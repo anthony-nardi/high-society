@@ -1,0 +1,10 @@
+{
+  "rules": {
+    "games": {
+      "$gameId": {
+        ".read": "auth.token.gameId == $gameId",
+        ".write": "auth.token.gameId == $gameId"
+      }
+    }
+  }
+}
