@@ -18,10 +18,8 @@ export default function Lobby({ user }: { user: User | null }) {
     const auth = getAuth();
     auth.onAuthStateChanged((user) => {
       if (user && typeof user.email === "string") {
-        console.log("already signed in", user.email);
         setCurrentUser(user);
         const functions = getFunctions();
-        console.log("joining lobby");
         const joinLobby = httpsCallable<any, any>(functions, "joinlobby");
         joinLobby({
           email: user.email,
@@ -36,8 +34,6 @@ export default function Lobby({ user }: { user: User | null }) {
     });
   }, [lobbyId, setCurrentUser]);
 
-  console.log(lobbyData);
-
   const handleURLChange = useCallback(() => {
     const lobbyUID = window.location.hash.replace(/\D/g, "");
     setLobbyId(Number(lobbyUID));
@@ -46,16 +42,12 @@ export default function Lobby({ user }: { user: User | null }) {
   useEffect(() => {
     if (!lobbyId || typeof lobbyId !== "number") return;
 
-    console.log("Attempting to fetch lobby ", lobbyId);
-
     const db = getDatabase();
 
     const lobbyRef = ref(db, "lobbies/" + lobbyId);
-    console.log(lobbyRef);
 
     onValue(lobbyRef, (snapshot) => {
       const data = snapshot.val();
-      console.log("Data for lobby", data);
       setLobbyData(data);
     });
   }, [lobbyId]);
@@ -89,13 +81,13 @@ export default function Lobby({ user }: { user: User | null }) {
     return <button onClick={handleCreateLobby}>Create lobby</button>;
   }
 
-  if (!lobbyData || !lobbyData.players.length || !user) {
+  if (!lobbyData || !lobbyData.players.length || !currentUser) {
     return <div>No data found for lobby</div>;
   }
 
   return (
     <PlayersList
-      user={user}
+      user={currentUser}
       players={lobbyData.players}
       lobbyUID={lobbyData.id}
     />

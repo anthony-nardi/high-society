@@ -9494,3 +9494,1784 @@ Issues? Report them at https://github.com/firebase/firebase-tools/issues and att
 [debug] [2024-07-06T18:14:07.424Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"Finishing up request with event=close"}}
 [debug] [2024-07-06T18:14:07.424Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
 [info] >  doesPlayerExist: true {"user":"doesPlayerExist: true","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"\u001b[90m> \u001b[39m doesPlayerExist: true"}}
+[debug] [2024-07-06T18:19:38.459Z] File C:\Users\UFO\high-society\functions\src\createLobby\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\createLobby\\index.ts changed, reloading triggers"}}
+[debug] [2024-07-06T18:19:38.459Z] File C:\Users\UFO\high-society\functions\src\createLobby\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\createLobby\\index.ts changed, reloading triggers"}}
+[debug] [2024-07-06T18:19:39.472Z] Validating nodejs source
+[debug] [2024-07-06T18:19:39.472Z] Validating nodejs source
+[debug] [2024-07-06T18:19:40.201Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:19:40.202Z] Building nodejs source
+[debug] [2024-07-06T18:19:40.202Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:19:40.203Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:19:40.207Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[debug] [2024-07-06T18:19:40.239Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:19:40.239Z] Building nodejs source
+[debug] [2024-07-06T18:19:40.239Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:19:40.240Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:19:40.245Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8774
+
+[info] Serving at port 8798
+
+[debug] [2024-07-06T18:19:40.602Z] Got response from /__/functions.yaml {"endpoints":{"createlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"createlobby"},"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[debug] [2024-07-06T18:19:40.647Z] Got response from /__/functions.yaml {"endpoints":{"createlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"createlobby"},"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[info] +  functions: Loaded functions definitions from source: createlobby, joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: createlobby, joinlobby, readyup."}}
+[info] +  functions: Loaded functions definitions from source: createlobby, joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: createlobby, joinlobby, readyup."}}
+[debug] [2024-07-06T18:19:45.675Z] [worker-pool] Shutting down IDLE worker (us-central1-createlobby) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] Shutting down IDLE worker (us-central1-createlobby)"}}
+[debug] [2024-07-06T18:19:45.675Z] [worker-us-central1-createlobby-e11eb25e-fc17-4912-b751-f7fc43813b8b]: FINISHING {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[worker-us-central1-createlobby-e11eb25e-fc17-4912-b751-f7fc43813b8b]: FINISHING"}}
+[debug] [2024-07-06T18:19:45.675Z] [worker-pool] Shutting down IDLE worker (us-central1-joinlobby) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] Shutting down IDLE worker (us-central1-joinlobby)"}}
+[debug] [2024-07-06T18:19:45.675Z] [worker-us-central1-joinlobby-66af9884-f721-46c0-865b-39ec7f623426]: FINISHING {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"[worker-us-central1-joinlobby-66af9884-f721-46c0-865b-39ec7f623426]: FINISHING"}}
+[debug] [2024-07-06T18:19:45.675Z] [worker-pool] Shutting down IDLE worker (us-central1-readyup) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] Shutting down IDLE worker (us-central1-readyup)"}}
+[debug] [2024-07-06T18:19:45.675Z] [worker-us-central1-readyup-5af5b509-3d37-4b41-bbfe-f2d3af6c70c7]: FINISHING {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-readyup"},"extension":{},"message":"[worker-us-central1-readyup-5af5b509-3d37-4b41-bbfe-f2d3af6c70c7]: FINISHING"}}
+[debug] [2024-07-06T18:19:45.683Z] [worker-us-central1-readyup-5af5b509-3d37-4b41-bbfe-f2d3af6c70c7]: exited {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-readyup"},"extension":{},"message":"[worker-us-central1-readyup-5af5b509-3d37-4b41-bbfe-f2d3af6c70c7]: exited"}}
+[debug] [2024-07-06T18:19:45.683Z] [worker-us-central1-readyup-5af5b509-3d37-4b41-bbfe-f2d3af6c70c7]: FINISHED {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-readyup"},"extension":{},"message":"[worker-us-central1-readyup-5af5b509-3d37-4b41-bbfe-f2d3af6c70c7]: FINISHED"}}
+[debug] [2024-07-06T18:19:45.683Z] [worker-us-central1-createlobby-e11eb25e-fc17-4912-b751-f7fc43813b8b]: exited {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[worker-us-central1-createlobby-e11eb25e-fc17-4912-b751-f7fc43813b8b]: exited"}}
+[debug] [2024-07-06T18:19:45.684Z] [worker-us-central1-createlobby-e11eb25e-fc17-4912-b751-f7fc43813b8b]: FINISHED {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[worker-us-central1-createlobby-e11eb25e-fc17-4912-b751-f7fc43813b8b]: FINISHED"}}
+[debug] [2024-07-06T18:19:45.684Z] [worker-us-central1-joinlobby-66af9884-f721-46c0-865b-39ec7f623426]: exited {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"[worker-us-central1-joinlobby-66af9884-f721-46c0-865b-39ec7f623426]: exited"}}
+[debug] [2024-07-06T18:19:45.684Z] [worker-us-central1-joinlobby-66af9884-f721-46c0-865b-39ec7f623426]: FINISHED {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"[worker-us-central1-joinlobby-66af9884-f721-46c0-865b-39ec7f623426]: FINISHED"}}
+[debug] [2024-07-06T18:19:46.411Z] File C:\Users\UFO\high-society\functions\src\createLobby\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\createLobby\\index.ts changed, reloading triggers"}}
+[debug] [2024-07-06T18:19:46.411Z] File C:\Users\UFO\high-society\functions\src\createLobby\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\createLobby\\index.ts changed, reloading triggers"}}
+[debug] [2024-07-06T18:19:47.418Z] Validating nodejs source
+[debug] [2024-07-06T18:19:47.418Z] Validating nodejs source
+[debug] [2024-07-06T18:19:48.143Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:19:48.143Z] Building nodejs source
+[debug] [2024-07-06T18:19:48.143Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:19:48.143Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:19:48.147Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8288
+
+[debug] [2024-07-06T18:19:48.323Z] File C:\Users\UFO\high-society\functions\src\createLobby\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\createLobby\\index.ts changed, reloading triggers"}}
+[debug] [2024-07-06T18:19:48.351Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:19:48.351Z] Building nodejs source
+[debug] [2024-07-06T18:19:48.352Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:19:48.353Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:19:48.356Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[debug] [2024-07-06T18:19:48.362Z] File C:\Users\UFO\high-society\functions\src\createLobby\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\createLobby\\index.ts changed, reloading triggers"}}
+[debug] [2024-07-06T18:19:48.489Z] Got response from /__/functions.yaml {"endpoints":{"createlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"createlobby"},"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[info] Serving at port 8487
+
+[debug] [2024-07-06T18:19:48.678Z] Got response from /__/functions.yaml {"endpoints":{"createlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"createlobby"},"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[debug] [2024-07-06T18:19:49.327Z] Validating nodejs source
+[debug] [2024-07-06T18:19:49.374Z] Validating nodejs source
+[debug] [2024-07-06T18:19:50.116Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:19:50.116Z] Building nodejs source
+[debug] [2024-07-06T18:19:50.116Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:19:50.117Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:19:50.122Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[debug] [2024-07-06T18:19:50.169Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:19:50.170Z] Building nodejs source
+[debug] [2024-07-06T18:19:50.170Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:19:50.170Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:19:50.176Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8273
+
+[info] Serving at port 8341
+
+[debug] [2024-07-06T18:19:50.524Z] Got response from /__/functions.yaml {"endpoints":{"createlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"createlobby"},"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[debug] [2024-07-06T18:19:50.569Z] Got response from /__/functions.yaml {"endpoints":{"createlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"createlobby"},"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[info] +  functions: Loaded functions definitions from source: createlobby, joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: createlobby, joinlobby, readyup."}}
+[info] +  functions: Loaded functions definitions from source: createlobby, joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: createlobby, joinlobby, readyup."}}
+[info] +  functions: Loaded functions definitions from source: createlobby, joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: createlobby, joinlobby, readyup."}}
+[info] +  functions: Loaded functions definitions from source: createlobby, joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: createlobby, joinlobby, readyup."}}
+[debug] [2024-07-06T18:20:05.846Z] File C:\Users\UFO\high-society\functions\src\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\index.ts changed, reloading triggers"}}
+[debug] [2024-07-06T18:20:05.846Z] File C:\Users\UFO\high-society\functions\src\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\index.ts changed, reloading triggers"}}
+[debug] [2024-07-06T18:20:06.849Z] Validating nodejs source
+[debug] [2024-07-06T18:20:06.849Z] Validating nodejs source
+[debug] [2024-07-06T18:20:07.497Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:20:07.497Z] Building nodejs source
+[debug] [2024-07-06T18:20:07.497Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:20:07.501Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:20:07.501Z] Building nodejs source
+[debug] [2024-07-06T18:20:07.501Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:20:07.497Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:20:07.501Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[debug] [2024-07-06T18:20:07.502Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:20:07.507Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8477
+
+[info] Serving at port 8443
+
+[debug] [2024-07-06T18:20:07.846Z] Got response from /__/functions.yaml {"endpoints":{"createlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"createlobby"},"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[debug] [2024-07-06T18:20:07.847Z] Got response from /__/functions.yaml {"endpoints":{"createlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"createlobby"},"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[debug] [2024-07-06T18:20:11.234Z] File C:\Users\UFO\high-society\functions\src\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\index.ts changed, reloading triggers"}}
+[debug] [2024-07-06T18:20:11.234Z] File C:\Users\UFO\high-society\functions\src\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\index.ts changed, reloading triggers"}}
+[debug] [2024-07-06T18:20:12.247Z] Validating nodejs source
+[debug] [2024-07-06T18:20:12.247Z] Validating nodejs source
+[debug] [2024-07-06T18:20:12.893Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:20:12.893Z] Building nodejs source
+[debug] [2024-07-06T18:20:12.893Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:20:12.894Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:20:12.899Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[info] +  functions: Loaded functions definitions from source: createlobby, joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: createlobby, joinlobby, readyup."}}
+[debug] [2024-07-06T18:20:12.904Z] File C:\Users\UFO\high-society\functions\src\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\index.ts changed, reloading triggers"}}
+[debug] [2024-07-06T18:20:12.919Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:20:12.919Z] Building nodejs source
+[debug] [2024-07-06T18:20:12.919Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:20:12.920Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:20:12.926Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[info] +  functions: Loaded functions definitions from source: createlobby, joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: createlobby, joinlobby, readyup."}}
+[debug] [2024-07-06T18:20:12.932Z] File C:\Users\UFO\high-society\functions\src\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\index.ts changed, reloading triggers"}}
+[info] Serving at port 8728
+
+[info] Serving at port 8897
+
+[debug] [2024-07-06T18:20:13.334Z] Got response from /__/functions.yaml {"endpoints":{"createlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"createlobby"},"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[debug] [2024-07-06T18:20:13.355Z] Got response from /__/functions.yaml {"endpoints":{"createlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"createlobby"},"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[debug] [2024-07-06T18:20:13.913Z] Validating nodejs source
+[debug] [2024-07-06T18:20:13.944Z] Validating nodejs source
+[debug] [2024-07-06T18:20:14.660Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:20:14.660Z] Building nodejs source
+[debug] [2024-07-06T18:20:14.660Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:20:14.661Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:20:14.665Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[debug] [2024-07-06T18:20:14.708Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:20:14.708Z] Building nodejs source
+[debug] [2024-07-06T18:20:14.709Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:20:14.709Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:20:14.714Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8478
+
+[info] Serving at port 8866
+
+[debug] [2024-07-06T18:20:15.001Z] Got response from /__/functions.yaml {"endpoints":{"createlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"createlobby"},"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[debug] [2024-07-06T18:20:15.043Z] Got response from /__/functions.yaml {"endpoints":{"createlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"createlobby"},"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[debug] [2024-07-06T18:20:17.272Z] File C:\Users\UFO\high-society\functions\lib\index.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\lib\\index.js.map changed, reloading triggers"}}
+[debug] [2024-07-06T18:20:17.272Z] File C:\Users\UFO\high-society\functions\lib\index.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\lib\\index.js.map changed, reloading triggers"}}
+[debug] [2024-07-06T18:20:17.272Z] File C:\Users\UFO\high-society\functions\lib\index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\lib\\index.js changed, reloading triggers"}}
+[debug] [2024-07-06T18:20:17.272Z] File C:\Users\UFO\high-society\functions\lib\index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\lib\\index.js changed, reloading triggers"}}
+[debug] [2024-07-06T18:20:18.284Z] Validating nodejs source
+[debug] [2024-07-06T18:20:18.284Z] Validating nodejs source
+[debug] [2024-07-06T18:20:18.959Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:20:18.959Z] Building nodejs source
+[debug] [2024-07-06T18:20:18.959Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:20:18.959Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:20:18.963Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[info] +  functions: Loaded functions definitions from source: createlobby, joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: createlobby, joinlobby, readyup."}}
+[debug] [2024-07-06T18:20:18.971Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:20:18.971Z] Building nodejs source
+[debug] [2024-07-06T18:20:18.971Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:20:18.972Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:20:18.978Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[info] +  functions: Loaded functions definitions from source: createlobby, joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: createlobby, joinlobby, readyup."}}
+[info] Serving at port 8053
+
+[info] Serving at port 8984
+
+[debug] [2024-07-06T18:20:19.361Z] Got response from /__/functions.yaml {"endpoints":{"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[debug] [2024-07-06T18:20:19.391Z] Got response from /__/functions.yaml {"endpoints":{"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[info] +  functions: Loaded functions definitions from source: createlobby, joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: createlobby, joinlobby, readyup."}}
+[info] +  functions: Loaded functions definitions from source: createlobby, joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: createlobby, joinlobby, readyup."}}
+[info] i  hosting: ::1 - - [06/Jul/2024:18:20:20 +0000] "GET / HTTP/1.1" 200 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [06/Jul/2024:18:20:20 +0000] \"GET / HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36\""}}
+[info] i  hosting: ::1 - - [06/Jul/2024:18:20:20 +0000] "GET /__/firebase/init.js?useEmulator=true HTTP/1.1" 200 - "http://localhost:5000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [06/Jul/2024:18:20:20 +0000] \"GET /__/firebase/init.js?useEmulator=true HTTP/1.1\" 200 - \"http://localhost:5000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36\""}}
+[info] i  hosting: ::1 - - [06/Jul/2024:18:20:20 +0000] "GET /static/css/main.18acf3da.css HTTP/1.1" 200 - "http://localhost:5000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [06/Jul/2024:18:20:20 +0000] \"GET /static/css/main.18acf3da.css HTTP/1.1\" 200 - \"http://localhost:5000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36\""}}
+[info] i  hosting: ::1 - - [06/Jul/2024:18:20:20 +0000] "GET /static/js/main.3f626bc1.js HTTP/1.1" 200 - "http://localhost:5000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [06/Jul/2024:18:20:20 +0000] \"GET /static/js/main.3f626bc1.js HTTP/1.1\" 200 - \"http://localhost:5000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36\""}}
+[info] i  hosting: ::1 - - [06/Jul/2024:18:20:20 +0000] "GET /static/css/main.18acf3da.css.map HTTP/1.1" 200 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [06/Jul/2024:18:20:20 +0000] \"GET /static/css/main.18acf3da.css.map HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36\""}}
+[info] i  hosting: ::1 - - [06/Jul/2024:18:20:20 +0000] "GET /static/js/main.3f626bc1.js.map HTTP/1.1" 200 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [06/Jul/2024:18:20:20 +0000] \"GET /static/js/main.3f626bc1.js.map HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36\""}}
+[debug] [2024-07-06T18:20:22.474Z] [work-queue] {"queuedWork":["/high-society-c4ff4/us-central1/createlobby-2024-07-06T18:20:22.474Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2024-07-06T18:20:22.474Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/high-society-c4ff4/us-central1/createlobby-2024-07-06T18:20:22.474Z"],"workRunningCount":1}
+[debug] [2024-07-06T18:20:22.474Z] Accepted request OPTIONS /high-society-c4ff4/us-central1/createlobby --> us-central1-createlobby
+[debug] [2024-07-06T18:20:22.476Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2024-07-06T18:20:22.476Z] [functions] Got req.url=/high-society-c4ff4/us-central1/createlobby, mapping to path=/ {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/high-society-c4ff4/us-central1/createlobby, mapping to path=/"}}
+[debug] [2024-07-06T18:20:22.476Z] [worker-pool] Cleaned up workers for us-central1-createlobby: 1 --> 0 {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] Cleaned up workers for us-central1-createlobby: 1 --> 0"}}
+[debug] [2024-07-06T18:20:22.476Z] [worker-pool] Cleaned up workers for us-central1-joinlobby: 1 --> 0 {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] Cleaned up workers for us-central1-joinlobby: 1 --> 0"}}
+[debug] [2024-07-06T18:20:22.476Z] [worker-pool] Cleaned up workers for us-central1-readyup: 1 --> 0 {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] Cleaned up workers for us-central1-readyup: 1 --> 0"}}
+[debug] [2024-07-06T18:20:22.480Z] [worker-pool] addWorker(us-central1-createlobby) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] addWorker(us-central1-createlobby)"}}
+[debug] [2024-07-06T18:20:22.481Z] [worker-pool] Adding worker with key us-central1-createlobby, total=1 {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] Adding worker with key us-central1-createlobby, total=1"}}
+[debug] [2024-07-06T18:20:23.199Z] [runtime-status] [18260] Resolved module firebase-admin {"declared":true,"installed":true,"version":"12.2.0","resolution":"C:\\Users\\UFO\\high-society\\functions\\node_modules\\firebase-admin\\lib\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[runtime-status] [18260] Resolved module firebase-admin {\"declared\":true,\"installed\":true,\"version\":\"12.2.0\",\"resolution\":\"C:\\\\Users\\\\UFO\\\\high-society\\\\functions\\\\node_modules\\\\firebase-admin\\\\lib\\\\index.js\"}"}}
+[debug] [2024-07-06T18:20:23.200Z] [runtime-status] [18260] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.0.1","resolution":"C:\\Users\\UFO\\high-society\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[runtime-status] [18260] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.0.1\",\"resolution\":\"C:\\\\Users\\\\UFO\\\\high-society\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2024-07-06T18:20:23.200Z] [runtime-status] [18260] Outgoing network have been stubbed. [{"name":"http","status":"mocked"},{"name":"http","status":"mocked"},{"name":"https","status":"mocked"},{"name":"https","status":"mocked"},{"name":"net","status":"mocked"}] {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[runtime-status] [18260] Outgoing network have been stubbed. [{\"name\":\"http\",\"status\":\"mocked\"},{\"name\":\"http\",\"status\":\"mocked\"},{\"name\":\"https\",\"status\":\"mocked\"},{\"name\":\"https\",\"status\":\"mocked\"},{\"name\":\"net\",\"status\":\"mocked\"}]"}}
+[debug] [2024-07-06T18:20:23.200Z] [runtime-status] [18260] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.0.1","resolution":"C:\\Users\\UFO\\high-society\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[runtime-status] [18260] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.0.1\",\"resolution\":\"C:\\\\Users\\\\UFO\\\\high-society\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2024-07-06T18:20:23.349Z] [runtime-status] [18260] Checked functions.config() {"config":{}} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[runtime-status] [18260] Checked functions.config() {\"config\":{}}"}}
+[debug] [2024-07-06T18:20:23.349Z] [runtime-status] [18260] firebase-functions has been stubbed. {"functionsResolution":{"declared":true,"installed":true,"version":"5.0.1","resolution":"C:\\Users\\UFO\\high-society\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"}} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[runtime-status] [18260] firebase-functions has been stubbed. {\"functionsResolution\":{\"declared\":true,\"installed\":true,\"version\":\"5.0.1\",\"resolution\":\"C:\\\\Users\\\\UFO\\\\high-society\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}}"}}
+[debug] [2024-07-06T18:20:23.350Z] [runtime-status] [18260] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.0.1","resolution":"C:\\Users\\UFO\\high-society\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[runtime-status] [18260] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.0.1\",\"resolution\":\"C:\\\\Users\\\\UFO\\\\high-society\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2024-07-06T18:20:23.350Z] [runtime-status] [18260] Resolved module firebase-admin {"declared":true,"installed":true,"version":"12.2.0","resolution":"C:\\Users\\UFO\\high-society\\functions\\node_modules\\firebase-admin\\lib\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[runtime-status] [18260] Resolved module firebase-admin {\"declared\":true,\"installed\":true,\"version\":\"12.2.0\",\"resolution\":\"C:\\\\Users\\\\UFO\\\\high-society\\\\functions\\\\node_modules\\\\firebase-admin\\\\lib\\\\index.js\"}"}}
+[debug] [2024-07-06T18:20:23.352Z] [runtime-status] [18260] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.0.1","resolution":"C:\\Users\\UFO\\high-society\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[runtime-status] [18260] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.0.1\",\"resolution\":\"C:\\\\Users\\\\UFO\\\\high-society\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2024-07-06T18:20:23.352Z] [runtime-status] [18260] firebase-admin has been stubbed. {"adminResolution":{"declared":true,"installed":true,"version":"12.2.0","resolution":"C:\\Users\\UFO\\high-society\\functions\\node_modules\\firebase-admin\\lib\\index.js"}} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[runtime-status] [18260] firebase-admin has been stubbed. {\"adminResolution\":{\"declared\":true,\"installed\":true,\"version\":\"12.2.0\",\"resolution\":\"C:\\\\Users\\\\UFO\\\\high-society\\\\functions\\\\node_modules\\\\firebase-admin\\\\lib\\\\index.js\"}}"}}
+[debug] [2024-07-06T18:20:23.367Z] [runtime-status] [18260] Functions runtime initialized. {"cwd":"C:\\Users\\UFO\\high-society\\functions","node_version":"20.15.0"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[runtime-status] [18260] Functions runtime initialized. {\"cwd\":\"C:\\\\Users\\\\UFO\\\\high-society\\\\functions\",\"node_version\":\"20.15.0\"}"}}
+[debug] [2024-07-06T18:20:23.368Z] [runtime-status] [18260] Listening to port: \\?\pipe\fire_emu_f34b172a9e230b61 {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[runtime-status] [18260] Listening to port: \\\\?\\pipe\\fire_emu_f34b172a9e230b61"}}
+[debug] [2024-07-06T18:20:23.460Z] [worker-us-central1-createlobby-ac37389d-b55c-4622-b4f5-eb1211a5b479]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[worker-us-central1-createlobby-ac37389d-b55c-4622-b4f5-eb1211a5b479]: IDLE"}}
+[debug] [2024-07-06T18:20:23.461Z] [worker-pool] submitRequest(triggerId=us-central1-createlobby) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-createlobby)"}}
+[info] i  functions: Beginning execution of "us-central1-createlobby" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"Beginning execution of \"us-central1-createlobby\""}}
+[debug] [2024-07-06T18:20:23.461Z] [worker-us-central1-createlobby-ac37389d-b55c-4622-b4f5-eb1211a5b479]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[worker-us-central1-createlobby-ac37389d-b55c-4622-b4f5-eb1211a5b479]: BUSY"}}
+[warn] !  functions: Error: Failed to find function createlobby in the loaded module
+    at C:\Users\UFO\AppData\Roaming\npm\node_modules\firebase-tools\lib\emulator\functionsEmulatorRuntime.js:676:23
+    at Layer.handle [as handle_request] (C:\Users\UFO\AppData\Roaming\npm\node_modules\firebase-tools\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\UFO\AppData\Roaming\npm\node_modules\firebase-tools\node_modules\express\lib\router\route.js:149:13)
+    at next (C:\Users\UFO\AppData\Roaming\npm\node_modules\firebase-tools\node_modules\express\lib\router\route.js:145:7)
+    at next (C:\Users\UFO\AppData\Roaming\npm\node_modules\firebase-tools\node_modules\express\lib\router\route.js:145:7)
+    at next (C:\Users\UFO\AppData\Roaming\npm\node_modules\firebase-tools\node_modules\express\lib\router\route.js:145:7)
+    at next (C:\Users\UFO\AppData\Roaming\npm\node_modules\firebase-tools\node_modules\express\lib\router\route.js:145:7)
+    at next (C:\Users\UFO\AppData\Roaming\npm\node_modules\firebase-tools\node_modules\express\lib\router\route.js:145:7)
+    at next (C:\Users\UFO\AppData\Roaming\npm\node_modules\firebase-tools\node_modules\express\lib\router\route.js:145:7)
+    at next (C:\Users\UFO\AppData\Roaming\npm\node_modules\firebase-tools\node_modules\express\lib\router\route.js:145:7) {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"Error: Failed to find function createlobby in the loaded module\n    at C:\\Users\\UFO\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\lib\\emulator\\functionsEmulatorRuntime.js:676:23\n    at Layer.handle [as handle_request] (C:\\Users\\UFO\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\node_modules\\express\\lib\\router\\layer.js:95:5)\n    at next (C:\\Users\\UFO\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\node_modules\\express\\lib\\router\\route.js:149:13)\n    at next (C:\\Users\\UFO\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\node_modules\\express\\lib\\router\\route.js:145:7)\n    at next (C:\\Users\\UFO\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\node_modules\\express\\lib\\router\\route.js:145:7)\n    at next (C:\\Users\\UFO\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\node_modules\\express\\lib\\router\\route.js:145:7)\n    at next (C:\\Users\\UFO\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\node_modules\\express\\lib\\router\\route.js:145:7)\n    at next (C:\\Users\\UFO\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\node_modules\\express\\lib\\router\\route.js:145:7)\n    at next (C:\\Users\\UFO\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\node_modules\\express\\lib\\router\\route.js:145:7)\n    at next (C:\\Users\\UFO\\AppData\\Roaming\\npm\\node_modules\\firebase-tools\\node_modules\\express\\lib\\router\\route.js:145:7)"}}
+[warn] !  Your function was killed because it raised an unhandled error. {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"Your function was killed because it raised an unhandled error."}}
+[debug] [2024-07-06T18:20:23.465Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-createlobby" in 3.9702ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"Finished \"us-central1-createlobby\" in 3.9702ms"}}
+[debug] [2024-07-06T18:20:23.466Z] [worker-us-central1-createlobby-ac37389d-b55c-4622-b4f5-eb1211a5b479]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[worker-us-central1-createlobby-ac37389d-b55c-4622-b4f5-eb1211a5b479]: IDLE"}}
+[debug] [2024-07-06T18:20:23.466Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2024-07-06T18:20:23.466Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2024-07-06T18:20:23.466Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[debug] [2024-07-06T18:20:23.476Z] [worker-us-central1-createlobby-ac37389d-b55c-4622-b4f5-eb1211a5b479]: exited {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[worker-us-central1-createlobby-ac37389d-b55c-4622-b4f5-eb1211a5b479]: exited"}}
+[debug] [2024-07-06T18:20:23.476Z] [worker-us-central1-createlobby-ac37389d-b55c-4622-b4f5-eb1211a5b479]: FINISHED {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[worker-us-central1-createlobby-ac37389d-b55c-4622-b4f5-eb1211a5b479]: FINISHED"}}
+[info] +  functions: Loaded functions definitions from source: joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: joinlobby, readyup."}}
+[info] +  functions: Loaded functions definitions from source: joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: joinlobby, readyup."}}
+[debug] [2024-07-06T18:20:29.998Z] File C:\Users\UFO\high-society\functions\src\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\index.ts changed, reloading triggers"}}
+[debug] [2024-07-06T18:20:29.998Z] File C:\Users\UFO\high-society\functions\src\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\index.ts changed, reloading triggers"}}
+[debug] [2024-07-06T18:20:31.011Z] Validating nodejs source
+[debug] [2024-07-06T18:20:31.011Z] Validating nodejs source
+[debug] [2024-07-06T18:20:31.693Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:20:31.693Z] Building nodejs source
+[debug] [2024-07-06T18:20:31.693Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:20:31.696Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:20:31.696Z] Building nodejs source
+[debug] [2024-07-06T18:20:31.697Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:20:31.694Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:20:31.699Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[debug] [2024-07-06T18:20:31.698Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:20:31.702Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8367
+
+[info] Serving at port 8376
+
+[debug] [2024-07-06T18:20:32.043Z] Got response from /__/functions.yaml {"endpoints":{"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[debug] [2024-07-06T18:20:32.043Z] Got response from /__/functions.yaml {"endpoints":{"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[info] +  functions: Loaded functions definitions from source: joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: joinlobby, readyup."}}
+[info] +  functions: Loaded functions definitions from source: joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: joinlobby, readyup."}}
+[debug] [2024-07-06T18:20:39.015Z] File C:\Users\UFO\high-society\functions\src\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\index.ts changed, reloading triggers"}}
+[debug] [2024-07-06T18:20:39.015Z] File C:\Users\UFO\high-society\functions\src\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\index.ts changed, reloading triggers"}}
+[debug] [2024-07-06T18:20:40.027Z] Validating nodejs source
+[debug] [2024-07-06T18:20:40.027Z] Validating nodejs source
+[debug] [2024-07-06T18:20:40.672Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:20:40.673Z] Building nodejs source
+[debug] [2024-07-06T18:20:40.673Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:20:40.675Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:20:40.675Z] Building nodejs source
+[debug] [2024-07-06T18:20:40.675Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:20:40.673Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:20:40.677Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[debug] [2024-07-06T18:20:40.675Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:20:40.680Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8314
+
+[info] Serving at port 8921
+
+[debug] [2024-07-06T18:20:41.028Z] Got response from /__/functions.yaml {"endpoints":{"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[debug] [2024-07-06T18:20:41.029Z] Got response from /__/functions.yaml {"endpoints":{"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[debug] [2024-07-06T18:20:41.759Z] File C:\Users\UFO\high-society\functions\src\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\index.ts changed, reloading triggers"}}
+[debug] [2024-07-06T18:20:41.759Z] File C:\Users\UFO\high-society\functions\src\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\index.ts changed, reloading triggers"}}
+[debug] [2024-07-06T18:20:42.764Z] Validating nodejs source
+[debug] [2024-07-06T18:20:42.764Z] Validating nodejs source
+[debug] [2024-07-06T18:20:43.402Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:20:43.402Z] Building nodejs source
+[debug] [2024-07-06T18:20:43.403Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:20:43.403Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:20:43.407Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[debug] [2024-07-06T18:20:43.413Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:20:43.414Z] Building nodejs source
+[debug] [2024-07-06T18:20:43.414Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:20:43.414Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:20:43.419Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8345
+
+[info] Serving at port 8470
+
+[debug] [2024-07-06T18:20:43.730Z] Got response from /__/functions.yaml {"endpoints":{"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[debug] [2024-07-06T18:20:43.735Z] Got response from /__/functions.yaml {"endpoints":{"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[info] +  functions: Loaded functions definitions from source: joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: joinlobby, readyup."}}
+[info] +  functions: Loaded functions definitions from source: joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: joinlobby, readyup."}}
+[debug] [2024-07-06T18:20:47.993Z] File C:\Users\UFO\high-society\functions\src\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\index.ts changed, reloading triggers"}}
+[debug] [2024-07-06T18:20:47.993Z] File C:\Users\UFO\high-society\functions\src\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\index.ts changed, reloading triggers"}}
+[info] +  functions: Loaded functions definitions from source: joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: joinlobby, readyup."}}
+[info] +  functions: Loaded functions definitions from source: joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: joinlobby, readyup."}}
+[debug] [2024-07-06T18:20:48.995Z] Validating nodejs source
+[debug] [2024-07-06T18:20:48.995Z] Validating nodejs source
+[debug] [2024-07-06T18:20:49.681Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:20:49.681Z] Building nodejs source
+[debug] [2024-07-06T18:20:49.681Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:20:49.681Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:20:49.681Z] Building nodejs source
+[debug] [2024-07-06T18:20:49.681Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:20:49.682Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:20:49.686Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[debug] [2024-07-06T18:20:49.681Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:20:49.690Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8414
+
+[info] Serving at port 9001
+
+[debug] [2024-07-06T18:20:50.047Z] Got response from /__/functions.yaml {"endpoints":{"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[debug] [2024-07-06T18:20:50.051Z] Got response from /__/functions.yaml {"endpoints":{"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[info] +  functions: Loaded functions definitions from source: joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: joinlobby, readyup."}}
+[info] +  functions: Loaded functions definitions from source: joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: joinlobby, readyup."}}
+[debug] [2024-07-06T18:20:58.503Z] File C:\Users\UFO\high-society\functions\src\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\index.ts changed, reloading triggers"}}
+[debug] [2024-07-06T18:20:58.504Z] File C:\Users\UFO\high-society\functions\src\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\index.ts changed, reloading triggers"}}
+[debug] [2024-07-06T18:20:59.510Z] Validating nodejs source
+[debug] [2024-07-06T18:20:59.510Z] Validating nodejs source
+[debug] [2024-07-06T18:21:00.142Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:21:00.142Z] Building nodejs source
+[debug] [2024-07-06T18:21:00.143Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:21:00.146Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:21:00.147Z] Building nodejs source
+[debug] [2024-07-06T18:21:00.147Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:21:00.144Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:21:00.148Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[debug] [2024-07-06T18:21:00.147Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:21:00.151Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8277
+
+[info] Serving at port 8102
+
+[debug] [2024-07-06T18:21:00.526Z] Got response from /__/functions.yaml {"endpoints":{"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[debug] [2024-07-06T18:21:00.549Z] Got response from /__/functions.yaml {"endpoints":{"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[debug] [2024-07-06T18:21:00.759Z] File C:\Users\UFO\high-society\functions\src\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\index.ts changed, reloading triggers"}}
+[debug] [2024-07-06T18:21:00.759Z] File C:\Users\UFO\high-society\functions\src\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\index.ts changed, reloading triggers"}}
+[debug] [2024-07-06T18:21:01.763Z] Validating nodejs source
+[debug] [2024-07-06T18:21:01.763Z] Validating nodejs source
+[debug] [2024-07-06T18:21:02.376Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:21:02.376Z] Building nodejs source
+[debug] [2024-07-06T18:21:02.377Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:21:02.382Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:21:02.382Z] Building nodejs source
+[debug] [2024-07-06T18:21:02.382Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:21:02.377Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:21:02.380Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[debug] [2024-07-06T18:21:02.383Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:21:02.387Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8534
+
+[info] Serving at port 8889
+
+[debug] [2024-07-06T18:21:02.704Z] Got response from /__/functions.yaml {"endpoints":{"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[debug] [2024-07-06T18:21:02.714Z] Got response from /__/functions.yaml {"endpoints":{"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[debug] [2024-07-06T18:21:03.246Z] File C:\Users\UFO\high-society\functions\src\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\index.ts changed, reloading triggers"}}
+[debug] [2024-07-06T18:21:03.246Z] File C:\Users\UFO\high-society\functions\src\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\index.ts changed, reloading triggers"}}
+[debug] [2024-07-06T18:21:04.252Z] Validating nodejs source
+[debug] [2024-07-06T18:21:04.252Z] Validating nodejs source
+[debug] [2024-07-06T18:21:05.181Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:21:05.181Z] Building nodejs source
+[debug] [2024-07-06T18:21:05.181Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:21:05.182Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:21:05.186Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[debug] [2024-07-06T18:21:05.193Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:21:05.193Z] Building nodejs source
+[debug] [2024-07-06T18:21:05.193Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:21:05.194Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:21:05.201Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8830
+
+[info] Serving at port 8602
+
+[info] +  functions: Loaded functions definitions from source: joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: joinlobby, readyup."}}
+[info] +  functions: Loaded functions definitions from source: joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: joinlobby, readyup."}}
+[debug] [2024-07-06T18:21:05.626Z] Got response from /__/functions.yaml {"endpoints":{"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[debug] [2024-07-06T18:21:05.628Z] Got response from /__/functions.yaml {"endpoints":{"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[info] +  functions: Loaded functions definitions from source: joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: joinlobby, readyup."}}
+[debug] [2024-07-06T18:21:07.735Z] File C:\Users\UFO\high-society\functions\lib\createLobby\index.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\lib\\createLobby\\index.js.map changed, reloading triggers"}}
+[debug] [2024-07-06T18:21:07.735Z] File C:\Users\UFO\high-society\functions\lib\createLobby\index.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\lib\\createLobby\\index.js.map changed, reloading triggers"}}
+[debug] [2024-07-06T18:21:07.736Z] File C:\Users\UFO\high-society\functions\lib\createLobby\index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\lib\\createLobby\\index.js changed, reloading triggers"}}
+[debug] [2024-07-06T18:21:07.736Z] File C:\Users\UFO\high-society\functions\lib\createLobby\index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\lib\\createLobby\\index.js changed, reloading triggers"}}
+[info] +  functions: Loaded functions definitions from source: joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: joinlobby, readyup."}}
+[debug] [2024-07-06T18:21:07.743Z] File C:\Users\UFO\high-society\functions\lib\index.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\lib\\index.js.map changed, reloading triggers"}}
+[debug] [2024-07-06T18:21:07.743Z] File C:\Users\UFO\high-society\functions\lib\index.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\lib\\index.js.map changed, reloading triggers"}}
+[debug] [2024-07-06T18:21:07.743Z] File C:\Users\UFO\high-society\functions\lib\index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\lib\\index.js changed, reloading triggers"}}
+[debug] [2024-07-06T18:21:07.743Z] File C:\Users\UFO\high-society\functions\lib\index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\lib\\index.js changed, reloading triggers"}}
+[debug] [2024-07-06T18:21:08.748Z] Validating nodejs source
+[debug] [2024-07-06T18:21:08.748Z] Validating nodejs source
+[debug] [2024-07-06T18:21:09.420Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:21:09.420Z] Building nodejs source
+[debug] [2024-07-06T18:21:09.421Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:21:09.421Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:21:09.427Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[debug] [2024-07-06T18:21:09.437Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:21:09.437Z] Building nodejs source
+[debug] [2024-07-06T18:21:09.437Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:21:09.438Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:21:09.442Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[info] i  hosting: ::1 - - [06/Jul/2024:18:21:09 +0000] "GET / HTTP/1.1" 200 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [06/Jul/2024:18:21:09 +0000] \"GET / HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36\""}}
+[info] i  hosting: ::1 - - [06/Jul/2024:18:21:09 +0000] "GET /__/firebase/init.js?useEmulator=true HTTP/1.1" 200 - "http://localhost:5000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [06/Jul/2024:18:21:09 +0000] \"GET /__/firebase/init.js?useEmulator=true HTTP/1.1\" 200 - \"http://localhost:5000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36\""}}
+[info] i  hosting: ::1 - - [06/Jul/2024:18:21:09 +0000] "GET /static/css/main.18acf3da.css HTTP/1.1" 200 - "http://localhost:5000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [06/Jul/2024:18:21:09 +0000] \"GET /static/css/main.18acf3da.css HTTP/1.1\" 200 - \"http://localhost:5000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36\""}}
+[info] i  hosting: ::1 - - [06/Jul/2024:18:21:09 +0000] "GET /static/js/main.3f626bc1.js HTTP/1.1" 200 - "http://localhost:5000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [06/Jul/2024:18:21:09 +0000] \"GET /static/js/main.3f626bc1.js HTTP/1.1\" 200 - \"http://localhost:5000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36\""}}
+[info] i  hosting: ::1 - - [06/Jul/2024:18:21:09 +0000] "GET /static/css/main.18acf3da.css.map HTTP/1.1" 200 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [06/Jul/2024:18:21:09 +0000] \"GET /static/css/main.18acf3da.css.map HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36\""}}
+[info] Serving at port 8154
+
+[info] Serving at port 8683
+
+[info] i  hosting: ::1 - - [06/Jul/2024:18:21:09 +0000] "GET /static/js/main.3f626bc1.js.map HTTP/1.1" 200 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [06/Jul/2024:18:21:09 +0000] \"GET /static/js/main.3f626bc1.js.map HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36\""}}
+[debug] [2024-07-06T18:21:09.831Z] Got response from /__/functions.yaml {"endpoints":{"createlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"createlobby"},"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[debug] [2024-07-06T18:21:09.842Z] Got response from /__/functions.yaml {"endpoints":{"createlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"createlobby"},"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[info] +  functions: Loaded functions definitions from source: joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: joinlobby, readyup."}}
+[info] +  functions: Loaded functions definitions from source: joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: joinlobby, readyup."}}
+[debug] [2024-07-06T18:21:12.988Z] [work-queue] {"queuedWork":["/high-society-c4ff4/us-central1/createlobby-2024-07-06T18:21:12.988Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2024-07-06T18:21:12.988Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/high-society-c4ff4/us-central1/createlobby-2024-07-06T18:21:12.988Z"],"workRunningCount":1}
+[debug] [2024-07-06T18:21:12.988Z] Accepted request OPTIONS /high-society-c4ff4/us-central1/createlobby --> us-central1-createlobby
+[debug] [2024-07-06T18:21:12.990Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2024-07-06T18:21:12.990Z] [functions] Got req.url=/high-society-c4ff4/us-central1/createlobby, mapping to path=/ {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/high-society-c4ff4/us-central1/createlobby, mapping to path=/"}}
+[debug] [2024-07-06T18:21:12.990Z] [worker-pool] Cleaned up workers for us-central1-createlobby: 1 --> 0 {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] Cleaned up workers for us-central1-createlobby: 1 --> 0"}}
+[debug] [2024-07-06T18:21:12.996Z] [worker-pool] addWorker(us-central1-createlobby) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] addWorker(us-central1-createlobby)"}}
+[debug] [2024-07-06T18:21:12.996Z] [worker-pool] Adding worker with key us-central1-createlobby, total=1 {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] Adding worker with key us-central1-createlobby, total=1"}}
+[debug] [2024-07-06T18:21:13.722Z] [runtime-status] [13628] Resolved module firebase-admin {"declared":true,"installed":true,"version":"12.2.0","resolution":"C:\\Users\\UFO\\high-society\\functions\\node_modules\\firebase-admin\\lib\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[runtime-status] [13628] Resolved module firebase-admin {\"declared\":true,\"installed\":true,\"version\":\"12.2.0\",\"resolution\":\"C:\\\\Users\\\\UFO\\\\high-society\\\\functions\\\\node_modules\\\\firebase-admin\\\\lib\\\\index.js\"}"}}
+[debug] [2024-07-06T18:21:13.723Z] [runtime-status] [13628] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.0.1","resolution":"C:\\Users\\UFO\\high-society\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[runtime-status] [13628] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.0.1\",\"resolution\":\"C:\\\\Users\\\\UFO\\\\high-society\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2024-07-06T18:21:13.723Z] [runtime-status] [13628] Outgoing network have been stubbed. [{"name":"http","status":"mocked"},{"name":"http","status":"mocked"},{"name":"https","status":"mocked"},{"name":"https","status":"mocked"},{"name":"net","status":"mocked"}] {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[runtime-status] [13628] Outgoing network have been stubbed. [{\"name\":\"http\",\"status\":\"mocked\"},{\"name\":\"http\",\"status\":\"mocked\"},{\"name\":\"https\",\"status\":\"mocked\"},{\"name\":\"https\",\"status\":\"mocked\"},{\"name\":\"net\",\"status\":\"mocked\"}]"}}
+[debug] [2024-07-06T18:21:13.724Z] [runtime-status] [13628] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.0.1","resolution":"C:\\Users\\UFO\\high-society\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[runtime-status] [13628] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.0.1\",\"resolution\":\"C:\\\\Users\\\\UFO\\\\high-society\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2024-07-06T18:21:13.871Z] [runtime-status] [13628] Checked functions.config() {"config":{}} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[runtime-status] [13628] Checked functions.config() {\"config\":{}}"}}
+[debug] [2024-07-06T18:21:13.871Z] [runtime-status] [13628] firebase-functions has been stubbed. {"functionsResolution":{"declared":true,"installed":true,"version":"5.0.1","resolution":"C:\\Users\\UFO\\high-society\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"}} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[runtime-status] [13628] firebase-functions has been stubbed. {\"functionsResolution\":{\"declared\":true,\"installed\":true,\"version\":\"5.0.1\",\"resolution\":\"C:\\\\Users\\\\UFO\\\\high-society\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}}"}}
+[debug] [2024-07-06T18:21:13.871Z] [runtime-status] [13628] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.0.1","resolution":"C:\\Users\\UFO\\high-society\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[runtime-status] [13628] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.0.1\",\"resolution\":\"C:\\\\Users\\\\UFO\\\\high-society\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2024-07-06T18:21:13.872Z] [runtime-status] [13628] Resolved module firebase-admin {"declared":true,"installed":true,"version":"12.2.0","resolution":"C:\\Users\\UFO\\high-society\\functions\\node_modules\\firebase-admin\\lib\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[runtime-status] [13628] Resolved module firebase-admin {\"declared\":true,\"installed\":true,\"version\":\"12.2.0\",\"resolution\":\"C:\\\\Users\\\\UFO\\\\high-society\\\\functions\\\\node_modules\\\\firebase-admin\\\\lib\\\\index.js\"}"}}
+[debug] [2024-07-06T18:21:13.873Z] [runtime-status] [13628] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.0.1","resolution":"C:\\Users\\UFO\\high-society\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[runtime-status] [13628] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.0.1\",\"resolution\":\"C:\\\\Users\\\\UFO\\\\high-society\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2024-07-06T18:21:13.873Z] [runtime-status] [13628] firebase-admin has been stubbed. {"adminResolution":{"declared":true,"installed":true,"version":"12.2.0","resolution":"C:\\Users\\UFO\\high-society\\functions\\node_modules\\firebase-admin\\lib\\index.js"}} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[runtime-status] [13628] firebase-admin has been stubbed. {\"adminResolution\":{\"declared\":true,\"installed\":true,\"version\":\"12.2.0\",\"resolution\":\"C:\\\\Users\\\\UFO\\\\high-society\\\\functions\\\\node_modules\\\\firebase-admin\\\\lib\\\\index.js\"}}"}}
+[debug] [2024-07-06T18:21:13.889Z] [runtime-status] [13628] Functions runtime initialized. {"cwd":"C:\\Users\\UFO\\high-society\\functions","node_version":"20.15.0"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[runtime-status] [13628] Functions runtime initialized. {\"cwd\":\"C:\\\\Users\\\\UFO\\\\high-society\\\\functions\",\"node_version\":\"20.15.0\"}"}}
+[debug] [2024-07-06T18:21:13.889Z] [runtime-status] [13628] Listening to port: \\?\pipe\fire_emu_ad29bb04f362969c {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[runtime-status] [13628] Listening to port: \\\\?\\pipe\\fire_emu_ad29bb04f362969c"}}
+[debug] [2024-07-06T18:21:13.970Z] [worker-us-central1-createlobby-a19905bb-e847-4270-8287-619b4ae4327b]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[worker-us-central1-createlobby-a19905bb-e847-4270-8287-619b4ae4327b]: IDLE"}}
+[debug] [2024-07-06T18:21:13.971Z] [worker-pool] submitRequest(triggerId=us-central1-createlobby) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-createlobby)"}}
+[info] i  functions: Beginning execution of "us-central1-createlobby" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"Beginning execution of \"us-central1-createlobby\""}}
+[debug] [2024-07-06T18:21:13.971Z] [worker-us-central1-createlobby-a19905bb-e847-4270-8287-619b4ae4327b]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[worker-us-central1-createlobby-a19905bb-e847-4270-8287-619b4ae4327b]: BUSY"}}
+[debug] [2024-07-06T18:21:13.973Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-createlobby" in 2.0743ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"Finished \"us-central1-createlobby\" in 2.0743ms"}}
+[debug] [2024-07-06T18:21:13.974Z] [worker-us-central1-createlobby-a19905bb-e847-4270-8287-619b4ae4327b]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[worker-us-central1-createlobby-a19905bb-e847-4270-8287-619b4ae4327b]: IDLE"}}
+[debug] [2024-07-06T18:21:13.974Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2024-07-06T18:21:13.974Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2024-07-06T18:21:13.974Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[debug] [2024-07-06T18:21:13.975Z] [work-queue] {"queuedWork":["/high-society-c4ff4/us-central1/createlobby-2024-07-06T18:21:13.975Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2024-07-06T18:21:13.975Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/high-society-c4ff4/us-central1/createlobby-2024-07-06T18:21:13.975Z"],"workRunningCount":1}
+[debug] [2024-07-06T18:21:13.975Z] Accepted request POST /high-society-c4ff4/us-central1/createlobby --> us-central1-createlobby
+[debug] [2024-07-06T18:21:13.975Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2024-07-06T18:21:13.975Z] [functions] Got req.url=/high-society-c4ff4/us-central1/createlobby, mapping to path=/ {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/high-society-c4ff4/us-central1/createlobby, mapping to path=/"}}
+[debug] [2024-07-06T18:21:13.975Z] [worker-pool] submitRequest(triggerId=us-central1-createlobby) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-createlobby)"}}
+[info] i  functions: Beginning execution of "us-central1-createlobby" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"Beginning execution of \"us-central1-createlobby\""}}
+[debug] [2024-07-06T18:21:13.976Z] [worker-us-central1-createlobby-a19905bb-e847-4270-8287-619b4ae4327b]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[worker-us-central1-createlobby-a19905bb-e847-4270-8287-619b4ae4327b]: BUSY"}}
+[info] >  {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"} {"user":{"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"},"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"\u001b[90m> \u001b[39m {\"verifications\":{\"app\":\"MISSING\",\"auth\":\"VALID\"},\"logging.googleapis.com/labels\":{\"firebase-log-type\":\"callable-request-verification\"},\"severity\":\"DEBUG\",\"message\":\"Callable request verification passed\"}"}}
+[info] >  {"severity":"INFO","message":"New lobby created."} {"user":{"severity":"INFO","message":"New lobby created."},"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"\u001b[90m> \u001b[39m {\"severity\":\"INFO\",\"message\":\"New lobby created.\"}"}}
+[debug] [2024-07-06T18:21:14.041Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-createlobby" in 65.076ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"Finished \"us-central1-createlobby\" in 65.076ms"}}
+[debug] [2024-07-06T18:21:14.041Z] [worker-us-central1-createlobby-a19905bb-e847-4270-8287-619b4ae4327b]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[worker-us-central1-createlobby-a19905bb-e847-4270-8287-619b4ae4327b]: IDLE"}}
+[debug] [2024-07-06T18:21:14.041Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2024-07-06T18:21:14.041Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2024-07-06T18:21:14.041Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[debug] [2024-07-06T18:21:14.046Z] [work-queue] {"queuedWork":["/high-society-c4ff4/us-central1/joinlobby-2024-07-06T18:21:14.046Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2024-07-06T18:21:14.046Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/high-society-c4ff4/us-central1/joinlobby-2024-07-06T18:21:14.046Z"],"workRunningCount":1}
+[debug] [2024-07-06T18:21:14.046Z] Accepted request OPTIONS /high-society-c4ff4/us-central1/joinlobby --> us-central1-joinlobby
+[debug] [2024-07-06T18:21:14.047Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2024-07-06T18:21:14.047Z] [functions] Got req.url=/high-society-c4ff4/us-central1/joinlobby, mapping to path=/ {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/high-society-c4ff4/us-central1/joinlobby, mapping to path=/"}}
+[debug] [2024-07-06T18:21:14.053Z] [worker-pool] addWorker(us-central1-joinlobby) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] addWorker(us-central1-joinlobby)"}}
+[debug] [2024-07-06T18:21:14.053Z] [worker-pool] Adding worker with key us-central1-joinlobby, total=1 {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] Adding worker with key us-central1-joinlobby, total=1"}}
+[debug] [2024-07-06T18:21:14.792Z] [runtime-status] [9196] Resolved module firebase-admin {"declared":true,"installed":true,"version":"12.2.0","resolution":"C:\\Users\\UFO\\high-society\\functions\\node_modules\\firebase-admin\\lib\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"[runtime-status] [9196] Resolved module firebase-admin {\"declared\":true,\"installed\":true,\"version\":\"12.2.0\",\"resolution\":\"C:\\\\Users\\\\UFO\\\\high-society\\\\functions\\\\node_modules\\\\firebase-admin\\\\lib\\\\index.js\"}"}}
+[debug] [2024-07-06T18:21:14.793Z] [runtime-status] [9196] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.0.1","resolution":"C:\\Users\\UFO\\high-society\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"[runtime-status] [9196] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.0.1\",\"resolution\":\"C:\\\\Users\\\\UFO\\\\high-society\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2024-07-06T18:21:14.793Z] [runtime-status] [9196] Outgoing network have been stubbed. [{"name":"http","status":"mocked"},{"name":"http","status":"mocked"},{"name":"https","status":"mocked"},{"name":"https","status":"mocked"},{"name":"net","status":"mocked"}] {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"[runtime-status] [9196] Outgoing network have been stubbed. [{\"name\":\"http\",\"status\":\"mocked\"},{\"name\":\"http\",\"status\":\"mocked\"},{\"name\":\"https\",\"status\":\"mocked\"},{\"name\":\"https\",\"status\":\"mocked\"},{\"name\":\"net\",\"status\":\"mocked\"}]"}}
+[debug] [2024-07-06T18:21:14.793Z] [runtime-status] [9196] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.0.1","resolution":"C:\\Users\\UFO\\high-society\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"[runtime-status] [9196] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.0.1\",\"resolution\":\"C:\\\\Users\\\\UFO\\\\high-society\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[info] +  functions: Loaded functions definitions from source: createlobby, joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: createlobby, joinlobby, readyup."}}
+[debug] [2024-07-06T18:21:14.852Z] [worker-pool] Shutting down IDLE worker (us-central1-createlobby) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] Shutting down IDLE worker (us-central1-createlobby)"}}
+[debug] [2024-07-06T18:21:14.852Z] [worker-us-central1-createlobby-a19905bb-e847-4270-8287-619b4ae4327b]: FINISHING {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[worker-us-central1-createlobby-a19905bb-e847-4270-8287-619b4ae4327b]: FINISHING"}}
+[debug] [2024-07-06T18:21:14.861Z] [worker-us-central1-createlobby-a19905bb-e847-4270-8287-619b4ae4327b]: exited {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[worker-us-central1-createlobby-a19905bb-e847-4270-8287-619b4ae4327b]: exited"}}
+[debug] [2024-07-06T18:21:14.862Z] [worker-us-central1-createlobby-a19905bb-e847-4270-8287-619b4ae4327b]: FINISHED {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createlobby"},"extension":{},"message":"[worker-us-central1-createlobby-a19905bb-e847-4270-8287-619b4ae4327b]: FINISHED"}}
+[info] +  functions: Loaded functions definitions from source: createlobby, joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: createlobby, joinlobby, readyup."}}
+[debug] [2024-07-06T18:21:14.945Z] [runtime-status] [9196] Checked functions.config() {"config":{}} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"[runtime-status] [9196] Checked functions.config() {\"config\":{}}"}}
+[debug] [2024-07-06T18:21:14.945Z] [runtime-status] [9196] firebase-functions has been stubbed. {"functionsResolution":{"declared":true,"installed":true,"version":"5.0.1","resolution":"C:\\Users\\UFO\\high-society\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"}} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"[runtime-status] [9196] firebase-functions has been stubbed. {\"functionsResolution\":{\"declared\":true,\"installed\":true,\"version\":\"5.0.1\",\"resolution\":\"C:\\\\Users\\\\UFO\\\\high-society\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}}"}}
+[debug] [2024-07-06T18:21:14.945Z] [runtime-status] [9196] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.0.1","resolution":"C:\\Users\\UFO\\high-society\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"[runtime-status] [9196] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.0.1\",\"resolution\":\"C:\\\\Users\\\\UFO\\\\high-society\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2024-07-06T18:21:14.946Z] [runtime-status] [9196] Resolved module firebase-admin {"declared":true,"installed":true,"version":"12.2.0","resolution":"C:\\Users\\UFO\\high-society\\functions\\node_modules\\firebase-admin\\lib\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"[runtime-status] [9196] Resolved module firebase-admin {\"declared\":true,\"installed\":true,\"version\":\"12.2.0\",\"resolution\":\"C:\\\\Users\\\\UFO\\\\high-society\\\\functions\\\\node_modules\\\\firebase-admin\\\\lib\\\\index.js\"}"}}
+[debug] [2024-07-06T18:21:14.947Z] [runtime-status] [9196] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.0.1","resolution":"C:\\Users\\UFO\\high-society\\functions\\node_modules\\firebase-functions\\lib\\v1\\index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"[runtime-status] [9196] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.0.1\",\"resolution\":\"C:\\\\Users\\\\UFO\\\\high-society\\\\functions\\\\node_modules\\\\firebase-functions\\\\lib\\\\v1\\\\index.js\"}"}}
+[debug] [2024-07-06T18:21:14.948Z] [runtime-status] [9196] firebase-admin has been stubbed. {"adminResolution":{"declared":true,"installed":true,"version":"12.2.0","resolution":"C:\\Users\\UFO\\high-society\\functions\\node_modules\\firebase-admin\\lib\\index.js"}} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"[runtime-status] [9196] firebase-admin has been stubbed. {\"adminResolution\":{\"declared\":true,\"installed\":true,\"version\":\"12.2.0\",\"resolution\":\"C:\\\\Users\\\\UFO\\\\high-society\\\\functions\\\\node_modules\\\\firebase-admin\\\\lib\\\\index.js\"}}"}}
+[debug] [2024-07-06T18:21:14.964Z] [runtime-status] [9196] Functions runtime initialized. {"cwd":"C:\\Users\\UFO\\high-society\\functions","node_version":"20.15.0"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"[runtime-status] [9196] Functions runtime initialized. {\"cwd\":\"C:\\\\Users\\\\UFO\\\\high-society\\\\functions\",\"node_version\":\"20.15.0\"}"}}
+[debug] [2024-07-06T18:21:14.964Z] [runtime-status] [9196] Listening to port: \\?\pipe\fire_emu_b896b884b76b743f {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"[runtime-status] [9196] Listening to port: \\\\?\\pipe\\fire_emu_b896b884b76b743f"}}
+[debug] [2024-07-06T18:21:15.033Z] [worker-us-central1-joinlobby-367ddc88-cdd1-4ad5-ad1d-6c44d476655b]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"[worker-us-central1-joinlobby-367ddc88-cdd1-4ad5-ad1d-6c44d476655b]: IDLE"}}
+[debug] [2024-07-06T18:21:15.033Z] [worker-pool] submitRequest(triggerId=us-central1-joinlobby) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-joinlobby)"}}
+[debug] [2024-07-06T18:21:15.033Z] [worker-pool] Cleaned up workers for us-central1-createlobby: 1 --> 0 {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] Cleaned up workers for us-central1-createlobby: 1 --> 0"}}
+[info] i  functions: Beginning execution of "us-central1-joinlobby" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"Beginning execution of \"us-central1-joinlobby\""}}
+[debug] [2024-07-06T18:21:15.034Z] [worker-us-central1-joinlobby-367ddc88-cdd1-4ad5-ad1d-6c44d476655b]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"[worker-us-central1-joinlobby-367ddc88-cdd1-4ad5-ad1d-6c44d476655b]: BUSY"}}
+[debug] [2024-07-06T18:21:15.035Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-joinlobby" in 2.0149ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"Finished \"us-central1-joinlobby\" in 2.0149ms"}}
+[debug] [2024-07-06T18:21:15.036Z] [worker-us-central1-joinlobby-367ddc88-cdd1-4ad5-ad1d-6c44d476655b]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"[worker-us-central1-joinlobby-367ddc88-cdd1-4ad5-ad1d-6c44d476655b]: IDLE"}}
+[debug] [2024-07-06T18:21:15.036Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2024-07-06T18:21:15.036Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2024-07-06T18:21:15.036Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[debug] [2024-07-06T18:21:15.037Z] [work-queue] {"queuedWork":["/high-society-c4ff4/us-central1/joinlobby-2024-07-06T18:21:15.037Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2024-07-06T18:21:15.037Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/high-society-c4ff4/us-central1/joinlobby-2024-07-06T18:21:15.037Z"],"workRunningCount":1}
+[debug] [2024-07-06T18:21:15.037Z] Accepted request POST /high-society-c4ff4/us-central1/joinlobby --> us-central1-joinlobby
+[debug] [2024-07-06T18:21:15.037Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2024-07-06T18:21:15.037Z] [functions] Got req.url=/high-society-c4ff4/us-central1/joinlobby, mapping to path=/ {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/high-society-c4ff4/us-central1/joinlobby, mapping to path=/"}}
+[debug] [2024-07-06T18:21:15.037Z] [worker-pool] submitRequest(triggerId=us-central1-joinlobby) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-joinlobby)"}}
+[info] i  functions: Beginning execution of "us-central1-joinlobby" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"Beginning execution of \"us-central1-joinlobby\""}}
+[debug] [2024-07-06T18:21:15.038Z] [worker-us-central1-joinlobby-367ddc88-cdd1-4ad5-ad1d-6c44d476655b]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"[worker-us-central1-joinlobby-367ddc88-cdd1-4ad5-ad1d-6c44d476655b]: BUSY"}}
+[info] >  {"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"} {"user":{"verifications":{"app":"MISSING","auth":"VALID"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"},"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"\u001b[90m> \u001b[39m {\"verifications\":{\"app\":\"MISSING\",\"auth\":\"VALID\"},\"logging.googleapis.com/labels\":{\"firebase-log-type\":\"callable-request-verification\"},\"severity\":\"DEBUG\",\"message\":\"Callable request verification passed\"}"}}
+[info] >  [ { email: 'panda.algae.571@example.com', ready: false } ] {"user":"[ { email: 'panda.algae.571@example.com', ready: false } ]","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"\u001b[90m> \u001b[39m [ { email: 'panda.algae.571@example.com', ready: false } ]"}}
+[info] >  doesPlayerExist: true {"user":"doesPlayerExist: true","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"\u001b[90m> \u001b[39m doesPlayerExist: true"}}
+[debug] [2024-07-06T18:21:15.107Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-joinlobby" in 69.7279ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"Finished \"us-central1-joinlobby\" in 69.7279ms"}}
+[debug] [2024-07-06T18:21:15.108Z] [worker-us-central1-joinlobby-367ddc88-cdd1-4ad5-ad1d-6c44d476655b]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"[worker-us-central1-joinlobby-367ddc88-cdd1-4ad5-ad1d-6c44d476655b]: IDLE"}}
+[debug] [2024-07-06T18:21:15.108Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2024-07-06T18:21:15.108Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2024-07-06T18:21:15.108Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[debug] [2024-07-06T18:21:18.603Z] File C:\Users\UFO\high-society\functions\src\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\index.ts changed, reloading triggers"}}
+[debug] [2024-07-06T18:21:18.604Z] File C:\Users\UFO\high-society\functions\src\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\index.ts changed, reloading triggers"}}
+[debug] [2024-07-06T18:21:19.615Z] Validating nodejs source
+[debug] [2024-07-06T18:21:19.615Z] Validating nodejs source
+[debug] [2024-07-06T18:21:20.299Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:21:20.300Z] Building nodejs source
+[debug] [2024-07-06T18:21:20.300Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:21:20.306Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T18:21:20.306Z] Building nodejs source
+[debug] [2024-07-06T18:21:20.307Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T18:21:20.300Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:21:20.306Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[debug] [2024-07-06T18:21:20.308Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T18:21:20.314Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8452
+
+[info] Serving at port 8922
+
+[debug] [2024-07-06T18:21:20.701Z] Got response from /__/functions.yaml {"endpoints":{"createlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"createlobby"},"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[debug] [2024-07-06T18:21:20.707Z] Got response from /__/functions.yaml {"endpoints":{"createlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"createlobby"},"joinlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinlobby"},"readyup":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"readyup"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[info] +  functions: Loaded functions definitions from source: createlobby, joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: createlobby, joinlobby, readyup."}}
+[info] +  functions: Loaded functions definitions from source: createlobby, joinlobby, readyup. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: createlobby, joinlobby, readyup."}}
+[debug] [2024-07-06T18:21:25.725Z] [worker-pool] Shutting down IDLE worker (us-central1-joinlobby) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] Shutting down IDLE worker (us-central1-joinlobby)"}}
+[debug] [2024-07-06T18:21:25.725Z] [worker-us-central1-joinlobby-367ddc88-cdd1-4ad5-ad1d-6c44d476655b]: FINISHING {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"[worker-us-central1-joinlobby-367ddc88-cdd1-4ad5-ad1d-6c44d476655b]: FINISHING"}}
+[debug] [2024-07-06T18:21:25.732Z] [worker-us-central1-joinlobby-367ddc88-cdd1-4ad5-ad1d-6c44d476655b]: exited {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"[worker-us-central1-joinlobby-367ddc88-cdd1-4ad5-ad1d-6c44d476655b]: exited"}}
+[debug] [2024-07-06T18:21:25.732Z] [worker-us-central1-joinlobby-367ddc88-cdd1-4ad5-ad1d-6c44d476655b]: FINISHED {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-joinlobby"},"extension":{},"message":"[worker-us-central1-joinlobby-367ddc88-cdd1-4ad5-ad1d-6c44d476655b]: FINISHED"}}
+[debug] [2024-07-06T18:21:28.052Z] File C:\Users\UFO\high-society\functions\src\createLobby\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\createLobby\\index.ts changed, reloading triggers"}}
+[debug] [2024-07-06T18:21:28.052Z] File C:\Users\UFO\high-society\functions\src\createLobby\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\UFO\\high-society\\functions\\src\\createLobby\\index.ts changed, reloading triggers"}}
