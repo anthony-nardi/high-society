@@ -1,10 +1,6 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getDatabase, ref, onValue } from "firebase/database";
-import {
-  getFunctions,
-  httpsCallable,
-  connectFunctionsEmulator,
-} from "firebase/functions";
+import { getFunctions, httpsCallable } from "firebase/functions";
 import { getAuth } from "firebase/auth";
 
 type CreateLobbyResponse = {

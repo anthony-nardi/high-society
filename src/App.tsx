@@ -1,39 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import "firebaseui/dist/firebaseui.css";
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import {
-  getAuth,
-  signInWithPopup,
-  GoogleAuthProvider,
-  connectAuthEmulator,
-} from "firebase/auth";
-import {
-  getDatabase,
-  ref,
-  child,
-  get,
-  connectDatabaseEmulator,
-} from "firebase/database";
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { getDatabase, ref, child, get } from "firebase/database";
 import Lobby from "./lobby";
-import { firebaseConfig } from "./constants/firebaseConfig";
-import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
+import initializeFirebase from "./utils/initializeFirebase";
 
-type CreateLobbyResponse = {
-  lobbyUID: number;
-};
-
-// Initialize Firebase
-initializeApp(firebaseConfig);
-
-const db = getDatabase();
-const auth = getAuth();
-connectAuthEmulator(auth, "http://127.0.0.1:9099");
-
-connectDatabaseEmulator(db, "127.0.0.1", 9000);
-const functions = getFunctions();
-connectFunctionsEmulator(functions, "127.0.0.1", 5001);
+initializeFirebase();
 
 function App() {
   const [isSignedIn, setIsSignedIn] = useState(false);
@@ -45,6 +18,7 @@ function App() {
     auth.onAuthStateChanged((user) => {
       if (user) {
         console.log("already signed in", user);
+
         setIsSignedIn(true);
       } else {
         console.log("not signed in yet");
@@ -79,7 +53,7 @@ function App() {
         const email = error.customData.email;
         // The AuthCredential type that was used.
         const credential = GoogleAuthProvider.credentialFromError(error);
-        console.log(error);
+        console.log(error, credential, email, errorMessage, errorCode);
       });
   }, []);
 
@@ -102,8 +76,8 @@ function App() {
     <div className="App">
       <header className="App-header">
         {!isSignedIn && <button onClick={handleSignIn}>Sign in</button>}
-        <button onClick={handleCreateGame}>Create Game</button>
-        <Lobby />
+        {isSignedIn && <button onClick={handleCreateGame}>Create Game</button>}
+        {isSignedIn && <Lobby />}
       </header>
     </div>
   );

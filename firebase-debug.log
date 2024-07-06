@@ -6708,3 +6708,102 @@ Registering trace stores...
 [info] +  functions[us-central1-joinLobby]: http function initialized (http://127.0.0.1:5001/high-society-c4ff4/us-central1/joinLobby). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/high-society-c4ff4/us-central1/joinLobby)."}}
 [info] i  hosting: 127.0.0.1 - - [05/Jul/2024:16:06:54 +0000] "GET / HTTP/1.1" 200 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [05/Jul/2024:16:06:54 +0000] \"GET / HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36\""}}
 [info] i  hosting: 127.0.0.1 - - [05/Jul/2024:16:06:54 +0000] "GET /__/firebase/init.js?useEmulator=true HTTP/1.1" 200 - "http://localhost:5000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [05/Jul/2024:16:06:54 +0000] \"GET /__/firebase/init.js?useEmulator=true HTTP/1.1\" 200 - \"http://localhost:5000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36\""}}
+[debug] [2024-07-06T13:40:30.490Z] ----------------------------------------------------------------------
+[debug] [2024-07-06T13:40:30.497Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\UFO\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js serve
+[debug] [2024-07-06T13:40:30.497Z] CLI Version:   13.13.0
+[debug] [2024-07-06T13:40:30.497Z] Platform:      win32
+[debug] [2024-07-06T13:40:30.497Z] Node Version:  v20.15.0
+[debug] [2024-07-06T13:40:30.497Z] Time:          Sat Jul 06 2024 09:40:30 GMT-0400 (Eastern Daylight Time)
+[debug] [2024-07-06T13:40:30.497Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-07-06T13:40:30.616Z] Object ".remoteconfig" in "firebase.json" is missing required property: {"missingProperty":"template"}
+[debug] [2024-07-06T13:40:30.623Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-07-06T13:40:30.623Z] > authorizing via signed-in user (anthonygt@gmail.com)
+[debug] [2024-07-06T13:40:30.624Z] [iam] checking project high-society-c4ff4 for permissions ["firebase.projects.get"]
+[debug] [2024-07-06T13:40:30.625Z] > refreshing access token with scopes: []
+[debug] [2024-07-06T13:40:30.626Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2024-07-06T13:40:30.626Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2024-07-06T13:40:31.002Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2024-07-06T13:40:31.002Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2024-07-06T13:40:31.010Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/high-society-c4ff4:testIamPermissions [none]
+[debug] [2024-07-06T13:40:31.010Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/high-society-c4ff4:testIamPermissions x-goog-quota-user=projects/high-society-c4ff4
+[debug] [2024-07-06T13:40:31.011Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/high-society-c4ff4:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2024-07-06T13:40:31.319Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/high-society-c4ff4:testIamPermissions 200
+[debug] [2024-07-06T13:40:31.319Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/high-society-c4ff4:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2024-07-06T13:40:31.319Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/high-society-c4ff4 [none]
+[debug] [2024-07-06T13:40:31.663Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/high-society-c4ff4 200
+[debug] [2024-07-06T13:40:31.663Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/high-society-c4ff4 {"projectId":"high-society-c4ff4","projectNumber":"459808509720","displayName":"high-society","name":"projects/high-society-c4ff4","resources":{"hostingSite":"high-society-c4ff4","realtimeDatabaseInstance":"high-society-c4ff4-default-rtdb"},"state":"ACTIVE","etag":"1_30e31b65-08c0-4ac9-add2-0cc806c54496"}
+[info] 
+[info] === Serving from 'C:\Users\UFO\high-society'...
+[info] 
+[debug] [2024-07-06T13:40:31.670Z] defaultcredentials: writing to file C:\Users\UFO\AppData\Roaming\firebase\anthonygt_gmail_com_application_default_credentials.json
+[debug] [2024-07-06T13:40:31.671Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/high-society-c4ff4/sites 
+[debug] [2024-07-06T13:40:31.677Z] Setting GAC to C:\Users\UFO\AppData\Roaming\firebase\anthonygt_gmail_com_application_default_credentials.json {"metadata":{"emulator":{"name":"functions"},"message":"Setting GAC to C:\\Users\\UFO\\AppData\\Roaming\\firebase\\anthonygt_gmail_com_application_default_credentials.json"}}
+[debug] [2024-07-06T13:40:31.677Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/high-society-c4ff4/adminSdkConfig [none]
+[debug] [2024-07-06T13:40:31.946Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/high-society-c4ff4/adminSdkConfig 200
+[debug] [2024-07-06T13:40:31.946Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/high-society-c4ff4/adminSdkConfig {"projectId":"high-society-c4ff4","databaseURL":"https://high-society-c4ff4-default-rtdb.firebaseio.com","storageBucket":"high-society-c4ff4.appspot.com"}
+[debug] [2024-07-06T13:40:32.042Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/high-society-c4ff4/sites 200
+[debug] [2024-07-06T13:40:32.043Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/high-society-c4ff4/sites {"sites":[{"name":"projects/high-society-c4ff4/sites/high-society-c4ff4","defaultUrl":"https://high-society-c4ff4.web.app","appId":"1:459808509720:web:69ae9362b926b6dc20986d","type":"DEFAULT_SITE"}]}
+[debug] [2024-07-06T13:40:32.043Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/high-society-c4ff4/webApps/1:459808509720:web:69ae9362b926b6dc20986d/config [none]
+[debug] [2024-07-06T13:40:32.505Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/high-society-c4ff4/webApps/1:459808509720:web:69ae9362b926b6dc20986d/config 200
+[debug] [2024-07-06T13:40:32.506Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/high-society-c4ff4/webApps/1:459808509720:web:69ae9362b926b6dc20986d/config {"projectId":"high-society-c4ff4","appId":"1:459808509720:web:69ae9362b926b6dc20986d","databaseURL":"https://high-society-c4ff4-default-rtdb.firebaseio.com","storageBucket":"high-society-c4ff4.appspot.com","apiKey":"AIzaSyA51EwhB9NThvn4QRtw5NEmGFmBTuKKKGM","authDomain":"high-society-c4ff4.firebaseapp.com","messagingSenderId":"459808509720","measurementId":"G-Q8NW81HQQ9"}
+[debug] [2024-07-06T13:40:32.510Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/high-society-c4ff4 [none]
+[debug] [2024-07-06T13:40:32.740Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/high-society-c4ff4 200
+[debug] [2024-07-06T13:40:32.740Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/high-society-c4ff4 {"projectId":"high-society-c4ff4","projectNumber":"459808509720","displayName":"high-society","name":"projects/high-society-c4ff4","resources":{"hostingSite":"high-society-c4ff4","realtimeDatabaseInstance":"high-society-c4ff4-default-rtdb"},"state":"ACTIVE","etag":"1_30e31b65-08c0-4ac9-add2-0cc806c54496"}
+[info] i  functions: Watching "C:\Users\UFO\high-society\functions" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"C:\\Users\\UFO\\high-society\\functions\" for Cloud Functions..."}}
+[info] i  hosting[high-society-c4ff4]: Serving hosting files from: build {"metadata":{"emulator":{"name":"hosting"},"message":"Serving hosting files from: \u001b[1mbuild\u001b[22m"}}
+[info] +  hosting[high-society-c4ff4]: Local server: http://localhost:5000 {"metadata":{"emulator":{"name":"hosting"},"message":"Local server: \u001b[4m\u001b[1mhttp://localhost:5000\u001b[22m\u001b[24m"}}
+[debug] [2024-07-06T13:40:32.759Z] Validating nodejs source
+[debug] [2024-07-06T13:40:34.862Z] > [functions] package.json contents: {
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "npm run shell",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "name": "functions",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@genkit-ai/ai": "^0.5.3",
+    "@genkit-ai/core": "^0.5.3",
+    "@genkit-ai/dotprompt": "^0.5.3",
+    "@genkit-ai/firebase": "^0.5.3",
+    "@genkit-ai/flow": "^0.5.3",
+    "@genkit-ai/googleai": "^0.5.3",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.5"
+  },
+  "private": true
+}
+[debug] [2024-07-06T13:40:34.862Z] Building nodejs source
+[debug] [2024-07-06T13:40:34.863Z] Failed to find version of module node: reached end of search path C:\Users\UFO\high-society\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "20". Using node@20 from host. 
+[debug] [2024-07-06T13:40:34.865Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-06T13:40:34.871Z] Found firebase-functions binary at 'C:\Users\UFO\high-society\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8525
+
+[debug] [2024-07-06T13:40:35.834Z] Got response from /__/functions.yaml {"endpoints":{"createlobby":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"createlobby"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[info] +  functions: Loaded functions definitions from source: createlobby. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: createlobby."}}
+[info] +  functions[us-central1-createlobby]: http function initialized (http://localhost:5001/high-society-c4ff4/us-central1/createlobby). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://localhost:5001/high-society-c4ff4/us-central1/createlobby)."}}
+[info] i  hosting: ::1 - - [06/Jul/2024:13:42:25 +0000] "GET / HTTP/1.1" 200 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [06/Jul/2024:13:42:25 +0000] \"GET / HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36\""}}
+[info] i  hosting: ::1 - - [06/Jul/2024:13:42:25 +0000] "GET /static/css/main.18acf3da.css HTTP/1.1" 200 - "http://localhost:5000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [06/Jul/2024:13:42:25 +0000] \"GET /static/css/main.18acf3da.css HTTP/1.1\" 200 - \"http://localhost:5000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36\""}}
+[info] i  hosting: ::1 - - [06/Jul/2024:13:42:25 +0000] "GET /__/firebase/init.js?useEmulator=true HTTP/1.1" 200 - "http://localhost:5000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [06/Jul/2024:13:42:25 +0000] \"GET /__/firebase/init.js?useEmulator=true HTTP/1.1\" 200 - \"http://localhost:5000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36\""}}
+[info] i  hosting: ::1 - - [06/Jul/2024:13:42:25 +0000] "GET /static/js/main.97f38c9c.js HTTP/1.1" 200 - "http://localhost:5000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [06/Jul/2024:13:42:25 +0000] \"GET /static/js/main.97f38c9c.js HTTP/1.1\" 200 - \"http://localhost:5000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36\""}}
