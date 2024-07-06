@@ -1,10 +1,6 @@
 {
   "rules": {
-    "games": {
-      "$gameId": {
-        ".read": "auth.token.gameId == $gameId",
-        ".write": "auth.token.gameId == $gameId"
-      }
-    }
+    ".read": "auth.uid !== null",
+    ".write": "auth.uid !== null"
   }
 }
