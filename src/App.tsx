@@ -1,60 +1,28 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import "./App.css";
 import "firebaseui/dist/firebaseui.css";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { getDatabase, ref, child, get } from "firebase/database";
 import Lobby from "./lobby";
 import initializeFirebase from "./utils/initializeFirebase";
+import Login from "./login";
+import { User } from "firebase/auth";
 
 initializeFirebase();
 
 function App() {
   const [isSignedIn, setIsSignedIn] = useState(false);
+  const [user, setUser] = useState<null | User>(null);
 
-  const provider = new GoogleAuthProvider();
+  const handleSignInFailed = useCallback(() => {
+    setIsSignedIn(false);
+  }, []);
+  const handleSignInSuccess = useCallback((user: User) => {
+    setIsSignedIn(true);
+    setUser(user);
 
-  useEffect(() => {
-    const auth = getAuth();
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        console.log("already signed in", user);
-
-        setIsSignedIn(true);
-      } else {
-        console.log("not signed in yet");
-        setIsSignedIn(false);
-      }
-    });
-  }, [setIsSignedIn]);
-
-  const handleSignIn = useCallback(() => {
-    const auth = getAuth();
-
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        // This gives you a Google Access Token. You can use it to access the Google API.
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-
-        if (!credential) {
-          throw new Error("Credential not found.");
-        }
-
-        const token = credential.accessToken;
-        // The signed-in user info.
-        const user = result.user;
-        // IdP data available using getAdditionalUserInfo(result)
-        // ...
-      })
-      .catch((error) => {
-        // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // The email of the user's account used.
-        const email = error.customData.email;
-        // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
-        console.log(error, credential, email, errorMessage, errorCode);
-      });
+    if (!user.email) {
+      throw new Error("User doesn't have an email");
+    }
   }, []);
 
   const handleCreateGame = useCallback(() => {
@@ -75,9 +43,14 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        {!isSignedIn && <button onClick={handleSignIn}>Sign in</button>}
+        {!isSignedIn && (
+          <Login
+            onSignInFailed={handleSignInFailed}
+            onSignInSuccess={handleSignInSuccess}
+          />
+        )}
         {isSignedIn && <button onClick={handleCreateGame}>Create Game</button>}
-        {isSignedIn && <Lobby />}
+        {isSignedIn && <Lobby user={user} />}
       </header>
     </div>
   );

@@ -1,33 +1,25 @@
 import { useCallback, useEffect, useState } from "react";
 import { getDatabase, ref, onValue } from "firebase/database";
 import { getFunctions, httpsCallable } from "firebase/functions";
-import { getAuth } from "firebase/auth";
+import { getAuth, User } from "firebase/auth";
+import { CreateLobbyResponse, LobbyData } from "./types";
+import PlayersList from "./components/PlayersList";
 
-type CreateLobbyResponse = {
-  lobbyUID: number;
-};
-type LobbyData = {
-  id: string;
-  players: {
-    email: string;
-    ready: boolean;
-  }[];
-};
-
-export default function Lobby() {
+export default function Lobby({ user }: { user: User | null }) {
   const [lobbyId, setLobbyId] = useState<number | null>(
     Number(window.location.hash.replace(/\D/g, ""))
   );
   const [lobbyData, setLobbyData] = useState<null | LobbyData>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(user);
 
   useEffect(() => {
     if (!lobbyId) return;
 
     const auth = getAuth();
     auth.onAuthStateChanged((user) => {
-      if (user) {
+      if (user && typeof user.email === "string") {
         console.log("already signed in", user.email);
-
+        setCurrentUser(user);
         const functions = getFunctions();
         console.log("joining lobby");
         const joinLobby = httpsCallable<any, any>(functions, "joinlobby");
@@ -42,7 +34,7 @@ export default function Lobby() {
           .catch((err) => console.log(err));
       }
     });
-  }, [lobbyId]);
+  }, [lobbyId, setCurrentUser]);
 
   console.log(lobbyData);
 
@@ -97,18 +89,15 @@ export default function Lobby() {
     return <button onClick={handleCreateLobby}>Create lobby</button>;
   }
 
-  if (!lobbyData || !lobbyData.players.length) {
+  if (!lobbyData || !lobbyData.players.length || !user) {
     return <div>No data found for lobby</div>;
   }
 
-  const playersList = lobbyData.players.map((player) => {
-    return (
-      <div>
-        <span>{player.email}</span>
-        <span>{player.ready ? "Ready" : "Not Ready"}</span>
-      </div>
-    );
-  });
-
-  return <div>{playersList}</div>;
+  return (
+    <PlayersList
+      user={user}
+      players={lobbyData.players}
+      lobbyUID={lobbyData.id}
+    />
+  );
 }
