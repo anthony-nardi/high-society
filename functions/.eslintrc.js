@@ -29,6 +29,11 @@ module.exports = {
     "quotes": ["error", "double"],
     "import/no-unresolved": 0,
     "indent": ["error", 2],
-    'linebreak-style': ['error', process.platform === 'win32' ? 'windows' : 'unix']
+    "linebreak-style": ["error", process.platform === "win32" ?
+      "windows" : "unix"],
+    "object-curly-spacing": ["error", "always"],
+    "require-jsdoc": 0,
+    "@typescript-eslint/no-explicit-any": "off",
+    "import/export": 0,
   },
 };
