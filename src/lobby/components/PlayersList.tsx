@@ -21,7 +21,7 @@ export default function PlayersList({
       email: user.email,
       lobbyUID,
     });
-  }, []);
+  }, [lobbyUID, user.email]);
 
   const renderCurrentPlayerStatus = useMemo(() => {
     const currentPlayer = players.find((player) => player.email === user.email);

@@ -13,8 +13,6 @@ export default function Login({
   onSignInSuccess: (user: User) => void;
   onSignInFailed: () => void;
 }) {
-  const provider = new GoogleAuthProvider();
-
   useEffect(() => {
     const auth = getAuth();
     auth.onAuthStateChanged((user) => {
@@ -28,6 +26,7 @@ export default function Login({
 
   const handleSignIn = useCallback(() => {
     const auth = getAuth();
+    const provider = new GoogleAuthProvider();
 
     signInWithPopup(auth, provider)
       .then((result) => {
@@ -44,7 +43,7 @@ export default function Login({
       .catch((error) => {
         onSignInFailed();
       });
-  }, []);
+  }, [onSignInFailed, onSignInSuccess]);
 
   return <button onClick={handleSignIn}>Sign in</button>;
 }

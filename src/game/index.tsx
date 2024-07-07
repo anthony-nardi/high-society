@@ -10,7 +10,7 @@ export default function Game({
   user: User;
 }) {
   const [gameData, setGameData] = useState(null);
-
+  console.log(gameData);
   useEffect(() => {
     const db = getDatabase();
 
