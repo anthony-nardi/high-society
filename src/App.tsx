@@ -69,7 +69,7 @@ function App() {
           />
         )}
         {isSignedIn && !gameData && <Lobby user={user} />}
-        {isSignedIn && gameData && lobbyId && (
+        {isSignedIn && gameData && lobbyId && user && (
           <Game lobbyId={lobbyId.toString()} user={user} />
         )}
       </header>
