@@ -9,6 +9,7 @@ export default function Game({
   lobbyId: string;
   user: User;
 }) {
+  console.log(user);
   const [gameData, setGameData] = useState(null);
   console.log(gameData);
   useEffect(() => {
