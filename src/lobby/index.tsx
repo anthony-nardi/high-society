@@ -4,6 +4,7 @@ import { getFunctions, httpsCallable } from "firebase/functions";
 import { getAuth, User } from "firebase/auth";
 import { CreateLobbyResponse, LobbyData } from "./types";
 import PlayersList from "./components/PlayersList";
+import { Button, Center } from "@mantine/core";
 
 export default function Lobby({ user }: { user: User | null }) {
   const [lobbyId, setLobbyId] = useState<number | null>(
@@ -78,7 +79,11 @@ export default function Lobby({ user }: { user: User | null }) {
   }, []);
 
   if (!lobbyId) {
-    return <button onClick={handleCreateLobby}>Create lobby</button>;
+    return (
+      <Center>
+        <Button onClick={handleCreateLobby}>Create lobby</Button>
+      </Center>
+    );
   }
 
   if (!lobbyData || !lobbyData.players.length || !currentUser) {

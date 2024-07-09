@@ -6,7 +6,7 @@ import {
   User,
 } from "firebase/auth";
 import { GoogleIcon } from "./GoogleIcon";
-import { Button } from "@mantine/core";
+import { Button, Center, Stack } from "@mantine/core";
 
 export default function Login({
   onSignInSuccess,
@@ -49,12 +49,16 @@ export default function Login({
   }, [onSignInFailed, onSignInSuccess]);
 
   return (
-    <Button
-      onClick={handleSignIn}
-      leftSection={<GoogleIcon />}
-      variant="default"
-    >
-      Continue with Google
-    </Button>
+    <Stack h={200} align="stretch" justify="space-around" gap="md">
+      <Center>
+        <Button
+          onClick={handleSignIn}
+          leftSection={<GoogleIcon />}
+          variant="default"
+        >
+          Continue with Google
+        </Button>
+      </Center>
+    </Stack>
   );
 }

@@ -7,6 +7,7 @@ import Login from "./login";
 import { User } from "firebase/auth";
 import { getDatabase, onValue, ref } from "firebase/database";
 import Game from "./game";
+import { Center, Stack, Title } from "@mantine/core";
 
 initializeFirebase();
 
@@ -61,18 +62,21 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        {!isSignedIn && (
-          <Login
-            onSignInFailed={handleSignInFailed}
-            onSignInSuccess={handleSignInSuccess}
-          />
-        )}
-        {isSignedIn && !gameData && <Lobby user={user} />}
-        {isSignedIn && gameData && lobbyId && user && (
-          <Game lobbyId={lobbyId.toString()} user={user} />
-        )}
-      </header>
+      <Stack h={200} justify="space-around" gap="md">
+        <Center>
+          <Title order={1}>High Society</Title>
+        </Center>
+      </Stack>
+      {!isSignedIn && (
+        <Login
+          onSignInFailed={handleSignInFailed}
+          onSignInSuccess={handleSignInSuccess}
+        />
+      )}
+      {isSignedIn && !gameData && <Lobby user={user} />}
+      {isSignedIn && gameData && lobbyId && user && (
+        <Game lobbyId={lobbyId.toString()} user={user} />
+      )}
     </div>
   );
 }

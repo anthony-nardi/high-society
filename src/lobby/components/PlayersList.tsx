@@ -2,6 +2,7 @@ import { User } from "firebase/auth";
 import { LobbyData } from "../types";
 import { useCallback, useMemo } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
+import { Box, Button, Center, Grid } from "@mantine/core";
 
 export default function PlayersList({
   players,
@@ -26,28 +27,43 @@ export default function PlayersList({
   const renderCurrentPlayerStatus = useMemo(() => {
     const currentPlayer = players.find((player) => player.email === user.email);
     if (currentPlayer && currentPlayer.ready) {
-      return <b>Waiting for others...</b>;
+      return (
+        <Box ml="sm">
+          <b>Waiting for others...</b>
+        </Box>
+      );
     }
 
-    return <button onClick={handleReadyUp}>Ready?</button>;
+    return (
+      <Button
+        styles={{ root: { "margin-left": "12px" } }}
+        onClick={handleReadyUp}
+      >
+        Ready?
+      </Button>
+    );
   }, [players, user, handleReadyUp]);
 
   const renderedUsers = useMemo(() => {
     return players.map((player) => {
       return (
-        <div>
-          <span>{player.email}</span>
-          {player.email === user.email ? (
-            renderCurrentPlayerStatus
-          ) : player.ready ? (
-            <b>Waiting for others...</b>
-          ) : (
-            <span>Not ready</span>
-          )}
-        </div>
+        <Grid.Col span={{ base: 12, md: 12, lg: 12 }}>
+          <Center>
+            <span>{player.email}</span>
+            {player.email === user.email ? (
+              renderCurrentPlayerStatus
+            ) : player.ready ? (
+              <Box ml="sm">
+                <b>Waiting for others...</b>
+              </Box>
+            ) : (
+              <span>Not ready</span>
+            )}
+          </Center>
+        </Grid.Col>
       );
     });
   }, [players, user, renderCurrentPlayerStatus]);
 
-  return <div>{renderedUsers}</div>;
+  return <Grid>{renderedUsers}</Grid>;
 }
