@@ -5,6 +5,8 @@ import {
   GoogleAuthProvider,
   User,
 } from "firebase/auth";
+import { GoogleIcon } from "./GoogleIcon";
+import { Button } from "@mantine/core";
 
 export default function Login({
   onSignInSuccess,
@@ -40,10 +42,19 @@ export default function Login({
 
         onSignInSuccess(result.user);
       })
-      .catch((error) => {
+      .catch((error: Error) => {
         onSignInFailed();
+        console.log(error);
       });
   }, [onSignInFailed, onSignInSuccess]);
 
-  return <button onClick={handleSignIn}>Sign in</button>;
+  return (
+    <Button
+      onClick={handleSignIn}
+      leftSection={<GoogleIcon />}
+      variant="default"
+    >
+      Continue with Google
+    </Button>
+  );
 }
