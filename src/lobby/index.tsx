@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { getDatabase, ref, onValue } from "firebase/database";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { getAuth, User } from "firebase/auth";
 import { CreateLobbyResponse, LobbyData } from "./types";
 import PlayersList from "./components/PlayersList";
-import { Button, Center } from "@mantine/core";
+import { Box, Button, Center, Container, Flex, Grid } from "@mantine/core";
+import ConnectedPlayersCount from "./components/ConnectedPlayersCount";
 
 export default function Lobby({ user }: { user: User | null }) {
   const [lobbyId, setLobbyId] = useState<number | null>(
@@ -78,6 +79,21 @@ export default function Lobby({ user }: { user: User | null }) {
     });
   }, []);
 
+  const handleReadyUp = useCallback(() => {
+    if (!currentUser) {
+      throw new Error("There is no current user.");
+    }
+
+    const functions = getFunctions();
+
+    const readyUp = httpsCallable<any, any>(functions, "readyup");
+
+    readyUp({
+      email: currentUser.email,
+      lobbyUID: lobbyId,
+    });
+  }, [currentUser, lobbyId]);
+
   if (!lobbyId) {
     return (
       <Center>
@@ -91,10 +107,30 @@ export default function Lobby({ user }: { user: User | null }) {
   }
 
   return (
-    <PlayersList
-      user={currentUser}
-      players={lobbyData.players}
-      lobbyUID={lobbyData.id}
-    />
+    <>
+      <Grid>
+        <Grid.Col span={{ base: 6, md: 6, lg: 6 }} offset={3}>
+          <Center>
+            <Flex direction={"column"}>
+              <Flex
+                justify={"space-between"}
+                align={"end"}
+                styles={{ root: { marginBottom: "16px" } }}
+              >
+                <ConnectedPlayersCount
+                  players={(lobbyData && lobbyData.players) || []}
+                />
+                <Button onClick={handleReadyUp}>Click here to ready!</Button>
+              </Flex>
+              <PlayersList
+                user={currentUser}
+                players={lobbyData.players}
+                lobbyUID={lobbyData.id}
+              />
+            </Flex>
+          </Center>
+        </Grid.Col>
+      </Grid>
+    </>
   );
 }

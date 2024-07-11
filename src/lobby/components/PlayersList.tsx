@@ -2,7 +2,7 @@ import { User } from "firebase/auth";
 import { LobbyData } from "../types";
 import { useCallback, useMemo } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
-import { Box, Button, Center, Grid } from "@mantine/core";
+import { Badge, Box, Button, Center, Flex, Grid } from "@mantine/core";
 
 export default function PlayersList({
   players,
@@ -13,57 +13,34 @@ export default function PlayersList({
   user: User;
   lobbyUID: string;
 }) {
-  const handleReadyUp = useCallback(() => {
-    const functions = getFunctions();
-
-    const readyUp = httpsCallable<any, any>(functions, "readyup");
-
-    readyUp({
-      email: user.email,
-      lobbyUID,
-    });
-  }, [lobbyUID, user.email]);
-
-  const renderCurrentPlayerStatus = useMemo(() => {
-    const currentPlayer = players.find((player) => player.email === user.email);
-    if (currentPlayer && currentPlayer.ready) {
-      return (
-        <Box ml="sm">
-          <b>Waiting for others...</b>
-        </Box>
-      );
-    }
-
-    return (
-      <Button
-        styles={{ root: { "margin-left": "12px" } }}
-        onClick={handleReadyUp}
-      >
-        Ready?
-      </Button>
-    );
-  }, [players, user, handleReadyUp]);
-
   const renderedUsers = useMemo(() => {
     return players.map((player) => {
       return (
-        <Grid.Col span={{ base: 12, md: 12, lg: 12 }}>
-          <Center>
-            <span>{player.email}</span>
-            {player.email === user.email ? (
-              renderCurrentPlayerStatus
-            ) : player.ready ? (
-              <Box ml="sm">
-                <b>Waiting for others...</b>
-              </Box>
-            ) : (
-              <span>Not ready</span>
-            )}
-          </Center>
-        </Grid.Col>
+        <Center
+          styles={{
+            root: {
+              border: "1px solid red",
+              padding: "32px",
+              borderRadius: "8px",
+              marginBottom: "8px",
+            },
+          }}
+        >
+          <span>{player.email}</span>
+          <Badge
+            autoContrast
+            ml="xl"
+            variant="outline"
+            color={player.ready ? "green" : "red"}
+            size="xl"
+            radius="sm"
+          >
+            {player.ready ? <span>Ready</span> : <span>Not Ready</span>}
+          </Badge>
+        </Center>
       );
     });
-  }, [players, user, renderCurrentPlayerStatus]);
+  }, [players]);
 
-  return <Grid>{renderedUsers}</Grid>;
+  return <>{renderedUsers}</>;
 }
