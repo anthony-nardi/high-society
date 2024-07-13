@@ -29,7 +29,23 @@ export default function PlayerRoundState({
     } catch (e) {
       console.error(e);
     }
-  }, [lobbyId, setActionsDisabled]);
+  }, [lobbyId]);
+
+  const handleBid = useCallback(async () => {
+    setActionsDisabled(true);
+    const functions = getFunctions();
+    const bid = httpsCallable<any, any>(functions, "bid");
+    try {
+      await bid({
+        lobbyUID: lobbyId,
+        bid: stagedBid,
+      });
+      setActionsDisabled(false);
+      setStagedBid([]);
+    } catch (e) {
+      console.error(e);
+    }
+  }, [lobbyId, stagedBid]);
 
   return (
     <>
@@ -73,7 +89,7 @@ export default function PlayerRoundState({
                   }}
                 />
               </Box>
-              <Button disabled={actionsDisabled} ml={"sm"}>
+              <Button disabled={actionsDisabled} ml={"sm"} onClick={handleBid}>
                 Confirm Bid
               </Button>
             </Flex>

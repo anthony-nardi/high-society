@@ -12,8 +12,8 @@ export type PlayerState = {
   email: string;
   lastActionAt: number;
   moneyCards: string[];
-  statusCards?: string[];
-  currentBid?: string[];
+  statusCards?: string[]; // Realtime Database doesnt like arrays, they dont exist unless they contain values
+  currentBid?: string[]; // Realtime Database doesnt like arrays, they dont exist unless they contain values
   hasPassed: boolean;
 };
 
@@ -38,8 +38,8 @@ type GameState = {
 };
 
 const STATUS_CARDS_THAT_END_ROUND_ON_FIRST_PASS = ["-5", "1/2", "-"];
-
 const GREEN_CARDS = ["2x", "1/2"];
+const MINUS_CARD = "-";
 
 admin.initializeApp();
 
@@ -56,13 +56,11 @@ function verifyRequestAuthentication(request: CallableRequest) {
 
 async function getGameState(lobbyUID: string) {
   const gameState = await getDatabase().ref(`games/${lobbyUID}`).get();
-
   return gameState.val() as GameState;
 }
 
 function revealNewStatusCard(gameState: GameState) {
   gameState.private.deck.shift();
-
   gameState.public.currentStatusCard = gameState.private.deck[0];
   gameState.public.remainingCards = gameState.private.deck.length;
 }
@@ -95,6 +93,108 @@ function isGameOver(gameState: GameState) {
   return false;
 }
 
+function getDoesBiddingRoundEndOnFirstPass(gameState: GameState) {
+  return STATUS_CARDS_THAT_END_ROUND_ON_FIRST_PASS.includes(
+    gameState.public.currentStatusCard
+  );
+}
+
+function getEmailFromRequest(request: CallableRequest) {
+  return request.auth?.token.email as string;
+}
+
+function isActivePlayerTakingAction(
+  gameState: GameState,
+  requestEmail: string
+) {
+  return gameState.public.activePlayer === requestEmail;
+}
+
+function getActivePlayerIndex(gameState: GameState) {
+  return gameState.public.players.findIndex(
+    (player) => player.email === gameState.public.activePlayer
+  );
+}
+
+function getNextPlayerIndex(gameState: GameState) {
+  const indexOfCurrentPlayer = getActivePlayerIndex(gameState);
+
+  let indexOfNextPlayer = indexOfCurrentPlayer + 1;
+
+  // Game is 3 players:
+  // Lets say active player is index 2, which means they are 3rd
+  // Next player should be index 0
+  // So, if index + 1 >= 3, nextIndex is 0
+  if (indexOfNextPlayer >= gameState.public.players.length) {
+    indexOfNextPlayer = 0;
+  }
+
+  let hasNextPlayerPassed =
+    gameState.public.players[indexOfNextPlayer].hasPassed;
+
+  while (hasNextPlayerPassed) {
+    indexOfNextPlayer++;
+    if (indexOfNextPlayer >= gameState.public.players.length) {
+      indexOfNextPlayer = 0;
+    }
+    hasNextPlayerPassed = gameState.public.players[indexOfNextPlayer].hasPassed;
+  }
+
+  return indexOfNextPlayer;
+}
+
+function updatePlayerLastAction(player: PlayerState) {
+  player.lastActionAt = Date.now();
+}
+
+function updatePlayersBid(player: PlayerState, bid: string[]) {
+  player.currentBid = (player.currentBid || []).concat(bid);
+  const updatedMoneyCards = player.moneyCards.filter(
+    (card) => !bid.includes(card)
+  );
+  player.moneyCards = updatedMoneyCards;
+}
+
+function updateNextActivePlayer(gameState: GameState) {
+  const indexOfNextPlayer = getNextPlayerIndex(gameState);
+
+  gameState.public.activePlayer =
+    gameState.public.players[indexOfNextPlayer].email;
+}
+
+exports.bid = onCall(async (request) => {
+  verifyRequestAuthentication(request);
+
+  const { lobbyUID, bid } = request.data;
+  const requestEmail = getEmailFromRequest(request);
+  const gameState = await getGameState(lobbyUID);
+  const players = gameState.public.players;
+
+  if (!isActivePlayerTakingAction(gameState, requestEmail)) {
+    return;
+  }
+
+  const indexOfCurrentPlayer = getActivePlayerIndex(gameState);
+  const activePlayer = players[indexOfCurrentPlayer];
+
+  updatePlayerLastAction(activePlayer);
+  updatePlayersBid(activePlayer, bid);
+  updateNextActivePlayer(gameState);
+
+  return getDatabase()
+    .ref("/games/" + lobbyUID)
+    .set(gameState)
+    .then(() => {
+      logger.info("Updated game state after player bid.");
+      return {};
+    })
+    .catch((error: Error) => {
+      // Re-throwing the error as an HttpsError so that the client gets
+      // the error details.
+      throw new HttpsError("unknown", error.message, error);
+    });
+});
+
 exports.passturn = onCall(async (request) => {
   verifyRequestAuthentication(request);
 
@@ -102,32 +202,65 @@ exports.passturn = onCall(async (request) => {
   const { lobbyUID } = request.data;
 
   const gameState = await getGameState(lobbyUID);
-  console.log(gameState);
-  console.log(gameState.public.players);
-  const playersVal = gameState.public.players;
+  const players = gameState.public.players;
 
   if (gameState.public.activePlayer !== requestEmail) {
     return;
   }
 
   const doesBiddingRoundEndOnFirstPass =
-    STATUS_CARDS_THAT_END_ROUND_ON_FIRST_PASS.includes(
-      gameState.public.currentStatusCard
-    );
+    getDoesBiddingRoundEndOnFirstPass(gameState);
+
   const updatedPlayersState: PlayerState[] = [];
 
   if (doesBiddingRoundEndOnFirstPass) {
+    // The active player is the one who passed.
+
     // Award the player who passed the currentStatusCard
     // The player who passed current bid is returned to their moneyCards
     // Reset all players current bids
     // Flip a new card from the deck
 
-    playersVal.forEach((player) => {
+    players.forEach((player) => {
       if (player.email === requestEmail) {
         player.lastActionAt = Date.now();
         player.statusCards = player.statusCards || [];
         player.statusCards.push(gameState.public.currentStatusCard);
         returnPlayersBidToHand(player);
+
+        if (gameState.public.currentStatusCard === MINUS_CARD) {
+          let cardToRemove = "";
+          const cardOrderDesc = [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+          ].reverse();
+
+          for (let i = 0; i < cardOrderDesc.length; i++) {
+            if (player.statusCards.includes(cardOrderDesc[i])) {
+              cardToRemove = cardOrderDesc[i];
+            }
+          }
+
+          // Remove lowest card and - card
+          if (cardToRemove) {
+            player.statusCards.splice(
+              player.statusCards.indexOf(cardToRemove),
+              1
+            );
+            player.statusCards.splice(
+              player.statusCards.indexOf(MINUS_CARD),
+              1
+            );
+          }
+        }
       } else {
         player.currentBid = [];
       }
@@ -173,14 +306,15 @@ exports.passturn = onCall(async (request) => {
       });
   }
 
-  let playersWithActiveBids = playersVal.length;
+  let playersWithActiveBids = players.length;
 
-  playersVal.forEach((player) => {
-    if (player.hasPassed) {
-      playersWithActiveBids--;
+  players.forEach((player) => {
+    if (player.email === requestEmail) {
+      player.lastActionAt = Date.now();
+      player.hasPassed = true;
     }
 
-    if (player.email === requestEmail) {
+    if (player.hasPassed) {
       playersWithActiveBids--;
     }
   });
@@ -191,13 +325,19 @@ exports.passturn = onCall(async (request) => {
     // Set all players hasPassed flags to false
     // Flip a new card from the deck
 
-    playersVal.forEach((player) => {
-      if (player.email === requestEmail) {
-        player.lastActionAt = Date.now();
+    let activePlayer = "";
+
+    players.forEach((player) => {
+      if (player.hasPassed === false) {
         player.statusCards = player.statusCards || [];
 
-        player.statusCards.push(gameState.public.currentStatusCard);
+        if (!player.statusCards.includes(MINUS_CARD)) {
+          player.statusCards.push(gameState.public.currentStatusCard);
+        } else {
+          player.statusCards.splice(player.statusCards.indexOf(MINUS_CARD), 1);
+        }
         player.currentBid = [];
+        activePlayer = player.email;
       } else {
         returnPlayersBidToHand(player);
       }
@@ -218,7 +358,7 @@ exports.passturn = onCall(async (request) => {
         id: gameState.public.id,
         game: gameState.public.game,
         players: updatedPlayersState,
-        activePlayer: gameState.public.activePlayer,
+        activePlayer,
         startAt: gameState.public.startAt,
         status: gameState.public.status,
         currentStatusCard: gameState.public.currentStatusCard,
@@ -251,7 +391,7 @@ exports.passturn = onCall(async (request) => {
 
     let indexOfCurrentPlayer: number = 0;
 
-    playersVal.forEach((player, index) => {
+    players.forEach((player, index) => {
       if (player.email === requestEmail) {
         player.lastActionAt = Date.now();
         player.hasPassed = true;
