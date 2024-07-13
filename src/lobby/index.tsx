@@ -14,6 +14,18 @@ export default function Lobby({ user }: { user: User | null }) {
   const [lobbyData, setLobbyData] = useState<null | LobbyData>(null);
   const [currentUser, setCurrentUser] = useState<User | null>(user);
 
+  const isCurrentUserReady = useMemo(() => {
+    if (!currentUser || !lobbyData) return false;
+
+    if ("players" in lobbyData) {
+      const user = lobbyData.players.find(
+        (player) => player.email === currentUser.email
+      );
+
+      return (user && user.ready) || false;
+    }
+  }, []);
+
   useEffect(() => {
     if (!lobbyId) return;
 
@@ -120,7 +132,9 @@ export default function Lobby({ user }: { user: User | null }) {
                 <ConnectedPlayersCount
                   players={(lobbyData && lobbyData.players) || []}
                 />
-                <Button onClick={handleReadyUp}>Click here to ready!</Button>
+                {!isCurrentUserReady && (
+                  <Button onClick={handleReadyUp}>Click here to ready!</Button>
+                )}
               </Flex>
               <PlayersList
                 user={currentUser}

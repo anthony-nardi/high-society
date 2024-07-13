@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import "./App.css";
 import "firebaseui/dist/firebaseui.css";
 import Lobby from "./lobby";
@@ -58,15 +58,19 @@ function App() {
     });
   }, [lobbyId]);
 
-  console.log(gameData);
+  const isGameActive = useMemo(() => {
+    return isSignedIn && gameData && lobbyId && user;
+  }, [isSignedIn, gameData, lobbyId, user]);
 
   return (
     <div className="App">
-      <Stack h={200} justify="space-around" gap="md">
-        <Center>
-          <Title order={1}>High Society</Title>
-        </Center>
-      </Stack>
+      {!isGameActive && (
+        <Stack h={200} justify="space-around" gap="md">
+          <Center>
+            <Title order={1}>High Society</Title>
+          </Center>
+        </Stack>
+      )}
       {!isSignedIn && (
         <Login
           onSignInFailed={handleSignInFailed}
@@ -74,8 +78,8 @@ function App() {
         />
       )}
       {isSignedIn && !gameData && <Lobby user={user} />}
-      {isSignedIn && gameData && lobbyId && user && (
-        <Game lobbyId={lobbyId.toString()} user={user} />
+      {isGameActive && (
+        <Game lobbyId={lobbyId?.toString() as string} user={user as User} />
       )}
     </div>
   );

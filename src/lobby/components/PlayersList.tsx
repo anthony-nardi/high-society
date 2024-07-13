@@ -15,15 +15,20 @@ export default function PlayersList({
 }) {
   const renderedUsers = useMemo(() => {
     return players.map((player) => {
+      let rootStyle = {
+        border: "1px solid red",
+        padding: "32px",
+        borderRadius: "8px",
+        marginBottom: "8px",
+      };
+      if (player.ready) {
+        rootStyle.border = "1px solid green";
+      }
+
       return (
         <Center
           styles={{
-            root: {
-              border: "1px solid red",
-              padding: "32px",
-              borderRadius: "8px",
-              marginBottom: "8px",
-            },
+            root: rootStyle,
           }}
         >
           <span>{player.email}</span>
