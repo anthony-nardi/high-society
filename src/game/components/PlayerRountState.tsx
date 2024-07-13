@@ -1,15 +1,35 @@
 import { Box, Button, Flex, MultiSelect, Popover } from "@mantine/core";
 import { PlayerState } from "../types";
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 export default function PlayerRoundState({
   player,
   isActivePlayer,
+  lobbyId,
+  isLoggedInUserActivePlayer,
 }: {
   player: PlayerState;
   isActivePlayer: boolean;
+  lobbyId: string;
+  isLoggedInUserActivePlayer: boolean;
 }) {
   const [stagedBid, setStagedBid] = useState<string[]>([]);
+  const [actionsDisabled, setActionsDisabled] = useState<boolean>(false);
+
+  const handlePassTurn = useCallback(async () => {
+    setActionsDisabled(true);
+    const functions = getFunctions();
+    const passTurn = httpsCallable<any, any>(functions, "passturn");
+    try {
+      await passTurn({
+        lobbyUID: lobbyId,
+      });
+      setActionsDisabled(false);
+    } catch (e) {
+      console.error(e);
+    }
+  }, [lobbyId, setActionsDisabled]);
 
   return (
     <>
@@ -18,12 +38,14 @@ export default function PlayerRoundState({
       ) : (
         <div>Current Bid: {player.currentBid || 0}</div>
       )}
-      {isActivePlayer && (
+      {isLoggedInUserActivePlayer && (
         <Flex>
-          <Button>Pass</Button>
+          <Button disabled={actionsDisabled} onClick={handlePassTurn}>
+            Pass
+          </Button>
         </Flex>
       )}
-      {isActivePlayer && (
+      {isLoggedInUserActivePlayer && (
         <Popover
           closeOnClickOutside={false}
           width={360}
@@ -32,7 +54,7 @@ export default function PlayerRoundState({
           shadow="md"
         >
           <Popover.Target>
-            <Button>Bid</Button>
+            <Button disabled={actionsDisabled}>Bid</Button>
           </Popover.Target>
           <Popover.Dropdown>
             <Flex align="end">
@@ -51,7 +73,9 @@ export default function PlayerRoundState({
                   }}
                 />
               </Box>
-              <Button ml={"sm"}>Confirm Bid</Button>
+              <Button disabled={actionsDisabled} ml={"sm"}>
+                Confirm Bid
+              </Button>
             </Flex>
           </Popover.Dropdown>
         </Popover>

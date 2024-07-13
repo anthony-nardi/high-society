@@ -41,7 +41,7 @@ export default function Lobby({ user }: { user: User | null }) {
         })
           .then((result) => {
             const data = result.data;
-            console.log(data);
+            console.log(`auth state changed: `, data);
           })
           .catch((err) => console.log(err));
       }
@@ -83,7 +83,6 @@ export default function Lobby({ user }: { user: User | null }) {
     );
     createLobby().then((result) => {
       const data = result.data;
-      console.log(data);
 
       if (data.lobbyUID) {
         window.location.hash = `#${data.lobbyUID}`;

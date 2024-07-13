@@ -12,8 +12,8 @@ export type PlayerState = {
   email: string;
   lastActionAt: number;
   moneyCards: string[];
-  statusCards: string[];
-  currentBid: string[];
+  statusCards?: string[];
+  currentBid?: string[];
   hasPassed: boolean;
 };
 
@@ -68,6 +68,8 @@ function revealNewStatusCard(gameState: GameState) {
 }
 
 function returnPlayersBidToHand(player: PlayerState) {
+  player.currentBid = player.currentBid || [];
+
   for (const bid in player.currentBid) {
     player.moneyCards.push(bid);
   }
@@ -100,8 +102,13 @@ exports.passturn = onCall(async (request) => {
   const { lobbyUID } = request.data;
 
   const gameState = await getGameState(lobbyUID);
-
+  console.log(gameState);
+  console.log(gameState.public.players);
   const playersVal = gameState.public.players;
+
+  if (gameState.public.activePlayer !== requestEmail) {
+    return;
+  }
 
   const doesBiddingRoundEndOnFirstPass =
     STATUS_CARDS_THAT_END_ROUND_ON_FIRST_PASS.includes(
@@ -118,6 +125,7 @@ exports.passturn = onCall(async (request) => {
     playersVal.forEach((player) => {
       if (player.email === requestEmail) {
         player.lastActionAt = Date.now();
+        player.statusCards = player.statusCards || [];
         player.statusCards.push(gameState.public.currentStatusCard);
         returnPlayersBidToHand(player);
       } else {
@@ -186,6 +194,8 @@ exports.passturn = onCall(async (request) => {
     playersVal.forEach((player) => {
       if (player.email === requestEmail) {
         player.lastActionAt = Date.now();
+        player.statusCards = player.statusCards || [];
+
         player.statusCards.push(gameState.public.currentStatusCard);
         player.currentBid = [];
       } else {
@@ -261,6 +271,18 @@ exports.passturn = onCall(async (request) => {
     // So, if index + 1 >= 3, nextIndex is 0
     if (indexOfNextPlayer >= gameState.public.players.length) {
       indexOfNextPlayer = 0;
+    }
+
+    let hasNextPlayerPassed =
+      gameState.public.players[indexOfNextPlayer].hasPassed;
+
+    while (hasNextPlayerPassed) {
+      indexOfNextPlayer++;
+      if (indexOfNextPlayer >= gameState.public.players.length) {
+        indexOfNextPlayer = 0;
+      }
+      hasNextPlayerPassed =
+        gameState.public.players[indexOfNextPlayer].hasPassed;
     }
 
     gameState.public.activePlayer =

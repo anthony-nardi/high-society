@@ -23,9 +23,7 @@ export default function Game({
   lobbyId: string;
   user: User;
 }) {
-  console.log(user);
   const [gameData, setGameData] = useState<null | GameState>(null);
-  console.log(gameData);
   useEffect(() => {
     const db = getDatabase();
 
@@ -33,6 +31,7 @@ export default function Game({
 
     onValue(lobbyRef, (snapshot) => {
       const data = snapshot.val();
+      console.log("New game state!", data);
       setGameData(data);
     });
   }, [lobbyId]);
@@ -98,6 +97,8 @@ export default function Game({
                     <PlayerOverview
                       player={player}
                       activePlayer={activePlayer}
+                      lobbyId={lobbyId}
+                      user={user}
                     />
                   </Box>
                 </Grid.Col>
