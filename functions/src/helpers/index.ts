@@ -44,7 +44,7 @@ export function revealNewStatusCard(gameState: GameState) {
 export function returnPlayersBidToHand(player: PlayerState) {
   player.currentBid = player.currentBid || [];
 
-  for (const bid in player.currentBid) {
+  for (const bid of player.currentBid) {
     player.moneyCards.push(bid);
   }
 
