@@ -18,7 +18,9 @@ function App() {
   );
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
-  const [gameData, setGameData] = useState<GameState | null>(null);
+  const [gameDataStatus, setGameDataStatus] = useState<
+    GameState["status"] | null
+  >(null);
 
   const handleURLChange = useCallback(() => {
     const lobbyUID = window.location.hash.replace(/\D/g, "");
@@ -54,18 +56,18 @@ function App() {
     const lobbyRef = ref(db, "games/" + lobbyId + "/public/status");
 
     onValue(lobbyRef, (snapshot) => {
-      const data = snapshot.val();
-      setGameData(data);
+      const data = snapshot.val() as GameState["status"];
+      setGameDataStatus(data);
     });
   }, [lobbyId]);
 
   const isGameActive = useMemo(() => {
-    return isSignedIn && gameData && lobbyId && user;
-  }, [isSignedIn, gameData, lobbyId, user]);
+    return isSignedIn && gameDataStatus && lobbyId && user;
+  }, [gameDataStatus, isSignedIn, lobbyId, user]);
 
   const isGameOver = useMemo(() => {
-    return gameData && gameData.status === "GAME_OVER";
-  }, [gameData]);
+    return gameDataStatus === "GAME_OVER";
+  }, [gameDataStatus]);
 
   return (
     <div className="App">
@@ -82,7 +84,7 @@ function App() {
           onSignInSuccess={handleSignInSuccess}
         />
       )}
-      {isSignedIn && !gameData && <Lobby user={user} />}
+      {isSignedIn && !gameDataStatus && <Lobby user={user} />}
       {isGameActive && !isGameOver && (
         <Game lobbyId={lobbyId?.toString() as string} user={user as User} />
       )}

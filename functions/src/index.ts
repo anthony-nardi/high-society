@@ -25,6 +25,7 @@ import {
   updatePlayersBid,
   verifyRequestAuthentication,
 } from "./helpers";
+import { Notification } from "./types";
 
 admin.initializeApp();
 
@@ -46,6 +47,18 @@ exports.bid = onCall(async (request) => {
   updatePlayerLastAction(activePlayer);
   updatePlayersBid(activePlayer, bid);
   updateNextActivePlayer(gameState);
+
+  const totalBid = bid.reduce(
+    (sum: number, current: number) => Number(sum) + Number(current),
+    0
+  );
+
+  const notification: Notification = {
+    timestamp: Date.now(),
+    title: `${requestEmail} has highest bid of ${totalBid}.`,
+  };
+
+  gameState.public.notification = notification;
 
   return updateGameState(
     gameState,
@@ -77,6 +90,8 @@ exports.passturn = onCall(async (request) => {
     // Reset all players current bids
     // Flip a new card from the deck
 
+    const cardAwarded = gameState.public.currentStatusCard;
+
     players.forEach((player) => {
       if (player.email === requestEmail) {
         updatePlayerLastAction(player);
@@ -94,7 +109,17 @@ exports.passturn = onCall(async (request) => {
       gameState.public.status = "GAME_OVER";
     }
 
-    return updateGameState(gameState, `${requestEmail} is the first to pass.`);
+    const notification: Notification = {
+      timestamp: Date.now(),
+      title: `${requestEmail} is the first to pass and receives ${cardAwarded}.`,
+    };
+
+    gameState.public.notification = notification;
+
+    return updateGameState(
+      gameState,
+      `${requestEmail} is the first to pass and receives ${cardAwarded}.`
+    );
   }
 
   const activePlayer = getActivePlayer(gameState);
@@ -112,6 +137,7 @@ exports.passturn = onCall(async (request) => {
     // Flip a new card from the deck
 
     let auctionWinner = "";
+    const cardAwarded = gameState.public.currentStatusCard;
 
     players.forEach((player) => {
       if (player.hasPassed === false) {
@@ -130,11 +156,26 @@ exports.passturn = onCall(async (request) => {
 
     gameState.public.activePlayer = auctionWinner;
 
+    const notification: Notification = {
+      timestamp: Date.now(),
+      title: `${auctionWinner} won auction for ${cardAwarded}.`,
+    };
+
+    gameState.public.notification = notification;
+
     return updateGameState(gameState, `Player ${auctionWinner} won auction.`);
   } else {
     // Update the next player
     // Player who passed has their bid returned to their hand
     updateNextActivePlayer(gameState);
+
+    const notification: Notification = {
+      timestamp: Date.now(),
+      title: `${requestEmail} passed.`,
+    };
+
+    gameState.public.notification = notification;
+
     return updateGameState(gameState, `${requestEmail} has passed.`);
   }
 });

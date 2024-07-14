@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import DeckOverview from "./components/DeckOverview";
 import PlayerOverview from "./components/PlayerOverview";
 import { GameState } from "./types";
+import { notifications } from "@mantine/notifications";
 
 const PRIMARY_COL_HEIGHT = rem(250);
 
@@ -24,7 +25,29 @@ export default function Game({
     onValue(lobbyRef, (snapshot) => {
       const data = snapshot.val();
       console.log("New game state!", data);
-      setGameData(data);
+      setGameData((prevGameData) => {
+        const previousNotificationTimestamp =
+          (prevGameData &&
+            prevGameData.notification &&
+            prevGameData.notification.timestamp) ||
+          0;
+        const currentNotificationTimestamp =
+          (data && data.notification && data.notification.timestamp) || 0;
+
+        const shouldRenderNotification =
+          previousNotificationTimestamp !== currentNotificationTimestamp;
+
+        if (shouldRenderNotification) {
+          console.log(`lets render notification : ${data.notification?.title}`);
+
+          notifications.show({
+            title: data.notification?.title as string,
+            message: " ",
+            autoClose: 6000,
+          });
+        }
+        return data;
+      });
     });
   }, [lobbyId]);
 

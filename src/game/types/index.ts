@@ -1,5 +1,11 @@
 export type GameStatus = "IN_PROGRESS" | "GAME_OVER";
 
+export type Notification = {
+  title: string;
+  message?: string;
+  timestamp: number;
+};
+
 export type PlayerState = {
   email: string;
   lastActionAt: number;
@@ -18,4 +24,5 @@ export type GameState = {
   status: GameStatus;
   currentStatusCard: string;
   remainingCards: number;
+  notification?: Notification;
 };
