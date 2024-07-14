@@ -137,10 +137,16 @@ exports.passturn = onCall(async (request) => {
     // Flip a new card from the deck
 
     let auctionWinner = "";
+    let totalBid = 0;
     const cardAwarded = gameState.public.currentStatusCard;
 
     players.forEach((player) => {
       if (player.hasPassed === false) {
+        totalBid = (player.currentBid || []).reduce(
+          (sum: number, current: string) => Number(sum) + Number(current),
+          0
+        );
+
         awardPlayerWithCurrentStatusCard(player, gameState);
         auctionWinner = player.email;
       }
@@ -158,7 +164,7 @@ exports.passturn = onCall(async (request) => {
 
     const notification: Notification = {
       timestamp: Date.now(),
-      title: `${auctionWinner} won auction for ${cardAwarded}.`,
+      title: `${auctionWinner} won ${cardAwarded} for a total of ${totalBid}.`,
     };
 
     gameState.public.notification = notification;

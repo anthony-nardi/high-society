@@ -44,6 +44,9 @@ export default function Game({
             title: data.notification?.title as string,
             message: " ",
             autoClose: 6000,
+            withBorder: true,
+            style: { backgroundColor: "#42384B" },
+            color: "#fff",
           });
         }
         return data;
@@ -105,7 +108,7 @@ export default function Game({
 
   return (
     <>
-      <Container fluid my="md">
+      <Container fluid my="xl">
         <Grid>
           <Grid.Col span={5}>
             <Center>
