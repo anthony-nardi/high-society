@@ -111,7 +111,7 @@ exports.passturn = onCall(async (request) => {
 
     const notification: Notification = {
       timestamp: Date.now(),
-      title: `${requestEmail} is the first to pass and receives ${cardAwarded}.`,
+      title: `${requestEmail} passes and receives ${cardAwarded}.`,
     };
 
     gameState.public.notification = notification;
