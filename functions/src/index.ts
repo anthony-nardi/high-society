@@ -8,6 +8,8 @@ import {
 import { logger } from "firebase-functions/v2";
 import { getDatabase } from "firebase-admin/database";
 
+export type GameStatus = "IN_PROGRESS" | "GAME_OVER";
+
 export type PlayerState = {
   email: string;
   lastActionAt: number;
@@ -23,7 +25,7 @@ export type PublicGameState = {
   players: PlayerState[];
   activePlayer: string;
   startAt: string;
-  status: string;
+  status: GameStatus;
   currentStatusCard: string;
   remainingCards: number;
 };
@@ -40,6 +42,7 @@ type GameState = {
 const STATUS_CARDS_THAT_END_ROUND_ON_FIRST_PASS = ["-5", "1/2", "-"];
 const GREEN_CARDS = ["2x", "1/2"];
 const MINUS_CARD = "-";
+const LUXURY_CARDS_DESC = ["10", "9", "8", "7", "6", "5", "4", "3", "2", "1"];
 
 admin.initializeApp();
 
@@ -116,6 +119,14 @@ function getActivePlayerIndex(gameState: GameState) {
   );
 }
 
+function getActivePlayer(gameState: GameState) {
+  const activePlayerIndex = gameState.public.players.findIndex(
+    (player) => player.email === gameState.public.activePlayer
+  );
+
+  return gameState.public.players[activePlayerIndex];
+}
+
 function getNextPlayerIndex(gameState: GameState) {
   const indexOfCurrentPlayer = getActivePlayerIndex(gameState);
 
@@ -162,6 +173,89 @@ function updateNextActivePlayer(gameState: GameState) {
     gameState.public.players[indexOfNextPlayer].email;
 }
 
+function updateGameState(gameState: GameState, message: string) {
+  return getDatabase()
+    .ref("/games/" + gameState.public.id)
+    .set(gameState)
+    .then(() => {
+      logger.info(message);
+      return {};
+    })
+    .catch((error: Error) => {
+      // Re-throwing the error as an HttpsError so that the client gets
+      // the error details.
+      throw new HttpsError("unknown", error.message, error);
+    });
+}
+
+function giveCurrentStatusCardToPlayer(
+  player: PlayerState,
+  gameState: GameState
+) {
+  player.statusCards = player.statusCards || [];
+  player.statusCards.push(gameState.public.currentStatusCard);
+}
+
+function maybeUseMinusCard(player: PlayerState, gameState: GameState) {
+  player.statusCards = player.statusCards || [];
+
+  if (gameState.public.currentStatusCard === MINUS_CARD) {
+    let cardToRemove = "";
+
+    for (let i = 0; i < LUXURY_CARDS_DESC.length; i++) {
+      if (player.statusCards.includes(LUXURY_CARDS_DESC[i])) {
+        cardToRemove = LUXURY_CARDS_DESC[i];
+      }
+    }
+
+    // Remove lowest card and - card
+    if (cardToRemove) {
+      player.statusCards.splice(player.statusCards.indexOf(cardToRemove), 1);
+      player.statusCards.splice(player.statusCards.indexOf(MINUS_CARD), 1);
+    }
+  }
+}
+
+function setActivePlayerPass(gameState: GameState) {
+  const activePlayer = getActivePlayer(gameState);
+  activePlayer.hasPassed = true;
+}
+
+function getPlayersActivelyBidding(gameState: GameState) {
+  const players = gameState.public.players;
+  let playersWithActiveBids = 0;
+
+  players.forEach((player) => {
+    if (!player.hasPassed) {
+      playersWithActiveBids++;
+    }
+  });
+
+  return playersWithActiveBids;
+}
+
+function awardPlayerWithCurrentStatusCard(
+  player: PlayerState,
+  gameState: GameState
+) {
+  player.statusCards = player.statusCards || [];
+
+  // If the player is holding a MINUS_CARD and is being awarded their first LUXURY_CARD
+  // then remove the MINUS_CARD
+
+  // Otherwise, they get the card
+  if (
+    player.statusCards.includes(MINUS_CARD) &&
+    LUXURY_CARDS_DESC.includes(gameState.public.currentStatusCard)
+  ) {
+    player.statusCards.splice(player.statusCards.indexOf(MINUS_CARD), 1);
+  } else {
+    player.statusCards.push(gameState.public.currentStatusCard);
+  }
+
+  player.currentBid = [];
+}
+
 exports.bid = onCall(async (request) => {
   verifyRequestAuthentication(request);
 
@@ -181,37 +275,27 @@ exports.bid = onCall(async (request) => {
   updatePlayersBid(activePlayer, bid);
   updateNextActivePlayer(gameState);
 
-  return getDatabase()
-    .ref("/games/" + lobbyUID)
-    .set(gameState)
-    .then(() => {
-      logger.info("Updated game state after player bid.");
-      return {};
-    })
-    .catch((error: Error) => {
-      // Re-throwing the error as an HttpsError so that the client gets
-      // the error details.
-      throw new HttpsError("unknown", error.message, error);
-    });
+  return updateGameState(
+    gameState,
+    `Player ${requestEmail} bid ${bid.join(",")}`
+  );
 });
 
 exports.passturn = onCall(async (request) => {
   verifyRequestAuthentication(request);
 
-  const requestEmail = request.auth?.token.email;
+  const requestEmail = getEmailFromRequest(request);
   const { lobbyUID } = request.data;
 
   const gameState = await getGameState(lobbyUID);
   const players = gameState.public.players;
 
-  if (gameState.public.activePlayer !== requestEmail) {
+  if (!isActivePlayerTakingAction(gameState, requestEmail)) {
     return;
   }
 
   const doesBiddingRoundEndOnFirstPass =
     getDoesBiddingRoundEndOnFirstPass(gameState);
-
-  const updatedPlayersState: PlayerState[] = [];
 
   if (doesBiddingRoundEndOnFirstPass) {
     // The active player is the one who passed.
@@ -223,49 +307,13 @@ exports.passturn = onCall(async (request) => {
 
     players.forEach((player) => {
       if (player.email === requestEmail) {
-        player.lastActionAt = Date.now();
-        player.statusCards = player.statusCards || [];
-        player.statusCards.push(gameState.public.currentStatusCard);
+        updatePlayerLastAction(player);
+        giveCurrentStatusCardToPlayer(player, gameState);
         returnPlayersBidToHand(player);
-
-        if (gameState.public.currentStatusCard === MINUS_CARD) {
-          let cardToRemove = "";
-          const cardOrderDesc = [
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-          ].reverse();
-
-          for (let i = 0; i < cardOrderDesc.length; i++) {
-            if (player.statusCards.includes(cardOrderDesc[i])) {
-              cardToRemove = cardOrderDesc[i];
-            }
-          }
-
-          // Remove lowest card and - card
-          if (cardToRemove) {
-            player.statusCards.splice(
-              player.statusCards.indexOf(cardToRemove),
-              1
-            );
-            player.statusCards.splice(
-              player.statusCards.indexOf(MINUS_CARD),
-              1
-            );
-          }
-        }
+        maybeUseMinusCard(player, gameState);
       } else {
         player.currentBid = [];
       }
-
-      updatedPlayersState.push(player);
     });
 
     revealNewStatusCard(gameState);
@@ -274,77 +322,33 @@ exports.passturn = onCall(async (request) => {
       gameState.public.status = "GAME_OVER";
     }
 
-    const newGameState: GameState = {
-      public: {
-        id: gameState.public.id,
-        game: gameState.public.game,
-        players: updatedPlayersState,
-        activePlayer: gameState.public.activePlayer,
-        startAt: gameState.public.startAt,
-        status: gameState.public.status,
-        currentStatusCard: gameState.public.currentStatusCard,
-        remainingCards: gameState.public.remainingCards,
-      },
-      private: {
-        deck: gameState.private.deck,
-      },
-    };
-
-    return getDatabase()
-      .ref("/games/" + lobbyUID)
-      .set(newGameState)
-      .then(() => {
-        logger.info(
-          "Updated game state after player passed. doesBiddingRoundEndOnFirstPass && playersWithActiveBids === playersVal.length"
-        );
-        return {};
-      })
-      .catch((error: Error) => {
-        // Re-throwing the error as an HttpsError so that the client gets
-        // the error details.
-        throw new HttpsError("unknown", error.message, error);
-      });
+    return updateGameState(gameState, `${requestEmail} is the first to pass.`);
   }
 
-  let playersWithActiveBids = players.length;
+  const activePlayer = getActivePlayer(gameState);
 
-  players.forEach((player) => {
-    if (player.email === requestEmail) {
-      player.lastActionAt = Date.now();
-      player.hasPassed = true;
-    }
+  updatePlayerLastAction(activePlayer);
+  setActivePlayerPass(gameState);
 
-    if (player.hasPassed) {
-      playersWithActiveBids--;
-    }
-  });
+  const playersWithActiveBids = getPlayersActivelyBidding(gameState);
 
-  if (!doesBiddingRoundEndOnFirstPass && playersWithActiveBids === 1) {
+  if (playersWithActiveBids === 1) {
     // Award the player with the only remaining bid the currentStatusCard
     // All players who passed return their currentBid to their moneyCard
     // Set all players hasPassed flags to false
     // Flip a new card from the deck
 
-    let activePlayer = "";
+    let auctionWinner = "";
 
     players.forEach((player) => {
       if (player.hasPassed === false) {
-        player.statusCards = player.statusCards || [];
-
-        if (!player.statusCards.includes(MINUS_CARD)) {
-          player.statusCards.push(gameState.public.currentStatusCard);
-        } else {
-          player.statusCards.splice(player.statusCards.indexOf(MINUS_CARD), 1);
-        }
-        player.currentBid = [];
-        activePlayer = player.email;
+        awardPlayerWithCurrentStatusCard(player, gameState);
+        auctionWinner = player.email;
       } else {
         returnPlayersBidToHand(player);
       }
 
       player.hasPassed = false;
-
-      updatedPlayersState.push(player);
     });
 
     revealNewStatusCard(gameState);
@@ -353,39 +357,10 @@ exports.passturn = onCall(async (request) => {
       gameState.public.status = "GAME_OVER";
     }
 
-    const newGameState: GameState = {
-      public: {
-        id: gameState.public.id,
-        game: gameState.public.game,
-        players: updatedPlayersState,
-        activePlayer,
-        startAt: gameState.public.startAt,
-        status: gameState.public.status,
-        currentStatusCard: gameState.public.currentStatusCard,
-        remainingCards: gameState.public.remainingCards,
-      },
-      private: {
-        deck: gameState.private.deck,
-      },
-    };
+    gameState.public.activePlayer = auctionWinner;
 
-    return getDatabase()
-      .ref("/games/" + lobbyUID)
-      .set(newGameState)
-      .then(() => {
-        logger.info(
-          "Updated game state after player passed. !doesBiddingRoundEndOnFirstPass && playersWithActiveBids === 1"
-        );
-        return {};
-      })
-      .catch((error: Error) => {
-        // Re-throwing the error as an HttpsError so that the client gets
-        // the error details.
-        throw new HttpsError("unknown", error.message, error);
-      });
-  }
-
-  if (!doesBiddingRoundEndOnFirstPass && playersWithActiveBids > 1) {
+    return updateGameState(gameState, `Player ${auctionWinner} won auction.`);
+  } else {
     // Update the next player
     // Player who passed has their bid returned to their hand
 
@@ -459,8 +434,6 @@ exports.passturn = onCall(async (request) => {
         throw new HttpsError("unknown", error.message, error);
       });
   }
-
-  throw new Error("This should never happen");
 });
 
 exports.createlobby = onCall((request) => {
