@@ -1,12 +1,4 @@
-import {
-  Box,
-  Code,
-  Container,
-  Grid,
-  rem,
-  SimpleGrid,
-  Skeleton,
-} from "@mantine/core";
+import { Box, Center, Container, Grid, rem } from "@mantine/core";
 import { User } from "firebase/auth";
 import { getDatabase, onValue, ref } from "firebase/database";
 import { useEffect, useMemo, useState } from "react";
@@ -65,6 +57,25 @@ export default function Game({
     return gameData.activePlayer;
   }, [gameData]);
 
+  const highestBidTotal = useMemo(() => {
+    if (!gameData || !gameData.players) {
+      return 0;
+    }
+
+    let highestBid = 0;
+
+    gameData.players.forEach((player) => {
+      const totalAmountBid = (player.currentBid || []).reduce((sum, curr) => {
+        return Number(sum) + Number(curr);
+      }, 0);
+      if (totalAmountBid > highestBid) {
+        highestBid = totalAmountBid;
+      }
+    });
+
+    return highestBid;
+  }, [gameData]);
+
   if (!gameData) {
     return <>loading...</>;
   }
@@ -72,40 +83,38 @@ export default function Game({
   return (
     <>
       <Container fluid my="md">
-        <SimpleGrid cols={{ base: 2, sm: 2 }} spacing="md">
-          <Box
-            style={{
-              border: "1px solid red",
-              height: Number(PRIMARY_COL_HEIGHT) * 2,
-            }}
-          >
-            <DeckOverview deckInfo={deckInfo} />
-          </Box>
-          <Grid gutter="md">
-            {playerInfo.map((player) => {
-              return (
-                <Grid.Col
-                  style={{ border: "1px solid red" }}
-                  span={12}
-                  key={player.email}
-                >
-                  <Box
-                    style={{
-                      height: SECONDARY_COL_HEIGHT,
-                    }}
-                  >
-                    <PlayerOverview
-                      player={player}
-                      activePlayer={activePlayer}
-                      lobbyId={lobbyId}
-                      user={user}
-                    />
-                  </Box>
-                </Grid.Col>
-              );
-            })}
-          </Grid>
-        </SimpleGrid>
+        <Grid>
+          <Grid.Col span={5}>
+            <Center>
+              <Box>
+                <DeckOverview deckInfo={deckInfo} />
+              </Box>
+            </Center>
+          </Grid.Col>
+          <Grid.Col span="auto">
+            <Grid>
+              {playerInfo.map((player) => {
+                return (
+                  <Grid.Col span={12} key={player.email}>
+                    <Box
+                      style={{
+                        height: SECONDARY_COL_HEIGHT,
+                      }}
+                    >
+                      <PlayerOverview
+                        player={player}
+                        activePlayer={activePlayer}
+                        lobbyId={lobbyId}
+                        user={user}
+                        highestBidTotal={highestBidTotal}
+                      />
+                    </Box>
+                  </Grid.Col>
+                );
+              })}
+            </Grid>
+          </Grid.Col>
+        </Grid>
       </Container>
     </>
   );

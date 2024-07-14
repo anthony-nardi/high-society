@@ -8,6 +8,7 @@ import { User } from "firebase/auth";
 import { getDatabase, onValue, ref } from "firebase/database";
 import Game from "./game";
 import { Center, Stack, Title } from "@mantine/core";
+import { GameState } from "./game/types";
 
 initializeFirebase();
 
@@ -15,9 +16,9 @@ function App() {
   const [lobbyId, setLobbyId] = useState<number | null>(
     Number(window.location.hash.replace(/\D/g, ""))
   );
-  const [isSignedIn, setIsSignedIn] = useState(false);
-  const [user, setUser] = useState<null | User>(null);
-  const [gameData, setGameData] = useState<any>(null);
+  const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [gameData, setGameData] = useState<GameState | null>(null);
 
   const handleURLChange = useCallback(() => {
     const lobbyUID = window.location.hash.replace(/\D/g, "");
@@ -62,6 +63,10 @@ function App() {
     return isSignedIn && gameData && lobbyId && user;
   }, [isSignedIn, gameData, lobbyId, user]);
 
+  const isGameOver = useMemo(() => {
+    return gameData && gameData.status === "GAME_OVER";
+  }, [gameData]);
+
   return (
     <div className="App">
       {!isGameActive && (
@@ -78,9 +83,10 @@ function App() {
         />
       )}
       {isSignedIn && !gameData && <Lobby user={user} />}
-      {isGameActive && (
+      {isGameActive && !isGameOver && (
         <Game lobbyId={lobbyId?.toString() as string} user={user as User} />
       )}
+      {isGameActive && isGameOver && <h1>Game Over</h1>}
     </div>
   );
 }

@@ -1,9 +1,11 @@
+export type GameStatus = "IN_PROGRESS" | "GAME_OVER";
+
 export type PlayerState = {
   email: string;
   lastActionAt: number;
   moneyCards: string[];
-  statusCards: string[];
-  currentBid: string[];
+  statusCards?: string[];
+  currentBid?: string[];
   hasPassed: boolean;
 };
 
@@ -13,7 +15,7 @@ export type GameState = {
   players: PlayerState[];
   activePlayer: string;
   startAt: string;
-  status: string;
+  status: GameStatus;
   currentStatusCard: string;
   remainingCards: number;
 };

@@ -1,3 +1,5 @@
+import CardBack from "../../card/CardBack";
+import CardFront from "../../card/CardFront";
 import { GameState } from "../types";
 
 export default function DeckOverview({
@@ -13,8 +15,12 @@ export default function DeckOverview({
   }
   return (
     <>
-      <div>Remaining Cards: {deckInfo.remainingCards}</div>
-      <div>Current Card: {deckInfo.currentStatusCard}</div>
+      <span>
+        <CardBack cardsLeft={deckInfo.remainingCards} />
+      </span>
+      <span style={{ marginLeft: "4px" }}>
+        <CardFront card={deckInfo.currentStatusCard} />
+      </span>
     </>
   );
 }

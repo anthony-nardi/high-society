@@ -1,7 +1,7 @@
 import { Box, Flex } from "@mantine/core";
 import { GameState, PlayerState } from "../types";
 import PlayerGameState from "./PlayerGameState";
-import PlayerRoundState from "./PlayerRountState";
+import PlayerRoundState from "./PlayerRoundState";
 import { useMemo } from "react";
 import { User } from "firebase/auth";
 
@@ -10,11 +10,13 @@ export default function PlayerOverview({
   activePlayer,
   lobbyId,
   user,
+  highestBidTotal,
 }: {
   player: PlayerState;
   activePlayer: GameState["activePlayer"];
   lobbyId: string;
   user: User;
+  highestBidTotal: number;
 }) {
   const isActivePlayer = useMemo(() => {
     return player.email === activePlayer;
@@ -22,20 +24,33 @@ export default function PlayerOverview({
 
   const isLoggedInUserActivePlayer = useMemo(() => {
     return user.email === activePlayer && isActivePlayer;
-  }, [user.email, activePlayer]);
+  }, [user.email, activePlayer, isActivePlayer]);
+
+  const styles = useMemo(() => {
+    if (isActivePlayer) {
+      return {
+        root: {
+          border: "2px solid #dadada",
+          borderRadius: "12px",
+          boxShadow: "0 0 8px #9ecaed",
+          padding: "16px",
+        },
+      };
+    }
+  }, [isActivePlayer]);
 
   return (
-    <Flex justify="space-between">
+    <Flex justify="space-between" styles={styles}>
       <Box>
         <PlayerGameState player={player} />
       </Box>
 
       <Box w={"50%"}>
         <PlayerRoundState
-          isActivePlayer={isActivePlayer}
           player={player}
           lobbyId={lobbyId}
           isLoggedInUserActivePlayer={isLoggedInUserActivePlayer}
+          highestBidTotal={highestBidTotal}
         />
       </Box>
     </Flex>
