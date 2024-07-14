@@ -229,6 +229,16 @@ exports.joinlobby = onCall(async (request) => {
 
   console.log(playersSnapshotValue);
 
+  if (playersSnapshotValue.length >= 5) {
+    return;
+  }
+
+  const gameState = await getGameState(lobbyUID);
+
+  if (gameState) {
+    return;
+  }
+
   const doesPlayerExist = playersSnapshotValue.find(
     (player: any) => player.email === email
   );
