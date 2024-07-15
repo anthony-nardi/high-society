@@ -33,14 +33,13 @@ export default function PlayerOverview({
           border: "2px solid #dadada",
           borderRadius: "12px",
           boxShadow: "0 0 8px #9ecaed",
-          padding: "16px",
         },
       };
     }
   }, [isActivePlayer]);
 
   return (
-    <Flex justify="space-between" styles={styles}>
+    <Flex p="md" justify="space-between" styles={styles}>
       <Box>
         <PlayerGameState player={player} />
       </Box>

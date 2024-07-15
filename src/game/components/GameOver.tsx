@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { GameState } from "../types";
 import { getDatabase, onValue, ref } from "firebase/database";
+import { Box, Center, Flex } from "@mantine/core";
 
 type MapOfPlayersToMetadata = {
   [key: string]: {
@@ -78,18 +79,69 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
   }, [mapOfPlayersToMetadata]);
 
   const renderedWinner = useMemo(() => {
-    if (mapOfPlayersToMetadata) {
-      const winner = mapOfPlayersToMetadata[tiedPlayers[0]];
-      return (
-        <>
-          <b>{winner.email} has won!</b>
-          <div>Cards in hand: ${(winner.moneyCards || []).join(", ")}</div>
-          <div>Status cards: ${(winner.statusCards || []).join(", ")}</div>
-          <b>Final score: ${winner.finalScore}</b>
-        </>
-      );
+    const renderedPlayersEndGame = [];
+
+    if (mapOfPlayersToMetadata && tiedPlayers.length === 1) {
+      for (const playerEmail in mapOfPlayersToMetadata) {
+        const isWinner = tiedPlayers[0] === playerEmail;
+        const player = mapOfPlayersToMetadata[playerEmail];
+        if (isWinner) {
+          renderedPlayersEndGame.push(
+            <Box mt="md">
+              <b>{player.email} has won!</b>
+              <div>Cards in hand: {(player.moneyCards || []).join(", ")}</div>
+              <div>Status cards: {(player.statusCards || []).join(", ")}</div>
+              <b>Final score: {player.finalScore}</b>
+            </Box>
+          );
+        } else {
+          renderedPlayersEndGame.push(
+            <Box mt="md">
+              <b>{player.email}</b>
+              <div>Cards in hand: {(player.moneyCards || []).join(", ")}</div>
+              <div>Status cards: {(player.statusCards || []).join(", ")}</div>
+              <b>Final score: {player.finalScore}</b>
+            </Box>
+          );
+        }
+      }
+    } else {
+      for (const playerEmail in mapOfPlayersToMetadata) {
+        const isWinner = tiedPlayers[0] === playerEmail;
+        const player = mapOfPlayersToMetadata[playerEmail];
+        if (isWinner) {
+          renderedPlayersEndGame.push(
+            <>
+              <b>
+                {player.email} has tied! Whoerver has the most money leftover
+                wins... (todo... figure this out)
+              </b>
+              <div>Cards in hand: {(player.moneyCards || []).join(", ")}</div>
+              <div>Status cards: {(player.statusCards || []).join(", ")}</div>
+              <b>Final score: {player.finalScore}</b>
+            </>
+          );
+        } else {
+          renderedPlayersEndGame.push(
+            <>
+              <b>{player.email}</b>
+              <div>Cards in hand: {(player.moneyCards || []).join(", ")}</div>
+              <div>Status cards: {(player.statusCards || []).join(", ")}</div>
+              <b>Final score: {player.finalScore}</b>
+            </>
+          );
+        }
+      }
     }
+    return renderedPlayersEndGame;
   }, [mapOfPlayersToMetadata, tiedPlayers]);
 
-  return <>{renderedWinner}</>;
+  return (
+    <Center>
+      <Flex direction="column">
+        <h1>Game Over</h1>
+        {renderedWinner}
+      </Flex>
+    </Center>
+  );
 }
