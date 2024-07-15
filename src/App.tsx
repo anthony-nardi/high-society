@@ -7,8 +7,9 @@ import Login from "./login";
 import { User } from "firebase/auth";
 import { getDatabase, onValue, ref } from "firebase/database";
 import Game from "./game";
-import { Center, Stack, Title } from "@mantine/core";
 import { GameState } from "./game/types";
+import GameOver from "./game/components/GameOver";
+import GameTitle from "./game/components/GameTitle";
 
 initializeFirebase();
 
@@ -66,29 +67,31 @@ function App() {
   }, [gameDataStatus, isSignedIn, lobbyId, user]);
 
   const isGameOver = useMemo(() => {
-    return gameDataStatus === "GAME_OVER";
-  }, [gameDataStatus]);
+    return isGameActive && gameDataStatus === "GAME_OVER";
+  }, [gameDataStatus, isGameActive]);
+
+  const isGameInProgress = useMemo(() => {
+    return isGameActive && gameDataStatus === "IN_PROGRESS";
+  }, [gameDataStatus, isGameActive]);
+
+  const isInLobby = useMemo(() => {
+    return isSignedIn && !gameDataStatus;
+  }, [gameDataStatus, isSignedIn]);
 
   return (
     <div className="App">
-      {!isGameActive && (
-        <Stack h={200} justify="space-around" gap="md">
-          <Center>
-            <Title order={1}>High Society</Title>
-          </Center>
-        </Stack>
-      )}
+      {!isGameActive && <GameTitle />}
       {!isSignedIn && (
         <Login
           onSignInFailed={handleSignInFailed}
           onSignInSuccess={handleSignInSuccess}
         />
       )}
-      {isSignedIn && !gameDataStatus && <Lobby user={user} />}
-      {isGameActive && !isGameOver && (
+      {isInLobby && <Lobby user={user} />}
+      {isGameInProgress && (
         <Game lobbyId={lobbyId?.toString() as string} user={user as User} />
       )}
-      {isGameActive && isGameOver && <h1>Game Over</h1>}
+      {isGameOver && <GameOver lobbyId={lobbyId?.toString() as string} />}
     </div>
   );
 }
