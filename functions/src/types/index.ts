@@ -10,8 +10,8 @@ export type PlayerState = {
   email: string;
   lastActionAt: number;
   moneyCards: string[];
-  statusCards?: string[]; // Realtime Database doesnt like arrays, they dont exist unless they contain values
-  currentBid?: string[]; // Realtime Database doesnt like arrays, they dont exist unless they contain values
+  statusCards?: string[]; // Realtime Database return nothing if array is empty
+  currentBid?: string[]; // Realtime Database return nothing if array is empty
   hasPassed: boolean;
 };
 

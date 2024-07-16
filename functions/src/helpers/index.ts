@@ -213,7 +213,8 @@ export function awardPlayerWithCurrentStatusCard(
 ) {
   player.statusCards = player.statusCards || [];
 
-  // If the player is holding a MINUS_CARD and is being awarded their first LUXURY_CARD
+  // If the player is holding a MINUS_CARD and
+  // is being awarded their first LUXURY_CARD
   // then remove the MINUS_CARD
 
   // Otherwise, they get the card
