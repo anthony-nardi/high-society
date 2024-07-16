@@ -12,13 +12,13 @@ export default function CardBack({ cardsLeft }: { cardsLeft: number }) {
         height="290"
         fill="none"
         stroke="#B4A166"
-        stroke-width="10"
+        strokeWidth="10"
         rx="10"
         ry="10"
       />
 
       {/* <!-- Ornate corner decorations --> */}
-      <g fill="none" stroke="#B4A166" stroke-width="2">
+      <g fill="none" stroke="#B4A166" strokeWidth="2">
         <path d="M15,15 Q30,30 15,45 Q30,60 15,75 Q30,90 15,105 Q30,120 15,135 Q30,150 15,165 Q30,180 15,195 Q30,210 15,225 Q30,240 15,255 Q30,270 15,285" />
         <path d="M185,15 Q170,30 185,45 Q170,60 185,75 Q170,90 185,105 Q170,120 185,135 Q170,150 185,165 Q170,180 185,195 Q170,210 185,225 Q170,240 185,255 Q170,270 185,285" />
         <path
@@ -42,7 +42,7 @@ export default function CardBack({ cardsLeft }: { cardsLeft: number }) {
         r="20"
         fill="none"
         stroke="#B4A166"
-        stroke-width="3"
+        strokeWidth="3"
       />
 
       {/* <!-- Ornate lines around oval --> */}
@@ -50,17 +50,17 @@ export default function CardBack({ cardsLeft }: { cardsLeft: number }) {
         d="M40,150 Q60,170 80,150 T120,150 T160,150"
         fill="none"
         stroke="#B4A166"
-        stroke-width="2"
+        strokeWidth="2"
       />
       <path
         d="M100,50 Q120,100 100,150 Q80,100 100,50"
         fill="none"
         stroke="#B4A166"
-        stroke-width="2"
+        strokeWidth="2"
       />
 
       {/* <!-- Fill the oval with decorative pattern --> */}
-      <g fill="none" stroke="#B4A166" stroke-width="1">
+      <g fill="none" stroke="#B4A166" strokeWidth="1">
         <path d="M70,80 Q90,100 70,120 T70,160 T70,200" />
         <path d="M130,80 Q110,100 130,120 T130,160 T130,200" />
         <path
@@ -76,10 +76,10 @@ export default function CardBack({ cardsLeft }: { cardsLeft: number }) {
       <text
         x="100"
         y="155"
-        font-size="24"
+        fontSize="24"
         fill="#B4A166"
-        text-anchor="middle"
-        dominant-baseline="middle"
+        textAnchor="middle"
+        dominantBaseline="middle"
       >
         {cardsLeft}
       </text>
@@ -87,10 +87,10 @@ export default function CardBack({ cardsLeft }: { cardsLeft: number }) {
       <text
         x="100"
         y="30"
-        font-size="24"
+        fontSize="24"
         fill="#B4A166"
-        text-anchor="middle"
-        dominant-baseline="middle"
+        textAnchor="middle"
+        dominantBaseline="middle"
       >
         Deck
       </text>

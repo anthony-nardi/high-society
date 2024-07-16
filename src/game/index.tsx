@@ -1,7 +1,7 @@
 import { Box, Center, Container, Grid, rem } from "@mantine/core";
 import { User } from "firebase/auth";
 import { getDatabase, onValue, ref } from "firebase/database";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import DeckOverview from "./components/DeckOverview";
 import PlayerOverview from "./components/PlayerOverview";
 import { GameState } from "./types";
@@ -17,7 +17,14 @@ export default function Game({
   user: User;
 }) {
   const [gameData, setGameData] = useState<null | GameState>(null);
+  const listeningToLobby = useRef<string | null>(null);
   useEffect(() => {
+    if (listeningToLobby.current === lobbyId) {
+      return;
+    }
+
+    listeningToLobby.current = lobbyId;
+
     const db = getDatabase();
 
     const lobbyRef = ref(db, "games/" + lobbyId + "/public");

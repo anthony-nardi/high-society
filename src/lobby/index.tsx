@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getDatabase, ref, onValue } from "firebase/database";
 import { getFunctions, httpsCallable } from "firebase/functions";
-import { getAuth, User } from "firebase/auth";
+import { User } from "firebase/auth";
 import { CreateLobbyResponse, LobbyData } from "./types";
 import PlayersList from "./components/PlayersList";
-import { Box, Button, Center, Container, Flex, Grid } from "@mantine/core";
+import { Button, Center, Flex, Grid } from "@mantine/core";
 import ConnectedPlayersCount from "./components/ConnectedPlayersCount";
+import useJoinLobby from "./hooks/useJoinLobby";
 
 export default function Lobby({ user }: { user: User | null }) {
   const [lobbyId, setLobbyId] = useState<number | null>(
@@ -26,27 +27,10 @@ export default function Lobby({ user }: { user: User | null }) {
     }
   }, []);
 
-  useEffect(() => {
-    if (!lobbyId) return;
-
-    const auth = getAuth();
-    auth.onAuthStateChanged((user) => {
-      if (user && typeof user.email === "string") {
-        setCurrentUser(user);
-        const functions = getFunctions();
-        const joinLobby = httpsCallable<any, any>(functions, "joinlobby");
-        joinLobby({
-          email: user.email,
-          lobbyUID: lobbyId,
-        })
-          .then((result) => {
-            const data = result.data;
-            console.log(`auth state changed: `, data);
-          })
-          .catch((err) => console.log(err));
-      }
-    });
-  }, [lobbyId, setCurrentUser]);
+  useJoinLobby({
+    lobbyId,
+    onAuthentication: setCurrentUser,
+  });
 
   const handleURLChange = useCallback(() => {
     const lobbyUID = window.location.hash.replace(/\D/g, "");

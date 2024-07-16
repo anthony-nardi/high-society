@@ -12,7 +12,7 @@ export default function CardFront({ card }: { card: string }) {
         height="290"
         fill="none"
         stroke="#B4A166"
-        stroke-width="10"
+        strokeWidth="10"
         rx="10"
         ry="10"
       />
@@ -25,7 +25,7 @@ export default function CardFront({ card }: { card: string }) {
         ry="100"
         fill="none"
         stroke="#B4A166"
-        stroke-width="5"
+        strokeWidth="5"
       />
 
       {/* <!-- Placeholder for dynamic number (empty space in center) --> */}
@@ -35,10 +35,10 @@ export default function CardFront({ card }: { card: string }) {
       <text
         x="100"
         y="155"
-        font-size="24"
+        fontSize="24"
         fill="#B4A166"
-        text-anchor="middle"
-        dominant-baseline="middle"
+        textAnchor="middle"
+        dominantBaseline="middle"
       >
         {card}
       </text>
@@ -46,10 +46,10 @@ export default function CardFront({ card }: { card: string }) {
       <text
         x="100"
         y="30"
-        font-size="24"
+        fontSize="24"
         fill="#B4A166"
-        text-anchor="middle"
-        dominant-baseline="middle"
+        textAnchor="middle"
+        dominantBaseline="middle"
       >
         Revealed
       </text>
