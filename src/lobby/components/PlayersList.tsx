@@ -1,21 +1,15 @@
-import { User } from "firebase/auth";
 import { LobbyData } from "../types";
-import { useCallback, useMemo } from "react";
-import { getFunctions, httpsCallable } from "firebase/functions";
-import { Badge, Box, Button, Center, Flex, Grid } from "@mantine/core";
+import { useMemo } from "react";
+import { Badge, Center } from "@mantine/core";
 
 export default function PlayersList({
   players,
-  user,
-  lobbyUID,
 }: {
   players: LobbyData["players"];
-  user: User;
-  lobbyUID: string;
 }) {
   const renderedUsers = useMemo(() => {
     return players.map((player) => {
-      let rootStyle = {
+      const rootStyle = {
         border: "1px solid red",
         padding: "32px",
         borderRadius: "8px",

@@ -119,11 +119,7 @@ export default function Lobby({ user }: { user: User | null }) {
                   <Button onClick={handleReadyUp}>Click here to ready!</Button>
                 )}
               </Flex>
-              <PlayersList
-                user={currentUser}
-                players={lobbyData.players}
-                lobbyUID={lobbyData.id}
-              />
+              <PlayersList players={lobbyData.players} />
             </Flex>
           </Center>
         </Grid.Col>
