@@ -25,7 +25,7 @@ export default function Lobby({ user }: { user: User | null }) {
 
       return (user && user.ready) || false;
     }
-  }, []);
+  }, [currentUser, lobbyData]);
 
   useJoinLobby({
     lobbyId,
