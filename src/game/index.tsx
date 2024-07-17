@@ -7,8 +7,6 @@ import PlayerOverview from "./components/PlayerOverview";
 import { GameState } from "./types";
 import { notifications } from "@mantine/notifications";
 
-const PRIMARY_COL_HEIGHT = rem(250);
-
 export default function Game({
   lobbyId,
   user,
@@ -60,8 +58,6 @@ export default function Game({
       });
     });
   }, [lobbyId]);
-
-  const SECONDARY_COL_HEIGHT = `calc(${PRIMARY_COL_HEIGHT} / 2 - var(--mantine-spacing-md) / 2)`;
 
   const deckInfo = useMemo(() => {
     if (!gameData) {
@@ -129,11 +125,7 @@ export default function Game({
               {playerInfo.map((player) => {
                 return (
                   <Grid.Col span={12} key={player.email}>
-                    <Box
-                      style={{
-                        height: SECONDARY_COL_HEIGHT,
-                      }}
-                    >
+                    <Box>
                       <PlayerOverview
                         player={player}
                         activePlayer={activePlayer}

@@ -1,5 +1,7 @@
 import { useMemo } from "react";
 import { PlayerState } from "../types";
+import { Flex } from "@mantine/core";
+import CardFront from "../../card/CardFront";
 
 export default function PlayerGameState({ player }: { player: PlayerState }) {
   const renderedStatusCards = useMemo(() => {
@@ -7,7 +9,13 @@ export default function PlayerGameState({ player }: { player: PlayerState }) {
       return "None";
     }
 
-    return player.statusCards.join(", ");
+    return (
+      <Flex>
+        {player.statusCards.map((card) => {
+          return <CardFront card={card} size="sm" />;
+        })}
+      </Flex>
+    );
   }, [player.statusCards]);
 
   return (
