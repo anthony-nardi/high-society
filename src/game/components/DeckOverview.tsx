@@ -19,7 +19,7 @@ export default function DeckOverview({
         <CardBack cardsLeft={deckInfo.remainingCards} />
       </span>
       <span style={{ marginLeft: "4px" }}>
-        <CardFront card={deckInfo.currentStatusCard} />
+        <CardFront card={deckInfo.currentStatusCard} size="lg" />
       </span>
     </>
   );

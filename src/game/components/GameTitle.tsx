@@ -1,4 +1,4 @@
-import { Center, Stack, Title } from "@mantine/core";
+import { Center, Stack } from "@mantine/core";
 
 export default function GameTitle() {
   return (

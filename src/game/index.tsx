@@ -1,4 +1,4 @@
-import { Box, Center, Container, Grid, rem } from "@mantine/core";
+import { Box, Center, Container, Grid } from "@mantine/core";
 import { User } from "firebase/auth";
 import { getDatabase, onValue, ref } from "firebase/database";
 import { useEffect, useMemo, useRef, useState } from "react";
