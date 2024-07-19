@@ -4,7 +4,7 @@ import { getFunctions, httpsCallable } from "firebase/functions";
 import { User } from "firebase/auth";
 import { CreateLobbyResponse, LobbyData } from "./types";
 import PlayersList from "./components/PlayersList";
-import { Button, Center, Flex, Grid } from "@mantine/core";
+import { Button, Center, Flex, Grid, LoadingOverlay } from "@mantine/core";
 import ConnectedPlayersCount from "./components/ConnectedPlayersCount";
 import useJoinLobby from "./hooks/useJoinLobby";
 
@@ -27,7 +27,7 @@ export default function Lobby({ user }: { user: User | null }) {
     }
   }, [currentUser, lobbyData]);
 
-  useJoinLobby({
+  const { isLoading: isLoadingLobbyJoin } = useJoinLobby({
     lobbyId,
     onAuthentication: setCurrentUser,
   });
@@ -74,16 +74,23 @@ export default function Lobby({ user }: { user: User | null }) {
     });
   }, []);
 
-  const handleReadyUp = useCallback(() => {
+  const handleReadyUp = useCallback(async () => {
     if (!currentUser) {
       throw new Error("There is no current user.");
     }
 
     const functions = getFunctions();
 
-    const readyUp = httpsCallable<any, any>(functions, "readyup");
+    const readyUp = httpsCallable<{ email: string; lobbyUID: number }, void>(
+      functions,
+      "readyup"
+    );
 
-    readyUp({
+    if (!currentUser.email || !lobbyId) {
+      throw new Error("email or lobbyId does not exist");
+    }
+
+    await readyUp({
       email: currentUser.email,
       lobbyUID: lobbyId,
     });
@@ -95,6 +102,10 @@ export default function Lobby({ user }: { user: User | null }) {
         <Button onClick={handleCreateLobby}>Create lobby</Button>
       </Center>
     );
+  }
+
+  if (isLoadingLobbyJoin) {
+    return <LoadingOverlay />;
   }
 
   if (!lobbyData || !lobbyData.players.length || !currentUser) {

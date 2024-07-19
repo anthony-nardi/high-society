@@ -1,15 +1,15 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import "./App.css";
 import "firebaseui/dist/firebaseui.css";
 import Lobby from "./lobby";
 import initializeFirebase from "./utils/initializeFirebase";
 import Login from "./login";
 import { User } from "firebase/auth";
-import { getDatabase, onValue, ref } from "firebase/database";
 import Game from "./game";
-import { GameState } from "./game/types";
 import GameOver from "./game/components/GameOver";
 import GameTitle from "./game/components/GameTitle";
+import useGameStatus from "./game/hooks/useGameStatus";
+import usePopstate from "./hooks/usePopstate";
 
 initializeFirebase();
 
@@ -19,22 +19,15 @@ function App() {
   );
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
-  const [gameDataStatus, setGameDataStatus] = useState<
-    GameState["status"] | null
-  >(null);
+
+  const { isLoading: isGameStatusLoading, gameStatus } = useGameStatus(lobbyId);
 
   const handleURLChange = useCallback(() => {
     const lobbyUID = window.location.hash.replace(/\D/g, "");
     setLobbyId(Number(lobbyUID));
   }, []);
 
-  useEffect(() => {
-    window.addEventListener("popstate", handleURLChange);
-
-    return () => {
-      window.removeEventListener("popstate", handleURLChange);
-    };
-  }, [handleURLChange]);
+  usePopstate(handleURLChange);
 
   const handleSignInFailed = useCallback(() => {
     setIsSignedIn(false);
@@ -49,34 +42,21 @@ function App() {
     }
   }, []);
 
-  useEffect(() => {
-    if (!lobbyId || typeof lobbyId !== "number") return;
-
-    const db = getDatabase();
-
-    const lobbyRef = ref(db, "games/" + lobbyId + "/public/status");
-
-    onValue(lobbyRef, (snapshot) => {
-      const data = snapshot.val() as GameState["status"];
-      setGameDataStatus(data);
-    });
-  }, [lobbyId]);
-
   const isGameActive = useMemo(() => {
-    return isSignedIn && gameDataStatus && lobbyId && user;
-  }, [gameDataStatus, isSignedIn, lobbyId, user]);
+    return isSignedIn && gameStatus && lobbyId && user;
+  }, [gameStatus, isSignedIn, lobbyId, user]);
 
   const isGameOver = useMemo(() => {
-    return isGameActive && gameDataStatus === "GAME_OVER";
-  }, [gameDataStatus, isGameActive]);
+    return isGameActive && gameStatus === "GAME_OVER";
+  }, [gameStatus, isGameActive]);
 
   const isGameInProgress = useMemo(() => {
-    return isGameActive && gameDataStatus === "IN_PROGRESS";
-  }, [gameDataStatus, isGameActive]);
+    return isGameActive && gameStatus === "IN_PROGRESS";
+  }, [gameStatus, isGameActive]);
 
   const isInLobby = useMemo(() => {
-    return isSignedIn && !gameDataStatus;
-  }, [gameDataStatus, isSignedIn]);
+    return isSignedIn && !gameStatus;
+  }, [gameStatus, isSignedIn]);
 
   return (
     <div className="App">
@@ -91,6 +71,7 @@ function App() {
       {isGameInProgress && (
         <Game lobbyId={lobbyId?.toString() as string} user={user as User} />
       )}
+      {isGameStatusLoading && <div>Loading...</div>}
       {isGameOver && <GameOver lobbyId={lobbyId?.toString() as string} />}
     </div>
   );
