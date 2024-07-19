@@ -9,6 +9,7 @@ type MapOfPlayersToMetadata = {
     moneyCards: string[];
     statusCards: string[];
     email: string;
+    moneyLeft: number;
   };
 };
 
@@ -48,6 +49,10 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
 
       metadata[player.email] = {
         finalScore: score * multiplier,
+        moneyLeft: player.moneyCards.reduce(
+          (total, card) => Number(total) + Number(card),
+          0
+        ),
         moneyCards: player.moneyCards,
         statusCards: player.statusCards,
         email: player.email,
@@ -57,13 +62,43 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
     return metadata;
   }, [gameData]);
 
-  const tiedPlayers = useMemo(() => {
+  const playersWithLeastMoneyRemaining = useMemo(() => {
+    let moneyLeft = 1000;
+    let playersWithLowestTotal: string[] = [];
+
+    if (!mapOfPlayersToMetadata) {
+      return [];
+    }
+
+    for (const metadata in mapOfPlayersToMetadata) {
+      if (mapOfPlayersToMetadata[metadata].moneyLeft === moneyLeft) {
+        moneyLeft = mapOfPlayersToMetadata[metadata].moneyLeft;
+
+        playersWithLowestTotal.push(mapOfPlayersToMetadata[metadata].email);
+      } else if (mapOfPlayersToMetadata[metadata].moneyLeft < moneyLeft) {
+        moneyLeft = mapOfPlayersToMetadata[metadata].moneyLeft;
+        playersWithLowestTotal = [mapOfPlayersToMetadata[metadata].email];
+      }
+    }
+
+    return playersWithLowestTotal;
+  }, [mapOfPlayersToMetadata]);
+
+  const winningPlayers = useMemo(() => {
     if (!mapOfPlayersToMetadata) return [];
 
     let highScore;
     let playersWithHighScore: string[] = [];
 
     for (const metadata in mapOfPlayersToMetadata) {
+      if (
+        playersWithLeastMoneyRemaining.includes(
+          mapOfPlayersToMetadata[metadata].email
+        )
+      ) {
+        continue;
+      }
+
       if (
         !highScore ||
         mapOfPlayersToMetadata[metadata].finalScore > highScore
@@ -76,14 +111,14 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
     }
 
     return playersWithHighScore;
-  }, [mapOfPlayersToMetadata]);
+  }, [mapOfPlayersToMetadata, playersWithLeastMoneyRemaining]);
 
   const renderedWinner = useMemo(() => {
     const renderedPlayersEndGame = [];
 
-    if (mapOfPlayersToMetadata && tiedPlayers.length === 1) {
+    if (mapOfPlayersToMetadata && winningPlayers.length === 1) {
       for (const playerEmail in mapOfPlayersToMetadata) {
-        const isWinner = tiedPlayers[0] === playerEmail;
+        const isWinner = winningPlayers[0] === playerEmail;
         const player = mapOfPlayersToMetadata[playerEmail];
         if (isWinner) {
           renderedPlayersEndGame.push(
@@ -107,7 +142,7 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
       }
     } else {
       for (const playerEmail in mapOfPlayersToMetadata) {
-        const isWinner = tiedPlayers[0] === playerEmail;
+        const isWinner = winningPlayers[0] === playerEmail;
         const player = mapOfPlayersToMetadata[playerEmail];
         if (isWinner) {
           renderedPlayersEndGame.push(
@@ -134,7 +169,7 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
       }
     }
     return renderedPlayersEndGame;
-  }, [mapOfPlayersToMetadata, tiedPlayers]);
+  }, [mapOfPlayersToMetadata, winningPlayers]);
 
   return (
     <Center>
