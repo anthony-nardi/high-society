@@ -1,23 +1,33 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { getDatabase, ref, onValue } from "firebase/database";
+import { useCallback, useMemo, useState } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { User } from "firebase/auth";
-import { CreateLobbyResponse, LobbyData } from "./types";
+import { CreateLobbyResponse } from "./types";
 import PlayersList from "./components/PlayersList";
 import { Button, Center, Flex, Grid, Loader } from "@mantine/core";
 import ConnectedPlayersCount from "./components/ConnectedPlayersCount";
 import useJoinLobby from "./hooks/useJoinLobby";
+import useLobbyData from "./hooks/useLobbyData";
+import usePopstate from "../hooks/usePopstate";
 
 export default function Lobby({ user }: { user: User | null }) {
   const [lobbyId, setLobbyId] = useState<number | null>(
     Number(window.location.hash.replace(/\D/g, ""))
   );
-  const [lobbyData, setLobbyData] = useState<null | LobbyData>(null);
   const [currentUser, setCurrentUser] = useState<User | null>(user);
-  const [isFetchingLobbyData, setIsFetchingLobbyData] = useState<
-    null | boolean
-  >(null);
+
   const [isReadying, setIsReadying] = useState<null | boolean>(null);
+
+  const { isLoading: isLoadingLobbyJoin } = useJoinLobby({
+    lobbyId,
+    onAuthentication: setCurrentUser,
+  });
+
+  const handleURLChange = useCallback(() => {
+    const lobbyUID = window.location.hash.replace(/\D/g, "");
+    setLobbyId(Number(lobbyUID));
+  }, []);
+
+  const { isLoading: isLoadingLobbyData, lobbyData } = useLobbyData(lobbyId);
 
   const isCurrentUserReady = useMemo(() => {
     if (!currentUser || !lobbyData) return false;
@@ -31,37 +41,7 @@ export default function Lobby({ user }: { user: User | null }) {
     }
   }, [currentUser, lobbyData]);
 
-  const { isLoading: isLoadingLobbyJoin } = useJoinLobby({
-    lobbyId,
-    onAuthentication: setCurrentUser,
-  });
-
-  const handleURLChange = useCallback(() => {
-    const lobbyUID = window.location.hash.replace(/\D/g, "");
-    setLobbyId(Number(lobbyUID));
-  }, []);
-
-  useEffect(() => {
-    if (!lobbyId || typeof lobbyId !== "number") return;
-    setIsFetchingLobbyData(true);
-    const db = getDatabase();
-
-    const lobbyRef = ref(db, "lobbies/" + lobbyId);
-
-    onValue(lobbyRef, (snapshot) => {
-      const data = snapshot.val();
-      setLobbyData(data);
-      setIsFetchingLobbyData(false);
-    });
-  }, [lobbyId]);
-
-  useEffect(() => {
-    window.addEventListener("popstate", handleURLChange);
-
-    return () => {
-      window.removeEventListener("popstate", handleURLChange);
-    };
-  }, [handleURLChange]);
+  usePopstate(handleURLChange);
 
   const handleCreateLobby = useCallback(() => {
     const functions = getFunctions();
@@ -110,7 +90,7 @@ export default function Lobby({ user }: { user: User | null }) {
     );
   }
 
-  if (isLoadingLobbyJoin || isFetchingLobbyData) {
+  if (isLoadingLobbyJoin || isLoadingLobbyData) {
     return (
       <Center>
         <Loader />
@@ -119,7 +99,7 @@ export default function Lobby({ user }: { user: User | null }) {
   }
 
   if (!lobbyData || !lobbyData.players.length) {
-    return <div>No data found for lobby</div>;
+    return <Center>Lobby does not exist.</Center>;
   }
 
   return (
@@ -137,7 +117,11 @@ export default function Lobby({ user }: { user: User | null }) {
                   players={(lobbyData && lobbyData.players) || []}
                 />
                 {!isCurrentUserReady && (
-                  <Button onClick={handleReadyUp} loading={!!isReadying}>
+                  <Button
+                    onClick={handleReadyUp}
+                    loading={!!isReadying}
+                    disabled={!!isReadying}
+                  >
                     Click here to ready!
                   </Button>
                 )}
