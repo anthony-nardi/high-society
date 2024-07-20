@@ -16,6 +16,7 @@ export default function Game({
 }) {
   const [gameData, setGameData] = useState<null | GameState>(null);
   const listeningToLobby = useRef<string | null>(null);
+  const previousNotificationTimestamp = useRef<number>(0);
   useEffect(() => {
     if (listeningToLobby.current === lobbyId) {
       return;
@@ -29,21 +30,14 @@ export default function Game({
 
     onValue(lobbyRef, (snapshot) => {
       const data = snapshot.val();
-      console.log("New game state!", data);
-      setGameData((prevGameData) => {
-        const previousNotificationTimestamp =
-          (prevGameData &&
-            prevGameData.notification &&
-            prevGameData.notification.timestamp) ||
-          0;
+      setGameData(() => {
         const currentNotificationTimestamp =
           (data && data.notification && data.notification.timestamp) || 0;
 
-        const shouldRenderNotification =
-          previousNotificationTimestamp !== currentNotificationTimestamp;
-
-        if (shouldRenderNotification) {
-          console.log(`lets render notification : ${data.notification?.title}`);
+        if (
+          previousNotificationTimestamp.current !== currentNotificationTimestamp
+        ) {
+          previousNotificationTimestamp.current = data.notification.timestamp;
 
           notifications.show({
             title: data.notification?.title as string,
