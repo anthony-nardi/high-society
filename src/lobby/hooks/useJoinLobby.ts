@@ -13,42 +13,42 @@ const useJoinLobby = ({
   lobbyId: number | null;
   onAuthentication: (user: User) => void;
 }) => {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState<null | boolean>(true);
   const lobbyJoined = useRef<number | null>(null);
 
   useEffect(() => {
-    if (!lobbyId || lobbyJoined.current === lobbyId) return;
+    if (!lobbyId || lobbyJoined.current === lobbyId) {
+      setIsLoading(false);
+      return;
+    }
     setIsLoading(true);
     lobbyJoined.current = lobbyId;
 
     const auth = getAuth();
 
     auth.onAuthStateChanged((user) => {
-      setTimeout(() => {
-        console.log("user is logged in");
-        if (user && typeof user.email === "string") {
-          onAuthentication(user);
-          const functions = getFunctions();
-          const joinLobby = httpsCallable<
-            { email: string; lobbyUID: number },
-            HttpsCallableResult<object>
-          >(functions, "joinlobby");
+      if (user && typeof user.email === "string") {
+        onAuthentication(user);
+        const functions = getFunctions();
+        const joinLobby = httpsCallable<
+          { email: string; lobbyUID: number },
+          HttpsCallableResult<object>
+        >(functions, "joinlobby");
 
-          joinLobby({
-            email: user.email,
-            lobbyUID: lobbyId,
+        joinLobby({
+          email: user.email,
+          lobbyUID: lobbyId,
+        })
+          .catch((err) => {
+            console.log(err);
+            lobbyJoined.current = null;
           })
-            .catch((err) => {
-              console.log(err);
-              lobbyJoined.current = null;
-            })
-            .finally(() => {
-              setIsLoading(true);
-            });
-        } else {
-          setIsLoading(false);
-        }
-      }, 5000);
+          .finally(() => {
+            setIsLoading(false);
+          });
+      } else {
+        setIsLoading(false);
+      }
     });
   }, [lobbyId, onAuthentication]);
 

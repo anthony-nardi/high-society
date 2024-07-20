@@ -124,7 +124,10 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
           renderedPlayersEndGame.push(
             <Box mt="md">
               <b>{player.email} has won!</b>
-              <div>Cards in hand: {(player.moneyCards || []).join(", ")}</div>
+              <div>
+                Cards in hand: {(player.moneyCards || []).join(", ")} Total: $
+                {player.moneyLeft}
+              </div>
               <div>Status cards: {(player.statusCards || []).join(", ")}</div>
               <b>Final score: {player.finalScore}</b>
             </Box>
@@ -133,7 +136,10 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
           renderedPlayersEndGame.push(
             <Box mt="md">
               <b>{player.email}</b>
-              <div>Cards in hand: {(player.moneyCards || []).join(", ")}</div>
+              <div>
+                Cards in hand: {(player.moneyCards || []).join(", ")} Total: $
+                {player.moneyLeft}
+              </div>
               <div>Status cards: {(player.statusCards || []).join(", ")}</div>
               <b>Final score: {player.finalScore}</b>
             </Box>
@@ -151,7 +157,10 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
                 {player.email} has tied! Whoerver has the most money leftover
                 wins... (todo... figure this out)
               </b>
-              <div>Cards in hand: {(player.moneyCards || []).join(", ")}</div>
+              <div>
+                Cards in hand: {(player.moneyCards || []).join(", ")} Total: $
+                {player.moneyLeft}
+              </div>
               <div>Status cards: {(player.statusCards || []).join(", ")}</div>
               <b>Final score: {player.finalScore}</b>
             </>
@@ -160,7 +169,10 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
           renderedPlayersEndGame.push(
             <>
               <b>{player.email}</b>
-              <div>Cards in hand: {(player.moneyCards || []).join(", ")}</div>
+              <div>
+                Cards in hand: {(player.moneyCards || []).join(", ")} Total: $
+                {player.moneyLeft}
+              </div>
               <div>Status cards: {(player.statusCards || []).join(", ")}</div>
               <b>Final score: {player.finalScore}</b>
             </>

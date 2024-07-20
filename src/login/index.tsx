@@ -6,14 +6,16 @@ import {
   User,
 } from "firebase/auth";
 import { GoogleIcon } from "./GoogleIcon";
-import { Button, Center, Stack } from "@mantine/core";
+import { Button, Center, Loader, Stack } from "@mantine/core";
 
 export default function Login({
   onSignInSuccess,
   onSignInFailed,
+  isLoading,
 }: {
   onSignInSuccess: (user: User) => void;
   onSignInFailed: () => void;
+  isLoading: boolean;
 }) {
   useEffect(() => {
     const auth = getAuth();
@@ -47,6 +49,16 @@ export default function Login({
         console.log(error);
       });
   }, [onSignInFailed, onSignInSuccess]);
+
+  if (isLoading) {
+    return (
+      <Stack h={200} align="stretch" justify="space-around" gap="md">
+        <Center>
+          <Loader />
+        </Center>
+      </Stack>
+    );
+  }
 
   return (
     <Stack h={200} align="stretch" justify="space-around" gap="md">

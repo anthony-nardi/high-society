@@ -24,6 +24,7 @@ export default function PlayersList({
           styles={{
             root: rootStyle,
           }}
+          key={player.email}
         >
           <span>{player.email}</span>
           <Badge

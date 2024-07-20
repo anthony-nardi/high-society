@@ -24,14 +24,22 @@ export default function PlayerRoundState({
   const [stagedBid, setStagedBid] = useState<string[]>([]);
   const [actionsLoading, setActionsLoading] = useState<boolean>(false);
 
+  const currentTotalBid = useMemo(() => {
+    if (!player.currentBid) return 0;
+
+    return player.currentBid.reduce((sum, curr) => {
+      return Number(sum) + Number(curr);
+    }, 0);
+  }, [player.currentBid]);
+
   const isStagedBidHigherThanHighestBid = useMemo(() => {
     const stagedBidTotal = stagedBid.reduce(
       (sum, current) => Number(sum) + Number(current),
       0
     );
 
-    return stagedBidTotal > highestBidTotal;
-  }, [highestBidTotal, stagedBid]);
+    return stagedBidTotal + currentTotalBid > highestBidTotal;
+  }, [currentTotalBid, highestBidTotal, stagedBid]);
 
   const handlePassTurn = useCallback(async () => {
     setStagedBid([]);
@@ -131,7 +139,9 @@ export default function PlayerRoundState({
                     hidePickedOptions
                     label="Select the cards from your hand to bid"
                     clearable
-                    data={player.moneyCards}
+                    data={(player.moneyCards || []).sort(function (a, b) {
+                      return Number(a) - Number(b);
+                    })}
                     value={stagedBid}
                     onChange={setStagedBid}
                     comboboxProps={{

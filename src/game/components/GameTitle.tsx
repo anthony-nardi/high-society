@@ -20,7 +20,7 @@ export default function GameTitle() {
             stroke="#B4A166"
             strokeWidth=""
           >
-            <textPath href="#text-path" startOffset="50%" text-anchor="middle">
+            <textPath href="#text-path" startOffset="50%" textAnchor="middle">
               High Society
             </textPath>
             <animate

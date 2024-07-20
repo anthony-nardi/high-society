@@ -106,7 +106,7 @@ export default function Game({
   }, [gameData]);
 
   if (!gameData) {
-    return <>loading...</>;
+    return <>No game data...</>;
   }
 
   return (

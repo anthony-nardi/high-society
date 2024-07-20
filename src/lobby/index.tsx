@@ -4,7 +4,7 @@ import { getFunctions, httpsCallable } from "firebase/functions";
 import { User } from "firebase/auth";
 import { CreateLobbyResponse, LobbyData } from "./types";
 import PlayersList from "./components/PlayersList";
-import { Button, Center, Flex, Grid, LoadingOverlay } from "@mantine/core";
+import { Button, Center, Flex, Grid, Loader } from "@mantine/core";
 import ConnectedPlayersCount from "./components/ConnectedPlayersCount";
 import useJoinLobby from "./hooks/useJoinLobby";
 
@@ -14,6 +14,10 @@ export default function Lobby({ user }: { user: User | null }) {
   );
   const [lobbyData, setLobbyData] = useState<null | LobbyData>(null);
   const [currentUser, setCurrentUser] = useState<User | null>(user);
+  const [isFetchingLobbyData, setIsFetchingLobbyData] = useState<
+    null | boolean
+  >(null);
+  const [isReadying, setIsReadying] = useState<null | boolean>(null);
 
   const isCurrentUserReady = useMemo(() => {
     if (!currentUser || !lobbyData) return false;
@@ -39,7 +43,7 @@ export default function Lobby({ user }: { user: User | null }) {
 
   useEffect(() => {
     if (!lobbyId || typeof lobbyId !== "number") return;
-
+    setIsFetchingLobbyData(true);
     const db = getDatabase();
 
     const lobbyRef = ref(db, "lobbies/" + lobbyId);
@@ -47,6 +51,7 @@ export default function Lobby({ user }: { user: User | null }) {
     onValue(lobbyRef, (snapshot) => {
       const data = snapshot.val();
       setLobbyData(data);
+      setIsFetchingLobbyData(false);
     });
   }, [lobbyId]);
 
@@ -78,7 +83,7 @@ export default function Lobby({ user }: { user: User | null }) {
     if (!currentUser) {
       throw new Error("There is no current user.");
     }
-
+    setIsReadying(true);
     const functions = getFunctions();
 
     const readyUp = httpsCallable<{ email: string; lobbyUID: number }, void>(
@@ -94,6 +99,7 @@ export default function Lobby({ user }: { user: User | null }) {
       email: currentUser.email,
       lobbyUID: lobbyId,
     });
+    setIsReadying(false);
   }, [currentUser, lobbyId]);
 
   if (!lobbyId) {
@@ -104,11 +110,15 @@ export default function Lobby({ user }: { user: User | null }) {
     );
   }
 
-  if (isLoadingLobbyJoin) {
-    return <LoadingOverlay />;
+  if (isLoadingLobbyJoin || isFetchingLobbyData) {
+    return (
+      <Center>
+        <Loader />
+      </Center>
+    );
   }
 
-  if (!lobbyData || !lobbyData.players.length || !currentUser) {
+  if (!lobbyData || !lobbyData.players.length) {
     return <div>No data found for lobby</div>;
   }
 
@@ -127,7 +137,9 @@ export default function Lobby({ user }: { user: User | null }) {
                   players={(lobbyData && lobbyData.players) || []}
                 />
                 {!isCurrentUserReady && (
-                  <Button onClick={handleReadyUp}>Click here to ready!</Button>
+                  <Button onClick={handleReadyUp} loading={!!isReadying}>
+                    Click here to ready!
+                  </Button>
                 )}
               </Flex>
               <PlayersList players={lobbyData.players} />
