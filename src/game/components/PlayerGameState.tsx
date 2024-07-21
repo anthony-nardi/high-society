@@ -21,9 +21,9 @@ export default function PlayerGameState({ player }: { player: PlayerState }) {
   return (
     <>
       <div style={{ marginBottom: "12px" }}>
-        <b>{player.email}</b>
+        <b>{player.email.split("@")[0]}</b>
       </div>
-      <div>Money cards in hand: {player.moneyCards.length}</div>
+      <div>Money cards in hand: {(player.moneyCards || []).length}</div>
       <div>Status cards: {renderedStatusCards}</div>
     </>
   );

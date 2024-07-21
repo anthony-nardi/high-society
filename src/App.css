@@ -1,0 +1,17 @@
+.sparkling-border {
+  border: 4px solid transparent;
+  border-image: linear-gradient(45deg, #f3ec78, #af4261) 1;
+  animation: sparkle 2s linear infinite;
+}
+
+@keyframes sparkle {
+  0% {
+    border-image: linear-gradient(45deg, #f3ec78, #af4261) 1;
+  }
+  50% {
+    border-image: linear-gradient(45deg, #af4261, #f3ec78) 1;
+  }
+  100% {
+    border-image: linear-gradient(45deg, #f3ec78, #af4261) 1;
+  }
+}

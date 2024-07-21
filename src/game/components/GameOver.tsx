@@ -49,12 +49,12 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
 
       metadata[player.email] = {
         finalScore: score * multiplier,
-        moneyLeft: player.moneyCards.reduce(
+        moneyLeft: (player.moneyCards || []).reduce(
           (total, card) => Number(total) + Number(card),
           0
         ),
-        moneyCards: player.moneyCards,
-        statusCards: player.statusCards,
+        moneyCards: player.moneyCards || [],
+        statusCards: player.statusCards || [],
         email: player.email,
       };
     }
@@ -87,7 +87,7 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
   const winningPlayers = useMemo(() => {
     if (!mapOfPlayersToMetadata) return [];
 
-    let highScore;
+    let highScore: number | undefined;
     let playersWithHighScore: string[] = [];
 
     for (const metadata in mapOfPlayersToMetadata) {
@@ -110,6 +110,39 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
       }
     }
 
+    if (playersWithHighScore.length === 1) {
+      return playersWithHighScore;
+    }
+
+    // Player with most money left wins...
+
+    if (playersWithHighScore.length > 1) {
+      // Player with most money left wins...
+      playersWithHighScore = playersWithHighScore.filter((email) => {
+        mapOfPlayersToMetadata[email].finalScore === highScore;
+      });
+    }
+
+    if (playersWithHighScore.length === 1) {
+      return playersWithHighScore;
+    }
+
+    // if there is still a tie the player with the highest luxury card wins
+    if (playersWithHighScore.length > 1) {
+      let highestLuxuryCard = 10;
+      while (playersWithHighScore.length !== 1) {
+        playersWithHighScore = playersWithHighScore.filter((email) => {
+          return !!mapOfPlayersToMetadata[email].statusCards.find(
+            (card) => Number(card) === highestLuxuryCard
+          );
+        });
+
+        if (playersWithHighScore.length > 1) {
+          highestLuxuryCard--;
+        }
+      }
+    }
+
     return playersWithHighScore;
   }, [mapOfPlayersToMetadata, playersWithLeastMoneyRemaining]);
 
@@ -122,60 +155,23 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
         const player = mapOfPlayersToMetadata[playerEmail];
         if (isWinner) {
           renderedPlayersEndGame.push(
-            <Box mt="md">
+            <Box className="sparkling-border" p="xs">
               <b>{player.email} has won!</b>
-              <div>
-                Cards in hand: {(player.moneyCards || []).join(", ")} Total: $
-                {player.moneyLeft}
-              </div>
+              <div>Money left: ${player.moneyLeft}</div>
+              <div>Cards in hand: {(player.moneyCards || []).join(", ")}</div>
               <div>Status cards: {(player.statusCards || []).join(", ")}</div>
               <b>Final score: {player.finalScore}</b>
             </Box>
           );
         } else {
           renderedPlayersEndGame.push(
-            <Box mt="md">
+            <Box p="xs">
               <b>{player.email}</b>
-              <div>
-                Cards in hand: {(player.moneyCards || []).join(", ")} Total: $
-                {player.moneyLeft}
-              </div>
+              <div>Money left: ${player.moneyLeft}</div>
+              <div>Cards in hand: {(player.moneyCards || []).join(", ")}</div>
               <div>Status cards: {(player.statusCards || []).join(", ")}</div>
               <b>Final score: {player.finalScore}</b>
             </Box>
-          );
-        }
-      }
-    } else {
-      for (const playerEmail in mapOfPlayersToMetadata) {
-        const isWinner = winningPlayers[0] === playerEmail;
-        const player = mapOfPlayersToMetadata[playerEmail];
-        if (isWinner) {
-          renderedPlayersEndGame.push(
-            <>
-              <b>
-                {player.email} has tied! Whoerver has the most money leftover
-                wins... (todo... figure this out)
-              </b>
-              <div>
-                Cards in hand: {(player.moneyCards || []).join(", ")} Total: $
-                {player.moneyLeft}
-              </div>
-              <div>Status cards: {(player.statusCards || []).join(", ")}</div>
-              <b>Final score: {player.finalScore}</b>
-            </>
-          );
-        } else {
-          renderedPlayersEndGame.push(
-            <>
-              <b>{player.email}</b>
-              <div>
-                Cards in hand: {(player.moneyCards || []).join(", ")} Total: $
-                {player.moneyLeft}
-              </div>
-              <div>Status cards: {(player.statusCards || []).join(", ")}</div>
-              <b>Final score: {player.finalScore}</b>
-            </>
           );
         }
       }
@@ -186,7 +182,7 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
   return (
     <Center>
       <Flex direction="column">
-        <h1>Game Over</h1>
+        <h1 style={{ padding: "8px" }}>Game Over</h1>
         {renderedWinner}
       </Flex>
     </Center>

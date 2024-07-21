@@ -77,7 +77,7 @@ export default function Lobby({ user }: { user: User | null }) {
     );
   }
 
-  if (isJoiningLobby || isLoadingLobbyData) {
+  if (isJoiningLobby || isLoadingLobbyData || !!isCreatingLobby) {
     return (
       <Center>
         <Loader />
