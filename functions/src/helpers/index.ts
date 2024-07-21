@@ -293,7 +293,7 @@ export async function createGame(lobbyUID: string) {
         startAt: Date.now().toString(),
         status: "IN_PROGRESS",
         currentStatusCard: deck[0],
-        remainingCards: deck.length,
+        remainingCards: deck.length - 1,
       },
       private: {
         deck,
