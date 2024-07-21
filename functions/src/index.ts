@@ -7,7 +7,6 @@ import {
   awardPlayerWithCurrentStatusCard,
   createGame,
   getActivePlayer,
-  getActivePlayerIndex,
   getDoesBiddingRoundEndOnFirstPass,
   getEmailFromRequest,
   getGameState,
@@ -35,14 +34,12 @@ exports.bid = onCall(async (request) => {
   const { lobbyUID, bid } = request.data;
   const requestEmail = getEmailFromRequest(request);
   const gameState = await getGameState(lobbyUID);
-  const players = gameState.public.players;
 
   if (!isActivePlayerTakingAction(gameState, requestEmail)) {
     return;
   }
 
-  const indexOfCurrentPlayer = getActivePlayerIndex(gameState);
-  const activePlayer = players[indexOfCurrentPlayer];
+  const activePlayer = getActivePlayer(gameState);
 
   updatePlayerLastAction(activePlayer);
   updatePlayersBid(activePlayer, bid);
@@ -105,13 +102,18 @@ exports.passturn = onCall(async (request) => {
 
     revealNewStatusCard(gameState);
 
+    let message = "";
+
     if (isGameOver(gameState)) {
       gameState.public.status = "GAME_OVER";
+      const { currentStatusCard } = gameState.public;
+      message = `${currentStatusCard} was revealed. Game over.`;
     }
 
     const notification: Notification = {
       timestamp: Date.now(),
       title: `${requestEmail} passes and receives ${cardAwarded}.`,
+      message,
     };
 
     gameState.public.notification = notification;
@@ -156,8 +158,12 @@ exports.passturn = onCall(async (request) => {
 
     revealNewStatusCard(gameState);
 
+    let message = "";
+
     if (isGameOver(gameState)) {
       gameState.public.status = "GAME_OVER";
+      const { currentStatusCard } = gameState.public;
+      message = `${currentStatusCard} was revealed. Game over.`;
     }
 
     gameState.public.activePlayer = auctionWinner;
@@ -165,6 +171,7 @@ exports.passturn = onCall(async (request) => {
     const notification: Notification = {
       timestamp: Date.now(),
       title: `${auctionWinner} won ${cardAwarded} for a total of ${totalBid}.`,
+      message,
     };
 
     gameState.public.notification = notification;

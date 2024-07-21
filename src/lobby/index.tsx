@@ -8,11 +8,10 @@ import useLobbyData from "./hooks/useLobbyData";
 import usePopstate from "../hooks/usePopstate";
 import readyUp from "../client/readyUp";
 import createLobby from "../client/createLobby";
+import getLobbyIdFromURL from "../utils/getLobbyIdFromURL";
 
 export default function Lobby({ user }: { user: User | null }) {
-  const [lobbyId, setLobbyId] = useState<number | null>(
-    Number(window.location.hash.replace(/\D/g, ""))
-  );
+  const [lobbyId, setLobbyId] = useState<number | null>(getLobbyIdFromURL());
   const [currentUser, setCurrentUser] = useState<User | null>(user);
 
   const [isReadying, setIsReadying] = useState<null | boolean>(null);

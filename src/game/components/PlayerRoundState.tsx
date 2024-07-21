@@ -135,7 +135,6 @@ export default function PlayerRoundState({
                 <Box maw="200px">
                   <MultiSelect
                     size="sm"
-                    inputSize="sm"
                     hidePickedOptions
                     label="Select the cards from your hand to bid"
                     clearable

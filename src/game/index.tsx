@@ -41,7 +41,7 @@ export default function Game({
 
           notifications.show({
             title: data.notification?.title as string,
-            message: " ",
+            message: (data.notification?.message || "") as string,
             autoClose: 6000,
             withBorder: true,
             style: { backgroundColor: "#42384B" },

@@ -10,12 +10,12 @@ import GameOver from "./game/components/GameOver";
 import GameTitle from "./game/components/GameTitle";
 import useGameStatus from "./game/hooks/useGameStatus";
 import usePopstate from "./hooks/usePopstate";
+import getLobbyIdFromURL from "./utils/getLobbyIdFromURL";
+import { Center, Loader } from "@mantine/core";
 initializeFirebase();
 
 function App() {
-  const [lobbyId, setLobbyId] = useState<number | null>(
-    Number(window.location.hash.replace(/\D/g, ""))
-  );
+  const [lobbyId, setLobbyId] = useState<number | null>(getLobbyIdFromURL());
   const [isSignedIn, setIsSignedIn] = useState<boolean | null>(null);
   const [user, setUser] = useState<User | null>(null);
 
@@ -85,7 +85,11 @@ function App() {
       {isGameInProgress && (
         <Game lobbyId={lobbyId?.toString() as string} user={user as User} />
       )}
-      {!isInLobby && isGameStatusLoading && <div>isGameStatusLoading...</div>}
+      {!isInLobby && isGameStatusLoading && (
+        <Center>
+          <Loader />
+        </Center>
+      )}
       {isGameOver && <GameOver lobbyId={lobbyId?.toString() as string} />}
     </div>
   );
