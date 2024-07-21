@@ -155,12 +155,20 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
         const player = mapOfPlayersToMetadata[playerEmail];
         if (isWinner) {
           renderedPlayersEndGame.push(
-            <Box className="sparkling-border" p="xs">
-              <b>{player.email} has won!</b>
-              <div>Money left: ${player.moneyLeft}</div>
-              <div>Cards in hand: {(player.moneyCards || []).join(", ")}</div>
-              <div>Status cards: {(player.statusCards || []).join(", ")}</div>
-              <b>Final score: {player.finalScore}</b>
+            <Box>
+              <div className="animated-border-box">
+                <Box p="xs">
+                  <b>{player.email} has won!</b>
+                  <div>Money left: ${player.moneyLeft}</div>
+                  <div>
+                    Cards in hand: {(player.moneyCards || []).join(", ")}
+                  </div>
+                  <div>
+                    Status cards: {(player.statusCards || []).join(", ")}
+                  </div>
+                  <b>Final score: {player.finalScore}</b>
+                </Box>
+              </div>
             </Box>
           );
         } else {
