@@ -29,8 +29,35 @@ import {
   verifyRequestAuthentication,
 } from "./helpers";
 import { Notification } from "./types";
+import { getVertexAI, getGenerativeModel } from "firebase/vertexai-preview";
+import { VertexAI } from "@google-cloud/vertexai";
+
+const project = "high-society-c4ff4";
+const location = "us-central1";
+const textModel = "gemini-1.5-flash"; // "gemini-1.0-pro";
+/*
+https://ai.google.dev/api?lang=node
+https://cloud.google.com/vertex-ai/generative-ai/docs/reference/nodejs/latest
+
+*/
+const vertexAI = new VertexAI({ project: project, location: location });
+
+console.log(vertexAI);
 
 admin.initializeApp();
+// Instantiate Gemini models
+const generativeModel = vertexAI.getGenerativeModel({
+  model: textModel,
+});
+
+async function generateContent() {
+  const request = {
+    contents: [{ role: "user", parts: [{ text: "How are you doing today?" }] }],
+  };
+  const result = await generativeModel.generateContent(request);
+  const response = result.response;
+  console.log("Response: ", JSON.stringify(response));
+}
 
 exports.bid = onCall(
   async (
