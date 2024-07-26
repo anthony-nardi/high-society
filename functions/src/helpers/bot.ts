@@ -111,10 +111,12 @@ function extractBidFromResponse2(str: string) {
   const match = str.match(pattern);
   let numbers;
   if (match) {
+    console.log(match);
     // Extract the numbers from the capturing groups
     numbers = match.slice(1); // Skip the full match
+  } else {
+    console.log(`no match for ${str}`);
   }
-
   return numbers;
 }
 
@@ -124,9 +126,12 @@ function extractBidFromResponse3(str: string) {
   const match = str.match(pattern);
 
   if (match) {
+    console.log(match);
     // Extract the numbers from the capturing group
     const numbersString = match[1]; // Get the matched group
     numbers = numbersString.split('","').map((s) => s.replace(/"/g, ""));
+  } else {
+    console.log(`no match for ${str}`);
   }
 
   return numbers;
@@ -139,9 +144,12 @@ function extractBidFromResponse4(str: string) {
   const match = str.match(pattern);
 
   if (match) {
+    console.log(match);
     // Extract the numbers from the capturing groups
     const numbers = match[0].match(/\d+/g);
     return numbers;
+  } else {
+    console.log(`no match for ${str}`);
   }
 
   return undefined;
@@ -181,10 +189,10 @@ export async function generateContent(gameState: GameState) {
 
     console.log("Response:", "\n", "\n", text, "\n", "\n");
 
-    const attempt1Parse = extractBidFromResponse(text);
-    const attempt2Parse = extractBidFromResponse2(text);
-    const attempt3Parse = extractBidFromResponse3(text);
     const attempt4Parse = extractBidFromResponse4(text);
+    const attempt3Parse = extractBidFromResponse3(text);
+    const attempt2Parse = extractBidFromResponse2(text);
+    const attempt1Parse = extractBidFromResponse(text);
 
     console.log("Attempt 1: ", attempt1Parse);
     console.log("Attempt 2: ", attempt2Parse);

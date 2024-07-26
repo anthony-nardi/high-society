@@ -258,6 +258,7 @@ export async function createGame(lobbyUID: string) {
       statusCards: [],
       currentBid: [],
       hasPassed: false,
+      isBot: !!player.isBot,
     };
   });
 

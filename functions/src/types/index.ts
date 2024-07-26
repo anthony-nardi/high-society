@@ -13,6 +13,7 @@ export type PlayerState = {
   statusCards?: string[]; // Realtime Database return nothing if array is empty
   currentBid?: string[]; // Realtime Database return nothing if array is empty
   hasPassed: boolean;
+  isBot: boolean;
 };
 
 export type PublicGameState = {

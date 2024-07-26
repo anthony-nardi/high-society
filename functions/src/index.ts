@@ -250,6 +250,7 @@ exports.createlobby = onCall(async (request) => {
           email: request?.auth?.token.email || request?.auth?.token.uid,
           ready: false,
           joinedAt: Date.now().toString(),
+          isBot: false,
         },
       ],
     })
@@ -310,6 +311,64 @@ exports.joinlobby = onCall(
       email,
       ready: false,
       joinedAt: Date.now().toString(),
+      isBot: false,
+    });
+
+    getDatabase()
+      .ref(`lobbies/${lobbyUID}/players`)
+      .set(playersSnapshotValue)
+      .then(() => {
+        logger.info("Lobby joined.");
+        return { lobbyUID };
+      })
+      .catch((error: Error) => {
+        // Re-throwing the error as an HttpsError so that the client gets
+        // the error details.
+        throw new HttpsError("unknown", error.message, error);
+      });
+  }
+);
+
+exports.addbot = onCall(
+  async (
+    request: CallableRequest<{
+      lobbyUID: string;
+    }>
+  ) => {
+    // Checking that the user is authenticated.
+    if (!request.auth) {
+      // Throwing an HttpsError so that the client gets the error details.
+      throw new HttpsError(
+        "failed-precondition",
+        "The function must be " + "called while authenticated."
+      );
+    }
+
+    const { lobbyUID } = request.data;
+
+    // Add new player to the lobby if they don't already exist
+
+    const players = await getDatabase()
+      .ref(`lobbies/${lobbyUID}/players`)
+      .get();
+
+    const playersSnapshotValue = players.val();
+
+    if (playersSnapshotValue.length >= 5) {
+      return;
+    }
+
+    const gameState = await getGameState(lobbyUID);
+
+    if (gameState) {
+      return;
+    }
+
+    playersSnapshotValue.push({
+      email: `Bot #${playersSnapshotValue.length}`,
+      ready: true,
+      joinedAt: Date.now().toString(),
+      isBot: true,
     });
 
     getDatabase()
