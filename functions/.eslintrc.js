@@ -35,5 +35,6 @@ module.exports = {
     "require-jsdoc": 0,
     "@typescript-eslint/no-explicit-any": "off",
     "import/export": 0,
+    "max-len": ["error", { "code": 320 }],
   },
 };

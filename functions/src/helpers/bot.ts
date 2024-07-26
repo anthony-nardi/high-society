@@ -26,8 +26,7 @@ const textModel = "gemini-1.5-flash"; // "gemini-1.0-pro";
 /*
   https://ai.google.dev/api?lang=node
   https://cloud.google.com/vertex-ai/generative-ai/docs/reference/nodejs/latest
-  
-  */
+*/
 
 const GAME_RULES_AND_STRATEGIES_PROMPT = `
 ## The Card Game:
@@ -87,18 +86,21 @@ function buildGameStatePrompt(gameState: GameState) {
 
   let prompt = GAME_RULES_AND_STRATEGIES_PROMPT;
 
-  prompt += `Make the optimal move given the following game state.\n`;
+  prompt += "Make the optimal move given the following game state.\n";
   prompt += `Total players: ${gameState.public.players.length}`;
 
-  prompt += `You have 2 options. Bid or pass.\n`;
+  prompt += "You have 2 options. Bid or pass.\n";
   prompt += `If bidding, only return an array of money cards to add to your current bid of ${activePlayersCurrentBid}. Your total bit must be higher than ${currentHighBid}\n`;
-  prompt += `When bidding, consider bidding using the high denominations of money cards first, as the small denominations `;
-  prompt += `are useful to counter bid in small increments. For example, if the 10 luxury card is `;
-  prompt += `the current auctioned card, then start your bid at 25.`;
-  prompt += `If passing, only return an array of the word "Pass"\n`;
+  prompt +=
+    "When bidding, consider bidding using the high denominations of money cards first, as the small denominations ";
+  prompt +=
+    "are useful to counter bid in small increments. For example, if the 10 luxury card is ";
+  prompt += "the current auctioned card, then start your bid at 25.";
+  prompt += "If passing, only return an array of the word 'Pass'\n";
   //   prompt += `Include a very brief explanation of your decision.\n`;
 
-  prompt += `Your response absolutely must be in the following format: "[money_card_1, money_card_2, ...]" or "['pass']"`;
+  prompt +=
+    "Your response absolutely must be in the following format: '[money_card_1, money_card_2, ...]' or '[\"pass\"]'";
 
   let gameStatePromptAddition = "";
 
@@ -107,17 +109,19 @@ function buildGameStatePrompt(gameState: GameState) {
   gameStatePromptAddition += `Your remaining money: ${JSON.stringify(
     activePlayersRemainingMoney
   )}.\n`;
-  gameStatePromptAddition += `Never spend all your money cards.\n`;
+  gameStatePromptAddition += "Never spend all your money cards.\n";
   if (activePlayersCurrentWonCards.length) {
     gameStatePromptAddition += `Your current held status cards: ${JSON.stringify(
       activePlayersCurrentWonCards
     )}.\n`;
   } else {
-    gameStatePromptAddition += `You do not have any status cards.\n`;
+    gameStatePromptAddition += "You do not have any status cards.\n";
   }
 
   if (isMisfortuneCard) {
-    gameStatePromptAddition += `The current card for auction is a Misfortune Card. It is wise to bid to avoid taking the card because the first player to pass will receive it. Only pass if you can afford losing your bid. Consider that if other plays have bid they will lose their bid if you pass. So that means if a player hasn't yet placed a bid and you pass, they didn't lose anything. Don't overbid to avoid taking the card.`;
+    gameStatePromptAddition +=
+      // eslint-disable-next-line max-len
+      "The current card for auction is a Misfortune Card. It is wise to bid to avoid taking the card because the first player to pass will receive it. Only pass if you can afford losing your bid. Consider that if other plays have bid they will lose their bid if you pass. So that means if a player hasn't yet placed a bid and you pass, they didn't lose anything. Don't overbid to avoid taking the card.";
   }
 
   const entirePrompt = prompt + gameStatePromptAddition;
@@ -150,6 +154,8 @@ function extractBidFromResponse(str: string) {
 
 function extractBidFromResponse2(str: string) {
   // Pattern to match only the numbers within the square brackets
+
+  // eslint-disable-next-line no-useless-escape
   const pattern = /\[\"(\d+)\",\s*\"(\d+)\"\]/;
 
   const match = str.match(pattern);
@@ -163,6 +169,7 @@ function extractBidFromResponse2(str: string) {
 }
 
 function extractBidFromResponse3(str: string) {
+  // eslint-disable-next-line no-useless-escape
   const pattern = /\[(\"(?:\d+\"(?:,\s*\")?)*)\]/;
   let numbers;
   const match = str.match(pattern);
@@ -171,6 +178,7 @@ function extractBidFromResponse3(str: string) {
     console.log(match);
     // Extract the numbers from the capturing group
     const numbersString = match[1]; // Get the matched group
+    // eslint-disable-next-line quotes
     numbers = numbersString.split('","').map((s) => s.replace(/"/g, ""));
   }
 
@@ -194,6 +202,7 @@ function extractBidFromResponse4(str: string) {
 }
 
 function extractPassFromResponse(str: string) {
+  // eslint-disable-next-line no-useless-escape
   const regex = /\[\"(Pass)\"\]/g; // Matches "Pass" within double quotes inside square brackets
   const matches = str.match(regex);
 
