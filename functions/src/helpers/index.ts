@@ -345,3 +345,61 @@ Manage Misfortune Cards: Have enough money to avoid taking Misfortune cards.
 Analyze Luxury Cards: Pay attention to the Luxury cards already purchased.
 Remember: The game can end quickly, so be prepared to react to the red-edged cards.
 */
+
+/*
+## The Card Game:
+
+**Goal:** Maximize your score at the end of the game.
+
+**Setup:**
+
+* **Deck:**  The deck contains 16 cards:
+    * 10 Luxury Cards: Values 1 through 10
+    * 3 Recognition Cards: 2x (Doubles your score)
+    * 3 Misfortune Cards: - (Thief), 1/2 (Mansion Fire), -5 (Scandal) 
+* **Money:** Each player starts with 11 money cards: 1, 2, 3, 4, 6, 8, 10, 12, 15, 20, 25
+
+**Gameplay:**
+
+1. **Bidding:** Players take turns bidding on cards, using their money cards. **Players can use multiple money cards in a single turn to increase their bid.**  The highest bidder wins the card. 
+2. **Winning a Card:**  The winning player removes their bid from the game and adds the card to their hand.
+3. **Misfortune Cards:**  Players bid to *avoid* taking Misfortune cards. The first player to pass on a Misfortune card takes the card and loses their bid.
+4. **Game End:** The game ends when the 4th red-edged card (2x Recognition, Mansion Fire) is revealed. Any remaining cards are not used.
+
+**Scoring:**
+
+1. **Base Score:** Sum the values of all your Luxury cards.
+2. **Thief Penalty:**  Subtract 5 points if you hold the "-" (Thief) card.
+3. **Recognition Bonus:** Multiply your score by 2 for each "2x" (Recognition) card you hold. 
+4. **Mansion Fire Penalty:** Halve your score if you hold the "1/2" (Mansion Fire) card.
+
+**Winning:** The player with the highest final score wins.
+
+**Strategies:**
+
+* **Luxury Card Value:** Consider using larger denominations for high-value Luxury cards, aiming for the most efficient use of your money. 
+* **Recognition Card Priority:** Prioritize acquiring at least one Recognition card (2x) for a significant score boost.
+* **Misfortune Card Management:**  Avoid taking Misfortune cards if possible, especially the "Scandal" (-5).
+* **Money Management:**  Preserve smaller denominations for flexibility and future bids, but don't be afraid to use larger denominations when necessary for strategic advantage.
+* **Adaptability:** Analyze the bidding patterns of other players and adjust your strategy accordingly.
+
+**Decision Scenario:**
+
+* **Current Card:** "8" (Luxury Card)
+* **Player Hand:**  [1, 2, 3, 4, 6, 8, 10, 12, 15, 20, 25]
+* **Opponent Actions:** [Player 2 bid 6]
+
+**Action:** 
+* **"Bid X":** (where X is the bid amount) 
+* **"Pass":**  (Do not bid)
+
+**Reasoning:** 
+* Explain your decision-making process. 
+* What are the potential risks and rewards of each action?
+
+**Example Reasoning:**
+
+* "I would bid 8 using my 8 card. This secures the valuable '8' Luxury card and keeps my larger denominations for future bids. Using the 8 card directly is more efficient and preserves more flexibility for later in the game."
+
+**Note:** Your responses should reflect a deep understanding of the game rules, the scoring system, and the strategies involved. Make strategic decisions that are in the best interest of maximizing your score.
+*/
