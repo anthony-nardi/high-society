@@ -92,6 +92,9 @@ function buildGameStatePrompt(gameState: GameState) {
 
   prompt += `You have 2 options. Bid or pass.\n`;
   prompt += `If bidding, only return an array of money cards to add to your current bid of ${activePlayersCurrentBid}. Your total bit must be higher than ${currentHighBid}\n`;
+  prompt += `When bidding, consider bidding using the high denominations of money cards first, as the small denominations `;
+  prompt += `are useful to counter bid in small increments. For example, if the 10 luxury card is `;
+  prompt += `the current auctioned card, then start your bid at 25.`;
   prompt += `If passing, only return an array of the word "Pass"\n`;
   //   prompt += `Include a very brief explanation of your decision.\n`;
 

@@ -19,6 +19,14 @@ export default function Lobby({ user }: { user: User | null }) {
   const [isCreatingLobby, setIsCreatingLobby] = useState<null | boolean>(null);
   const [isAddingBot, setIsAddingBot] = useState<null | boolean>(null);
 
+  const showBotButton = useMemo(() => {
+    try {
+      return !!window.localStorage["high-society:bots"];
+    } catch (e) {
+      console.log(e);
+    }
+  }, []);
+
   const handleURLChange = useCallback(() => {
     const lobbyUID = window.location.hash.replace(/\D/g, "");
     setLobbyId(Number(lobbyUID));
@@ -127,13 +135,15 @@ export default function Lobby({ user }: { user: User | null }) {
                   Click here to ready!
                 </Button>
               )}
-              <Button
-                onClick={handleAddBot}
-                loading={!!isAddingBot}
-                disabled={!!isAddingBot}
-              >
-                Add bot
-              </Button>
+              {showBotButton && (
+                <Button
+                  onClick={handleAddBot}
+                  loading={!!isAddingBot}
+                  disabled={!!isAddingBot}
+                >
+                  Add bot
+                </Button>
+              )}
             </Flex>
             <PlayersList players={lobbyData.players} />
           </Flex>
