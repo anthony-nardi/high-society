@@ -1,6 +1,24 @@
 import { VertexAI } from "@google-cloud/vertexai";
-import { GameState } from "../types";
-import { getActivePlayer, getBidValue, getHighestCurrentBid } from ".";
+import { GameState, Notification } from "../types";
+import {
+  awardPlayerWithCurrentStatusCard,
+  getActivePlayer,
+  getBidValue,
+  getDoesBiddingRoundEndOnFirstPass,
+  getHighestCurrentBid,
+  getPlayersActivelyBidding,
+  giveCurrentStatusCardToPlayer,
+  isGameOver,
+  maybeUseMinusCard,
+  returnPlayersBidToHand,
+  revealNewStatusCard,
+  setActivePlayerPass,
+  updateGameState,
+  updateNextActivePlayer,
+  updatePlayerLastAction,
+  updatePlayersBid,
+  wait,
+} from ".";
 
 const project = "high-society-c4ff4";
 const location = "us-central1";
@@ -69,27 +87,50 @@ function buildGameStatePrompt(gameState: GameState) {
 
   let prompt = GAME_RULES_AND_STRATEGIES_PROMPT;
 
-  prompt += `Make the optimal move given the following game state. Your response should include an array of money cards to bid to make your current bid greater than the current highest bid. Or return an array of the word "Pass". Include a very brief explanation of your decision.\n`;
+  prompt += `Make the optimal move given the following game state.\n`;
+  prompt += `Total players: ${gameState.public.players.length}`;
 
-  prompt += `The current card up for auction is ${currentAuctionedCard}.\n`;
-  prompt += `The current highest bid is ${currentHighBid}.\n`;
-  prompt += `Your current bid is ${JSON.stringify(activePlayersCurrentBid)}.\n`;
-  prompt += `Your remaining money is ${JSON.stringify(
+  prompt += `You have 2 options. Bid or pass.\n`;
+  prompt += `If bidding, only return an array of money cards to add to your current bid of ${activePlayersCurrentBid}. Your total bit must be higher than ${currentHighBid}\n`;
+  prompt += `If passing, only return an array of the word "Pass"\n`;
+  //   prompt += `Include a very brief explanation of your decision.\n`;
+
+  prompt += `Your response absolutely must be in the following format: "[money_card_1, money_card_2, ...]" or "['pass']"`;
+
+  let gameStatePromptAddition = "";
+
+  gameStatePromptAddition += `Current card for auction: ${currentAuctionedCard}\n`;
+  gameStatePromptAddition += `Current highest bid: ${currentHighBid}.\n`;
+  gameStatePromptAddition += `Your remaining money: ${JSON.stringify(
     activePlayersRemainingMoney
   )}.\n`;
+  gameStatePromptAddition += `Never spend all your money cards.\n`;
   if (activePlayersCurrentWonCards.length) {
-    prompt += `Your current held status cards are ${JSON.stringify(
+    gameStatePromptAddition += `Your current held status cards: ${JSON.stringify(
       activePlayersCurrentWonCards
     )}.\n`;
   } else {
-    prompt += `You do not have any status cards.\n`;
+    gameStatePromptAddition += `You do not have any status cards.\n`;
   }
 
   if (isMisfortuneCard) {
-    prompt += `The current card for auction is a Misfortune Card. It is wise to bid to avoid taking the card because the first player to pass will receive it. Only pass if you can afford losing your bid. Consider that if other plays have bid they will lose their bid if you pass. So that means if a player hasn't yet placed a bid and you pass, they didn't lose anything. Don't overbid to avoid taking the card.`;
+    gameStatePromptAddition += `The current card for auction is a Misfortune Card. It is wise to bid to avoid taking the card because the first player to pass will receive it. Only pass if you can afford losing your bid. Consider that if other plays have bid they will lose their bid if you pass. So that means if a player hasn't yet placed a bid and you pass, they didn't lose anything. Don't overbid to avoid taking the card.`;
   }
 
-  return prompt;
+  const entirePrompt = prompt + gameStatePromptAddition;
+
+  console.log(
+    "Start Prompt:",
+    "\n",
+    "\n",
+    entirePrompt,
+    "\n",
+    "\n",
+    "End Prompt",
+    "\n",
+    "\n"
+  );
+  return entirePrompt;
 }
 
 function extractBidFromResponse(str: string) {
@@ -114,8 +155,6 @@ function extractBidFromResponse2(str: string) {
     console.log(match);
     // Extract the numbers from the capturing groups
     numbers = match.slice(1); // Skip the full match
-  } else {
-    console.log(`no match for ${str}`);
   }
   return numbers;
 }
@@ -130,8 +169,6 @@ function extractBidFromResponse3(str: string) {
     // Extract the numbers from the capturing group
     const numbersString = match[1]; // Get the matched group
     numbers = numbersString.split('","').map((s) => s.replace(/"/g, ""));
-  } else {
-    console.log(`no match for ${str}`);
   }
 
   return numbers;
@@ -148,8 +185,20 @@ function extractBidFromResponse4(str: string) {
     // Extract the numbers from the capturing groups
     const numbers = match[0].match(/\d+/g);
     return numbers;
+  }
+
+  return undefined;
+}
+
+function extractPassFromResponse(str: string) {
+  const regex = /\[\"(Pass)\"\]/g; // Matches "Pass" within double quotes inside square brackets
+  const matches = str.match(regex);
+
+  if (matches) {
+    const parsedArray = matches.map((match) => match.slice(2, -2)); // Extracts "Pass" from the match
+    return parsedArray;
   } else {
-    console.log(`no match for ${str}`);
+    console.log("No match found");
   }
 
   return undefined;
@@ -158,17 +207,6 @@ function extractBidFromResponse4(str: string) {
 export async function generateContent(gameState: GameState) {
   const prompt = buildGameStatePrompt(gameState);
 
-  console.log(
-    "Start Prompt:",
-    "\n",
-    "\n",
-    prompt,
-    "\n",
-    "\n",
-    "End Prompt",
-    "\n",
-    "\n"
-  );
   const request = {
     contents: [
       {
@@ -194,11 +232,16 @@ export async function generateContent(gameState: GameState) {
     const attempt2Parse = extractBidFromResponse2(text);
     const attempt1Parse = extractBidFromResponse(text);
 
+    const didPass = extractPassFromResponse(text);
+
     console.log("Attempt 1: ", attempt1Parse);
     console.log("Attempt 2: ", attempt2Parse);
     console.log("Attempt 3: ", attempt3Parse);
     console.log("Attempt 4: ", attempt4Parse);
 
+    if (didPass && didPass[0] && didPass[0].toLocaleLowerCase() === "pass") {
+      return [];
+    }
     if (attempt4Parse) {
       return attempt4Parse;
     }
@@ -234,8 +277,10 @@ export function isValidSuggestedBid(
     return false;
   }
 
+  const moneyCards = activePlayer.moneyCards || [];
+
   for (const card of suggestedAction) {
-    if (!activePlayer.moneyCards.includes(card)) {
+    if (!moneyCards.includes(card)) {
       console.log(
         `${card} is not in ${JSON.stringify(activePlayer.moneyCards)}`
       );
@@ -244,4 +289,182 @@ export function isValidSuggestedBid(
   }
 
   return true;
+}
+
+export async function maybeTakeBotTurn(gameState: GameState) {
+  const activePlayer = getActivePlayer(gameState);
+
+  if (!activePlayer.isBot) {
+    return false;
+  }
+
+  const currentTimestamp = Date.now();
+
+  let suggestedAction: string[] = [];
+
+  try {
+    suggestedAction = await generateContent(gameState);
+  } catch (e) {
+    console.log(e);
+  }
+
+  const timeElapsed = Date.now() - currentTimestamp;
+
+  if (timeElapsed < 8000) {
+    await wait(8000 - timeElapsed);
+  }
+
+  if (suggestedAction.length) {
+    const isValidAction = isValidSuggestedBid(gameState, suggestedAction);
+    if (!isValidAction) {
+      suggestedAction = [];
+    }
+  }
+
+  if (suggestedAction.length) {
+    updatePlayerLastAction(activePlayer);
+    updatePlayersBid(activePlayer, suggestedAction);
+    updateNextActivePlayer(gameState);
+
+    const totalBid = suggestedAction.reduce(
+      (sum: number, current) => Number(sum) + Number(current),
+      0
+    );
+
+    const notification: Notification = {
+      timestamp: Date.now(),
+      title: `${activePlayer.email} has highest bid of ${totalBid}.`,
+    };
+
+    gameState.public.notification = notification;
+
+    await updateGameState(
+      gameState,
+      `Player ${activePlayer.email} bid ${suggestedAction.join(",")}`
+    );
+
+    return true;
+  } else {
+    const doesBiddingRoundEndOnFirstPass =
+      getDoesBiddingRoundEndOnFirstPass(gameState);
+
+    if (doesBiddingRoundEndOnFirstPass) {
+      // The active player is the one who passed.
+
+      // Award the player who passed the currentStatusCard
+      // The player who passed current bid is returned to their moneyCards
+      // Reset all players current bids
+      // Flip a new card from the deck
+
+      const cardAwarded = gameState.public.currentStatusCard;
+      const players = gameState.public.players;
+
+      players.forEach((player) => {
+        if (player.email === activePlayer.email) {
+          updatePlayerLastAction(player);
+          giveCurrentStatusCardToPlayer(player, gameState);
+          returnPlayersBidToHand(player);
+          maybeUseMinusCard(player, gameState);
+        } else {
+          player.currentBid = [];
+        }
+      });
+
+      revealNewStatusCard(gameState);
+
+      let message = "";
+
+      if (isGameOver(gameState)) {
+        gameState.public.status = "GAME_OVER";
+        const { currentStatusCard } = gameState.public;
+        message = `${currentStatusCard} was revealed. Game over.`;
+      }
+
+      const notification: Notification = {
+        timestamp: Date.now(),
+        title: `${activePlayer.email} passes and receives ${cardAwarded}.`,
+        message,
+      };
+
+      gameState.public.notification = notification;
+
+      return updateGameState(
+        gameState,
+        `${activePlayer.email} is the first to pass and receives ${cardAwarded}.`
+      );
+    }
+
+    updatePlayerLastAction(activePlayer);
+    setActivePlayerPass(gameState);
+    returnPlayersBidToHand(activePlayer);
+
+    const playersWithActiveBids = getPlayersActivelyBidding(gameState);
+
+    if (playersWithActiveBids === 1) {
+      // Award the player with the only remaining bid the currentStatusCard
+      // All players who passed return their currentBid to their moneyCard
+      // Set all players hasPassed flags to false
+      // Flip a new card from the deck
+
+      let auctionWinner = "";
+      let totalBid = 0;
+      const cardAwarded = gameState.public.currentStatusCard;
+
+      const players = gameState.public.players;
+
+      players.forEach((player) => {
+        if (player.hasPassed === false) {
+          totalBid = (player.currentBid || []).reduce(
+            (sum: number, current: string) => Number(sum) + Number(current),
+            0
+          );
+
+          awardPlayerWithCurrentStatusCard(player, gameState);
+          auctionWinner = player.email;
+        }
+
+        player.hasPassed = false;
+      });
+
+      revealNewStatusCard(gameState);
+
+      let message = "";
+
+      if (isGameOver(gameState)) {
+        gameState.public.status = "GAME_OVER";
+        const { currentStatusCard } = gameState.public;
+        message = `${currentStatusCard} was revealed. Game over.`;
+      }
+
+      gameState.public.activePlayer = auctionWinner;
+
+      const notification: Notification = {
+        timestamp: Date.now(),
+        title: `${auctionWinner} won ${cardAwarded} for a total of ${totalBid}.`,
+        message,
+      };
+
+      gameState.public.notification = notification;
+
+      return updateGameState(gameState, `Player ${auctionWinner} won auction.`);
+    } else {
+      // Update the next player
+      // Player who passed has their bid returned to their hand
+      updateNextActivePlayer(gameState);
+
+      const notification: Notification = {
+        timestamp: Date.now(),
+        title: `${activePlayer.email} passed.`,
+      };
+
+      gameState.public.notification = notification;
+
+      await updateGameState(gameState, `${activePlayer.email} has passed.`);
+      return true;
+    }
+  }
+}
+
+export function isActivePlayerBot(gameState: GameState) {
+  return getActivePlayer(gameState).isBot;
 }

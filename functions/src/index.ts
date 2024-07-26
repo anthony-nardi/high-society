@@ -26,10 +26,9 @@ import {
   updatePlayerLastAction,
   updatePlayersBid,
   verifyRequestAuthentication,
-  wait,
 } from "./helpers";
 import { Notification } from "./types";
-import { generateContent, isValidSuggestedBid } from "./helpers/bot";
+import { isActivePlayerBot, maybeTakeBotTurn } from "./helpers/bot";
 
 admin.initializeApp();
 
@@ -50,30 +49,6 @@ exports.bid = onCall(
       return;
     }
 
-    const currentTimestamp = Date.now();
-
-    try {
-      const suggestedAction = await generateContent(gameState);
-
-      if (suggestedAction && suggestedAction.length) {
-        const isValidAction = isValidSuggestedBid(gameState, suggestedAction);
-        console.log(`isValidAction: ${isValidAction}`);
-      } else {
-        // We should simply pass since that is always a valid action but
-        // it might not be optimal.
-        // Later we can implement some logic to guess... but too lazy
-        console.log("passing");
-      }
-    } catch (e) {
-      console.log(e);
-    }
-
-    const timeElapsed = Date.now() - currentTimestamp;
-
-    if (timeElapsed < 6000) {
-      await wait(6000 - timeElapsed);
-    }
-
     const activePlayer = getActivePlayer(gameState);
 
     updatePlayerLastAction(activePlayer);
@@ -92,10 +67,30 @@ exports.bid = onCall(
 
     gameState.public.notification = notification;
 
-    return updateGameState(
+    await updateGameState(
       gameState,
       `Player ${requestEmail} bid ${bid.join(",")}`
     );
+
+    // Theoretically a bot may be the first to make
+    // a move if there are 4 bots and 1 player.
+    // If a bot passes on a negative card it goes again.
+    // If a bot wins an auction, it goes again.
+    // Not gonna bother figuring out the actual highest
+    // bot move streak so lets settle for something.
+    let attemptsToLetBotMakeMove = 30;
+
+    while (
+      !isGameOver(gameState) &&
+      isActivePlayerBot(gameState) &&
+      attemptsToLetBotMakeMove > 0
+    ) {
+      attemptsToLetBotMakeMove--;
+
+      await maybeTakeBotTurn(gameState);
+    }
+
+    return {};
   }
 );
 
@@ -159,10 +154,29 @@ exports.passturn = onCall(
 
       gameState.public.notification = notification;
 
-      return updateGameState(
+      await updateGameState(
         gameState,
         `${requestEmail} is the first to pass and receives ${cardAwarded}.`
       );
+
+      // Theoretically a bot may be the first to make
+      // a move if there are 4 bots and 1 player.
+      // If a bot passes on a negative card it goes again.
+      // If a bot wins an auction, it goes again.
+      // Not gonna bother figuring out the actual highest
+      // bot move streak so lets settle for something.
+      let attemptsToLetBotMakeMove = 30;
+
+      while (
+        !isGameOver(gameState) &&
+        isActivePlayerBot(gameState) &&
+        attemptsToLetBotMakeMove > 0
+      ) {
+        attemptsToLetBotMakeMove--;
+        await maybeTakeBotTurn(gameState);
+      }
+
+      return {};
     }
 
     const activePlayer = getActivePlayer(gameState);
@@ -217,7 +231,26 @@ exports.passturn = onCall(
 
       gameState.public.notification = notification;
 
-      return updateGameState(gameState, `Player ${auctionWinner} won auction.`);
+      await updateGameState(gameState, `Player ${auctionWinner} won auction.`);
+
+      // Theoretically a bot may be the first to make
+      // a move if there are 4 bots and 1 player.
+      // If a bot passes on a negative card it goes again.
+      // If a bot wins an auction, it goes again.
+      // Not gonna bother figuring out the actual highest
+      // bot move streak so lets settle for something.
+      let attemptsToLetBotMakeMove = 30;
+
+      while (
+        !isGameOver(gameState) &&
+        isActivePlayerBot(gameState) &&
+        attemptsToLetBotMakeMove > 0
+      ) {
+        attemptsToLetBotMakeMove--;
+        await maybeTakeBotTurn(gameState);
+      }
+
+      return {};
     } else {
       // Update the next player
       // Player who passed has their bid returned to their hand
@@ -230,7 +263,26 @@ exports.passturn = onCall(
 
       gameState.public.notification = notification;
 
-      return updateGameState(gameState, `${requestEmail} has passed.`);
+      await updateGameState(gameState, `${requestEmail} has passed.`);
+
+      // Theoretically a bot may be the first to make
+      // a move if there are 4 bots and 1 player.
+      // If a bot passes on a negative card it goes again.
+      // If a bot wins an auction, it goes again.
+      // Not gonna bother figuring out the actual highest
+      // bot move streak so lets settle for something.
+      let attemptsToLetBotMakeMove = 30;
+
+      while (
+        !isGameOver(gameState) &&
+        isActivePlayerBot(gameState) &&
+        attemptsToLetBotMakeMove > 0
+      ) {
+        attemptsToLetBotMakeMove--;
+        await maybeTakeBotTurn(gameState);
+      }
+
+      return {};
     }
   }
 );
