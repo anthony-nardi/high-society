@@ -29,8 +29,11 @@ import {
   verifyRequestAuthentication,
 } from "./helpers";
 import { Notification } from "./types";
-import { getVertexAI, getGenerativeModel } from "firebase/vertexai-preview";
-import { VertexAI } from "@google-cloud/vertexai";
+// import { getVertexAI, getGenerativeModel } from "firebase/vertexai-preview";
+import {
+  FunctionDeclarationSchemaType,
+  VertexAI,
+} from "@google-cloud/vertexai";
 
 const project = "high-society-c4ff4";
 const location = "us-central1";
@@ -42,22 +45,119 @@ https://cloud.google.com/vertex-ai/generative-ai/docs/reference/nodejs/latest
 */
 const vertexAI = new VertexAI({ project: project, location: location });
 
-console.log(vertexAI);
-
 admin.initializeApp();
 // Instantiate Gemini models
 const generativeModel = vertexAI.getGenerativeModel({
   model: textModel,
 });
 
+const functionDeclarations = [
+  {
+    functionDeclarations: [
+      {
+        name: "get_bot_action",
+        description:
+          "gets the best action during this players turn to maximize victory",
+        parameters: {
+          type: FunctionDeclarationSchemaType.OBJECT,
+          properties: {
+            action: { type: FunctionDeclarationSchemaType.STRING },
+            actionType: {
+              type: FunctionDeclarationSchemaType.STRING,
+              enum: ["pass", "bid"],
+            },
+          },
+        },
+      },
+    ],
+  },
+];
+
+const functionResponseParts = [
+  {
+    functionResponse: {
+      name: "get_bot_action",
+      response: {
+        name: "get_bot_action",
+        content: { action: "super nice" },
+      },
+    },
+  },
+];
+
 async function generateContent() {
   const request = {
-    contents: [{ role: "user", parts: [{ text: "How are you doing today?" }] }],
+    contents: [
+      {
+        role: "user",
+        parts: [
+          {
+            text: "Only give me a javascript array with values 1, 2, 25.",
+          },
+        ],
+      },
+    ],
   };
   const result = await generativeModel.generateContent(request);
   const response = result.response;
-  console.log("Response: ", JSON.stringify(response));
+
+  if (response.candidates) {
+    const text = JSON.stringify(response.candidates[0].content.parts[0].text);
+    // console.log(text);
+    // Regex to match an array enclosed in square brackets
+    const regex = /\[(.*?)\]/;
+
+    // Find the first match
+    const match = text.match(regex);
+
+    // If there is a match, extract the array content
+    let array;
+    if (match) {
+      // Remove the square brackets and split by commas
+      array = match[1].trim().split(",");
+
+      // Parse each element as a number
+      array = array.map(Number);
+    } else {
+      console.log("No array found in the string.");
+    }
+
+    console.log(array); // Output: [1, 2, 3]
+  } else {
+    console.log("NO CONTENT!");
+  }
 }
+
+// eslint-disable-next-line
+// @typescript-eslint/no-unused-vars
+async function getBotAction() {
+  const chat = generativeModel.startChat({
+    tools: functionDeclarations,
+  });
+  const chatInput1 = "What is the best action to take?";
+  // This should include a functionCall response from the model
+  const streamingResult1 = await chat.sendMessageStream(chatInput1);
+  for await (const item of streamingResult1.stream) {
+    if (item.candidates) {
+      console.log(item.candidates[0]);
+    }
+  }
+  const response1 = await streamingResult1.response;
+  console.log("first aggregated response: ", JSON.stringify(response1));
+
+  // Send a follow up message with a FunctionResponse
+  const streamingResult2 = await chat.sendMessageStream(functionResponseParts);
+  for await (const item of streamingResult2.stream) {
+    if (item.candidates) {
+      console.log(item.candidates[0]);
+    }
+  }
+  // This should include a text response from the model using the response content
+  // provided above
+  const response2 = await streamingResult2.response;
+  console.log("second aggregated response: ", JSON.stringify(response2));
+}
+console.log(getBotAction);
 
 exports.bid = onCall(
   async (
@@ -237,10 +337,13 @@ exports.passturn = onCall(
   }
 );
 
-exports.createlobby = onCall((request) => {
+exports.createlobby = onCall(async (request) => {
   verifyRequestAuthentication(request);
 
   const lobbyUID = Date.now().toString();
+
+  console.log("generateContent...");
+  await generateContent();
 
   return getDatabase()
     .ref("/lobbies/" + lobbyUID)
