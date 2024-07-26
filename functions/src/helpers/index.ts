@@ -309,3 +309,39 @@ export async function createGame(lobbyUID: string) {
       throw new HttpsError("unknown", error.message, error);
     });
 }
+
+/*
+Simplified Game Rules:
+Goal: Be the player with the most "status" points and more money than at least one other player at the end of the game.
+Setup:
+Deck: The deck contains the following cards:
+Luxury Cards: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+Recognition Cards: 2x, 2x, 2x (double your score)
+Misfortune Cards: -5 (Scandal), 1/2 (Mansion Fire), - (Thief)
+Money: Each player starts with the following money cards: 1, 2, 3, 4, 6, 8, 10, 12, 15, 20, 25
+Gameplay:
+Bidding: Players take turns bidding on cards by playing money cards from their hand. The highest bidder wins the card.
+Winning a Card: The winner pays for the card by removing their bid from the game and adds the card to their pile (face up or down, depending on the variation).
+Misfortune Cards: Players bid to avoid taking these cards. The first player to pass takes the Misfortune card and loses their bid.
+Game End: The game ends when the 4th card with a red edge (2x Recognition cards and Mansion Fire) is revealed. Any remaining cards are not used.
+Scoring:
+Money: The player with the least money loses immediately.
+Status Points:
+Luxury Cards: Add the value of all Luxury cards.
+Scandal: Subtract 5 points for each "Scandal" Misfortune card.
+Recognition Cards: Double the score for each Recognition card.
+Mansion Fire: Subtract half the value of the "Mansion Fire" Misfortune card.
+Winning: The player with the most status points wins. If tied, the player with the highest single Luxury card wins.
+Important Notes:
+Passing: Players can pass on a bid and keep their money cards.
+No Change: Players cannot take back money cards once played.
+Misfortune Cards: Misfortune cards can be costly, so be strategic in avoiding them.
+Thief: You must discard a Luxury card. If you don't have one, you discard the 1st one you purchase. Both are removed from the game.
+Strategies:
+Save Money: Don't waste money on unnecessary bids.
+Be Patient: Wait for opportunities to bid on valuable cards.
+Watch Opponents: Keep track of what money cards others have played.
+Manage Misfortune Cards: Have enough money to avoid taking Misfortune cards.
+Analyze Luxury Cards: Pay attention to the Luxury cards already purchased.
+Remember: The game can end quickly, so be prepared to react to the red-edged cards.
+*/
