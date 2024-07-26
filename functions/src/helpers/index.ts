@@ -258,6 +258,7 @@ export async function createGame(lobbyUID: string) {
       statusCards: [],
       currentBid: [],
       hasPassed: false,
+      isBot: !!player.isBot,
     };
   });
 
@@ -308,4 +309,31 @@ export async function createGame(lobbyUID: string) {
       // the error details.
       throw new HttpsError("unknown", error.message, error);
     });
+}
+
+export function getHighestCurrentBid(gameState: GameState) {
+  let highestBid = 0;
+
+  gameState.public.players.forEach((player) => {
+    const playersBid = (player.currentBid || []).reduce(
+      (sum, current) => Number(sum) + Number(current),
+      0
+    );
+
+    if (playersBid > highestBid) {
+      highestBid = playersBid;
+    }
+  });
+
+  return highestBid;
+}
+
+export function getBidValue(bid: string[]) {
+  return bid.reduce((sum, current) => Number(sum) + Number(current), 0);
+}
+
+export async function wait(milliseconds: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, milliseconds);
+  });
 }

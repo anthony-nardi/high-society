@@ -1,5 +1,4 @@
 import admin from "firebase-admin";
-
 import {
   onCall,
   HttpsError,
@@ -29,6 +28,7 @@ import {
   verifyRequestAuthentication,
 } from "./helpers";
 import { Notification } from "./types";
+import { isActivePlayerBot, maybeTakeBotTurn } from "./helpers/bot";
 
 admin.initializeApp();
 
@@ -67,10 +67,30 @@ exports.bid = onCall(
 
     gameState.public.notification = notification;
 
-    return updateGameState(
+    await updateGameState(
       gameState,
       `Player ${requestEmail} bid ${bid.join(",")}`
     );
+
+    // Theoretically a bot may be the first to make
+    // a move if there are 4 bots and 1 player.
+    // If a bot passes on a negative card it goes again.
+    // If a bot wins an auction, it goes again.
+    // Not gonna bother figuring out the actual highest
+    // bot move streak so lets settle for something.
+    let attemptsToLetBotMakeMove = 30;
+
+    while (
+      !isGameOver(gameState) &&
+      isActivePlayerBot(gameState) &&
+      attemptsToLetBotMakeMove > 0
+    ) {
+      attemptsToLetBotMakeMove--;
+
+      await maybeTakeBotTurn(gameState);
+    }
+
+    return {};
   }
 );
 
@@ -134,10 +154,29 @@ exports.passturn = onCall(
 
       gameState.public.notification = notification;
 
-      return updateGameState(
+      await updateGameState(
         gameState,
         `${requestEmail} is the first to pass and receives ${cardAwarded}.`
       );
+
+      // Theoretically a bot may be the first to make
+      // a move if there are 4 bots and 1 player.
+      // If a bot passes on a negative card it goes again.
+      // If a bot wins an auction, it goes again.
+      // Not gonna bother figuring out the actual highest
+      // bot move streak so lets settle for something.
+      let attemptsToLetBotMakeMove = 30;
+
+      while (
+        !isGameOver(gameState) &&
+        isActivePlayerBot(gameState) &&
+        attemptsToLetBotMakeMove > 0
+      ) {
+        attemptsToLetBotMakeMove--;
+        await maybeTakeBotTurn(gameState);
+      }
+
+      return {};
     }
 
     const activePlayer = getActivePlayer(gameState);
@@ -192,7 +231,26 @@ exports.passturn = onCall(
 
       gameState.public.notification = notification;
 
-      return updateGameState(gameState, `Player ${auctionWinner} won auction.`);
+      await updateGameState(gameState, `Player ${auctionWinner} won auction.`);
+
+      // Theoretically a bot may be the first to make
+      // a move if there are 4 bots and 1 player.
+      // If a bot passes on a negative card it goes again.
+      // If a bot wins an auction, it goes again.
+      // Not gonna bother figuring out the actual highest
+      // bot move streak so lets settle for something.
+      let attemptsToLetBotMakeMove = 30;
+
+      while (
+        !isGameOver(gameState) &&
+        isActivePlayerBot(gameState) &&
+        attemptsToLetBotMakeMove > 0
+      ) {
+        attemptsToLetBotMakeMove--;
+        await maybeTakeBotTurn(gameState);
+      }
+
+      return {};
     } else {
       // Update the next player
       // Player who passed has their bid returned to their hand
@@ -205,12 +263,31 @@ exports.passturn = onCall(
 
       gameState.public.notification = notification;
 
-      return updateGameState(gameState, `${requestEmail} has passed.`);
+      await updateGameState(gameState, `${requestEmail} has passed.`);
+
+      // Theoretically a bot may be the first to make
+      // a move if there are 4 bots and 1 player.
+      // If a bot passes on a negative card it goes again.
+      // If a bot wins an auction, it goes again.
+      // Not gonna bother figuring out the actual highest
+      // bot move streak so lets settle for something.
+      let attemptsToLetBotMakeMove = 30;
+
+      while (
+        !isGameOver(gameState) &&
+        isActivePlayerBot(gameState) &&
+        attemptsToLetBotMakeMove > 0
+      ) {
+        attemptsToLetBotMakeMove--;
+        await maybeTakeBotTurn(gameState);
+      }
+
+      return {};
     }
   }
 );
 
-exports.createlobby = onCall((request) => {
+exports.createlobby = onCall(async (request) => {
   verifyRequestAuthentication(request);
 
   const lobbyUID = Date.now().toString();
@@ -225,6 +302,7 @@ exports.createlobby = onCall((request) => {
           email: request?.auth?.token.email || request?.auth?.token.uid,
           ready: false,
           joinedAt: Date.now().toString(),
+          isBot: false,
         },
       ],
     })
@@ -265,8 +343,6 @@ exports.joinlobby = onCall(
 
     const playersSnapshotValue = players.val();
 
-    console.log(playersSnapshotValue);
-
     if (playersSnapshotValue.length >= 5) {
       return;
     }
@@ -281,19 +357,71 @@ exports.joinlobby = onCall(
       (player: any) => player.email === email
     );
 
-    console.log("doesPlayerExist:", doesPlayerExist ? "true" : "false");
-
     if (doesPlayerExist) return;
-
-    console.log(`Attempting to add ${email} to the lobby.`);
 
     playersSnapshotValue.push({
       email,
       ready: false,
       joinedAt: Date.now().toString(),
+      isBot: false,
     });
 
-    console.log(`New players: ${playersSnapshotValue}`);
+    getDatabase()
+      .ref(`lobbies/${lobbyUID}/players`)
+      .set(playersSnapshotValue)
+      .then(() => {
+        logger.info("Lobby joined.");
+        return { lobbyUID };
+      })
+      .catch((error: Error) => {
+        // Re-throwing the error as an HttpsError so that the client gets
+        // the error details.
+        throw new HttpsError("unknown", error.message, error);
+      });
+  }
+);
+
+exports.addbot = onCall(
+  async (
+    request: CallableRequest<{
+      lobbyUID: string;
+    }>
+  ) => {
+    // Checking that the user is authenticated.
+    if (!request.auth) {
+      // Throwing an HttpsError so that the client gets the error details.
+      throw new HttpsError(
+        "failed-precondition",
+        "The function must be " + "called while authenticated."
+      );
+    }
+
+    const { lobbyUID } = request.data;
+
+    // Add new player to the lobby if they don't already exist
+
+    const players = await getDatabase()
+      .ref(`lobbies/${lobbyUID}/players`)
+      .get();
+
+    const playersSnapshotValue = players.val();
+
+    if (playersSnapshotValue.length >= 5) {
+      return;
+    }
+
+    const gameState = await getGameState(lobbyUID);
+
+    if (gameState) {
+      return;
+    }
+
+    playersSnapshotValue.push({
+      email: `Bot #${playersSnapshotValue.length}`,
+      ready: true,
+      joinedAt: Date.now().toString(),
+      isBot: true,
+    });
 
     getDatabase()
       .ref(`lobbies/${lobbyUID}/players`)

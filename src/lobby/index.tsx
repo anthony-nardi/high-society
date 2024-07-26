@@ -7,6 +7,7 @@ import useJoinLobby from "./hooks/useJoinLobby";
 import useLobbyData from "./hooks/useLobbyData";
 import usePopstate from "../hooks/usePopstate";
 import readyUp from "../client/readyUp";
+import addBot from "../client/addBot";
 import createLobby from "../client/createLobby";
 import getLobbyIdFromURL from "../utils/getLobbyIdFromURL";
 
@@ -16,6 +17,15 @@ export default function Lobby({ user }: { user: User | null }) {
 
   const [isReadying, setIsReadying] = useState<null | boolean>(null);
   const [isCreatingLobby, setIsCreatingLobby] = useState<null | boolean>(null);
+  const [isAddingBot, setIsAddingBot] = useState<null | boolean>(null);
+
+  const showBotButton = useMemo(() => {
+    try {
+      return !!window.localStorage["high-society:bots"];
+    } catch (e) {
+      console.log(e);
+    }
+  }, []);
 
   const handleURLChange = useCallback(() => {
     const lobbyUID = window.location.hash.replace(/\D/g, "");
@@ -51,6 +61,20 @@ export default function Lobby({ user }: { user: User | null }) {
 
     setIsCreatingLobby(false);
   }, []);
+
+  const handleAddBot = useCallback(async () => {
+    if (!currentUser || !currentUser.email || !lobbyId) {
+      throw new Error("There is no current user or lobby.");
+    }
+
+    setIsAddingBot(true);
+
+    await addBot({
+      lobbyUID: lobbyId,
+    });
+
+    setIsAddingBot(false);
+  }, [currentUser, lobbyId]);
 
   const handleReadyUp = useCallback(async () => {
     if (!currentUser || !currentUser.email || !lobbyId) {
@@ -109,6 +133,15 @@ export default function Lobby({ user }: { user: User | null }) {
                   disabled={!!isReadying}
                 >
                   Click here to ready!
+                </Button>
+              )}
+              {showBotButton && (
+                <Button
+                  onClick={handleAddBot}
+                  loading={!!isAddingBot}
+                  disabled={!!isAddingBot}
+                >
+                  Add bot
                 </Button>
               )}
             </Flex>
