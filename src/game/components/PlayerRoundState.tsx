@@ -17,7 +17,7 @@ export default function PlayerRoundState({
   highestBidTotal,
 }: {
   player: PlayerState;
-  lobbyId: string;
+  lobbyId: number | null;
   isLoggedInUserActivePlayer: boolean;
   highestBidTotal: number;
 }) {
@@ -47,13 +47,13 @@ export default function PlayerRoundState({
     const functions = getFunctions();
     const passTurn = httpsCallable<
       {
-        lobbyUID: string;
+        lobbyUID: number;
       },
       object
     >(functions, "passturn");
     try {
       await passTurn({
-        lobbyUID: lobbyId,
+        lobbyUID: lobbyId ? lobbyId : 0,
       });
       setActionsLoading(false);
     } catch (e) {
@@ -66,14 +66,14 @@ export default function PlayerRoundState({
     const functions = getFunctions();
     const bid = httpsCallable<
       {
-        lobbyUID: string;
+        lobbyUID: number;
         bid: string[];
       },
       object
     >(functions, "bid");
     try {
       await bid({
-        lobbyUID: lobbyId,
+        lobbyUID: lobbyId ? lobbyId : 0,
         bid: stagedBid,
       });
       setActionsLoading(false);

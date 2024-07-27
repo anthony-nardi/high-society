@@ -3,28 +3,26 @@ import { GameState, PlayerState } from "../types";
 import PlayerGameState from "./PlayerGameState";
 import PlayerRoundState from "./PlayerRoundState";
 import { useMemo } from "react";
-import { User } from "firebase/auth";
+import { useLobbyContext } from "../../context/LobbyProvider";
 
 export default function PlayerOverview({
   player,
   activePlayer,
-  lobbyId,
-  user,
   highestBidTotal,
 }: {
   player: PlayerState;
   activePlayer: GameState["activePlayer"];
-  lobbyId: string;
-  user: User;
   highestBidTotal: number;
 }) {
+  const { user, lobbyId } = useLobbyContext();
+
   const isActivePlayer = useMemo(() => {
     return player.email === activePlayer;
   }, [player, activePlayer]);
 
   const isLoggedInUserActivePlayer = useMemo(() => {
-    return user.email === activePlayer && isActivePlayer;
-  }, [user.email, activePlayer, isActivePlayer]);
+    return user && user.email === activePlayer && isActivePlayer;
+  }, [user, activePlayer, isActivePlayer]);
 
   const styles = useMemo(() => {
     if (isActivePlayer) {
@@ -41,14 +39,17 @@ export default function PlayerOverview({
   return (
     <Flex p="md" justify="space-between" styles={styles} key={player.email}>
       <Box>
-        <PlayerGameState player={player} loggedInUser={user.email || ""} />
+        <PlayerGameState
+          player={player}
+          loggedInUser={(user && user.email) || ""}
+        />
       </Box>
 
       <Box w={"50%"}>
         <PlayerRoundState
           player={player}
           lobbyId={lobbyId}
-          isLoggedInUserActivePlayer={isLoggedInUserActivePlayer}
+          isLoggedInUserActivePlayer={!!isLoggedInUserActivePlayer}
           highestBidTotal={highestBidTotal}
         />
       </Box>

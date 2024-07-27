@@ -1,32 +1,12 @@
-import { useCallback, useEffect } from "react";
-import {
-  getAuth,
-  signInWithPopup,
-  GoogleAuthProvider,
-  User,
-} from "firebase/auth";
+import { useCallback } from "react";
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { GoogleIcon } from "./GoogleIcon";
 import { Button, Center, Loader, Stack } from "@mantine/core";
+import { useLobbyContext } from "../context/LobbyProvider";
 
-export default function Login({
-  onSignInSuccess,
-  onSignInFailed,
-  isLoading,
-}: {
-  onSignInSuccess: (user: User) => void;
-  onSignInFailed: () => void;
-  isLoading: boolean;
-}) {
-  useEffect(() => {
-    const auth = getAuth();
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        onSignInSuccess(user);
-      } else {
-        onSignInFailed();
-      }
-    });
-  }, [onSignInSuccess, onSignInFailed]);
+export default function Login() {
+  const { isSignedIn, handleSignInSuccess, handleSignInFailed } =
+    useLobbyContext();
 
   const handleSignIn = useCallback(() => {
     const auth = getAuth();
@@ -38,19 +18,19 @@ export default function Login({
         const credential = GoogleAuthProvider.credentialFromResult(result);
 
         if (!credential) {
-          onSignInFailed();
+          handleSignInFailed();
           throw new Error("Credential not found.");
         }
 
-        onSignInSuccess(result.user);
+        handleSignInSuccess(result.user);
       })
       .catch((error: Error) => {
-        onSignInFailed();
+        handleSignInFailed();
         console.log(error);
       });
-  }, [onSignInFailed, onSignInSuccess]);
+  }, [handleSignInFailed, handleSignInSuccess]);
 
-  if (isLoading) {
+  if (isSignedIn === null) {
     return (
       <Stack h={200} align="stretch" justify="space-around" gap="md">
         <Center>
@@ -58,6 +38,10 @@ export default function Login({
         </Center>
       </Stack>
     );
+  }
+
+  if (isSignedIn) {
+    return null;
   }
 
   return (

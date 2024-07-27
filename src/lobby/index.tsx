@@ -10,8 +10,13 @@ import readyUp from "../client/readyUp";
 import addBot from "../client/addBot";
 import createLobby from "../client/createLobby";
 import getLobbyIdFromURL from "../utils/getLobbyIdFromURL";
+import { useLobbyContext } from "../context/LobbyProvider";
+import { useGameStateContext } from "../context/GameStateProvider";
 
-export default function Lobby({ user }: { user: User | null }) {
+export default function Lobby() {
+  const { user } = useLobbyContext();
+  const { gameState } = useGameStateContext();
+
   const [lobbyId, setLobbyId] = useState<number | null>(getLobbyIdFromURL());
   const [currentUser, setCurrentUser] = useState<User | null>(user);
 
@@ -111,6 +116,10 @@ export default function Lobby({ user }: { user: User | null }) {
 
   if (!lobbyData || !lobbyData.players.length) {
     return <Center>Lobby does not exist.</Center>;
+  }
+
+  if (gameState) {
+    return null;
   }
 
   return (
