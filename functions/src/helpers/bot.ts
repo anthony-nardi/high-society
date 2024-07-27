@@ -1,22 +1,11 @@
 import { VertexAI } from "@google-cloud/vertexai";
-import { GameState, Notification } from "../types";
+import { GameState } from "../types";
 import {
-  awardPlayerWithCurrentStatusCard,
   getActivePlayer,
   getBidValue,
-  getDoesBiddingRoundEndOnFirstPass,
   getHighestCurrentBid,
-  getPlayersActivelyBidding,
-  giveCurrentStatusCardToPlayer,
-  isGameOver,
-  maybeUseMinusCard,
-  returnPlayersBidToHand,
-  revealNewStatusCard,
-  setActivePlayerPass,
-  updateGameState,
-  updateNextActivePlayer,
-  updatePlayerLastAction,
-  updatePlayersBid,
+  updateGameStateWithBid,
+  updateGameStateWithPass,
   wait,
 } from ".";
 
@@ -99,8 +88,7 @@ function buildGameStatePrompt(gameState: GameState) {
   prompt += "If passing, only return an array of the word 'Pass'\n";
   //   prompt += `Include a very brief explanation of your decision.\n`;
 
-  prompt +=
-    "Your response absolutely must be in the following format: '[money_card_1, money_card_2, ...]' or '[\"pass\"]'";
+  prompt += `Your response absolutely must be in the following format: ["money_card_1", "money_card_2", ...] or ["pass"]`;
 
   let gameStatePromptAddition = "";
 
@@ -307,7 +295,7 @@ export async function maybeTakeBotTurn(gameState: GameState) {
   const activePlayer = getActivePlayer(gameState);
 
   if (!activePlayer.isBot) {
-    return false;
+    return;
   }
 
   const currentTimestamp = Date.now();
@@ -334,146 +322,9 @@ export async function maybeTakeBotTurn(gameState: GameState) {
   }
 
   if (suggestedAction.length) {
-    updatePlayerLastAction(activePlayer);
-    updatePlayersBid(activePlayer, suggestedAction);
-    updateNextActivePlayer(gameState);
-
-    const totalBid = suggestedAction.reduce(
-      (sum: number, current) => Number(sum) + Number(current),
-      0
-    );
-
-    const notification: Notification = {
-      timestamp: Date.now(),
-      title: `${activePlayer.email} has highest bid of ${totalBid}.`,
-    };
-
-    gameState.public.notification = notification;
-
-    await updateGameState(
-      gameState,
-      `Player ${activePlayer.email} bid ${suggestedAction.join(",")}`
-    );
-
-    return true;
+    await updateGameStateWithBid(gameState, activePlayer, suggestedAction);
   } else {
-    const doesBiddingRoundEndOnFirstPass =
-      getDoesBiddingRoundEndOnFirstPass(gameState);
-
-    if (doesBiddingRoundEndOnFirstPass) {
-      // The active player is the one who passed.
-
-      // Award the player who passed the currentStatusCard
-      // The player who passed current bid is returned to their moneyCards
-      // Reset all players current bids
-      // Flip a new card from the deck
-
-      const cardAwarded = gameState.public.currentStatusCard;
-      const players = gameState.public.players;
-
-      players.forEach((player) => {
-        if (player.email === activePlayer.email) {
-          updatePlayerLastAction(player);
-          giveCurrentStatusCardToPlayer(player, gameState);
-          returnPlayersBidToHand(player);
-          maybeUseMinusCard(player, gameState);
-        } else {
-          player.currentBid = [];
-        }
-      });
-
-      revealNewStatusCard(gameState);
-
-      let message = "";
-
-      if (isGameOver(gameState)) {
-        gameState.public.status = "GAME_OVER";
-        const { currentStatusCard } = gameState.public;
-        message = `${currentStatusCard} was revealed. Game over.`;
-      }
-
-      const notification: Notification = {
-        timestamp: Date.now(),
-        title: `${activePlayer.email} passes and receives ${cardAwarded}.`,
-        message,
-      };
-
-      gameState.public.notification = notification;
-
-      return updateGameState(
-        gameState,
-        `${activePlayer.email} is the first to pass and receives ${cardAwarded}.`
-      );
-    }
-
-    updatePlayerLastAction(activePlayer);
-    setActivePlayerPass(gameState);
-    returnPlayersBidToHand(activePlayer);
-
-    const playersWithActiveBids = getPlayersActivelyBidding(gameState);
-
-    if (playersWithActiveBids === 1) {
-      // Award the player with the only remaining bid the currentStatusCard
-      // All players who passed return their currentBid to their moneyCard
-      // Set all players hasPassed flags to false
-      // Flip a new card from the deck
-
-      let auctionWinner = "";
-      let totalBid = 0;
-      const cardAwarded = gameState.public.currentStatusCard;
-
-      const players = gameState.public.players;
-
-      players.forEach((player) => {
-        if (player.hasPassed === false) {
-          totalBid = (player.currentBid || []).reduce(
-            (sum: number, current: string) => Number(sum) + Number(current),
-            0
-          );
-
-          awardPlayerWithCurrentStatusCard(player, gameState);
-          auctionWinner = player.email;
-        }
-
-        player.hasPassed = false;
-      });
-
-      revealNewStatusCard(gameState);
-
-      let message = "";
-
-      if (isGameOver(gameState)) {
-        gameState.public.status = "GAME_OVER";
-        const { currentStatusCard } = gameState.public;
-        message = `${currentStatusCard} was revealed. Game over.`;
-      }
-
-      gameState.public.activePlayer = auctionWinner;
-
-      const notification: Notification = {
-        timestamp: Date.now(),
-        title: `${auctionWinner} won ${cardAwarded} for a total of ${totalBid}.`,
-        message,
-      };
-
-      gameState.public.notification = notification;
-
-      return updateGameState(gameState, `Player ${auctionWinner} won auction.`);
-    } else {
-      // Update the next player
-      // Player who passed has their bid returned to their hand
-      updateNextActivePlayer(gameState);
-
-      const notification: Notification = {
-        timestamp: Date.now(),
-        title: `${activePlayer.email} passed.`,
-      };
-
-      gameState.public.notification = notification;
-
-      await updateGameState(gameState, `${activePlayer.email} has passed.`);
-      return true;
-    }
+    await updateGameStateWithPass(gameState, activePlayer);
   }
 }
 
