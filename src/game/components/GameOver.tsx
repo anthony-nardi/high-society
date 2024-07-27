@@ -146,6 +146,9 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
     return playersWithHighScore;
   }, [mapOfPlayersToMetadata, playersWithLeastMoneyRemaining]);
 
+  console.log(mapOfPlayersToMetadata);
+  console.log(winningPlayers);
+
   const renderedWinner = useMemo(() => {
     const renderedPlayersEndGame = [];
 
@@ -155,7 +158,7 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
         const player = mapOfPlayersToMetadata[playerEmail];
         if (isWinner) {
           renderedPlayersEndGame.push(
-            <Box>
+            <Box key={player.email}>
               <div className="animated-border-box">
                 <Box p="xs">
                   <b>{player.email} has won!</b>
@@ -172,8 +175,9 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
             </Box>
           );
         } else {
+          console.log("pushing...", player.email);
           renderedPlayersEndGame.push(
-            <Box p="xs">
+            <Box p="xs" key={player.email}>
               <b>{player.email}</b>
               <div>Money left: ${player.moneyLeft}</div>
               <div>Cards in hand: {(player.moneyCards || []).join(", ")}</div>

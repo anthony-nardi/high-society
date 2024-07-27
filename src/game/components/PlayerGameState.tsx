@@ -3,7 +3,13 @@ import { PlayerState } from "../types";
 import { Flex } from "@mantine/core";
 import CardFront from "../../card/CardFront";
 
-export default function PlayerGameState({ player }: { player: PlayerState }) {
+export default function PlayerGameState({
+  player,
+  loggedInUser,
+}: {
+  player: PlayerState;
+  loggedInUser: string;
+}) {
   const renderedStatusCards = useMemo(() => {
     if (!player.statusCards) {
       return "None";
@@ -17,6 +23,18 @@ export default function PlayerGameState({ player }: { player: PlayerState }) {
       </Flex>
     );
   }, [player.statusCards]);
+
+  if (loggedInUser === player.email) {
+    return (
+      <>
+        <div style={{ marginBottom: "12px" }}>
+          <b>{player.email.split("@")[0]}</b>
+        </div>
+        <div>Money cards in hand: {(player.moneyCards || []).join(", ")}</div>
+        <div>Status cards: {renderedStatusCards}</div>
+      </>
+    );
+  }
 
   return (
     <>

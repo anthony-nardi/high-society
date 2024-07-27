@@ -39,9 +39,9 @@ export default function PlayerOverview({
   }, [isActivePlayer]);
 
   return (
-    <Flex p="md" justify="space-between" styles={styles}>
+    <Flex p="md" justify="space-between" styles={styles} key={player.email}>
       <Box>
-        <PlayerGameState player={player} />
+        <PlayerGameState player={player} loggedInUser={user.email || ""} />
       </Box>
 
       <Box w={"50%"}>
