@@ -30,6 +30,9 @@ export default function Login() {
       });
   }, [handleSignInFailed, handleSignInSuccess]);
 
+  // isSignedIn will automatically be set to false or true without
+  // user interaction due to the auth.onAuthStateChanged found
+  // inside the LobbyProvider
   if (isSignedIn === null) {
     return (
       <Stack h={200} align="stretch" justify="space-around" gap="md">
