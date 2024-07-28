@@ -7,20 +7,23 @@ import Game from "./game";
 import GameTitle from "./game/components/GameTitle";
 import { GameStateProvider } from "./context/GameStateProvider";
 import { LobbyProvider } from "./context/LobbyProvider";
+import { UserProvider } from "./context/UserProvider";
 
 initializeFirebase();
 
 function App() {
   return (
     <div className="App">
-      <LobbyProvider>
-        <GameStateProvider>
-          <GameTitle />
-          <Login />
-          <Lobby />
-          <Game />
-        </GameStateProvider>
-      </LobbyProvider>
+      <UserProvider>
+        <LobbyProvider>
+          <GameStateProvider>
+            <GameTitle />
+            <Login />
+            <Lobby />
+            <Game />
+          </GameStateProvider>
+        </LobbyProvider>
+      </UserProvider>
     </div>
   );
 }

@@ -2,11 +2,11 @@ import { useCallback } from "react";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { GoogleIcon } from "./GoogleIcon";
 import { Button, Center, Loader, Stack } from "@mantine/core";
-import { useLobbyContext } from "../context/LobbyProvider";
+import { useUserContext } from "../context/useUserContext";
 
 export default function Login() {
   const { isSignedIn, handleSignInSuccess, handleSignInFailed } =
-    useLobbyContext();
+    useUserContext();
 
   const handleSignIn = useCallback(() => {
     const auth = getAuth();

@@ -2,6 +2,7 @@ import { createContext, useContext } from "react";
 import useGameState from "../game/hooks/useGameState";
 import { GameState } from "../game/types";
 import { useLobbyContext } from "./LobbyProvider";
+import { useUserContext } from "./useUserContext";
 
 const GameStateContext = createContext<{
   isGameStatusLoading: boolean | null;
@@ -29,7 +30,8 @@ export const GameStateProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const { lobbyId, isSignedIn } = useLobbyContext();
+  const { isSignedIn } = useUserContext();
+  const { lobbyId } = useLobbyContext();
 
   const { isLoading: isGameStatusLoading, gameState } = useGameState(
     lobbyId,

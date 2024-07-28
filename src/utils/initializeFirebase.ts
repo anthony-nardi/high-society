@@ -5,6 +5,8 @@ import { connectAuthEmulator, getAuth } from "firebase/auth";
 import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
 
 export default function initializeFirebase() {
+  console.log("Initialize Firebase");
+
   initializeApp(firebaseConfig);
 
   if (window.location.hostname === "localhost") {

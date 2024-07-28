@@ -1,24 +1,19 @@
 import { useCallback, useMemo, useState } from "react";
-import { User } from "firebase/auth";
 import PlayersList from "./components/PlayersList";
 import { Button, Center, Flex, Grid, Loader } from "@mantine/core";
 import ConnectedPlayersCount from "./components/ConnectedPlayersCount";
-import useJoinLobby from "./hooks/useJoinLobby";
-import useLobbyData from "./hooks/useLobbyData";
-import usePopstate from "../hooks/usePopstate";
 import readyUp from "../client/readyUp";
 import addBot from "../client/addBot";
 import createLobby from "../client/createLobby";
-import getLobbyIdFromURL from "../utils/getLobbyIdFromURL";
 import { useLobbyContext } from "../context/LobbyProvider";
 import { useGameStateContext } from "../context/GameStateProvider";
+import { useUserContext } from "../context/useUserContext";
 
 export default function Lobby() {
-  const { user } = useLobbyContext();
+  const { user } = useUserContext();
+  const { lobbyId, isLoadingLobbyData, lobbyData, isJoiningLobby } =
+    useLobbyContext();
   const { gameState } = useGameStateContext();
-
-  const [lobbyId, setLobbyId] = useState<number | null>(getLobbyIdFromURL());
-  const [currentUser, setCurrentUser] = useState<User | null>(user);
 
   const [isReadying, setIsReadying] = useState<null | boolean>(null);
   const [isCreatingLobby, setIsCreatingLobby] = useState<null | boolean>(null);
@@ -32,31 +27,17 @@ export default function Lobby() {
     }
   }, []);
 
-  const handleURLChange = useCallback(() => {
-    const lobbyUID = window.location.hash.replace(/\D/g, "");
-    setLobbyId(Number(lobbyUID));
-  }, []);
-
-  usePopstate(handleURLChange);
-
-  const { isLoading: isJoiningLobby } = useJoinLobby({
-    lobbyId,
-    onAuthentication: setCurrentUser,
-  });
-
-  const { isLoading: isLoadingLobbyData, lobbyData } = useLobbyData(lobbyId);
-
   const isCurrentUserReady = useMemo(() => {
-    if (!currentUser || !lobbyData) return false;
+    if (!user || !lobbyData) return false;
 
     if ("players" in lobbyData) {
-      const user = lobbyData.players.find(
-        (player) => player.email === currentUser.email
+      const currentUser = lobbyData.players.find(
+        (player) => player.email === user.email
       );
 
-      return (user && user.ready) || false;
+      return (currentUser && currentUser.ready) || false;
     }
-  }, [currentUser, lobbyData]);
+  }, [user, lobbyData]);
 
   const handleCreateLobby = useCallback(async () => {
     setIsCreatingLobby(true);
@@ -68,7 +49,7 @@ export default function Lobby() {
   }, []);
 
   const handleAddBot = useCallback(async () => {
-    if (!currentUser || !currentUser.email || !lobbyId) {
+    if (!user || !user.email || !lobbyId) {
       throw new Error("There is no current user or lobby.");
     }
 
@@ -79,22 +60,26 @@ export default function Lobby() {
     });
 
     setIsAddingBot(false);
-  }, [currentUser, lobbyId]);
+  }, [user, lobbyId]);
 
   const handleReadyUp = useCallback(async () => {
-    if (!currentUser || !currentUser.email || !lobbyId) {
+    if (!user || !user.email || !lobbyId) {
       throw new Error("There is no current user or lobby.");
     }
 
     setIsReadying(true);
 
     await readyUp({
-      email: currentUser.email,
+      email: user.email,
       lobbyUID: lobbyId,
     });
 
     setIsReadying(false);
-  }, [currentUser, lobbyId]);
+  }, [user, lobbyId]);
+
+  if (!user) {
+    return null;
+  }
 
   if (!lobbyId) {
     return (
@@ -104,6 +89,10 @@ export default function Lobby() {
         </Button>
       </Center>
     );
+  }
+
+  if (gameState) {
+    return null;
   }
 
   if (isJoiningLobby || isLoadingLobbyData || !!isCreatingLobby) {
@@ -116,10 +105,6 @@ export default function Lobby() {
 
   if (!lobbyData || !lobbyData.players.length) {
     return <Center>Lobby does not exist.</Center>;
-  }
-
-  if (gameState) {
-    return null;
   }
 
   return (

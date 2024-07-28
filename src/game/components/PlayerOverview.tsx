@@ -4,6 +4,7 @@ import PlayerGameState from "./PlayerGameState";
 import PlayerRoundState from "./PlayerRoundState";
 import { useMemo } from "react";
 import { useLobbyContext } from "../../context/LobbyProvider";
+import { useUserContext } from "../../context/useUserContext";
 
 export default function PlayerOverview({
   player,
@@ -14,7 +15,8 @@ export default function PlayerOverview({
   activePlayer: GameState["activePlayer"];
   highestBidTotal: number;
 }) {
-  const { user, lobbyId } = useLobbyContext();
+  const { user } = useUserContext();
+  const { lobbyId } = useLobbyContext();
 
   const isActivePlayer = useMemo(() => {
     return player.email === activePlayer;

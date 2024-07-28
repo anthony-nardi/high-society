@@ -1,4 +1,4 @@
-import { getAuth, User } from "firebase/auth";
+import { User } from "firebase/auth";
 import {
   getFunctions,
   httpsCallable,
@@ -8,49 +8,40 @@ import { useEffect, useRef, useState } from "react";
 
 const useJoinLobby = ({
   lobbyId,
-  onAuthentication,
+  user,
 }: {
   lobbyId: number | null;
-  onAuthentication: (user: User) => void;
+  user: User | null;
 }) => {
   const [isLoading, setIsLoading] = useState<null | boolean>(true);
   const lobbyJoined = useRef<number | null>(null);
 
   useEffect(() => {
-    if (!lobbyId || lobbyJoined.current === lobbyId) {
+    if (!user || !user.email || !lobbyId || lobbyJoined.current === lobbyId) {
       setIsLoading(false);
       return;
     }
+
     setIsLoading(true);
     lobbyJoined.current = lobbyId;
+    const functions = getFunctions();
+    const joinLobby = httpsCallable<
+      { email: string; lobbyUID: number },
+      HttpsCallableResult<object>
+    >(functions, "joinlobby");
 
-    const auth = getAuth();
-
-    auth.onAuthStateChanged((user) => {
-      if (user && typeof user.email === "string") {
-        onAuthentication(user);
-        const functions = getFunctions();
-        const joinLobby = httpsCallable<
-          { email: string; lobbyUID: number },
-          HttpsCallableResult<object>
-        >(functions, "joinlobby");
-
-        joinLobby({
-          email: user.email,
-          lobbyUID: lobbyId,
-        })
-          .catch((err) => {
-            console.log(err);
-            lobbyJoined.current = null;
-          })
-          .finally(() => {
-            setIsLoading(false);
-          });
-      } else {
+    joinLobby({
+      email: user.email,
+      lobbyUID: lobbyId,
+    })
+      .catch((err) => {
+        console.log(err);
+        lobbyJoined.current = null;
+      })
+      .finally(() => {
         setIsLoading(false);
-      }
-    });
-  }, [lobbyId, onAuthentication]);
+      });
+  }, [lobbyId, user]);
 
   return {
     isLoading,
