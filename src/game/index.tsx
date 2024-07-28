@@ -11,7 +11,7 @@ import { useServerNotification } from "./hooks/useServerNotification";
 export default function Game() {
   const { user, isSignedIn } = useUserContext();
   const { lobbyId } = useLobbyContext();
-  const { gameState } = useGameState(lobbyId, !!isSignedIn);
+  const { gameState } = useGameState();
 
   useServerNotification();
 

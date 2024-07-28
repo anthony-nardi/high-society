@@ -8,19 +8,21 @@ import {
 } from "@mantine/core";
 import { PlayerState } from "../types";
 import { useCallback, useMemo, useState } from "react";
-import { getFunctions, httpsCallable } from "firebase/functions";
+import passTurn from "../../client/passTurn";
+import bid from "../../client/bid";
+import { useLobbyContext } from "../../context/LobbyProvider";
 
 export default function PlayerRoundState({
   player,
-  lobbyId,
   isLoggedInUserActivePlayer,
   highestBidTotal,
 }: {
   player: PlayerState;
-  lobbyId: number | null;
   isLoggedInUserActivePlayer: boolean;
   highestBidTotal: number;
 }) {
+  const { lobbyId } = useLobbyContext();
+
   const [stagedBid, setStagedBid] = useState<string[]>([]);
   const [actionsLoading, setActionsLoading] = useState<boolean>(false);
 
@@ -44,43 +46,22 @@ export default function PlayerRoundState({
   const handlePassTurn = useCallback(async () => {
     setStagedBid([]);
     setActionsLoading(true);
-    const functions = getFunctions();
-    const passTurn = httpsCallable<
-      {
-        lobbyUID: number;
-      },
-      object
-    >(functions, "passturn");
-    try {
-      await passTurn({
-        lobbyUID: lobbyId ? lobbyId : 0,
-      });
-      setActionsLoading(false);
-    } catch (e) {
-      console.error(e);
-    }
+
+    await passTurn({ lobbyUID: lobbyId || 0 });
+
+    setActionsLoading(false);
   }, [lobbyId]);
 
   const handleBid = useCallback(async () => {
     setActionsLoading(true);
-    const functions = getFunctions();
-    const bid = httpsCallable<
-      {
-        lobbyUID: number;
-        bid: string[];
-      },
-      object
-    >(functions, "bid");
-    try {
-      await bid({
-        lobbyUID: lobbyId ? lobbyId : 0,
-        bid: stagedBid,
-      });
-      setActionsLoading(false);
-      setStagedBid([]);
-    } catch (e) {
-      console.error(e);
-    }
+
+    await bid({
+      lobbyUID: lobbyId || 0,
+      bid: stagedBid,
+    });
+
+    setActionsLoading(false);
+    setStagedBid([]);
   }, [lobbyId, stagedBid]);
 
   const renderedPlayerBid = useMemo(() => {
