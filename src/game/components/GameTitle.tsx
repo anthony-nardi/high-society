@@ -1,6 +1,13 @@
 import { Center, Stack } from "@mantine/core";
+import { useGameStateContext } from "../../context/GameStateProvider";
 
 export default function GameTitle() {
+  const { gameState } = useGameStateContext();
+
+  if (gameState) {
+    return null;
+  }
+
   return (
     <Stack h={200} justify="space-around" gap="md">
       <Center>

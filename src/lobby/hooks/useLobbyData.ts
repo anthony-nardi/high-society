@@ -3,7 +3,7 @@ import { LobbyData } from "../types";
 import { getDatabase, onValue, ref } from "firebase/database";
 
 const useLobbyData = (lobbyId: number | null) => {
-  const [isLoading, setIsLoading] = useState<null | boolean>(null);
+  const [isLoadingLobbyData, setIsLoading] = useState<null | boolean>(null);
   const [lobbyData, setLobbyData] = useState<null | LobbyData>(null);
 
   useEffect(() => {
@@ -12,7 +12,6 @@ const useLobbyData = (lobbyId: number | null) => {
     setIsLoading(true);
 
     const db = getDatabase();
-
     const lobbyRef = ref(db, "lobbies/" + lobbyId);
 
     onValue(lobbyRef, (snapshot) => {
@@ -22,8 +21,14 @@ const useLobbyData = (lobbyId: number | null) => {
     });
   }, [lobbyId]);
 
+  useEffect(() => {
+    return () => {
+      setIsLoading(false);
+    };
+  });
+
   return {
-    isLoading,
+    isLoadingLobbyData,
     lobbyData,
   };
 };

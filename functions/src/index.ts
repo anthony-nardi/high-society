@@ -7,27 +7,16 @@ import {
 import { logger } from "firebase-functions/v2";
 import { getDatabase } from "firebase-admin/database";
 import {
-  awardPlayerWithCurrentStatusCard,
   createGame,
   getActivePlayer,
-  getDoesBiddingRoundEndOnFirstPass,
   getEmailFromRequest,
   getGameState,
-  getPlayersActivelyBidding,
-  giveCurrentStatusCardToPlayer,
   isActivePlayerTakingAction,
   isGameOver,
-  maybeUseMinusCard,
-  returnPlayersBidToHand,
-  revealNewStatusCard,
-  setActivePlayerPass,
-  updateGameState,
-  updateNextActivePlayer,
-  updatePlayerLastAction,
-  updatePlayersBid,
+  updateGameStateWithBid,
+  updateGameStateWithPass,
   verifyRequestAuthentication,
 } from "./helpers";
-import { Notification } from "./types";
 import { isActivePlayerBot, maybeTakeBotTurn } from "./helpers/bot";
 
 admin.initializeApp();
@@ -51,26 +40,7 @@ exports.bid = onCall(
 
     const activePlayer = getActivePlayer(gameState);
 
-    updatePlayerLastAction(activePlayer);
-    updatePlayersBid(activePlayer, bid);
-    updateNextActivePlayer(gameState);
-
-    const totalBid = bid.reduce(
-      (sum: number, current) => Number(sum) + Number(current),
-      0
-    );
-
-    const notification: Notification = {
-      timestamp: Date.now(),
-      title: `${requestEmail} has highest bid of ${totalBid}.`,
-    };
-
-    gameState.public.notification = notification;
-
-    await updateGameState(
-      gameState,
-      `Player ${requestEmail} bid ${bid.join(",")}`
-    );
+    await updateGameStateWithBid(gameState, activePlayer, bid);
 
     // Theoretically a bot may be the first to make
     // a move if there are 4 bots and 1 player.
@@ -106,183 +76,30 @@ exports.passturn = onCall(
     const { lobbyUID } = request.data;
 
     const gameState = await getGameState(lobbyUID);
-    const players = gameState.public.players;
 
     if (!isActivePlayerTakingAction(gameState, requestEmail)) {
       return;
     }
 
-    const doesBiddingRoundEndOnFirstPass =
-      getDoesBiddingRoundEndOnFirstPass(gameState);
-
-    if (doesBiddingRoundEndOnFirstPass) {
-      // The active player is the one who passed.
-
-      // Award the player who passed the currentStatusCard
-      // The player who passed current bid is returned to their moneyCards
-      // Reset all players current bids
-      // Flip a new card from the deck
-
-      const cardAwarded = gameState.public.currentStatusCard;
-
-      players.forEach((player) => {
-        if (player.email === requestEmail) {
-          updatePlayerLastAction(player);
-          giveCurrentStatusCardToPlayer(player, gameState);
-          returnPlayersBidToHand(player);
-          maybeUseMinusCard(player, gameState);
-        } else {
-          player.currentBid = [];
-        }
-      });
-
-      revealNewStatusCard(gameState);
-
-      let message = "";
-
-      if (isGameOver(gameState)) {
-        gameState.public.status = "GAME_OVER";
-        const { currentStatusCard } = gameState.public;
-        message = `${currentStatusCard} was revealed. Game over.`;
-      }
-
-      const notification: Notification = {
-        timestamp: Date.now(),
-        title: `${requestEmail} passes and receives ${cardAwarded}.`,
-        message,
-      };
-
-      gameState.public.notification = notification;
-
-      await updateGameState(
-        gameState,
-        `${requestEmail} is the first to pass and receives ${cardAwarded}.`
-      );
-
-      // Theoretically a bot may be the first to make
-      // a move if there are 4 bots and 1 player.
-      // If a bot passes on a negative card it goes again.
-      // If a bot wins an auction, it goes again.
-      // Not gonna bother figuring out the actual highest
-      // bot move streak so lets settle for something.
-      let attemptsToLetBotMakeMove = 30;
-
-      while (
-        !isGameOver(gameState) &&
-        isActivePlayerBot(gameState) &&
-        attemptsToLetBotMakeMove > 0
-      ) {
-        attemptsToLetBotMakeMove--;
-        await maybeTakeBotTurn(gameState);
-      }
-
-      return {};
-    }
-
     const activePlayer = getActivePlayer(gameState);
 
-    updatePlayerLastAction(activePlayer);
-    setActivePlayerPass(gameState);
-    returnPlayersBidToHand(activePlayer);
+    await updateGameStateWithPass(gameState, activePlayer);
 
-    const playersWithActiveBids = getPlayersActivelyBidding(gameState);
+    // Theoretically a bot may be the first to make
+    // a move if there are 4 bots and 1 player.
+    // If a bot passes on a negative card it goes again.
+    // If a bot wins an auction, it goes again.
+    // Not gonna bother figuring out the actual highest
+    // bot move streak so lets settle for something.
+    let attemptsToLetBotMakeMove = 30;
 
-    if (playersWithActiveBids === 1) {
-      // Award the player with the only remaining bid the currentStatusCard
-      // All players who passed return their currentBid to their moneyCard
-      // Set all players hasPassed flags to false
-      // Flip a new card from the deck
-
-      let auctionWinner = "";
-      let totalBid = 0;
-      const cardAwarded = gameState.public.currentStatusCard;
-
-      players.forEach((player) => {
-        if (player.hasPassed === false) {
-          totalBid = (player.currentBid || []).reduce(
-            (sum: number, current: string) => Number(sum) + Number(current),
-            0
-          );
-
-          awardPlayerWithCurrentStatusCard(player, gameState);
-          auctionWinner = player.email;
-        }
-
-        player.hasPassed = false;
-      });
-
-      revealNewStatusCard(gameState);
-
-      let message = "";
-
-      if (isGameOver(gameState)) {
-        gameState.public.status = "GAME_OVER";
-        const { currentStatusCard } = gameState.public;
-        message = `${currentStatusCard} was revealed. Game over.`;
-      }
-
-      gameState.public.activePlayer = auctionWinner;
-
-      const notification: Notification = {
-        timestamp: Date.now(),
-        title: `${auctionWinner} won ${cardAwarded} for a total of ${totalBid}.`,
-        message,
-      };
-
-      gameState.public.notification = notification;
-
-      await updateGameState(gameState, `Player ${auctionWinner} won auction.`);
-
-      // Theoretically a bot may be the first to make
-      // a move if there are 4 bots and 1 player.
-      // If a bot passes on a negative card it goes again.
-      // If a bot wins an auction, it goes again.
-      // Not gonna bother figuring out the actual highest
-      // bot move streak so lets settle for something.
-      let attemptsToLetBotMakeMove = 30;
-
-      while (
-        !isGameOver(gameState) &&
-        isActivePlayerBot(gameState) &&
-        attemptsToLetBotMakeMove > 0
-      ) {
-        attemptsToLetBotMakeMove--;
-        await maybeTakeBotTurn(gameState);
-      }
-
-      return {};
-    } else {
-      // Update the next player
-      // Player who passed has their bid returned to their hand
-      updateNextActivePlayer(gameState);
-
-      const notification: Notification = {
-        timestamp: Date.now(),
-        title: `${requestEmail} passed.`,
-      };
-
-      gameState.public.notification = notification;
-
-      await updateGameState(gameState, `${requestEmail} has passed.`);
-
-      // Theoretically a bot may be the first to make
-      // a move if there are 4 bots and 1 player.
-      // If a bot passes on a negative card it goes again.
-      // If a bot wins an auction, it goes again.
-      // Not gonna bother figuring out the actual highest
-      // bot move streak so lets settle for something.
-      let attemptsToLetBotMakeMove = 30;
-
-      while (
-        !isGameOver(gameState) &&
-        isActivePlayerBot(gameState) &&
-        attemptsToLetBotMakeMove > 0
-      ) {
-        attemptsToLetBotMakeMove--;
-        await maybeTakeBotTurn(gameState);
-      }
-
-      return {};
+    while (
+      !isGameOver(gameState) &&
+      isActivePlayerBot(gameState) &&
+      attemptsToLetBotMakeMove > 0
+    ) {
+      attemptsToLetBotMakeMove--;
+      await maybeTakeBotTurn(gameState);
     }
   }
 );

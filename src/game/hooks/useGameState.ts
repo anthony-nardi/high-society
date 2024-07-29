@@ -1,12 +1,15 @@
 import { getDatabase, onValue, ref } from "firebase/database";
 import { GameState } from "../types";
 import { useEffect, useRef, useState } from "react";
+import { useLobbyContext } from "../../context/LobbyProvider";
+import { useUserContext } from "../../context/useUserContext";
 
-const useGameStatus = (lobbyId: number | null, isSignedIn: boolean) => {
+const useGameState = () => {
+  const { lobbyId } = useLobbyContext();
+  const { isSignedIn } = useUserContext();
+
   const [isLoading, setIsLoading] = useState(false);
-  const [gameStatus, setGameStatus] = useState<null | GameState["status"]>(
-    null
-  );
+  const [gameState, setGameState] = useState<null | GameState>(null);
   const lobbyIdFetched = useRef<number | null>(null);
 
   useEffect(() => {
@@ -18,26 +21,26 @@ const useGameStatus = (lobbyId: number | null, isSignedIn: boolean) => {
     }
     const db = getDatabase();
 
-    const lobbyRef = ref(db, "games/" + lobbyId + "/public/status");
+    const lobbyRef = ref(db, "games/" + lobbyId + "/public");
 
     onValue(
       lobbyRef,
       (snapshot) => {
-        const data = snapshot.val() as GameState["status"];
+        const data = snapshot.val() as GameState;
         setIsLoading(false);
-        setGameStatus(data);
+        setGameState(data);
       },
       (err) => {
         setIsLoading(false);
         console.log(err);
       }
     );
-  }, [isSignedIn, lobbyId, setGameStatus]);
+  }, [isSignedIn, lobbyId]);
 
   return {
     isLoading,
-    gameStatus,
+    gameState,
   };
 };
 
-export default useGameStatus;
+export default useGameState;

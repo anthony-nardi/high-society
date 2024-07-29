@@ -1,93 +1,55 @@
-import { Box, Center, Container, Grid } from "@mantine/core";
-import { User } from "firebase/auth";
-import { getDatabase, onValue, ref } from "firebase/database";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Box, Center, Container, Grid, Loader } from "@mantine/core";
+import { useMemo } from "react";
 import DeckOverview from "./components/DeckOverview";
 import PlayerOverview from "./components/PlayerOverview";
-import { GameState } from "./types";
-import { notifications } from "@mantine/notifications";
+import GameOver from "./components/GameOver";
+import { useLobbyContext } from "../context/LobbyProvider";
+import useGameState from "./hooks/useGameState";
+import { useUserContext } from "../context/useUserContext";
+import { useServerNotification } from "./hooks/useServerNotification";
 
-export default function Game({
-  lobbyId,
-  user,
-}: {
-  lobbyId: string;
-  user: User;
-}) {
-  const [gameData, setGameData] = useState<null | GameState>(null);
-  const listeningToLobby = useRef<string | null>(null);
-  const previousNotificationTimestamp = useRef<number>(0);
-  useEffect(() => {
-    if (listeningToLobby.current === lobbyId) {
-      return;
-    }
+export default function Game() {
+  const { user, isSignedIn } = useUserContext();
+  const { lobbyId } = useLobbyContext();
+  const { gameState } = useGameState();
 
-    listeningToLobby.current = lobbyId;
-
-    const db = getDatabase();
-
-    const lobbyRef = ref(db, "games/" + lobbyId + "/public");
-
-    onValue(lobbyRef, (snapshot) => {
-      const data = snapshot.val();
-      setGameData(() => {
-        const currentNotificationTimestamp =
-          (data && data.notification && data.notification.timestamp) || 0;
-
-        if (
-          previousNotificationTimestamp.current !== currentNotificationTimestamp
-        ) {
-          previousNotificationTimestamp.current = data.notification.timestamp;
-
-          notifications.show({
-            title: data.notification?.title as string,
-            message: (data.notification?.message || "") as string,
-            autoClose: 6000,
-            withBorder: true,
-            style: { backgroundColor: "#42384B" },
-            color: "#fff",
-          });
-        }
-        return data;
-      });
-    });
-  }, [lobbyId]);
+  useServerNotification();
 
   const deckInfo = useMemo(() => {
-    if (!gameData) {
+    if (!gameState) {
       return null;
     }
 
     return {
-      currentStatusCard: gameData.currentStatusCard,
-      remainingCards: gameData.remainingCards,
+      currentStatusCard: gameState.currentStatusCard,
+      remainingCards: gameState.remainingCards,
     };
-  }, [gameData]);
+  }, [gameState]);
 
   const playerInfo = useMemo(() => {
-    if (!gameData) {
+    if (!gameState) {
       return [];
     }
 
-    return gameData.players;
-  }, [gameData]);
+    return gameState.players;
+  }, [gameState]);
 
   const activePlayer = useMemo(() => {
-    if (!gameData) {
+    if (!gameState) {
       return "";
     }
 
-    return gameData.activePlayer;
-  }, [gameData]);
+    return gameState.activePlayer;
+  }, [gameState]);
 
   const highestBidTotal = useMemo(() => {
-    if (!gameData || !gameData.players) {
+    if (!gameState || !gameState.players) {
       return 0;
     }
 
     let highestBid = 0;
 
-    gameData.players.forEach((player) => {
+    gameState.players.forEach((player) => {
       const totalAmountBid = (player.currentBid || []).reduce((sum, curr) => {
         return Number(sum) + Number(curr);
       }, 0);
@@ -97,9 +59,41 @@ export default function Game({
     });
 
     return highestBid;
-  }, [gameData]);
+  }, [gameState]);
 
-  if (!gameData) {
+  const isInLobby = useMemo(() => {
+    return isSignedIn && !gameState;
+  }, [gameState, isSignedIn]);
+
+  const isGameActive = useMemo(() => {
+    return isSignedIn && gameState && gameState.status && lobbyId && user;
+  }, [gameState, isSignedIn, lobbyId, user]);
+
+  const isGameOver = useMemo(() => {
+    return isGameActive && gameState?.status === "GAME_OVER";
+  }, [gameState?.status, isGameActive]);
+
+  const isGameInProgress = useMemo(() => {
+    return isGameActive && gameState?.status === "IN_PROGRESS";
+  }, [gameState?.status, isGameActive]);
+
+  if (!isGameInProgress) {
+    return null;
+  }
+
+  if (!isInLobby && gameState === null) {
+    return (
+      <Center>
+        <Loader />
+      </Center>
+    );
+  }
+
+  if (isGameOver) {
+    return <GameOver lobbyId={lobbyId?.toString() as string} />;
+  }
+
+  if (!gameState) {
     return <>No game data...</>;
   }
 
@@ -123,8 +117,6 @@ export default function Game({
                       <PlayerOverview
                         player={player}
                         activePlayer={activePlayer}
-                        lobbyId={lobbyId}
-                        user={user}
                         highestBidTotal={highestBidTotal}
                       />
                     </Box>
