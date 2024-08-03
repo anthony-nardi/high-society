@@ -1,5 +1,5 @@
 import { getFunctions, httpsCallable } from "firebase/functions";
-import { CreateLobbyResponse } from "../lobby/types";
+import { CreateLobbyResponse } from "../../shared/lobby/types";
 
 export type GameName = "high-society" | "no-thanks";
 

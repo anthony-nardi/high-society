@@ -1,15 +1,14 @@
 import { getDatabase, onValue, ref } from "firebase/database";
-import { GameState } from "../types";
 import { useEffect, useRef, useState } from "react";
-import { useLobbyContext } from "../../context/LobbyProvider";
-import { useUserContext } from "../../context/useUserContext";
+import { useLobbyContext } from "../context/LobbyProvider";
+import { useUserContext } from "../context/useUserContext";
 
-const useGameState = () => {
+const useGameState = <GameStateType>() => {
   const { lobbyId } = useLobbyContext();
   const { isSignedIn } = useUserContext();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [gameState, setGameState] = useState<null | GameState>(null);
+  const [gameState, setGameState] = useState<null | GameStateType>(null);
   const lobbyIdFetched = useRef<number | null>(null);
 
   useEffect(() => {
@@ -26,7 +25,7 @@ const useGameState = () => {
     onValue(
       lobbyRef,
       (snapshot) => {
-        const data = snapshot.val() as GameState;
+        const data = snapshot.val() as GameStateType;
         setIsLoading(false);
         setGameState(data);
       },

@@ -1,7 +1,7 @@
 import { getDatabase, onValue, ref } from "firebase/database";
 import { useEffect, useRef } from "react";
 import { notifications } from "@mantine/notifications";
-import { useLobbyContext } from "../../context/LobbyProvider";
+import { useLobbyContext } from "../context/LobbyProvider";
 
 export const useServerNotification = () => {
   const { lobbyId } = useLobbyContext();

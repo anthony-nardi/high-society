@@ -2,18 +2,18 @@ import { useCallback, useMemo, useState } from "react";
 import PlayersList from "./components/PlayersList";
 import { Button, Center, Flex, Grid, Loader } from "@mantine/core";
 import ConnectedPlayersCount from "./components/ConnectedPlayersCount";
-import readyUp from "../client/readyUp";
-import addBot from "../client/addBot";
-import createLobby from "../client/createLobby";
+import readyUp from "../../high-society/client/readyUp";
+import addBot from "../../high-society/client/addBot";
+import createLobby, { GameName } from "../../high-society/client/createLobby";
 import { useLobbyContext } from "../context/LobbyProvider";
 import { useGameStateContext } from "../context/GameStateProvider";
 import { useUserContext } from "../context/useUserContext";
 
-export default function Lobby() {
+export default function Lobby({ gameName }: { gameName: GameName }) {
   const { user } = useUserContext();
   const { lobbyId, isLoadingLobbyData, lobbyData, isJoiningLobby } =
     useLobbyContext();
-  const { gameState } = useGameStateContext();
+  const { gameState } = useGameStateContext(gameName);
 
   const [isReadying, setIsReadying] = useState<null | boolean>(null);
   const [isCreatingLobby, setIsCreatingLobby] = useState<null | boolean>(null);
@@ -21,11 +21,11 @@ export default function Lobby() {
 
   const showBotButton = useMemo(() => {
     try {
-      return !!window.localStorage["high-society:bots"];
+      return !!window.localStorage[`${gameName}:bots`];
     } catch (e) {
       console.log(e);
     }
-  }, []);
+  }, [gameName]);
 
   const isCurrentUserReady = useMemo(() => {
     if (!user || !lobbyData) return false;
@@ -42,7 +42,7 @@ export default function Lobby() {
   const handleCreateLobby = useCallback(async () => {
     setIsCreatingLobby(true);
 
-    const lobby = await createLobby();
+    const lobby = await createLobby(gameName);
     window.location.hash = `#${lobby.data.lobbyUID}`;
 
     setIsCreatingLobby(false);

@@ -19,7 +19,7 @@ function App() {
           <GameStateProvider gameName={"no-thanks"}>
             <GameTitle />
             <Login />
-            <Lobby gameName="high-society" />
+            <Lobby gameName={"no-thanks"} />
             <Game />
           </GameStateProvider>
         </LobbyProvider>

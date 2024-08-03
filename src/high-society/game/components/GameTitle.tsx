@@ -1,5 +1,5 @@
 import { Center, Stack } from "@mantine/core";
-import { useGameStateContext } from "../../context/GameStateProvider";
+import { useGameStateContext } from "../../../shared/context/GameStateProvider";
 
 export default function GameTitle() {
   const { gameState } = useGameStateContext();

@@ -3,7 +3,7 @@ import { GameState, PlayerState } from "../types";
 import PlayerGameState from "./PlayerGameState";
 import PlayerRoundState from "./PlayerRoundState";
 import { useMemo } from "react";
-import { useUserContext } from "../../context/useUserContext";
+import { useUserContext } from "../../../shared/context/useUserContext";
 
 export default function PlayerOverview({
   player,

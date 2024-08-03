@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { firebaseConfig } from "../constants/firebaseConfig";
+import { firebaseConfig } from "../../high-society/constants/firebaseConfig";
 import { connectDatabaseEmulator, getDatabase } from "firebase/database";
 import { connectAuthEmulator, getAuth } from "firebase/auth";
 import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
