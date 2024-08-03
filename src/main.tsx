@@ -1,20 +1,29 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
+import HighSociety from "./high-society/App";
 import reportWebVitals from "./reportWebVitals";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <HighSociety />,
+  },
+]);
+
 root.render(
   <React.StrictMode>
     <MantineProvider defaultColorScheme="dark">
       <Notifications position="top-left" />
-      <App />
+      <RouterProvider router={router} />
     </MantineProvider>
   </React.StrictMode>
 );

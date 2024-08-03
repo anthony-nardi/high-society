@@ -104,35 +104,42 @@ exports.passturn = onCall(
   }
 );
 
-exports.createlobby = onCall(async (request) => {
-  verifyRequestAuthentication(request);
+exports.createlobby = onCall(
+  async (
+    request: CallableRequest<{
+      gameName: "high-society" | "no-thanks";
+    }>
+  ) => {
+    verifyRequestAuthentication(request);
 
-  const lobbyUID = Date.now().toString();
+    const lobbyUID = Date.now().toString();
 
-  return getDatabase()
-    .ref("/lobbies/" + lobbyUID)
-    .set({
-      id: lobbyUID,
-      game: "high-society",
-      players: [
-        {
-          email: request?.auth?.token.email || request?.auth?.token.uid,
-          ready: false,
-          joinedAt: Date.now().toString(),
-          isBot: false,
-        },
-      ],
-    })
-    .then(() => {
-      logger.info("New lobby created.");
-      return { lobbyUID };
-    })
-    .catch((error: Error) => {
-      // Re-throwing the error as an HttpsError so that the client gets
-      // the error details.
-      throw new HttpsError("unknown", error.message, error);
-    });
-});
+    return getDatabase()
+      .ref("/lobbies/" + lobbyUID)
+      .set({
+        id: lobbyUID,
+        game: "high-society",
+        players: [
+          {
+            email: request?.auth?.token.email || request?.auth?.token.uid,
+            ready: false,
+            joinedAt: Date.now().toString(),
+            isBot: false,
+            gameName: request.data.gameName,
+          },
+        ],
+      })
+      .then(() => {
+        logger.info(`New lobby created for ${request.data.gameName}`);
+        return { lobbyUID };
+      })
+      .catch((error: Error) => {
+        // Re-throwing the error as an HttpsError so that the client gets
+        // the error details.
+        throw new HttpsError("unknown", error.message, error);
+      });
+  }
+);
 
 exports.joinlobby = onCall(
   async (
