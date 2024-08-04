@@ -117,6 +117,7 @@ export default function Lobby({ gameName }: { gameName: GameName }) {
               styles={{ root: { marginBottom: "16px" } }}
             >
               <ConnectedPlayersCount
+                gameName={gameName}
                 players={(lobbyData && lobbyData.players) || []}
               />
               {!isCurrentUserReady && (

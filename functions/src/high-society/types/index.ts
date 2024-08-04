@@ -1,3 +1,5 @@
+import { GenericGameState, GenericPlayerState } from "../../shared/types";
+
 export type GameStatus = "IN_PROGRESS" | "GAME_OVER";
 
 export type Notification = {
@@ -6,7 +8,7 @@ export type Notification = {
   timestamp: number;
 };
 
-export type PlayerState = {
+export type PlayerState = GenericPlayerState & {
   email: string;
   lastActionAt: number;
   moneyCards: string[];
@@ -32,7 +34,7 @@ export type PrivateGameState = {
   deck: string[];
 };
 
-export type HighSocietyGameState = {
+export type HighSocietyGameState = GenericGameState & {
   public: PublicGameState;
   private: PrivateGameState;
 };

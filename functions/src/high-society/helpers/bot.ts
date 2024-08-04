@@ -1,5 +1,5 @@
 import { VertexAI } from "@google-cloud/vertexai";
-import { HighSocietyGameState } from "../high-society/types";
+import { HighSocietyGameState } from "../types";
 import {
   getActivePlayer,
   getBidValue,

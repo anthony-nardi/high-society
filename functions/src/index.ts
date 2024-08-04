@@ -12,6 +12,7 @@ import {
   getGameState,
   isActivePlayerTakingAction,
   isGameOver,
+  isNoThanksGameState,
   updateGameStateWithBid,
   updateGameStateWithPass,
   verifyRequestAuthentication,
@@ -21,6 +22,8 @@ import {
   maybeTakeBotTurn,
 } from "./high-society/helpers/bot";
 import { getGameName, createGame } from "./shared/helpers";
+import { HighSocietyGameState } from "./high-society/types";
+import { NoThanksGameState } from "./no-thanks/types";
 
 admin.initializeApp();
 
@@ -35,7 +38,7 @@ exports.bid = onCall(
 
     const { lobbyUID, bid } = request.data;
     const requestEmail = getEmailFromRequest(request);
-    const gameState = await getGameState(lobbyUID);
+    const gameState = (await getGameState(lobbyUID)) as HighSocietyGameState;
 
     if (!isActivePlayerTakingAction(gameState, requestEmail)) {
       return;
@@ -333,5 +336,47 @@ exports.readyup = onCall(
         // the error details.
         throw new HttpsError("unknown", error.message, error);
       });
+  }
+);
+
+exports.takeActiveCard = onCall(
+  async (
+    request: CallableRequest<{
+      lobbyUID: string;
+    }>
+  ) => {
+    verifyRequestAuthentication(request);
+
+    const requestEmail = getEmailFromRequest(request);
+    const { lobbyUID } = request.data;
+
+    const gameState = await getGameState<NoThanksGameState>(lobbyUID);
+
+    if (isNoThanksGameState(gameState)) {
+      if (!isActivePlayerTakingAction(gameState, requestEmail)) {
+        return;
+      }
+
+      const activePlayer = getActivePlayer(gameState);
+
+      await updateGameStateWithPass(gameState, activePlayer);
+
+      // Theoretically a bot may be the first to make
+      // a move if there are 4 bots and 1 player.
+      // If a bot passes on a negative card it goes again.
+      // If a bot wins an auction, it goes again.
+      // Not gonna bother figuring out the actual highest
+      // bot move streak so lets settle for something.
+      let attemptsToLetBotMakeMove = 30;
+
+      while (
+        !isGameOver(gameState) &&
+        isActivePlayerBot(gameState) &&
+        attemptsToLetBotMakeMove > 0
+      ) {
+        attemptsToLetBotMakeMove--;
+        await maybeTakeBotTurn(gameState);
+      }
+    }
   }
 );

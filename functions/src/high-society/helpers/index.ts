@@ -3,6 +3,8 @@ import { logger } from "firebase-functions/v2";
 import { getDatabase } from "firebase-admin/database";
 import { HighSocietyGameState, Notification, PlayerState } from "../types";
 import { shuffle } from "../../shared/helpers";
+import { NoThanksGameState } from "../../no-thanks/types";
+import { GenericGameState, GenericPlayerState } from "../../shared/types";
 
 export const STATUS_CARDS_THAT_END_ROUND_ON_FIRST_PASS = ["-5", "1/2", "-"];
 export const GREEN_CARDS = ["2x", "1/2"];
@@ -31,9 +33,21 @@ export function verifyRequestAuthentication(request: CallableRequest) {
   }
 }
 
-export async function getGameState(lobbyUID: string) {
+export function isHighSocietyGameState(
+  gameStateSnapshot: any
+): gameStateSnapshot is HighSocietyGameState {
+  return gameStateSnapshot.public.gameName === "high-society";
+}
+
+export function isNoThanksGameState(
+  gameStateSnapshot: any
+): gameStateSnapshot is NoThanksGameState {
+  return gameStateSnapshot.public.gameName === "no-thanks";
+}
+
+export async function getGameState<T>(lobbyUID: string): Promise<T> {
   const gameState = await getDatabase().ref(`games/${lobbyUID}`).get();
-  return gameState.val() as HighSocietyGameState;
+  return gameState.val();
 }
 
 export function revealNewStatusCard(gameState: HighSocietyGameState) {
@@ -83,7 +97,7 @@ export function getEmailFromRequest(request: CallableRequest) {
 }
 
 export function isActivePlayerTakingAction(
-  gameState: HighSocietyGameState,
+  gameState: GenericGameState,
   requestEmail: string
 ) {
   return gameState.public.activePlayer === requestEmail;
@@ -95,7 +109,7 @@ export function getActivePlayerIndex(gameState: HighSocietyGameState) {
   );
 }
 
-export function getActivePlayer(gameState: HighSocietyGameState) {
+export function getActivePlayer(gameState: GenericGameState) {
   const activePlayerIndex = gameState.public.players.findIndex(
     (player) => player.email === gameState.public.activePlayer
   );
@@ -130,7 +144,7 @@ export function getNextPlayerIndex(gameState: HighSocietyGameState) {
   return indexOfNextPlayer;
 }
 
-export function updatePlayerLastAction(player: PlayerState) {
+export function updatePlayerLastAction(player: GenericPlayerState) {
   player.lastActionAt = Date.now();
 }
 
