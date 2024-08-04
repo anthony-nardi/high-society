@@ -16,7 +16,7 @@ function App() {
     <div className="App">
       <UserProvider>
         <LobbyProvider>
-          <GameStateProvider gameName={"no-thanks"}>
+          <GameStateProvider gameName={"high-society"}>
             <GameTitle />
             <Login />
             <Lobby gameName="high-society" />

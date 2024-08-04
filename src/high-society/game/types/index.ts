@@ -6,7 +6,7 @@ export type Notification = {
   timestamp: number;
 };
 
-export type PlayerState = {
+export type HighSocietyPlayerState = {
   email: string;
   lastActionAt: number;
   moneyCards: string[];
@@ -15,10 +15,10 @@ export type PlayerState = {
   hasPassed: boolean;
 };
 
-export type GameState = {
+export type HighSocietyGameState = {
   id: string;
   game: string;
-  players: PlayerState[];
+  players: HighSocietyPlayerState[];
   activePlayer: string;
   startAt: string;
   status: GameStatus;

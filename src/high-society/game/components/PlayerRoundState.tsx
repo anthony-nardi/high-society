@@ -6,7 +6,7 @@ import {
   Popover,
   Tooltip,
 } from "@mantine/core";
-import { PlayerState } from "../types";
+import { HighSocietyPlayerState } from "../types";
 import { useCallback, useMemo, useState } from "react";
 import passTurn from "../../client/passTurn";
 import bid from "../../client/bid";
@@ -17,7 +17,7 @@ export default function PlayerRoundState({
   isLoggedInUserActivePlayer,
   highestBidTotal,
 }: {
-  player: PlayerState;
+  player: HighSocietyPlayerState;
   isLoggedInUserActivePlayer: boolean;
   highestBidTotal: number;
 }) {

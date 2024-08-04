@@ -7,12 +7,12 @@ import { useLobbyContext } from "../../shared/context/LobbyProvider";
 import useGameState from "../../shared/hooks/useGameState";
 import { useUserContext } from "../../shared/context/useUserContext";
 import { useServerNotification } from "../../shared/hooks/useServerNotification";
-import { GameState } from "./types";
+import { HighSocietyGameState } from "./types";
 
 export default function Game() {
   const { user, isSignedIn } = useUserContext();
   const { lobbyId } = useLobbyContext();
-  const { gameState } = useGameState<GameState>();
+  const { gameState } = useGameState<HighSocietyGameState>();
 
   useServerNotification();
 

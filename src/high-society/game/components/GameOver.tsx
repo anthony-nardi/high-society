@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { GameState } from "../types";
+import { HighSocietyGameState } from "../types";
 import { getDatabase, onValue, ref } from "firebase/database";
 import { Box, Center, Flex } from "@mantine/core";
 
@@ -14,14 +14,14 @@ type MapOfPlayersToMetadata = {
 };
 
 export default function GameOver({ lobbyId }: { lobbyId: string }) {
-  const [gameData, setGameData] = useState<null | GameState>(null);
+  const [gameData, setGameData] = useState<null | HighSocietyGameState>(null);
   useEffect(() => {
     const db = getDatabase();
 
     const lobbyRef = ref(db, "games/" + lobbyId + "/public");
 
     onValue(lobbyRef, (snapshot) => {
-      const data = snapshot.val();
+      const data = snapshot.val() as HighSocietyGameState;
       setGameData(data);
     });
   }, [lobbyId]);

@@ -1,7 +1,7 @@
 import { createContext, useContext } from "react";
 import useGameState from "../hooks/useGameState";
 import { GameName } from "../../high-society/client/createLobby";
-import { GameState as HighSocietyGameState } from "../../high-society/game/types";
+import { HighSocietyGameState as HighSocietyGameState } from "../../high-society/game/types";
 import { NoThanksGameState } from "../../no-thanks/game/types";
 
 type GameState<T extends string> = T extends "high-society"
@@ -57,7 +57,6 @@ export function useGameStateContext<T extends string>(
   isGameStatusLoading: boolean | null;
 } {
   let returnVal;
-
   if (gameType === "high-society") {
     // eslint-disable-next-line
     returnVal = useHighSocietyGameState();
@@ -79,6 +78,7 @@ export const GameStateProvider = ({
 }) => {
   const { isLoading: isGameStatusLoading, gameState } =
     useGameState<GameState<typeof gameName>>();
+
   if (gameName === "high-society") {
     return (
       <HighSocietyContext.Provider

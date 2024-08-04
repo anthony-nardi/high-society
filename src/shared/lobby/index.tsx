@@ -14,7 +14,6 @@ export default function Lobby({ gameName }: { gameName: GameName }) {
   const { lobbyId, isLoadingLobbyData, lobbyData, isJoiningLobby } =
     useLobbyContext();
   const { gameState } = useGameStateContext(gameName);
-
   const [isReadying, setIsReadying] = useState<null | boolean>(null);
   const [isCreatingLobby, setIsCreatingLobby] = useState<null | boolean>(null);
   const [isAddingBot, setIsAddingBot] = useState<null | boolean>(null);
@@ -46,7 +45,7 @@ export default function Lobby({ gameName }: { gameName: GameName }) {
     window.location.hash = `#${lobby.data.lobbyUID}`;
 
     setIsCreatingLobby(false);
-  }, []);
+  }, [gameName]);
 
   const handleAddBot = useCallback(async () => {
     if (!user || !user.email || !lobbyId) {

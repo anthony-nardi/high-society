@@ -1,5 +1,5 @@
 import { Box, Flex } from "@mantine/core";
-import { GameState, PlayerState } from "../types";
+import { HighSocietyGameState, HighSocietyPlayerState } from "../types";
 import PlayerGameState from "./PlayerGameState";
 import PlayerRoundState from "./PlayerRoundState";
 import { useMemo } from "react";
@@ -10,8 +10,8 @@ export default function PlayerOverview({
   activePlayer,
   highestBidTotal,
 }: {
-  player: PlayerState;
-  activePlayer: GameState["activePlayer"];
+  player: HighSocietyPlayerState;
+  activePlayer: HighSocietyGameState["activePlayer"];
   highestBidTotal: number;
 }) {
   const { user } = useUserContext();

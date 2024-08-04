@@ -1,13 +1,13 @@
 import CardBack from "../../card/CardBack";
 import CardFront from "../../card/CardFront";
-import { GameState } from "../types";
+import { HighSocietyGameState } from "../types";
 
 export default function DeckOverview({
   deckInfo,
 }: {
   deckInfo: {
-    currentStatusCard: GameState["currentStatusCard"];
-    remainingCards: GameState["remainingCards"];
+    currentStatusCard: HighSocietyGameState["currentStatusCard"];
+    remainingCards: HighSocietyGameState["remainingCards"];
   } | null;
 }) {
   if (deckInfo === null) {

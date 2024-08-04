@@ -2,7 +2,7 @@ import { Center, Stack } from "@mantine/core";
 import { useGameStateContext } from "../../../shared/context/GameStateProvider";
 
 export default function GameTitle() {
-  const { gameState } = useGameStateContext();
+  const { gameState } = useGameStateContext("high-society");
 
   if (gameState) {
     return null;

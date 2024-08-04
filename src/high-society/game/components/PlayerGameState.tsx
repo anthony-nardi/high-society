@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { PlayerState } from "../types";
+import { HighSocietyPlayerState } from "../types";
 import { Flex } from "@mantine/core";
 import CardFront from "../../card/CardFront";
 
@@ -7,7 +7,7 @@ export default function PlayerGameState({
   player,
   loggedInUser,
 }: {
-  player: PlayerState;
+  player: HighSocietyPlayerState;
   loggedInUser: string;
 }) {
   const renderedStatusCards = useMemo(() => {
