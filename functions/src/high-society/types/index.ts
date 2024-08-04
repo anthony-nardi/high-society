@@ -32,7 +32,7 @@ export type PrivateGameState = {
   deck: string[];
 };
 
-export type GameState = {
+export type HighSocietyGameState = {
   public: PublicGameState;
   private: PrivateGameState;
 };

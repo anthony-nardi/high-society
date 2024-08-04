@@ -1,7 +1,8 @@
 import { HttpsError, CallableRequest } from "firebase-functions/v2/https";
 import { logger } from "firebase-functions/v2";
 import { getDatabase } from "firebase-admin/database";
-import { GameState, Notification, PlayerState } from "../types";
+import { HighSocietyGameState, Notification, PlayerState } from "../types";
+import { shuffle } from "../../shared/helpers";
 
 export const STATUS_CARDS_THAT_END_ROUND_ON_FIRST_PASS = ["-5", "1/2", "-"];
 export const GREEN_CARDS = ["2x", "1/2"];
@@ -32,10 +33,10 @@ export function verifyRequestAuthentication(request: CallableRequest) {
 
 export async function getGameState(lobbyUID: string) {
   const gameState = await getDatabase().ref(`games/${lobbyUID}`).get();
-  return gameState.val() as GameState;
+  return gameState.val() as HighSocietyGameState;
 }
 
-export function revealNewStatusCard(gameState: GameState) {
+export function revealNewStatusCard(gameState: HighSocietyGameState) {
   gameState.private.deck.shift();
   gameState.public.currentStatusCard = gameState.private.deck[0];
   gameState.public.remainingCards = gameState.private.deck.length;
@@ -51,7 +52,7 @@ export function returnPlayersBidToHand(player: PlayerState) {
   player.currentBid = [];
 }
 
-export function isGameOver(gameState: GameState) {
+export function isGameOver(gameState: HighSocietyGameState) {
   const deck = gameState.private.deck;
   const currentStatusCard = gameState.public.currentStatusCard;
 
@@ -69,7 +70,9 @@ export function isGameOver(gameState: GameState) {
   return false;
 }
 
-export function getDoesBiddingRoundEndOnFirstPass(gameState: GameState) {
+export function getDoesBiddingRoundEndOnFirstPass(
+  gameState: HighSocietyGameState
+) {
   return STATUS_CARDS_THAT_END_ROUND_ON_FIRST_PASS.includes(
     gameState.public.currentStatusCard
   );
@@ -80,19 +83,19 @@ export function getEmailFromRequest(request: CallableRequest) {
 }
 
 export function isActivePlayerTakingAction(
-  gameState: GameState,
+  gameState: HighSocietyGameState,
   requestEmail: string
 ) {
   return gameState.public.activePlayer === requestEmail;
 }
 
-export function getActivePlayerIndex(gameState: GameState) {
+export function getActivePlayerIndex(gameState: HighSocietyGameState) {
   return gameState.public.players.findIndex(
     (player) => player.email === gameState.public.activePlayer
   );
 }
 
-export function getActivePlayer(gameState: GameState) {
+export function getActivePlayer(gameState: HighSocietyGameState) {
   const activePlayerIndex = gameState.public.players.findIndex(
     (player) => player.email === gameState.public.activePlayer
   );
@@ -100,7 +103,7 @@ export function getActivePlayer(gameState: GameState) {
   return gameState.public.players[activePlayerIndex];
 }
 
-export function getNextPlayerIndex(gameState: GameState) {
+export function getNextPlayerIndex(gameState: HighSocietyGameState) {
   const indexOfCurrentPlayer = getActivePlayerIndex(gameState);
 
   let indexOfNextPlayer = indexOfCurrentPlayer + 1;
@@ -139,14 +142,17 @@ export function updatePlayersBid(player: PlayerState, bid: string[]) {
   player.moneyCards = updatedMoneyCards;
 }
 
-export function updateNextActivePlayer(gameState: GameState) {
+export function updateNextActivePlayer(gameState: HighSocietyGameState) {
   const indexOfNextPlayer = getNextPlayerIndex(gameState);
 
   gameState.public.activePlayer =
     gameState.public.players[indexOfNextPlayer].email;
 }
 
-export function updateGameState(gameState: GameState, message: string) {
+export function updateGameState(
+  gameState: HighSocietyGameState,
+  message: string
+) {
   return getDatabase()
     .ref("/games/" + gameState.public.id)
     .set(gameState)
@@ -163,13 +169,16 @@ export function updateGameState(gameState: GameState, message: string) {
 
 export function giveCurrentStatusCardToPlayer(
   player: PlayerState,
-  gameState: GameState
+  gameState: HighSocietyGameState
 ) {
   player.statusCards = player.statusCards || [];
   player.statusCards.push(gameState.public.currentStatusCard);
 }
 
-export function maybeUseMinusCard(player: PlayerState, gameState: GameState) {
+export function maybeUseMinusCard(
+  player: PlayerState,
+  gameState: HighSocietyGameState
+) {
   player.statusCards = player.statusCards || [];
 
   if (gameState.public.currentStatusCard === MINUS_CARD) {
@@ -189,12 +198,12 @@ export function maybeUseMinusCard(player: PlayerState, gameState: GameState) {
   }
 }
 
-export function setActivePlayerPass(gameState: GameState) {
+export function setActivePlayerPass(gameState: HighSocietyGameState) {
   const activePlayer = getActivePlayer(gameState);
   activePlayer.hasPassed = true;
 }
 
-export function getPlayersActivelyBidding(gameState: GameState) {
+export function getPlayersActivelyBidding(gameState: HighSocietyGameState) {
   const players = gameState.public.players;
   let playersWithActiveBids = 0;
 
@@ -209,7 +218,7 @@ export function getPlayersActivelyBidding(gameState: GameState) {
 
 export function awardPlayerWithCurrentStatusCard(
   player: PlayerState,
-  gameState: GameState
+  gameState: HighSocietyGameState
 ) {
   player.statusCards = player.statusCards || [];
 
@@ -230,24 +239,7 @@ export function awardPlayerWithCurrentStatusCard(
   player.currentBid = [];
 }
 
-export function shuffle(array: string[]) {
-  let currentIndex = array.length;
-
-  // While there remain elements to shuffle...
-  while (currentIndex != 0) {
-    // Pick a remaining element...
-    const randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-
-    // And swap it with the current element.
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex],
-      array[currentIndex],
-    ];
-  }
-}
-
-export async function createGame(lobbyUID: string) {
+export async function createHighSocietyGameState(lobbyUID: string) {
   const players = await getDatabase().ref(`lobbies/${lobbyUID}/players`).get();
 
   const playersMetadata = players.val().map((player: any) => {
@@ -311,7 +303,7 @@ export async function createGame(lobbyUID: string) {
     });
 }
 
-export function getHighestCurrentBid(gameState: GameState) {
+export function getHighestCurrentBid(gameState: HighSocietyGameState) {
   let highestBid = 0;
 
   gameState.public.players.forEach((player) => {
@@ -339,7 +331,7 @@ export async function wait(milliseconds: number) {
 }
 
 export async function updateGameStateWithBid(
-  gameState: GameState,
+  gameState: HighSocietyGameState,
   activePlayer: PlayerState,
   bid: string[]
 ) {
@@ -366,7 +358,7 @@ export async function updateGameStateWithBid(
 }
 
 export async function updateGameStateWithPass(
-  gameState: GameState,
+  gameState: HighSocietyGameState,
   activePlayer: PlayerState
 ) {
   const doesBiddingRoundEndOnFirstPass =

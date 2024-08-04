@@ -1,5 +1,5 @@
 import { VertexAI } from "@google-cloud/vertexai";
-import { GameState } from "../types";
+import { HighSocietyGameState } from "../high-society/types";
 import {
   getActivePlayer,
   getBidValue,
@@ -63,7 +63,7 @@ const generativeModel = vertexAI.getGenerativeModel({
   model: textModel,
 });
 
-function buildGameStatePrompt(gameState: GameState) {
+function buildGameStatePrompt(gameState: HighSocietyGameState) {
   const activePlayer = getActivePlayer(gameState);
   const currentAuctionedCard = gameState.public.currentStatusCard;
   const currentHighBid = getHighestCurrentBid(gameState);
@@ -204,7 +204,7 @@ function extractPassFromResponse(str: string) {
   return undefined;
 }
 
-export async function generateContent(gameState: GameState) {
+export async function generateContent(gameState: HighSocietyGameState) {
   const prompt = buildGameStatePrompt(gameState);
 
   const request = {
@@ -264,7 +264,7 @@ export async function generateContent(gameState: GameState) {
 }
 
 export function isValidSuggestedBid(
-  gameState: GameState,
+  gameState: HighSocietyGameState,
   suggestedAction: string[]
 ) {
   const activePlayer = getActivePlayer(gameState);
@@ -291,7 +291,7 @@ export function isValidSuggestedBid(
   return true;
 }
 
-export async function maybeTakeBotTurn(gameState: GameState) {
+export async function maybeTakeBotTurn(gameState: HighSocietyGameState) {
   const activePlayer = getActivePlayer(gameState);
 
   if (!activePlayer.isBot) {
@@ -328,6 +328,6 @@ export async function maybeTakeBotTurn(gameState: GameState) {
   }
 }
 
-export function isActivePlayerBot(gameState: GameState) {
+export function isActivePlayerBot(gameState: HighSocietyGameState) {
   return getActivePlayer(gameState).isBot;
 }

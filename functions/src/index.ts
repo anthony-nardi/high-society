@@ -7,7 +7,6 @@ import {
 import { logger } from "firebase-functions/v2";
 import { getDatabase } from "firebase-admin/database";
 import {
-  createGame,
   getActivePlayer,
   getEmailFromRequest,
   getGameState,
@@ -16,8 +15,12 @@ import {
   updateGameStateWithBid,
   updateGameStateWithPass,
   verifyRequestAuthentication,
-} from "./helpers";
-import { isActivePlayerBot, maybeTakeBotTurn } from "./helpers/bot";
+} from "./high-society/helpers";
+import {
+  isActivePlayerBot,
+  maybeTakeBotTurn,
+} from "./high-society/helpers/bot";
+import { getGameName, createGame } from "./shared/helpers";
 
 admin.initializeApp();
 
@@ -167,19 +170,8 @@ exports.joinlobby = onCall(
 
     const playersSnapshotValue = players.val();
 
-    let maxPlayers = 0;
-    let gameName = "";
-    if (
-      playersSnapshotValue &&
-      playersSnapshotValue[0] &&
-      playersSnapshotValue[0].gameName === "high-society"
-    ) {
-      maxPlayers = 5;
-      gameName = "high-society";
-    } else {
-      maxPlayers = 7;
-      gameName = "no-thanks";
-    }
+    const gameName = getGameName(playersSnapshotValue);
+    const maxPlayers = gameName === "high-society" ? 5 : 7;
 
     if (playersSnapshotValue.length >= maxPlayers) {
       return;
@@ -245,19 +237,8 @@ exports.addbot = onCall(
 
     const playersSnapshotValue = players.val();
 
-    let maxPlayers = 0;
-    let gameName = "";
-    if (
-      playersSnapshotValue &&
-      playersSnapshotValue[0] &&
-      playersSnapshotValue[0].gameName === "high-society"
-    ) {
-      maxPlayers = 5;
-      gameName = "high-society";
-    } else {
-      maxPlayers = 7;
-      gameName = "no-thanks";
-    }
+    const gameName = getGameName(playersSnapshotValue);
+    const maxPlayers = gameName === "high-society" ? 5 : 7;
 
     if (playersSnapshotValue.length >= maxPlayers) {
       return;
@@ -331,8 +312,10 @@ exports.readyup = onCall(
     });
 
     if (playersSnapshotValue.length >= 3 && areAllPlayersReady) {
+      const gameName = getGameName(playersSnapshotValue);
+
       try {
-        await createGame(lobbyUID);
+        await createGame(lobbyUID, gameName);
       } catch (e) {
         console.log(e);
       }
