@@ -1,10 +1,18 @@
 import { HttpsError, CallableRequest } from "firebase-functions/v2/https";
 import { logger } from "firebase-functions/v2";
 import { getDatabase } from "firebase-admin/database";
-import { HighSocietyGameState, Notification, PlayerState } from "../types";
-import { shuffle } from "../../shared/helpers";
+import { HighSocietyGameState, HighSocietyPlayerState } from "../types";
+import {
+  shuffle,
+  updateGameState,
+  updatePlayerLastAction,
+} from "../../shared/helpers";
 import { NoThanksGameState } from "../../no-thanks/types";
-import { GenericGameState, GenericPlayerState } from "../../shared/types";
+import {
+  GenericGameState,
+  GenericPlayerState,
+  Notification,
+} from "../../shared/types";
 
 export const STATUS_CARDS_THAT_END_ROUND_ON_FIRST_PASS = ["-5", "1/2", "-"];
 export const GREEN_CARDS = ["2x", "1/2"];
@@ -56,7 +64,7 @@ export function revealNewStatusCard(gameState: HighSocietyGameState) {
   gameState.public.remainingCards = gameState.private.deck.length;
 }
 
-export function returnPlayersBidToHand(player: PlayerState) {
+export function returnPlayersBidToHand(player: HighSocietyPlayerState) {
   player.currentBid = player.currentBid || [];
 
   for (const bid of player.currentBid) {
@@ -109,7 +117,10 @@ export function getActivePlayerIndex(gameState: HighSocietyGameState) {
   );
 }
 
-export function getActivePlayer(gameState: GenericGameState) {
+// Generic function to get the active player
+export function getActivePlayer<T extends GenericPlayerState>(
+  gameState: GenericGameState<T>
+): T {
   const activePlayerIndex = gameState.public.players.findIndex(
     (player) => player.email === gameState.public.activePlayer
   );
@@ -144,11 +155,10 @@ export function getNextPlayerIndex(gameState: HighSocietyGameState) {
   return indexOfNextPlayer;
 }
 
-export function updatePlayerLastAction(player: GenericPlayerState) {
-  player.lastActionAt = Date.now();
-}
-
-export function updatePlayersBid(player: PlayerState, bid: string[]) {
+export function updatePlayersBid(
+  player: HighSocietyPlayerState,
+  bid: string[]
+) {
   player.currentBid = (player.currentBid || []).concat(bid);
   const updatedMoneyCards = player.moneyCards.filter(
     (card) => !bid.includes(card)
@@ -163,26 +173,8 @@ export function updateNextActivePlayer(gameState: HighSocietyGameState) {
     gameState.public.players[indexOfNextPlayer].email;
 }
 
-export function updateGameState(
-  gameState: HighSocietyGameState,
-  message: string
-) {
-  return getDatabase()
-    .ref("/games/" + gameState.public.id)
-    .set(gameState)
-    .then(() => {
-      logger.info(message);
-      return {};
-    })
-    .catch((error: Error) => {
-      // Re-throwing the error as an HttpsError so that the client gets
-      // the error details.
-      throw new HttpsError("unknown", error.message, error);
-    });
-}
-
 export function giveCurrentStatusCardToPlayer(
-  player: PlayerState,
+  player: HighSocietyPlayerState,
   gameState: HighSocietyGameState
 ) {
   player.statusCards = player.statusCards || [];
@@ -190,7 +182,7 @@ export function giveCurrentStatusCardToPlayer(
 }
 
 export function maybeUseMinusCard(
-  player: PlayerState,
+  player: HighSocietyPlayerState,
   gameState: HighSocietyGameState
 ) {
   player.statusCards = player.statusCards || [];
@@ -231,7 +223,7 @@ export function getPlayersActivelyBidding(gameState: HighSocietyGameState) {
 }
 
 export function awardPlayerWithCurrentStatusCard(
-  player: PlayerState,
+  player: HighSocietyPlayerState,
   gameState: HighSocietyGameState
 ) {
   player.statusCards = player.statusCards || [];
@@ -320,7 +312,9 @@ export async function createHighSocietyGameState(lobbyUID: string) {
 export function getHighestCurrentBid(gameState: HighSocietyGameState) {
   let highestBid = 0;
 
-  gameState.public.players.forEach((player) => {
+  const players: HighSocietyPlayerState[] = gameState.public.players;
+
+  players.forEach((player) => {
     const playersBid = (player.currentBid || []).reduce(
       (sum, current) => Number(sum) + Number(current),
       0
@@ -346,7 +340,7 @@ export async function wait(milliseconds: number) {
 
 export async function updateGameStateWithBid(
   gameState: HighSocietyGameState,
-  activePlayer: PlayerState,
+  activePlayer: HighSocietyPlayerState,
   bid: string[]
 ) {
   updatePlayerLastAction(activePlayer);
@@ -373,7 +367,7 @@ export async function updateGameStateWithBid(
 
 export async function updateGameStateWithPass(
   gameState: HighSocietyGameState,
-  activePlayer: PlayerState
+  activePlayer: HighSocietyPlayerState
 ) {
   const doesBiddingRoundEndOnFirstPass =
     getDoesBiddingRoundEndOnFirstPass(gameState);
@@ -387,7 +381,7 @@ export async function updateGameStateWithPass(
     // Flip a new card from the deck
 
     const cardAwarded = gameState.public.currentStatusCard;
-    const players = gameState.public.players;
+    const players: HighSocietyPlayerState[] = gameState.public.players;
 
     players.forEach((player) => {
       if (player.email === activePlayer.email) {
@@ -440,7 +434,7 @@ export async function updateGameStateWithPass(
     let totalBid = 0;
     const cardAwarded = gameState.public.currentStatusCard;
 
-    const players = gameState.public.players;
+    const players: HighSocietyPlayerState[] = gameState.public.players;
 
     players.forEach((player) => {
       if (player.hasPassed === false) {

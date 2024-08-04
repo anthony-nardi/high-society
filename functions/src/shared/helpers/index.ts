@@ -1,6 +1,14 @@
-import { GameName, PlayerInLobby } from "../types";
+import {
+  GameName,
+  GenericGameState,
+  GenericPlayerState,
+  PlayerInLobby,
+} from "../types";
 import { createHighSocietyGameState } from "../../high-society/helpers";
 import { createNoThanksGameState } from "../../no-thanks/helpers";
+import { getDatabase } from "firebase-admin/database";
+import { logger } from "firebase-functions/v2";
+import { HttpsError } from "firebase-functions/v2/https";
 
 export function getGameName(playersInLobby: PlayerInLobby[]) {
   return playersInLobby[0].gameName;
@@ -31,4 +39,26 @@ export function shuffle(array: string[] | number[]) {
       array[currentIndex],
     ];
   }
+}
+
+export function updatePlayerLastAction(player: GenericPlayerState) {
+  player.lastActionAt = Date.now();
+}
+
+export function updateGameState<T extends GenericPlayerState>(
+  gameState: GenericGameState<T>,
+  message: string
+) {
+  return getDatabase()
+    .ref("/games/" + gameState.public.id)
+    .set(gameState)
+    .then(() => {
+      logger.info(message);
+      return {};
+    })
+    .catch((error: Error) => {
+      // Re-throwing the error as an HttpsError so that the client gets
+      // the error details.
+      throw new HttpsError("unknown", error.message, error);
+    });
 }

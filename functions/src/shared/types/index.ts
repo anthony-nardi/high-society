@@ -22,11 +22,14 @@ export type GenericPlayerState = {
   isBot: boolean;
 };
 
-export type GenericGameState = {
+// Define the GenericGameState type
+export type GenericGameState<
+  PlayerType extends GenericPlayerState = GenericPlayerState
+> = {
   public: {
     id: string;
     game: GameName;
-    players: GenericPlayerState[];
+    players: PlayerType[];
     activePlayer: string;
     startAt: string;
     status: GameStatus;
