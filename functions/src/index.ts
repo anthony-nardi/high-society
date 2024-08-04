@@ -167,7 +167,21 @@ exports.joinlobby = onCall(
 
     const playersSnapshotValue = players.val();
 
-    if (playersSnapshotValue.length >= 5) {
+    let maxPlayers = 0;
+    let gameName = "";
+    if (
+      playersSnapshotValue &&
+      playersSnapshotValue[0] &&
+      playersSnapshotValue[0].gameName === "high-society"
+    ) {
+      maxPlayers = 5;
+      gameName = "high-society";
+    } else {
+      maxPlayers = 7;
+      gameName = "no-thanks";
+    }
+
+    if (playersSnapshotValue.length >= maxPlayers) {
       return;
     }
 
@@ -188,6 +202,7 @@ exports.joinlobby = onCall(
       ready: false,
       joinedAt: Date.now().toString(),
       isBot: false,
+      gameName,
     });
 
     getDatabase()
@@ -230,7 +245,21 @@ exports.addbot = onCall(
 
     const playersSnapshotValue = players.val();
 
-    if (playersSnapshotValue.length >= 5) {
+    let maxPlayers = 0;
+    let gameName = "";
+    if (
+      playersSnapshotValue &&
+      playersSnapshotValue[0] &&
+      playersSnapshotValue[0].gameName === "high-society"
+    ) {
+      maxPlayers = 5;
+      gameName = "high-society";
+    } else {
+      maxPlayers = 7;
+      gameName = "no-thanks";
+    }
+
+    if (playersSnapshotValue.length >= maxPlayers) {
       return;
     }
 
@@ -245,6 +274,7 @@ exports.addbot = onCall(
       ready: true,
       joinedAt: Date.now().toString(),
       isBot: true,
+      gameName,
     });
 
     getDatabase()
