@@ -6,48 +6,13 @@ import {
   isActivePlayerTakingAction,
   verifyRequestAuthentication,
 } from "../../high-society/helpers";
-import { NoThanksGameState, NoThanksPlayerState } from "../types";
-import { updateGameState, updatePlayerLastAction } from "../../shared/helpers";
+import { NoThanksGameState } from "../types";
+import { updateGameState } from "../../shared/helpers";
 import { Notification } from "../../shared/types";
-
-function revealNewActiveCard(gameState: NoThanksGameState) {
-  gameState.private.deck.shift();
-  gameState.public.activeCard = gameState.private.deck[0];
-  gameState.public.remainingCards = gameState.private.deck.length;
-}
-
-function giveActiveCardToPlayer(
-  gameState: NoThanksGameState,
-  player: NoThanksPlayerState
-) {
-  player.cards = player.cards || [];
-  player.cards.push(gameState.public.activeCard);
-
-  revealNewActiveCard(gameState);
-}
-
-function givePlacedChipsToPlayer(
-  gameState: NoThanksGameState,
-  player: NoThanksPlayerState
-) {
-  player.chips += gameState.public.chipsPlaced;
-  gameState.public.chipsPlaced = 0;
-}
-
-function updatePlayersGameStateWithTakeActiveCard(
-  gameState: NoThanksGameState,
-  activePlayer: NoThanksPlayerState
-) {
-  const players = gameState.public.players;
-
-  players.forEach((player) => {
-    if (player.email === activePlayer.email) {
-      updatePlayerLastAction(player);
-      giveActiveCardToPlayer(gameState, player);
-      givePlacedChipsToPlayer(gameState, player);
-    }
-  });
-}
+import {
+  updatePlayersGameStateWithPlaceChip,
+  updatePlayersGameStateWithTakeActiveCard,
+} from "../helpers";
 
 export const takeActiveCard = onCall(
   async (
@@ -76,6 +41,40 @@ export const takeActiveCard = onCall(
     const notification: Notification = {
       timestamp: Date.now(),
       title: `${activePlayer.email} has taken the ${activeCard} along with ${chipsPlaced} chips.`,
+    };
+
+    gameState.public.notification = notification;
+
+    await updateGameState(gameState, notification.title);
+  }
+);
+
+export const placeChipOnActiveCard = onCall(
+  async (
+    request: CallableRequest<{
+      lobbyUID: string;
+    }>
+  ) => {
+    verifyRequestAuthentication(request);
+
+    const requestEmail = getEmailFromRequest(request);
+    const { lobbyUID } = request.data;
+
+    const gameState = await getGameState<NoThanksGameState>(lobbyUID);
+
+    if (!isActivePlayerTakingAction(gameState, requestEmail)) {
+      return;
+    }
+
+    const activeCard = gameState.public.activeCard;
+
+    const activePlayer = getActivePlayer(gameState);
+
+    await updatePlayersGameStateWithPlaceChip(gameState, activePlayer);
+
+    const notification: Notification = {
+      timestamp: Date.now(),
+      title: `${activePlayer.email} has placed a chip on ${activeCard}.`,
     };
 
     gameState.public.notification = notification;

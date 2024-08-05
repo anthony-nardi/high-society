@@ -1,7 +1,7 @@
 import admin from "firebase-admin";
 import { bid, passturn } from "./high-society/client";
 import { addbot, createlobby, joinlobby, readyup } from "./shared/client";
-import { takeActiveCard } from "./no-thanks/client";
+import { placeChipOnActiveCard, takeActiveCard } from "./no-thanks/client";
 
 admin.initializeApp();
 
@@ -17,3 +17,4 @@ exports.passturn = passturn;
 
 // No Thanks!
 exports.takeActiveCard = takeActiveCard;
+exports.placeChipOnActiveCard = placeChipOnActiveCard;

@@ -1,8 +1,9 @@
 import { getDatabase } from "firebase-admin/database";
 import { PlayerInLobby } from "../../shared/types";
-import { shuffle } from "../../shared/helpers";
+import { shuffle, updatePlayerLastAction } from "../../shared/helpers";
 import { logger } from "firebase-functions/v2";
 import { HttpsError } from "firebase-functions/v2/https";
+import { NoThanksGameState, NoThanksPlayerState } from "../types";
 
 export async function createNoThanksGameState(lobbyUID: string) {
   const players = await getDatabase().ref(`lobbies/${lobbyUID}/players`).get();
@@ -29,7 +30,7 @@ export async function createNoThanksGameState(lobbyUID: string) {
     };
   });
 
-  const deck = Array.from(Array(36).keys()).slice(3, 36); // 3 to 35
+  const deck = Array.from(Array(36).keys()).slice(3); // 3 to 35
 
   shuffle(deck);
 
@@ -62,4 +63,58 @@ export async function createNoThanksGameState(lobbyUID: string) {
       // the error details.
       throw new HttpsError("unknown", error.message, error);
     });
+}
+
+function revealNewActiveCard(gameState: NoThanksGameState) {
+  gameState.private.deck.shift();
+  gameState.public.activeCard = gameState.private.deck[0];
+  gameState.public.remainingCards = gameState.private.deck.length;
+}
+
+function giveActiveCardToPlayer(
+  gameState: NoThanksGameState,
+  player: NoThanksPlayerState
+) {
+  player.cards = player.cards || [];
+  player.cards.push(gameState.public.activeCard);
+
+  revealNewActiveCard(gameState);
+}
+
+function givePlacedChipsToPlayer(
+  gameState: NoThanksGameState,
+  player: NoThanksPlayerState
+) {
+  player.chips += gameState.public.chipsPlaced;
+  gameState.public.chipsPlaced = 0;
+}
+
+export function updatePlayersGameStateWithTakeActiveCard(
+  gameState: NoThanksGameState,
+  activePlayer: NoThanksPlayerState
+) {
+  const players = gameState.public.players;
+
+  players.forEach((player) => {
+    if (player.email === activePlayer.email) {
+      updatePlayerLastAction(player);
+      giveActiveCardToPlayer(gameState, player);
+      givePlacedChipsToPlayer(gameState, player);
+    }
+  });
+}
+
+export function updatePlayersGameStateWithPlaceChip(
+  gameState: NoThanksGameState,
+  activePlayer: NoThanksPlayerState
+) {
+  const players = gameState.public.players;
+
+  players.forEach((player) => {
+    if (player.email === activePlayer.email) {
+      updatePlayerLastAction(player);
+      player.chips--;
+      gameState.public.chipsPlaced++;
+    }
+  });
 }
