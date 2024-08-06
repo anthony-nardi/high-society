@@ -5,64 +5,80 @@ import { logger } from "firebase-functions/v2";
 import { HttpsError } from "firebase-functions/v2/https";
 import { NoThanksGameState, NoThanksPlayerState } from "../types";
 
-export async function createNoThanksGameState(lobbyUID: string) {
-  const players = await getDatabase().ref(`lobbies/${lobbyUID}/players`).get();
+const DEFAULT_CHIPS = 11;
+const CHIPS_FOR_SIX_PLAYERS = 9;
+const CHIPS_FOR_SEVEN_PLAYERS = 7;
+const DECK_SIZE = 36;
+const CARDS_TO_REMOVE = 9;
 
-  const playersSnapshotValue = players.val() as PlayerInLobby[];
-
-  let chips = 11;
-
-  if (playersSnapshotValue.length === 6) {
-    chips = 9;
+function getInitialChips(playerCount: number): number {
+  switch (playerCount) {
+    case 6:
+      return CHIPS_FOR_SIX_PLAYERS;
+    case 7:
+      return CHIPS_FOR_SEVEN_PLAYERS;
+    default:
+      return DEFAULT_CHIPS;
   }
+}
 
-  if (playersSnapshotValue.length === 7) {
-    chips = 7;
-  }
+function createPlayerMetadata(players: PlayerInLobby[], chips: number) {
+  return players.map((player) => ({
+    email: player.email,
+    lastActionAt: 0,
+    cards: [],
+    chips,
+    isBot: !!player.isBot,
+  }));
+}
 
-  const playersMetadata = playersSnapshotValue.map((player: any) => {
-    return {
-      email: player.email,
-      lastActionAt: 0,
-      cards: [],
-      chips,
-      isBot: !!player.isBot,
-    };
-  });
-
-  const deck = Array.from(Array(36).keys()).slice(3); // 3 to 35
-
+function initializeDeck(): number[] {
+  const deck = Array.from(Array(DECK_SIZE).keys()).slice(3); // 3 to 35
   shuffle(deck);
+  return deck.slice(0, deck.length - CARDS_TO_REMOVE);
+}
 
-  const deckWith9CardsRemoved = deck.slice(0, deck.length - 9);
-
+async function saveGameState(lobbyUID: string, gameState: NoThanksGameState) {
   return getDatabase()
-    .ref("/games/" + lobbyUID)
-    .set({
-      public: {
-        id: lobbyUID,
-        game: "no-thanks",
-        players: playersMetadata,
-        activePlayer: playersMetadata[0].email,
-        startAt: Date.now().toString(),
-        status: "IN_PROGRESS",
-        activeCard: deckWith9CardsRemoved[0],
-        chipsPlaced: 0,
-        remainingCards: deckWith9CardsRemoved.length - 1,
-      },
-      private: {
-        deck: deckWith9CardsRemoved,
-      },
-    })
+    .ref(`/games/${lobbyUID}`)
+    .set(gameState)
     .then(() => {
       logger.info("New game created.");
       return { lobbyUID, message: "New game created." };
     })
     .catch((error: Error) => {
-      // Re-throwing the error as an HttpsError so that the client gets
-      // the error details.
       throw new HttpsError("unknown", error.message, error);
     });
+}
+
+export async function createNoThanksGameState(lobbyUID: string) {
+  const playersSnapshot = await getDatabase()
+    .ref(`lobbies/${lobbyUID}/players`)
+    .get();
+  const players = playersSnapshot.val() as PlayerInLobby[];
+
+  const chips = getInitialChips(players.length);
+  const playersMetadata = createPlayerMetadata(players, chips);
+  const deck = initializeDeck();
+
+  const gameState: NoThanksGameState = {
+    public: {
+      id: lobbyUID,
+      game: "no-thanks",
+      players: playersMetadata,
+      activePlayer: playersMetadata[0].email,
+      startAt: Date.now().toString(),
+      status: "IN_PROGRESS",
+      activeCard: deck[0],
+      chipsPlaced: 0,
+      remainingCards: deck.length - 1,
+    },
+    private: {
+      deck,
+    },
+  };
+
+  return saveGameState(lobbyUID, gameState);
 }
 
 function revealNewActiveCard(gameState: NoThanksGameState) {
@@ -77,7 +93,6 @@ function giveActiveCardToPlayer(
 ) {
   player.cards = player.cards || [];
   player.cards.push(gameState.public.activeCard);
-
   revealNewActiveCard(gameState);
 }
 
@@ -93,28 +108,39 @@ export function updatePlayersGameStateWithTakeActiveCard(
   gameState: NoThanksGameState,
   activePlayer: NoThanksPlayerState
 ) {
-  const players = gameState.public.players;
-
-  players.forEach((player) => {
-    if (player.email === activePlayer.email) {
-      updatePlayerLastAction(player);
-      giveActiveCardToPlayer(gameState, player);
-      givePlacedChipsToPlayer(gameState, player);
-    }
-  });
+  const player = gameState.public.players.find(
+    (p) => p.email === activePlayer.email
+  );
+  if (player) {
+    updatePlayerLastAction(player);
+    giveActiveCardToPlayer(gameState, player);
+    givePlacedChipsToPlayer(gameState, player);
+  }
 }
 
 export function updatePlayersGameStateWithPlaceChip(
   gameState: NoThanksGameState,
   activePlayer: NoThanksPlayerState
 ) {
-  const players = gameState.public.players;
+  const player = gameState.public.players.find(
+    (p) => p.email === activePlayer.email
+  );
+  if (player) {
+    updatePlayerLastAction(player);
+    player.chips--;
+    gameState.public.chipsPlaced++;
+  }
+}
 
-  players.forEach((player) => {
-    if (player.email === activePlayer.email) {
-      updatePlayerLastAction(player);
-      player.chips--;
-      gameState.public.chipsPlaced++;
-    }
-  });
+export function getNextPlayerIndex(gameState: NoThanksGameState) {
+  const activePlayerIndex = gameState.public.players.findIndex(
+    (player) => player.email === gameState.public.activePlayer
+  );
+  return (activePlayerIndex + 1) % gameState.public.players.length;
+}
+
+export function updateActivePlayer(gameState: NoThanksGameState) {
+  const nextPlayerIndex = getNextPlayerIndex(gameState);
+  gameState.public.activePlayer =
+    gameState.public.players[nextPlayerIndex].email;
 }

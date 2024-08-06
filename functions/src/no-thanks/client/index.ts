@@ -10,6 +10,7 @@ import { NoThanksGameState } from "../types";
 import { updateGameState } from "../../shared/helpers";
 import { Notification } from "../../shared/types";
 import {
+  updateActivePlayer,
   updatePlayersGameStateWithPlaceChip,
   updatePlayersGameStateWithTakeActiveCard,
 } from "../helpers";
@@ -71,6 +72,8 @@ export const placeChipOnActiveCard = onCall(
     const activePlayer = getActivePlayer(gameState);
 
     await updatePlayersGameStateWithPlaceChip(gameState, activePlayer);
+
+    updateActivePlayer(gameState);
 
     const notification: Notification = {
       timestamp: Date.now(),
