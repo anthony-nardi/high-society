@@ -10,7 +10,7 @@ import { HighSocietyPlayerState } from "../types";
 import { useCallback, useMemo, useState } from "react";
 import passTurn from "../../client/passTurn";
 import bid from "../../client/bid";
-import { useLobbyContext } from "../../../shared/context/LobbyProvider";
+import { useLobbyContext } from "../../../shared/context/useLobbyContext";
 
 export default function PlayerRoundState({
   player,

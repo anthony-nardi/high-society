@@ -5,9 +5,9 @@ import ConnectedPlayersCount from "./components/ConnectedPlayersCount";
 import readyUp from "../../high-society/client/readyUp";
 import addBot from "../../high-society/client/addBot";
 import createLobby, { GameName } from "../../high-society/client/createLobby";
-import { useLobbyContext } from "../context/LobbyProvider";
 import { useGameStateContext } from "../context/GameStateProvider";
 import { useUserContext } from "../context/useUserContext";
+import { useLobbyContext } from "../context/useLobbyContext";
 
 export default function Lobby({ gameName }: { gameName: GameName }) {
   const { user } = useUserContext();

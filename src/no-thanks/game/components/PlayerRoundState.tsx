@@ -2,7 +2,7 @@ import { Button, Flex } from "@mantine/core";
 import { useCallback, useState } from "react";
 import takeActiveCard from "../../client/takeActiveCard";
 import placeChip from "../../client/placeChip";
-import { useLobbyContext } from "../../../shared/context/LobbyProvider";
+import { useLobbyContext } from "../../../shared/context/useLobbyContext";
 
 export default function PlayerRoundState({
   isLoggedInUserActivePlayer,

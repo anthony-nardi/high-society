@@ -25,7 +25,7 @@ export const createlobby = onCall(
       .ref("/lobbies/" + lobbyUID)
       .set({
         id: lobbyUID,
-        game: "high-society",
+        game: request.data.gameName,
         players: [
           {
             email: request?.auth?.token.email || request?.auth?.token.uid,

@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useState } from "react";
+import { createContext, useCallback, useState } from "react";
 import getLobbyIdFromURL from "../utils/getLobbyIdFromURL";
 import usePopstate from "../hooks/usePopstate";
 import useLobbyData from "../lobby/hooks/useLobbyData";
@@ -6,7 +6,7 @@ import useJoinLobby from "../lobby/hooks/useJoinLobby";
 import { LobbyData } from "../lobby/types";
 import { useUserContext } from "./useUserContext";
 
-const LobbyContext = createContext<{
+export const LobbyContext = createContext<{
   lobbyId: null | number;
   isLoadingLobbyData: boolean | null;
   lobbyData: LobbyData | null;
@@ -17,17 +17,6 @@ const LobbyContext = createContext<{
   lobbyData: null,
   isJoiningLobby: null,
 });
-
-// eslint-disable-next-line react-refresh/only-export-components
-export const useLobbyContext = () => {
-  const context = useContext(LobbyContext);
-
-  if (!context) {
-    throw new Error("useLobbyContext must be used within a LobbyContext");
-  }
-
-  return context;
-};
 
 export const LobbyProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useUserContext();
@@ -45,7 +34,7 @@ export const LobbyProvider = ({ children }: { children: React.ReactNode }) => {
     user,
   });
 
-  const { isLoadingLobbyData, lobbyData } = useLobbyData(lobbyId);
+  const { isLoadingLobbyData, lobbyData } = useLobbyData({ lobbyId, user });
 
   return (
     <LobbyContext.Provider

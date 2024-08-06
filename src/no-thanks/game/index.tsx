@@ -3,11 +3,11 @@ import { useMemo } from "react";
 import DeckOverview from "./components/DeckOverview";
 import PlayerOverview from "./components/PlayerOverview";
 import GameOver from "./components/GameOver.tsx";
-import { useLobbyContext } from "../../shared/context/LobbyProvider";
 import useGameState from "../../shared/hooks/useGameState";
 import { useUserContext } from "../../shared/context/useUserContext";
 import { useServerNotification } from "../../shared/hooks/useServerNotification";
 import { NoThanksGameState } from "./types";
+import { useLobbyContext } from "../../shared/context/useLobbyContext.tsx";
 
 export default function Game() {
   const { user, isSignedIn } = useUserContext();
@@ -20,8 +20,6 @@ export default function Game() {
     if (!gameState) {
       return null;
     }
-
-    console.log(gameState);
 
     return {
       activeCard: gameState.activeCard,

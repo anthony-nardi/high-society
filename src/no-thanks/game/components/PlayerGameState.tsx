@@ -17,7 +17,7 @@ export default function PlayerGameState({
     return (
       <Flex>
         {player.cards.map((card) => {
-          return <b>{card} , </b>;
+          return <b key={card}>{card} , </b>;
         })}
       </Flex>
     );

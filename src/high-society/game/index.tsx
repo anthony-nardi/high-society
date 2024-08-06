@@ -3,11 +3,11 @@ import { useMemo } from "react";
 import DeckOverview from "./components/DeckOverview";
 import PlayerOverview from "./components/PlayerOverview";
 import GameOver from "./components/GameOver";
-import { useLobbyContext } from "../../shared/context/LobbyProvider";
 import useGameState from "../../shared/hooks/useGameState";
 import { useUserContext } from "../../shared/context/useUserContext";
 import { useServerNotification } from "../../shared/hooks/useServerNotification";
 import { HighSocietyGameState } from "./types";
+import { useLobbyContext } from "../../shared/context/useLobbyContext";
 
 export default function Game() {
   const { user, isSignedIn } = useUserContext();

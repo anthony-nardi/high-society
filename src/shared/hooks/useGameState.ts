@@ -1,7 +1,7 @@
 import { getDatabase, onValue, ref } from "firebase/database";
 import { useEffect, useRef, useState } from "react";
-import { useLobbyContext } from "../context/LobbyProvider";
 import { useUserContext } from "../context/useUserContext";
+import { useLobbyContext } from "../context/useLobbyContext";
 
 const useGameState = <GameStateType>() => {
   const { lobbyId } = useLobbyContext();

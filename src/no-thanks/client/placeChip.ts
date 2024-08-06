@@ -6,13 +6,13 @@ export type PlaceChipRequest = {
 
 export default async function placeChip(placeChipRequest: PlaceChipRequest) {
   const functions = getFunctions();
-  const placeChipApi = httpsCallable<PlaceChipRequest, void>(
+  const placeChipOnActiveCardApi = httpsCallable<PlaceChipRequest, void>(
     functions,
-    "placechip"
+    "placeChipOnActiveCard"
   );
 
   try {
-    await placeChipApi(placeChipRequest);
+    await placeChipOnActiveCardApi(placeChipRequest);
   } catch (e) {
     console.error(e);
   }
