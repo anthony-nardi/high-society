@@ -6,6 +6,7 @@ export default function DeckOverview({
   deckInfo: {
     activeCard: NoThanksGameState["activeCard"];
     remainingCards: NoThanksGameState["remainingCards"];
+    chipsPlaced: NoThanksGameState["chipsPlaced"];
   } | null;
 }) {
   if (deckInfo === null) {
@@ -17,6 +18,7 @@ export default function DeckOverview({
       <span style={{ marginLeft: "4px" }}>
         Active Card: {deckInfo.activeCard}
       </span>
+      <div>Chips Placed: {deckInfo.chipsPlaced}</div>
     </>
   );
 }

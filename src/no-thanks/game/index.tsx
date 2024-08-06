@@ -24,6 +24,7 @@ export default function Game() {
     return {
       activeCard: gameState.activeCard,
       remainingCards: gameState.remainingCards,
+      chipsPlaced: gameState.chipsPlaced,
     };
   }, [gameState]);
 
