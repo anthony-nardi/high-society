@@ -14,30 +14,32 @@ export function getGameName(playersInLobby: PlayerInLobby[]) {
   return playersInLobby[0].gameName;
 }
 
-export async function createGame(lobbyUID: string, gameName: GameName) {
-  if (gameName === "high-society") {
-    await createHighSocietyGameState(lobbyUID);
+async function createSpecificGameState(lobbyUID: string, gameName: GameName) {
+  switch (gameName) {
+    case "high-society":
+      await createHighSocietyGameState(lobbyUID);
+      break;
+    case "no-thanks":
+      await createNoThanksGameState(lobbyUID);
+      break;
+    default:
+      throw new Error(`Unknown game name: ${gameName}`);
   }
+}
 
-  if (gameName === "no-thanks") {
-    await createNoThanksGameState(lobbyUID);
+export async function createGame(lobbyUID: string, gameName: GameName) {
+  try {
+    await createSpecificGameState(lobbyUID, gameName);
+  } catch (error: any) {
+    logger.error(`Failed to create game: ${error.message}`);
+    throw new HttpsError("unknown", `Failed to create game: ${error.message}`);
   }
 }
 
 export function shuffle(array: string[] | number[]) {
-  let currentIndex = array.length;
-
-  // While there remain elements to shuffle...
-  while (currentIndex != 0) {
-    // Pick a remaining element...
-    const randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-
-    // And swap it with the current element.
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex],
-      array[currentIndex],
-    ];
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
   }
 }
 
@@ -54,11 +56,8 @@ export function updateGameState<T extends GenericPlayerState>(
     .set(gameState)
     .then(() => {
       logger.info(message);
-      return {};
     })
-    .catch((error: Error) => {
-      // Re-throwing the error as an HttpsError so that the client gets
-      // the error details.
+    .catch((error: any) => {
       throw new HttpsError("unknown", error.message, error);
     });
 }

@@ -187,6 +187,20 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
           );
         }
       }
+    } else {
+      for (const playerEmail in mapOfPlayersToMetadata) {
+        const player = mapOfPlayersToMetadata[playerEmail];
+        console.log("pushing...", player.email);
+        renderedPlayersEndGame.push(
+          <Box p="xs" key={player.email}>
+            <b>{player.email}</b>
+            <div>Money left: ${player.moneyLeft}</div>
+            <div>Cards in hand: {(player.moneyCards || []).join(", ")}</div>
+            <div>Status cards: {(player.statusCards || []).join(", ")}</div>
+            <b>Final score: {player.finalScore}</b>
+          </Box>
+        );
+      }
     }
     return renderedPlayersEndGame;
   }, [mapOfPlayersToMetadata, winningPlayers]);

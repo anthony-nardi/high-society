@@ -11,6 +11,24 @@ import {
 } from "../../high-society/helpers";
 import { createGame, getGameName } from "../helpers";
 
+const checkAuthentication = (request: CallableRequest<any>) => {
+  if (!request.auth) {
+    throw new HttpsError(
+      "failed-precondition",
+      "The function must be called while authenticated."
+    );
+  }
+};
+
+const getPlayers = async (lobbyUID: string) => {
+  const players = await getDatabase().ref(`lobbies/${lobbyUID}/players`).get();
+  return players.val();
+};
+
+const updatePlayers = async (lobbyUID: string, players: any) => {
+  await getDatabase().ref(`lobbies/${lobbyUID}/players`).set(players);
+};
+
 export const createlobby = onCall(
   async (
     request: CallableRequest<{
@@ -41,8 +59,6 @@ export const createlobby = onCall(
         return { lobbyUID };
       })
       .catch((error: Error) => {
-        // Re-throwing the error as an HttpsError so that the client gets
-        // the error details.
         throw new HttpsError("unknown", error.message, error);
       });
   }
@@ -55,24 +71,10 @@ export const joinlobby = onCall(
       email: string;
     }>
   ) => {
-    // Checking that the user is authenticated.
-    if (!request.auth) {
-      // Throwing an HttpsError so that the client gets the error details.
-      throw new HttpsError(
-        "failed-precondition",
-        "The function must be " + "called while authenticated."
-      );
-    }
+    checkAuthentication(request);
 
     const { lobbyUID, email } = request.data;
-
-    // Add new player to the lobby if they don't already exist
-
-    const players = await getDatabase()
-      .ref(`lobbies/${lobbyUID}/players`)
-      .get();
-
-    const playersSnapshotValue = players.val();
+    const playersSnapshotValue = await getPlayers(lobbyUID);
 
     const gameName = getGameName(playersSnapshotValue);
     const maxPlayers = gameName === "high-society" ? 5 : 7;
@@ -82,7 +84,6 @@ export const joinlobby = onCall(
     }
 
     const gameState = await getGameState(lobbyUID);
-
     if (gameState) {
       return;
     }
@@ -101,18 +102,9 @@ export const joinlobby = onCall(
       gameName,
     });
 
-    getDatabase()
-      .ref(`lobbies/${lobbyUID}/players`)
-      .set(playersSnapshotValue)
-      .then(() => {
-        logger.info("Lobby joined.");
-        return { lobbyUID };
-      })
-      .catch((error: Error) => {
-        // Re-throwing the error as an HttpsError so that the client gets
-        // the error details.
-        throw new HttpsError("unknown", error.message, error);
-      });
+    await updatePlayers(lobbyUID, playersSnapshotValue);
+    logger.info("Lobby joined.");
+    return { lobbyUID };
   }
 );
 
@@ -122,24 +114,10 @@ export const addbot = onCall(
       lobbyUID: string;
     }>
   ) => {
-    // Checking that the user is authenticated.
-    if (!request.auth) {
-      // Throwing an HttpsError so that the client gets the error details.
-      throw new HttpsError(
-        "failed-precondition",
-        "The function must be " + "called while authenticated."
-      );
-    }
+    checkAuthentication(request);
 
     const { lobbyUID } = request.data;
-
-    // Add new player to the lobby if they don't already exist
-
-    const players = await getDatabase()
-      .ref(`lobbies/${lobbyUID}/players`)
-      .get();
-
-    const playersSnapshotValue = players.val();
+    const playersSnapshotValue = await getPlayers(lobbyUID);
 
     const gameName = getGameName(playersSnapshotValue);
     const maxPlayers = gameName === "high-society" ? 5 : 7;
@@ -149,7 +127,6 @@ export const addbot = onCall(
     }
 
     const gameState = await getGameState(lobbyUID);
-
     if (gameState) {
       return;
     }
@@ -162,18 +139,9 @@ export const addbot = onCall(
       gameName,
     });
 
-    getDatabase()
-      .ref(`lobbies/${lobbyUID}/players`)
-      .set(playersSnapshotValue)
-      .then(() => {
-        logger.info("Lobby joined.");
-        return { lobbyUID };
-      })
-      .catch((error: Error) => {
-        // Re-throwing the error as an HttpsError so that the client gets
-        // the error details.
-        throw new HttpsError("unknown", error.message, error);
-      });
+    await updatePlayers(lobbyUID, playersSnapshotValue);
+    logger.info("Lobby joined.");
+    return { lobbyUID };
   }
 );
 
@@ -184,24 +152,10 @@ export const readyup = onCall(
       lobbyUID: string;
     }>
   ) => {
-    // Checking that the user is authenticated.
-    if (!request.auth) {
-      // Throwing an HttpsError so that the client gets the error details.
-      throw new HttpsError(
-        "failed-precondition",
-        "The function must be " + "called while authenticated."
-      );
-    }
+    checkAuthentication(request);
 
     const { lobbyUID, email } = request.data;
-
-    // Add new player to the lobby if they don't already exist
-
-    const players = await getDatabase()
-      .ref(`lobbies/${lobbyUID}/players`)
-      .get();
-
-    const playersSnapshotValue = players.val();
+    const playersSnapshotValue = await getPlayers(lobbyUID);
 
     let areAllPlayersReady = true;
 
@@ -210,7 +164,7 @@ export const readyup = onCall(
         player.ready = true;
       }
 
-      if (player.ready === false) {
+      if (!player.ready) {
         areAllPlayersReady = false;
       }
     });
@@ -225,17 +179,8 @@ export const readyup = onCall(
       }
     }
 
-    getDatabase()
-      .ref(`lobbies/${lobbyUID}/players`)
-      .set(playersSnapshotValue)
-      .then(() => {
-        logger.info("Lobby joined.");
-        return { lobbyUID };
-      })
-      .catch((error: Error) => {
-        // Re-throwing the error as an HttpsError so that the client gets
-        // the error details.
-        throw new HttpsError("unknown", error.message, error);
-      });
+    await updatePlayers(lobbyUID, playersSnapshotValue);
+    logger.info("Lobby joined.");
+    return { lobbyUID };
   }
 );

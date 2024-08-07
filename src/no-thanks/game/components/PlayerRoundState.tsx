@@ -6,8 +6,10 @@ import { useLobbyContext } from "../../../shared/context/useLobbyContext";
 
 export default function PlayerRoundState({
   isLoggedInUserActivePlayer,
+  chipsRemaining,
 }: {
   isLoggedInUserActivePlayer: boolean;
+  chipsRemaining: number;
 }) {
   const { lobbyId } = useLobbyContext();
 
@@ -46,7 +48,7 @@ export default function PlayerRoundState({
             </Button>
           </Flex>
         )}
-        {isLoggedInUserActivePlayer && (
+        {isLoggedInUserActivePlayer && chipsRemaining && (
           <Button
             disabled={actionsLoading}
             loading={actionsLoading}

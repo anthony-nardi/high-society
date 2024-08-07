@@ -46,6 +46,7 @@ export default function PlayerOverview({
       <Box w={"50%"}>
         <PlayerRoundState
           isLoggedInUserActivePlayer={!!isLoggedInUserActivePlayer}
+          chipsRemaining={player.chips}
         />
       </Box>
     </Flex>

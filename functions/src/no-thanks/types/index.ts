@@ -13,24 +13,24 @@ export type NoThanksPlayerState = GenericPlayerState & {
   isBot: boolean;
 };
 
-export type PublicGameState = {
+export type NoThanksPublicGameState = {
   id: string;
   game: string;
   players: NoThanksPlayerState[];
   activePlayer: string;
   startAt: string;
   status: GameStatus;
-  activeCard: number;
+  activeCard: number | null;
   chipsPlaced: number;
   remainingCards: number;
   notification?: Notification;
 };
 
-export type PrivateGameState = {
+export type NoThanksPrivateGameState = {
   deck: number[];
 };
 
 export type NoThanksGameState = GenericGameState<NoThanksPlayerState> & {
-  public: PublicGameState;
-  private: PrivateGameState;
+  public: NoThanksPublicGameState;
+  private: NoThanksPrivateGameState;
 };

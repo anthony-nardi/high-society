@@ -83,7 +83,7 @@ export async function createNoThanksGameState(lobbyUID: string) {
 
 function revealNewActiveCard(gameState: NoThanksGameState) {
   gameState.private.deck.shift();
-  gameState.public.activeCard = gameState.private.deck[0];
+  gameState.public.activeCard = gameState.private.deck[0] || null;
   gameState.public.remainingCards = gameState.private.deck.length;
 }
 
@@ -92,7 +92,9 @@ function giveActiveCardToPlayer(
   player: NoThanksPlayerState
 ) {
   player.cards = player.cards || [];
-  player.cards.push(gameState.public.activeCard);
+  if (gameState.public.activeCard) {
+    player.cards.push(gameState.public.activeCard);
+  }
   revealNewActiveCard(gameState);
 }
 
@@ -143,4 +145,8 @@ export function updateActivePlayer(gameState: NoThanksGameState) {
   const nextPlayerIndex = getNextPlayerIndex(gameState);
   gameState.public.activePlayer =
     gameState.public.players[nextPlayerIndex].email;
+}
+
+export function isGameOver(gameState: NoThanksGameState) {
+  return gameState.public.remainingCards === 0;
 }

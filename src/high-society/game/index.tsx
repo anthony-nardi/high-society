@@ -74,14 +74,6 @@ export default function Game() {
     return isGameActive && gameState?.status === "GAME_OVER";
   }, [gameState?.status, isGameActive]);
 
-  const isGameInProgress = useMemo(() => {
-    return isGameActive && gameState?.status === "IN_PROGRESS";
-  }, [gameState?.status, isGameActive]);
-
-  if (!isGameInProgress) {
-    return null;
-  }
-
   if (!isInLobby && gameState === null) {
     return (
       <Center>

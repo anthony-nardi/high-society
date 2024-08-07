@@ -10,6 +10,7 @@ import { NoThanksGameState } from "../types";
 import { updateGameState } from "../../shared/helpers";
 import { Notification } from "../../shared/types";
 import {
+  isGameOver,
   updateActivePlayer,
   updatePlayersGameStateWithPlaceChip,
   updatePlayersGameStateWithTakeActiveCard,
@@ -38,6 +39,10 @@ export const takeActiveCard = onCall(
     const activePlayer = getActivePlayer(gameState);
 
     await updatePlayersGameStateWithTakeActiveCard(gameState, activePlayer);
+
+    if (isGameOver(gameState)) {
+      gameState.public.status = "GAME_OVER";
+    }
 
     const notification: Notification = {
       timestamp: Date.now(),
