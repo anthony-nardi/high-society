@@ -88,6 +88,7 @@ function buildGameStatePrompt(gameState: HighSocietyGameState) {
   prompt += "If passing, only return an array of the word 'Pass'\n";
   //   prompt += `Include a very brief explanation of your decision.\n`;
 
+  // eslint-disable-next-line
   prompt += `Your response absolutely must be in the following format: ["money_card_1", "money_card_2", ...] or ["pass"]`;
 
   let gameStatePromptAddition = "";
