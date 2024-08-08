@@ -12,7 +12,7 @@ import { useLobbyContext } from "../../shared/context/useLobbyContext.tsx";
 export default function Game() {
   const { user, isSignedIn } = useUserContext();
   const { lobbyId } = useLobbyContext();
-  const { gameState } = useGameState<NoThanksGameState>();
+  const { gameState, isLoading } = useGameState<NoThanksGameState>();
 
   useServerNotification();
 
@@ -44,10 +44,6 @@ export default function Game() {
     return gameState.activePlayer;
   }, [gameState]);
 
-  const isInLobby = useMemo(() => {
-    return isSignedIn && !gameState;
-  }, [gameState, isSignedIn]);
-
   const isGameActive = useMemo(() => {
     return isSignedIn && gameState && gameState.status && lobbyId && user;
   }, [gameState, isSignedIn, lobbyId, user]);
@@ -56,7 +52,11 @@ export default function Game() {
     return isGameActive && gameState?.status === "GAME_OVER";
   }, [gameState?.status, isGameActive]);
 
-  if (!isInLobby && gameState === null) {
+  if (gameState === null) {
+    return null;
+  }
+
+  if (isLoading) {
     return (
       <Center>
         <Loader />
@@ -66,10 +66,6 @@ export default function Game() {
 
   if (isGameOver) {
     return <GameOver gameState={gameState} />;
-  }
-
-  if (!gameState) {
-    return <>No game data...</>;
   }
 
   return (

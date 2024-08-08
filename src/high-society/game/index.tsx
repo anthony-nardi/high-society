@@ -12,7 +12,7 @@ import { useLobbyContext } from "../../shared/context/useLobbyContext";
 export default function Game() {
   const { user, isSignedIn } = useUserContext();
   const { lobbyId } = useLobbyContext();
-  const { gameState } = useGameState<HighSocietyGameState>();
+  const { gameState, isLoading } = useGameState<HighSocietyGameState>();
 
   useServerNotification();
 
@@ -62,10 +62,6 @@ export default function Game() {
     return highestBid;
   }, [gameState]);
 
-  const isInLobby = useMemo(() => {
-    return isSignedIn && !gameState;
-  }, [gameState, isSignedIn]);
-
   const isGameActive = useMemo(() => {
     return isSignedIn && gameState && gameState.status && lobbyId && user;
   }, [gameState, isSignedIn, lobbyId, user]);
@@ -74,7 +70,11 @@ export default function Game() {
     return isGameActive && gameState?.status === "GAME_OVER";
   }, [gameState?.status, isGameActive]);
 
-  if (!isInLobby && gameState === null) {
+  if (gameState === null) {
+    return null;
+  }
+
+  if (isLoading) {
     return (
       <Center>
         <Loader />
@@ -84,10 +84,6 @@ export default function Game() {
 
   if (isGameOver) {
     return <GameOver lobbyId={lobbyId?.toString() as string} />;
-  }
-
-  if (!gameState) {
-    return <>No game data...</>;
   }
 
   return (
