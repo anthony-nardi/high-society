@@ -11,6 +11,7 @@ module.exports = {
     "plugin:import/typescript",
     "google",
     "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
   ],
   parser: "@typescript-eslint/parser",
   parserOptions: {
@@ -36,5 +37,6 @@ module.exports = {
     "@typescript-eslint/no-explicit-any": "off",
     "import/export": 0,
     "max-len": ["error", { "code": 320 }],
+    "operator-linebreak": ["error", "after"],
   },
 };
