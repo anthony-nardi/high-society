@@ -1,3 +1,5 @@
+import CardFront from "../../card/CardFront";
+import PokerChip from "../../poker-chip/PokerChip";
 import { NoThanksGameState } from "../types";
 
 export default function DeckOverview({
@@ -16,9 +18,10 @@ export default function DeckOverview({
     <>
       <span>Remaining Cards : {deckInfo.remainingCards}</span>
       <span style={{ marginLeft: "4px" }}>
-        Active Card: {deckInfo.activeCard}
+        <CardFront card={deckInfo.activeCard} size="lg" />
       </span>
       <div>Chips Placed: {deckInfo.chipsPlaced}</div>
+      <PokerChip number={deckInfo.chipsPlaced || 0} />
     </>
   );
 }
