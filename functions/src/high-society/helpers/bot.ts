@@ -89,7 +89,7 @@ function buildGameStatePrompt(gameState: HighSocietyGameState) {
   //   prompt += `Include a very brief explanation of your decision.\n`;
 
   // eslint-disable-next-line
-  prompt += `Your response absolutely must be in the following format: ["money_card_1", "money_card_2", ...] or ["pass"]`;
+  prompt += `Your response absolutely must be either a comma separated list of money cards to bid or the word 'Pass'.\n`;
 
   let gameStatePromptAddition = "";
 
@@ -130,64 +130,13 @@ function buildGameStatePrompt(gameState: HighSocietyGameState) {
 }
 
 function extractBidFromResponse(str: string) {
-  const pattern = /\\"(\d+)\\"/g;
-  const matches = [];
-  let match;
-
-  while ((match = pattern.exec(str)) !== null) {
-    matches.push(match[1]);
+  const regex = /\d+/g;
+  const numbers = str.match(regex);
+  if (numbers) {
+    return numbers.map((num) => `${num}`);
   }
 
-  return matches;
-}
-
-function extractBidFromResponse2(str: string) {
-  // Pattern to match only the numbers within the square brackets
-
-  // eslint-disable-next-line no-useless-escape
-  const pattern = /\[\"(\d+)\",\s*\"(\d+)\"\]/;
-
-  const match = str.match(pattern);
-  let numbers;
-  if (match) {
-    console.log(match);
-    // Extract the numbers from the capturing groups
-    numbers = match.slice(1); // Skip the full match
-  }
-  return numbers;
-}
-
-function extractBidFromResponse3(str: string) {
-  // eslint-disable-next-line no-useless-escape
-  const pattern = /\[(\"(?:\d+\"(?:,\s*\")?)*)\]/;
-  let numbers;
-  const match = str.match(pattern);
-
-  if (match) {
-    console.log(match);
-    // Extract the numbers from the capturing group
-    const numbersString = match[1]; // Get the matched group
-    // eslint-disable-next-line quotes
-    numbers = numbersString.split('","').map((s) => s.replace(/"/g, ""));
-  }
-
-  return numbers;
-}
-
-function extractBidFromResponse4(str: string) {
-  // Pattern to match the content inside square brackets, including single and multiple elements
-  const pattern = /\["(\d+)"(?:,\s*"(\d+)")*\]/;
-
-  const match = str.match(pattern);
-
-  if (match) {
-    console.log(match);
-    // Extract the numbers from the capturing groups
-    const numbers = match[0].match(/\d+/g);
-    return numbers;
-  }
-
-  return undefined;
+  return [];
 }
 
 function extractPassFromResponse(str: string) {
@@ -228,31 +177,14 @@ export async function generateContent(gameState: HighSocietyGameState) {
 
     console.log("Response:", "\n", "\n", text, "\n", "\n");
 
-    const attempt4Parse = extractBidFromResponse4(text);
-    const attempt3Parse = extractBidFromResponse3(text);
-    const attempt2Parse = extractBidFromResponse2(text);
     const attempt1Parse = extractBidFromResponse(text);
 
     const didPass = extractPassFromResponse(text);
 
     console.log("Attempt 1: ", attempt1Parse);
-    console.log("Attempt 2: ", attempt2Parse);
-    console.log("Attempt 3: ", attempt3Parse);
-    console.log("Attempt 4: ", attempt4Parse);
 
     if (didPass && didPass[0] && didPass[0].toLocaleLowerCase() === "pass") {
       return [];
-    }
-    if (attempt4Parse) {
-      return attempt4Parse;
-    }
-
-    if (attempt3Parse) {
-      return attempt3Parse;
-    }
-
-    if (attempt2Parse) {
-      return attempt2Parse;
     }
 
     if (attempt1Parse) {
