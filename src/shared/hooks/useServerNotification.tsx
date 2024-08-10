@@ -45,10 +45,11 @@ export const useServerNotification = () => {
     const db = getDatabase();
     const lobbyRef = ref(db, `games/${lobbyId}/public/notification`);
 
-    onValue(lobbyRef, handleNotification);
+    const unsubscribe = onValue(lobbyRef, handleNotification);
 
     return () => {
       listeningToLobby.current = null;
+      unsubscribe();
     };
   }, [lobbyId, handleNotification]);
 };

@@ -1,39 +1,40 @@
 import { useMemo } from "react";
 import { NoThanksPlayerState } from "../types";
 import { Flex } from "@mantine/core";
+import PlayerActions from "./PlayerActions";
+import { useUserContext } from "../../../shared/context/useUserContext";
+import PlayerChips from "./player/PlayerChips";
+import PlayerInfo from "./player/PlayerInfo";
+import PlayerCards from "./player/PlayerCards";
+
+interface PlayerGameStateProps {
+  player: NoThanksPlayerState;
+  activePlayer: string;
+}
 
 export default function PlayerGameState({
   player,
-  loggedInUser,
-}: {
-  player: NoThanksPlayerState;
-  loggedInUser: string;
-}) {
-  const renderedCards = useMemo(() => {
-    if (!player.cards) {
-      return "None";
-    }
+  activePlayer,
+}: PlayerGameStateProps) {
+  const { user } = useUserContext();
+  const { email, cards, chips } = player;
 
-    return (
-      <Flex>
-        {player.cards.map((card) => {
-          return <b key={card}>{card} , </b>;
-        })}
-      </Flex>
-    );
-  }, [player.cards]);
+  const isLoggedInUserActivePlayer = useMemo(() => {
+    const isActivePlayer = email === activePlayer;
+    return user && user.email === activePlayer && isActivePlayer;
+  }, [user, email, activePlayer]);
 
   return (
     <>
-      <div style={{ marginBottom: "12px" }}>
-        <b>{player.email.split("@")[0]}</b>
-      </div>
-      <div>Cards: {renderedCards}</div>
-      {loggedInUser === player.email ? (
-        <div>
-          <Flex>Chips: {player.chips}</Flex>
-        </div>
-      ) : null}
+      <Flex style={{ marginBottom: "12px" }}>
+        <PlayerInfo email={email} />
+        <PlayerActions
+          isLoggedInUserActivePlayer={!!isLoggedInUserActivePlayer}
+          chipsRemaining={chips}
+        />
+      </Flex>
+      <PlayerCards cards={cards} />
+      {user && user.email === email ? <PlayerChips chips={chips} /> : null}
     </>
   );
 }

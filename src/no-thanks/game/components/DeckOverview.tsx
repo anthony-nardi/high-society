@@ -1,3 +1,4 @@
+import { Box } from "@mantine/core";
 import CardFront from "../../card/CardFront";
 import PokerChip from "../../poker-chip/PokerChip";
 import { NoThanksGameState } from "../types";
@@ -16,11 +17,10 @@ export default function DeckOverview({
   }
   return (
     <>
-      <span>Remaining Cards : {deckInfo.remainingCards}</span>
-      <span style={{ marginLeft: "4px" }}>
+      <Box>Remaining Cards : {deckInfo.remainingCards}</Box>
+      <Box style={{ marginLeft: "4px" }} mt="sm">
         <CardFront card={deckInfo.activeCard} size="lg" />
-      </span>
-      <div>Chips Placed: {deckInfo.chipsPlaced}</div>
+      </Box>
       <PokerChip number={deckInfo.chipsPlaced || 0} />
     </>
   );

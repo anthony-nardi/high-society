@@ -4,7 +4,7 @@ import takeActiveCard from "../../client/takeActiveCard";
 import placeChip from "../../client/placeChip";
 import { useLobbyContext } from "../../../shared/context/useLobbyContext";
 
-export default function PlayerRoundState({
+export default function PlayerActions({
   isLoggedInUserActivePlayer,
   chipsRemaining,
 }: {
@@ -35,7 +35,7 @@ export default function PlayerRoundState({
 
   return (
     <>
-      <Flex align={"flex-end"}>
+      <Flex align={"flex-end"} ml="sm">
         {isLoggedInUserActivePlayer && (
           <Flex>
             <Button
