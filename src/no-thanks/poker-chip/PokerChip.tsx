@@ -1,5 +1,3 @@
-import React from "react";
-
 const CHIP_COLOR = "#FF0000"; // Red color for the chip
 const TEXT_COLOR = "#FFFFFF"; // White color for the text
 
