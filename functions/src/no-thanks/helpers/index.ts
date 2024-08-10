@@ -150,3 +150,9 @@ export function updateActivePlayer(gameState: NoThanksGameState) {
 export function isGameOver(gameState: NoThanksGameState) {
   return gameState.public.remainingCards === 0;
 }
+
+export function getActivePlayer(gameState: NoThanksGameState) {
+  return gameState.public.players.find(
+    (player) => player.email === gameState.public.activePlayer
+  );
+}

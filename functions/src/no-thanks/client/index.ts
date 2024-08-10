@@ -15,6 +15,7 @@ import {
   updatePlayersGameStateWithPlaceChip,
   updatePlayersGameStateWithTakeActiveCard,
 } from "../helpers";
+import { isActivePlayerBot, maybeTakeBotTurn } from "../helpers/bot";
 
 export const takeActiveCard = onCall(
   async (
@@ -52,6 +53,24 @@ export const takeActiveCard = onCall(
     gameState.public.notification = notification;
 
     await updateGameState(gameState, notification.title);
+
+    // Theoretically a bot may be the first to make
+    // a move if there are 4 bots and 1 player.
+    // If a bot passes on a negative card it goes again.
+    // If a bot wins an auction, it goes again.
+    // Not gonna bother figuring out the actual highest
+    // bot move streak so lets settle for something.
+    let attemptsToLetBotMakeMove = 30;
+
+    while (
+      !isGameOver(gameState) &&
+      isActivePlayerBot(gameState) &&
+      attemptsToLetBotMakeMove > 0
+    ) {
+      attemptsToLetBotMakeMove--;
+
+      await maybeTakeBotTurn(gameState);
+    }
   }
 );
 
@@ -88,5 +107,23 @@ export const placeChipOnActiveCard = onCall(
     gameState.public.notification = notification;
 
     await updateGameState(gameState, notification.title);
+
+    // Theoretically a bot may be the first to make
+    // a move if there are 4 bots and 1 player.
+    // If a bot passes on a negative card it goes again.
+    // If a bot wins an auction, it goes again.
+    // Not gonna bother figuring out the actual highest
+    // bot move streak so lets settle for something.
+    let attemptsToLetBotMakeMove = 30;
+
+    while (
+      !isGameOver(gameState) &&
+      isActivePlayerBot(gameState) &&
+      attemptsToLetBotMakeMove > 0
+    ) {
+      attemptsToLetBotMakeMove--;
+
+      await maybeTakeBotTurn(gameState);
+    }
   }
 );
