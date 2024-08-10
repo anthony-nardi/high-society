@@ -112,10 +112,13 @@ function buildGameStatePrompt(gameState: NoThanksGameState) {
     activePlayersCurrentCards
   )}.\n`;
 
-  gameStatePromptAddition += `Make the optimal move given the following game state.\n`;
-  gameStatePromptAddition += `Remember, cards are positive points and you want the fewest points possible.\n`;
+  gameStatePromptAddition +=
+    "Make the optimal move given the following game state.\n";
+  gameStatePromptAddition +=
+    "Remember, cards are positive points and you want the fewest points possible.\n";
   gameStatePromptAddition += `Your response must be either a "1" or "0" only. Do not offer any explaination, just a simple "1" or "0". Return a "1" if placing a chip to avoid taking the card. Return a "0" if taking the ${activeCard} card and ${chipsPlaced} chips.\n`;
-  gameStatePromptAddition += `Remember, points are bad. Try avoiding taking a card if you can't form an immediate sequence with it unless its a low card.\n`;
+  gameStatePromptAddition +=
+    "Remember, points are bad. Try avoiding taking a card if you can't form an immediate sequence with it unless its a low card.";
 
   const entirePrompt = prompt + gameStatePromptAddition;
 
