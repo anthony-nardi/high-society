@@ -10,6 +10,7 @@ import {
 import { wait } from "../../high-society/helpers";
 import { Notification } from "../../shared/types";
 import { updateGameState } from "../../shared/helpers";
+import { makeBestMoveForActivePlayer } from "./simpleBot";
 
 const project = "high-society-c4ff4";
 const location = "us-central1";
@@ -238,7 +239,8 @@ export async function maybeTakeBotTurn(gameState: NoThanksGameState) {
   let suggestedAction: 0 | 1 = 0;
 
   try {
-    suggestedAction = await generateContent(gameState);
+    // suggestedAction = await generateContent(gameState);
+    suggestedAction = makeBestMoveForActivePlayer(gameState);
   } catch (e) {
     console.log(e);
   }
