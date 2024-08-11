@@ -243,8 +243,8 @@ export async function maybeTakeBotTurn(gameState: HighSocietyGameState) {
 
   const timeElapsed = Date.now() - currentTimestamp;
 
-  if (timeElapsed < 8000) {
-    await wait(8000 - timeElapsed);
+  if (timeElapsed < 3000) {
+    await wait(Math.max(3000 - timeElapsed));
   }
 
   if (suggestedAction.length) {

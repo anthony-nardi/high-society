@@ -1,5 +1,6 @@
 import { Center, Stack } from "@mantine/core";
 import { useGameStateContext } from "../../../shared/context/GameStateProvider";
+import CardFront from "../../card/CardFront";
 
 export default function GameTitle() {
   const { gameState } = useGameStateContext("no-thanks");

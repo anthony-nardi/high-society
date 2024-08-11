@@ -16,10 +16,6 @@ export default function CardFront({
   const TEXT_COLOR = "#000";
   const BORDER_COLOR = "#fff";
 
-  console.log(
-    `Card: ${card}, Background Color: ${CARD_BACKGROUND_COLOR}, Text Color: ${TEXT_COLOR}, Border Color: ${BORDER_COLOR}`
-  );
-
   return (
     <div style={{ width }}>
       <svg

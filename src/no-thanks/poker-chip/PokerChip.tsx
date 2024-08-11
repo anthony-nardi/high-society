@@ -1,14 +1,10 @@
 const CHIP_COLOR = "#FF0000"; // Red color for the chip
-const TEXT_COLOR = "#FFFFFF"; // White color for the text
 
 interface PokerChipProps {
   number: number;
 }
 
 export default function PokerChip({ number }: PokerChipProps) {
-  console.log(
-    `Number: ${number}, Chip Color: ${CHIP_COLOR}, Text Color: ${TEXT_COLOR}`
-  );
   return (
     <svg width="200" height="200" viewBox="0 0 200 200">
       {/* Outer circle */}

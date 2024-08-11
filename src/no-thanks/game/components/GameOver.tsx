@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { NoThanksGameState, NoThanksPlayerState } from "../types";
 import { Box, Center, Flex } from "@mantine/core";
+import CardFront from "../../card/CardFront";
 
 export default function GameOver({
   gameState,
@@ -9,7 +10,6 @@ export default function GameOver({
 }) {
   const playersAsMap = useMemo(() => {
     if (!gameState) return null;
-
     return gameState.players.reduce(
       (acc: { [key: string]: NoThanksPlayerState }, player) => {
         acc[player.email] = player;
@@ -19,40 +19,28 @@ export default function GameOver({
     );
   }, [gameState]);
 
-  // Each card is worth its face value
-  // Each chip is worth -1 point
-  // Each consecutive card is worth the face value of the lowest card in the run
-  const playersToPointsMap = gameState?.players.reduce(
-    (acc: { [key: string]: number }, player) => {
-      let points = 0;
-
-      player.cards = player.cards || [];
-
-      // Calculate points for cards
-      const sortedCards = player.cards.sort((a, b) => a - b);
-
-      for (let i = 0; i < sortedCards.length; i++) {
-        const card = sortedCards[i];
-
-        if (sortedCards[i - 1] === card - 1) {
-          continue;
-        } else {
-          points += card;
+  const playersToPointsMap = useMemo(() => {
+    if (!gameState) return null;
+    return gameState.players.reduce(
+      (acc: { [key: string]: number }, player) => {
+        let points = 0;
+        const sortedCards = (player.cards || []).sort((a, b) => a - b);
+        for (let i = 0; i < sortedCards.length; i++) {
+          const card = sortedCards[i];
+          if (sortedCards[i - 1] !== card - 1) {
+            points += card;
+          }
         }
-      }
-
-      // Subtract points for chips
-      points -= player.chips;
-
-      acc[player.email] = points;
-      return acc;
-    },
-    {}
-  );
+        points -= player.chips;
+        acc[player.email] = points;
+        return acc;
+      },
+      {}
+    );
+  }, [gameState]);
 
   const lowestScore = useMemo(() => {
     if (!playersToPointsMap) return null;
-
     return Object.values(playersToPointsMap).reduce((lowest, points) => {
       return points < lowest ? points : lowest;
     }, Infinity);
@@ -60,29 +48,29 @@ export default function GameOver({
 
   const renderedPlayersEndGame = useMemo(() => {
     if (!playersToPointsMap || !playersAsMap) return null;
-
     return Object.entries(playersToPointsMap).map(([email, points]) => {
-      if (points === lowestScore) {
-        return (
-          <Box key={email}>
-            <div className="animated-border-box">
-              <Box p="xs">
-                <b>{email} has won!</b>
-                <div>Cards: {(playersAsMap[email].cards || []).join(", ")}</div>
-                <b>Final score: {points}</b>
-              </Box>
-            </div>
-          </Box>
-        );
-      } else {
-        return (
-          <Box p="xs" key={email}>
-            <b>{email}</b>
-            <div>Cards: {(playersAsMap[email].cards || []).join(", ")}</div>
-            <b>Final score: {points}</b>
-          </Box>
-        );
-      }
+      const player = playersAsMap[email];
+      const isWinner = points === lowestScore;
+      return (
+        <Box
+          key={email}
+          p="xs"
+          className={isWinner ? "animated-border-box" : ""}
+        >
+          <div>
+            <Box>
+              <b>{isWinner ? `${email} has won!` : email}</b>
+              <Flex wrap="wrap">
+                {(player.cards || []).map((card) => (
+                  <CardFront key={card} card={card} size="sm" />
+                ))}
+              </Flex>
+              <div>Chips: {player.chips}</div>
+              <b>Final score: {points}</b>
+            </Box>
+          </div>
+        </Box>
+      );
     });
   }, [playersToPointsMap, lowestScore, playersAsMap]);
 

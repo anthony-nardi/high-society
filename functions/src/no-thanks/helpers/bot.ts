@@ -99,7 +99,7 @@ function buildGameStatePrompt(gameState: NoThanksGameState) {
 
   let prompt = GAME_RULES_AND_STRATEGIES_PROMPT;
 
-  prompt += `Total players: ${gameState.public.players.length}`;
+  prompt += `Total players: ${gameState.public.players.length}\n`;
 
   let gameStatePromptAddition = "";
 
@@ -110,6 +110,37 @@ function buildGameStatePrompt(gameState: NoThanksGameState) {
   )}.\n`;
   gameStatePromptAddition += `Your current cards: ${JSON.stringify(
     activePlayersCurrentCards
+  )}.\n`;
+  gameStatePromptAddition += `Cards left in the deck: ${gameState.public.remainingCards}.\n`;
+
+  const opponentCards = gameState.public.players.reduce(
+    (acc: number[][], player) => {
+      if (player.email === activePlayer?.email) {
+        return acc;
+      }
+
+      return acc.concat([player.cards || []]);
+    },
+    []
+  );
+
+  const oppoenentChips = gameState.public.players.reduce(
+    (acc: number[][], player) => {
+      if (player.email === activePlayer?.email) {
+        return acc;
+      }
+
+      return acc.concat([[player.chips || 0]]);
+    },
+    []
+  );
+
+  gameStatePromptAddition += `Opponent cards: ${JSON.stringify(
+    opponentCards
+  )}.\n`;
+
+  gameStatePromptAddition += `Opponent chips: ${JSON.stringify(
+    oppoenentChips
   )}.\n`;
 
   gameStatePromptAddition +=
@@ -214,8 +245,8 @@ export async function maybeTakeBotTurn(gameState: NoThanksGameState) {
 
   const timeElapsed = Date.now() - currentTimestamp;
 
-  if (timeElapsed < 8000) {
-    await wait(8000 - timeElapsed);
+  if (timeElapsed < 3000) {
+    await wait(Math.max(3000 - timeElapsed, 0));
   }
 
   if (!isValidAction(gameState, suggestedAction)) {
