@@ -20,7 +20,9 @@ export default function Lobby({ gameName }: { gameName: GameName }) {
 
   const showBotButton = useMemo(() => {
     try {
-      return !!window.localStorage[`${gameName}:bots`];
+      return (
+        !!window.localStorage[`${gameName}:bots`] || gameName === "no-thanks"
+      );
     } catch (e) {
       console.log(e);
     }
