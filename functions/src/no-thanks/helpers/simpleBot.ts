@@ -32,16 +32,10 @@ function shouldTakeCard(
   );
 
   // Calculate the number of chips needed to take the card based on its value
-  const chipsNeeded = Math.floor((activeCard - 3) / 5) * 2; // More chips for higher cards
+  const chipsNeeded = Math.max(4, Math.floor((activeCard - 3) / 5) * 2); // More chips for higher cards
 
   // Check if taking the card would give the player the required number of chips
   const wouldGiveRequiredChips = gameState.public.chipsPlaced >= chipsNeeded;
-
-  // Calculate the preference based on the card's value
-  const cardPreference = 35 - activeCard; // Higher value for cards closer to 3, lower for cards closer to 35
-
-  // Define a threshold for the card preference
-  const preferenceThreshold = 20; // Adjust this value based on your strategy
 
   // Check if the card completes a run for any opponent
   const completesRunForOpponent = gameState.public.players.some(
@@ -55,10 +49,21 @@ function shouldTakeCard(
   // Check if there are at least 2 chips on the active card
   const atLeastTwoChips = gameState.public.chipsPlaced >= 2;
 
+  const canCreateRunAndDoesntCompleteOpponentRun =
+    canCreateRun && !completesRunForOpponent;
+
+  const canCreateRunAndDoesntCompleteOpponentRunAndHasChips =
+    canCreateRunAndDoesntCompleteOpponentRun && atLeastTwoChips;
+
   return (
-    canCreateRun ||
+    // Take the card if it can create a run and doesn't complete a run for an opponent and
+    // there are at least 2 chips on the card. Basically we can be greedy here.
+    canCreateRunAndDoesntCompleteOpponentRunAndHasChips ||
+    // Take the card if it can create a run and completes a run for an opponent. Give them no chance.
+    (canCreateRun && completesRunForOpponent) ||
+    // Take the card if it would give the player the required number of chips
     wouldGiveRequiredChips ||
-    cardPreference > preferenceThreshold ||
+    // Take the card if there are at least 2 chips on the active card and it completes a run for an opponent
     (completesRunForOpponent && atLeastTwoChips)
   );
 }
