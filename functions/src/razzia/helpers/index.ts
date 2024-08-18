@@ -42,7 +42,7 @@ function getPlayersStartingMoney(
 }
 
 function initializeDeck(): LootCards[] {
-  let deck: LootCards[] = [];
+  const deck: LootCards[] = [];
 
   // 4 types of each jewels
   for (let i = 0; i < 4; i++) {
@@ -212,4 +212,140 @@ export function getActivePlayer(gameState: RazziaGameState) {
   return gameState.public.players.find(
     (player) => player.email === gameState.public.activePlayer
   );
+}
+
+export function updateActivePlayerForNewRound(gameState: RazziaGameState) {
+  let activePlayerEmail;
+  let highestMoney = 0;
+
+  for (const player of gameState.public.players) {
+    for (const money of player.money || []) {
+      if (parseInt(money) > highestMoney) {
+        highestMoney = parseInt(money);
+        activePlayerEmail = player.email;
+      }
+    }
+  }
+
+  if (activePlayerEmail) {
+    gameState.public.activePlayer = activePlayerEmail;
+  }
+}
+
+export function makeAllPlayersMoneyAvailable(gameState: RazziaGameState) {
+  for (const player of gameState.public.players) {
+    player.availableMoney = player.money;
+  }
+}
+
+export function hasHitRaidLimit(gameState: RazziaGameState) {
+  return gameState.public.policeRaids === 6;
+}
+
+export function getPlayerWithHighestBid(gameState: RazziaGameState) {
+  let highestBid = 0;
+  let highestBidder: RazziaPlayerState | undefined;
+
+  for (const player of gameState.public.players) {
+    if (parseInt(player.bid) > highestBid) {
+      highestBid = parseInt(player.bid);
+      highestBidder = player;
+    }
+  }
+
+  return highestBidder;
+}
+
+export function getCategorizedCardsFromGameState(gameState: RazziaGameState) {
+  const cards: {
+    jewels: LootCards[];
+    bodyguards: LootCards[];
+    coins: LootCards[];
+    theives: LootCards[];
+    cars: LootCards[];
+    drivers: LootCards[];
+    businesses: LootCards[];
+  } = {
+    jewels: [],
+    bodyguards: [],
+    coins: [],
+    theives: [],
+    cars: [],
+    drivers: [],
+    businesses: [],
+  };
+
+  for (const card of gameState.public.revealedCards || []) {
+    switch (card) {
+      case LOOT_CARDS.SCARAB:
+      case LOOT_CARDS.CROSS:
+      case LOOT_CARDS.BRACELET:
+      case LOOT_CARDS.TIARA:
+      case LOOT_CARDS.RING:
+        cards.jewels.push(card);
+        break;
+      case LOOT_CARDS.BODYGUARDS:
+        cards.bodyguards.push(card);
+        break;
+      case LOOT_CARDS.COINS:
+        cards.coins.push(card);
+        break;
+      case LOOT_CARDS.THIEF:
+        cards.theives.push(card);
+        break;
+      case LOOT_CARDS.CARS:
+        cards.cars.push(card);
+        break;
+      case LOOT_CARDS.DRIVERS:
+        cards.drivers.push(card);
+        break;
+      case LOOT_CARDS.CASINO:
+      case LOOT_CARDS.TRANSPORTATION:
+      case LOOT_CARDS.MOVIE_THEATER:
+      case LOOT_CARDS.RACING:
+      case LOOT_CARDS.REAL_ESTATE:
+      case LOOT_CARDS.NIGHTCLUB:
+      case LOOT_CARDS.RESTAURANT:
+        cards.businesses.push(card);
+        break;
+    }
+  }
+
+  return cards;
+}
+
+export function transferCategorizedCardsToPlayer(
+  gameState: RazziaGameState,
+  player: RazziaPlayerState
+) {
+  const cards = getCategorizedCardsFromGameState(gameState);
+
+  // If the player has no cards, initialize the array
+  player.cards.jewels = player.cards.jewels || [];
+  player.cards.bodyguards = player.cards.bodyguards || [];
+  player.cards.coins = player.cards.coins || [];
+  player.cards.theives = player.cards.theives || [];
+  player.cards.cars = player.cards.cars || [];
+  player.cards.drivers = player.cards.drivers || [];
+  player.cards.businesses = player.cards.businesses || [];
+
+  player.cards.jewels = player.cards.jewels.concat(cards.jewels);
+  player.cards.bodyguards = player.cards.bodyguards.concat(cards.bodyguards);
+  player.cards.coins = player.cards.coins.concat(cards.coins);
+  player.cards.theives = player.cards.theives.concat(cards.theives);
+  player.cards.cars = player.cards.cars.concat(cards.cars);
+  player.cards.drivers = player.cards.drivers.concat(cards.drivers);
+  player.cards.businesses = player.cards.businesses.concat(cards.businesses);
+}
+
+export function doesAtLeastOnePlayerHaveAvailableMoney(
+  gameState: RazziaGameState
+) {
+  for (const player of gameState.public.players) {
+    if ((player.availableMoney || []).length > 0) {
+      return true;
+    }
+  }
+
+  return false;
 }

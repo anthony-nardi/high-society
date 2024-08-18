@@ -9,16 +9,17 @@ export type RazziaPlayerState = GenericPlayerState & {
   email: string;
   lastActionAt: number;
   cards: {
-    jewels?: [];
-    bodyguards?: [];
-    coins?: [];
-    theives?: [];
-    cars?: [];
-    drivers?: [];
-    businesses?: [];
+    jewels?: string[];
+    bodyguards?: string[];
+    coins?: string[];
+    theives?: string[];
+    cars?: string[];
+    drivers?: string[];
+    businesses?: string[];
   };
   money?: string[];
   availableMoney?: string[];
+  bid: string;
   score: number;
   isBot: boolean;
 };
@@ -37,6 +38,7 @@ export type RazziaPublicGameState = {
   policeRaids: number;
   money: string;
   round: 1 | 2 | 3;
+  auctionTriggeringPlayer?: string;
 };
 
 export type RazziaPrivateGameState = {
