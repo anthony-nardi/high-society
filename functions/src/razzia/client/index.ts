@@ -5,7 +5,27 @@ import {
   isActivePlayerTakingAction,
   verifyRequestAuthentication,
 } from "../../high-society/helpers";
-import { POLICE_RAIDS, RazziaGameState } from "../types";
+import {
+  BODYGUARDS,
+  BRACELET,
+  CARS,
+  CASINO,
+  COINS,
+  CROSS,
+  DRIVERS,
+  LootCards,
+  MOVIE_THEATER,
+  NIGHTCLUB,
+  POLICE_RAIDS,
+  RACING,
+  RazziaGameState,
+  REAL_ESTATE,
+  RESTAURANT,
+  RING,
+  SCARAB,
+  TIARA,
+  TRANSPORTATION,
+} from "../types";
 import {
   doesAtLeastOnePlayerHaveAvailableMoney,
   getActivePlayer,
@@ -139,6 +159,7 @@ export const useThief = onCall(
   async (
     request: CallableRequest<{
       lobbyUID: string;
+      cardToSteal: LootCards[];
     }>
   ) => {
     verifyRequestAuthentication(request);
@@ -151,6 +172,90 @@ export const useThief = onCall(
     if (!isActivePlayerTakingAction(gameState, requestEmail)) {
       return;
     }
+
+    // first check that the player has as many theif cards as they are trying to use
+    const activePlayer = getActivePlayer(gameState);
+
+    if (!activePlayer) {
+      throw new Error("Active player not found.");
+    }
+
+    activePlayer.cards = activePlayer.cards || {};
+    activePlayer.cards.theives = activePlayer.cards.theives || [];
+
+    if (activePlayer.cards.theives.length < request.data.cardToSteal.length) {
+      throw new Error("Player does not have enough thief cards.");
+    }
+
+    // check card to steal is in revealed cards
+    const cardToSteal = request.data.cardToSteal;
+    const revealedCards = gameState.public.revealedCards || [];
+
+    for (const card of cardToSteal) {
+      if (!revealedCards.includes(card)) {
+        throw new Error(`Card ${card} to steal is not in the revealed cards.`);
+      }
+
+      // Remove the thief from the active player's cards
+      activePlayer.cards.theives.pop();
+
+      // Move the card from the revealed cards to the active player
+      const cardIndex = revealedCards.indexOf(card);
+      const stolenCard = revealedCards.splice(cardIndex, 1)[0];
+
+      switch (stolenCard) {
+        case SCARAB:
+        case CROSS:
+        case BRACELET:
+        case TIARA:
+        case RING:
+          activePlayer.cards.jewels = activePlayer.cards.jewels || [];
+          activePlayer.cards.jewels.push(stolenCard);
+          break;
+        case BODYGUARDS:
+          activePlayer.cards.bodyguards = activePlayer.cards.bodyguards || [];
+          activePlayer.cards.bodyguards.push(stolenCard);
+          break;
+        case COINS:
+          activePlayer.cards.coins = activePlayer.cards.coins || [];
+          activePlayer.cards.coins.push(stolenCard);
+          break;
+        case CARS:
+          activePlayer.cards.cars = activePlayer.cards.cars || [];
+          activePlayer.cards.cars.push(stolenCard);
+          break;
+        case DRIVERS:
+          activePlayer.cards.drivers = activePlayer.cards.drivers || [];
+          activePlayer.cards.drivers.push(stolenCard);
+          break;
+        case CASINO:
+        case TRANSPORTATION:
+        case MOVIE_THEATER:
+        case RACING:
+        case REAL_ESTATE:
+        case NIGHTCLUB:
+        case RESTAURANT:
+          activePlayer.cards.businesses = activePlayer.cards.businesses || [];
+          activePlayer.cards.businesses.push(stolenCard);
+          break;
+        default:
+          throw new Error(`Invalid card ${stolenCard} to steal.`);
+      }
+    }
+
+    updateActivePlayer(gameState);
+
+    gameState.public.notification = {
+      timestamp: Date.now(),
+      title: `${activePlayer.email} has stolen the cards: ${cardToSteal.join(
+        ", "
+      )}.`,
+    };
+
+    await updateGameState(
+      gameState,
+      `${activePlayer.email} has stolen the cards: ${cardToSteal.join(", ")}.`
+    );
   }
 );
 
