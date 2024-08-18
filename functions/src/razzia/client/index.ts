@@ -12,6 +12,7 @@ import {
   getPlayerWithHighestBid,
   hasHitRaidLimit,
   makeAllPlayersMoneyAvailable,
+  resetAllPlayersBid,
   transferCategorizedCardsToPlayer,
   updateActivePlayer,
   updateActivePlayerForNewRound,
@@ -250,6 +251,9 @@ export const passOnLoot = onCall(
       // The players bid becomes the next money to be won.
       gameState.public.money = highestBid;
 
+      // All player's bids are reset.
+      resetAllPlayersBid(gameState);
+
       // Award the player the revealed cards and the money.
       highestBiddingPlayer.money.push(gameState.public.money);
       highestBiddingPlayer.cards = highestBiddingPlayer.cards || [];
@@ -356,6 +360,9 @@ export const bidOnLoot = onCall(
 
     // The players bid becomes the next money to be won.
     gameState.public.money = highestBid;
+
+    // All player's bids are reset.
+    resetAllPlayersBid(gameState);
 
     // Award the player the revealed cards and the money.
     highestBiddingPlayer.money.push(gameState.public.money);

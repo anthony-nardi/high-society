@@ -116,6 +116,7 @@ function createPlayerMetadata(players: PlayerInLobby[]): RazziaPlayerState[] {
     availableMoney: getPlayersStartingMoney(players.length, index),
     isBot: !!player.isBot,
     score: 0,
+    bid: "0",
   }));
 }
 
@@ -348,4 +349,10 @@ export function doesAtLeastOnePlayerHaveAvailableMoney(
   }
 
   return false;
+}
+
+export function resetAllPlayersBid(gameState: RazziaGameState) {
+  for (const player of gameState.public.players) {
+    player.bid = "0";
+  }
 }
