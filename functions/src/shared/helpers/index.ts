@@ -9,6 +9,7 @@ import { createNoThanksGameState } from "../../no-thanks/helpers";
 import { getDatabase } from "firebase-admin/database";
 import { logger } from "firebase-functions/v2";
 import { HttpsError } from "firebase-functions/v2/https";
+import { createRazziaGameState } from "../../razzia/helpers";
 
 export function getGameName(playersInLobby: PlayerInLobby[]) {
   return playersInLobby[0].gameName;
@@ -21,6 +22,9 @@ async function createSpecificGameState(lobbyUID: string, gameName: GameName) {
       break;
     case "no-thanks":
       await createNoThanksGameState(lobbyUID);
+      break;
+    case "razzia":
+      await createRazziaGameState(lobbyUID);
       break;
     default:
       throw new Error(`Unknown game name: ${gameName}`);

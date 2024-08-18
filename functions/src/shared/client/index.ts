@@ -10,6 +10,7 @@ import {
   verifyRequestAuthentication,
 } from "../../high-society/helpers";
 import { createGame, getGameName } from "../helpers";
+import { GameName } from "../types";
 
 const checkAuthentication = (request: CallableRequest<any>) => {
   if (!request.auth) {
@@ -29,10 +30,23 @@ const updatePlayers = async (lobbyUID: string, players: any) => {
   await getDatabase().ref(`lobbies/${lobbyUID}/players`).set(players);
 };
 
+const getMaxPlayers = (gameName: GameName): number => {
+  switch (gameName) {
+    case "high-society":
+      return 5;
+    case "no-thanks":
+      return 7;
+    case "razzia":
+      return 5;
+    default:
+      return 0 as never;
+  }
+};
+
 export const createlobby = onCall(
   async (
     request: CallableRequest<{
-      gameName: "high-society" | "no-thanks";
+      gameName: GameName;
     }>
   ) => {
     verifyRequestAuthentication(request);
@@ -77,7 +91,7 @@ export const joinlobby = onCall(
     const playersSnapshotValue = await getPlayers(lobbyUID);
 
     const gameName = getGameName(playersSnapshotValue);
-    const maxPlayers = gameName === "high-society" ? 5 : 7;
+    const maxPlayers = getMaxPlayers(gameName);
 
     if (playersSnapshotValue.length >= maxPlayers) {
       return;
@@ -120,7 +134,7 @@ export const addbot = onCall(
     const playersSnapshotValue = await getPlayers(lobbyUID);
 
     const gameName = getGameName(playersSnapshotValue);
-    const maxPlayers = gameName === "high-society" ? 5 : 7;
+    const maxPlayers = getMaxPlayers(gameName);
 
     if (playersSnapshotValue.length >= maxPlayers) {
       return;

@@ -17,7 +17,8 @@ export type RazziaPlayerState = GenericPlayerState & {
     drivers?: [];
     businesses?: [];
   };
-  money?: [];
+  money?: string[];
+  availableMoney?: string[];
   score: number;
   isBot: boolean;
 };
@@ -31,14 +32,15 @@ export type RazziaPublicGameState = {
   status: GameStatus;
   roundState: "NORMAL_AUCTION" | "FORCED_AUCTION" | "SCORING" | "ACTION";
   notification?: Notification;
-  revealedCards?: [];
+  revealedCards?: LootCards[];
   remainingCards: number;
   policeRaids: number;
-  money: number;
+  money: string;
+  round: 1 | 2 | 3;
 };
 
 export type RazziaPrivateGameState = {
-  deck: [];
+  deck: LootCards[];
 };
 
 export type RazziaGameState = GenericGameState<RazziaPlayerState> & {
@@ -46,36 +48,57 @@ export type RazziaGameState = GenericGameState<RazziaPlayerState> & {
   private: RazziaPrivateGameState;
 };
 
+export const SCARAB = "SCARAB";
+export const CROSS = "CROSS";
+export const BRACELET = "BRACELET";
+export const TIARA = "TIARA";
+export const RING = "RING";
+export const BODYGUARDS = "BODYGUARDS";
+export const COINS = "COINS";
+export const POLICE_RAIDS = "POLICE_RAIDS";
+export const CARS = "CARS";
+export const DRIVERS = "DRIVERS";
+export const CASINO = "CASINO";
+export const TRANSPORTATION = "TRANSPORTATION";
+export const MOVIE_THEATER = "MOVIE_THEATER";
+export const RACING = "RACING";
+export const REAL_ESTATE = "REAL_ESTATE";
+export const NIGHTCLUB = "NIGHTCLUB";
+export const RESTAURANT = "RESTAURANT";
+export const THIEF = "THIEF";
+
 export const LOOT_CARDS = {
-  JEWLES: {
-    SCARAB: "SCARAB",
-    CROSS: "CROSS",
-    BRACELET: "BRACELET",
-    TIARA: "TIARA",
-    RING: "RING",
-  },
-  BODYGUARDS: "BODYGUARDS",
-  COINS: "COINS",
-  POLICE_RAIDS: "POLICE_RAIDS",
-  CARS: "CARS",
-  DRIVERS: "DRIVERS",
-  BUSINESSES: {
-    CASINO: "CASINO",
-    TRANSPORTATION: "TRANSPORTATION",
-    MOVIE_THEATER: "MOVIE_THEATER",
-    RACING: "RACING",
-    REAL_ESTATE: "REAL_ESTATE",
-    NIGHTCLUB: "NIGHTCLUB",
-    RESTAURANT: "RESTAURANT",
-  },
+  // JEWELS
+  SCARAB,
+  CROSS,
+  BRACELET,
+  TIARA,
+  RING,
+
+  // BODYGUARDS,
+  BODYGUARDS,
+
+  // COINS,
+  COINS,
+
+  // POLICE_RAIDS,
+  POLICE_RAIDS,
+
+  // CARS & DRIVERS
+  CARS,
+  DRIVERS,
+
+  // BUSINESSES
+  CASINO,
+  TRANSPORTATION,
+  MOVIE_THEATER,
+  RACING,
+  REAL_ESTATE,
+  NIGHTCLUB,
+  RESTAURANT,
+
+  // THIEF
+  THIEF,
 } as const;
 
 export type LootCards = (typeof LOOT_CARDS)[keyof typeof LOOT_CARDS];
-
-// 4 types of each jewwels
-// 16 bodyguards
-// 3 Coins
-// 21 Police Raids
-// 16 Cars
-// 10 Drivers
-// 4 types of each business
