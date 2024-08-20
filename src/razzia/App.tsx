@@ -7,6 +7,7 @@ import GameTitle from "./game/components/GameTitle.tsx";
 import { GameStateProvider } from "../shared/context/GameStateProvider";
 import { LobbyProvider } from "../shared/context/LobbyProvider";
 import { UserProvider } from "../shared/context/UserProvider";
+import Game from "./game";
 
 initializeFirebase();
 
@@ -19,6 +20,7 @@ function App() {
             <GameTitle />
             <Login />
             <Lobby gameName={"razzia"} />
+            <Game />
           </GameStateProvider>
         </LobbyProvider>
       </UserProvider>

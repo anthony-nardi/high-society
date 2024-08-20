@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import HighSociety from "./high-society/App";
 import NoThanks from "./no-thanks/App";
+import Razzia from "./razzia/App";
 import reportWebVitals from "./reportWebVitals";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
   {
     path: "/no-thanks",
     element: <NoThanks />,
+  },
+  {
+    path: "/razzia",
+    element: <Razzia />,
   },
 ]);
 
