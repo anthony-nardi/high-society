@@ -1,17 +1,13 @@
-import {
-  Box,
-  Center,
-  Container,
-  Grid,
-  Loader,
-  SimpleGrid,
-} from "@mantine/core";
+import { Center, Container, Loader } from "@mantine/core";
 import { useMemo } from "react";
 import useGameState from "../../shared/hooks/useGameState";
 import { useUserContext } from "../../shared/context/useUserContext";
 import { useServerNotification } from "../../shared/hooks/useServerNotification";
 import { RazziaGameState } from "./types";
-import { useLobbyContext } from "../../shared/context/useLobbyContext.tsx";
+import { useLobbyContext } from "../../shared/context/useLobbyContext";
+import ThreePlayerLayout from "./components/board-layout/ThreePlayerLayout";
+import FourPlayerLayout from "./components/board-layout/FourPlayerLayout";
+import FivePlayerLayout from "./components/board-layout/FivePlayerLayout";
 
 export default function Game() {
   const { user, isSignedIn } = useUserContext();
@@ -44,11 +40,31 @@ export default function Game() {
     return isGameActive && gameState?.status === "GAME_OVER";
   }, [gameState?.status, isGameActive]);
 
+  const layout = useMemo(() => {
+    if (playerInfo.length === 3) {
+      return (
+        <ThreePlayerLayout players={playerInfo} activePlayer={activePlayer} />
+      );
+    }
+
+    if (playerInfo.length === 4) {
+      return (
+        <FourPlayerLayout players={playerInfo} activePlayer={activePlayer} />
+      );
+    }
+
+    if (playerInfo.length === 5) {
+      return (
+        <FivePlayerLayout players={playerInfo} activePlayer={activePlayer} />
+      );
+    }
+
+    return null;
+  }, [playerInfo, activePlayer]);
+
   if (gameState === null) {
     return null;
   }
-
-  console.log(gameState);
 
   if (isLoading) {
     return (
@@ -65,41 +81,7 @@ export default function Game() {
   return (
     <>
       <Container fluid my="xl">
-        <Grid gutter={{ base: 5, xs: "md", md: "xl", xl: 50 }}>
-          <Grid.Col
-            span={{ base: 12, md: 4 }}
-            style={{ border: "1px solid red" }}
-          >
-            1
-          </Grid.Col>
-          <Grid.Col
-            span={{ base: 12, md: 4 }}
-            style={{ border: "1px solid red" }}
-          >
-            1
-          </Grid.Col>
-          <Grid.Col
-            span={{ base: 12, md: 4 }}
-            style={{ border: "1px solid red" }}
-          >
-            1
-          </Grid.Col>
-          <Grid.Col span={12} style={{ border: "1px solid red" }}>
-            1
-          </Grid.Col>
-          <Grid.Col
-            span={{ base: 12, md: 4 }}
-            style={{ border: "1px solid red" }}
-          >
-            1
-          </Grid.Col>
-          <Grid.Col
-            span={{ base: 12, md: 8 }}
-            style={{ border: "1px solid red" }}
-          >
-            2
-          </Grid.Col>
-        </Grid>
+        {layout}
       </Container>
     </>
   );
