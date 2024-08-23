@@ -10,6 +10,7 @@ export default function Money({
 
   return (
     <svg
+      transform="translate(0,-20)"
       width="80px"
       height="80px"
       viewBox="0 -196 1416 1416"

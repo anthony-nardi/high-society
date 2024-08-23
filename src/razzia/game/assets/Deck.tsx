@@ -126,8 +126,8 @@ export default function Deck() {
         strokeWidth="5"
       />
       <svg x="50" y="125" width="200" height="200" viewBox="0 0 512 512">
-        <g stroke-width="0" />
-        <g stroke-linecap="round" stroke-linejoin="round" />
+        <g strokeWidth="0" />
+        <g strokeLinecap="round" strokeLinejoin="round" />
         <path
           fill="#707487"
           d="M346.548 150.057c-36.217-25.543-63.38 8.516-90.543 8.516s-54.325-34.059-90.543-8.516c-46.381 32.713-63.38 221.385-63.38 221.385h307.845c.001-.001-16.999-188.673-63.379-221.385"
