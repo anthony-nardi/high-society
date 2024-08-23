@@ -55,6 +55,7 @@ export const CROSS = "CROSS";
 export const BRACELET = "BRACELET";
 export const TIARA = "TIARA";
 export const RING = "RING";
+
 export const BODYGUARDS = "BODYGUARDS";
 export const COINS = "COINS";
 export const POLICE_RAIDS = "POLICE_RAIDS";

@@ -11,6 +11,8 @@ export default function SharedBoard() {
     return null;
   }
 
+  console.log(gameState);
+
   return (
     <div>
       <Flex direction={"column"}>
