@@ -10,8 +10,8 @@ export default function Money({
 
   return (
     <svg
-      width="800px"
-      height="800px"
+      width="80px"
+      height="80px"
       viewBox="0 -196 1416 1416"
       version="1.1"
       xmlns="http://www.w3.org/2000/svg"
@@ -65,6 +65,19 @@ export default function Money({
         d="M865.695135 715.139459c-34.317838 0-63.100541-27.675676-63.10054-63.10054s27.675676-63.100541 63.10054-63.100541c34.317838 0 63.100541 27.675676 63.100541 63.100541s-28.782703 63.100541-63.100541 63.10054z m0-80.812973c-9.963243 0-18.819459 7.749189-18.819459 18.81946s7.749189 18.819459 18.819459 18.819459 18.819459-7.749189 18.81946-18.819459-8.856216-18.819459-18.81946-18.81946z"
         fill="#131313"
       />
+
+      <text
+        x="41%"
+        y="45%"
+        fill="#000"
+        fontSize="21rem"
+        textAnchor="middle"
+        dominantBaseline="central"
+        stroke="#000"
+        fontWeight={"bold"}
+      >
+        {amount}
+      </text>
     </svg>
   );
 }

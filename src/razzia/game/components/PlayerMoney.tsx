@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { RazziaPlayerState } from "../types";
+import Money from "../assets/Money";
 
 export default function PlayerMoney({
   availableMoney,
@@ -11,9 +12,9 @@ export default function PlayerMoney({
   const renderedMoney = useMemo(() => {
     return money?.map((m) => {
       if (availableMoney?.includes(m)) {
-        return m;
+        return <Money amount={m} isActive={true} />;
       } else {
-        return "X";
+        return <Money amount={m} isActive={false} />;
       }
     });
   }, [availableMoney, money]);

@@ -3,6 +3,7 @@ import { RazziaPlayerState } from "../../types";
 import PlayerOverview from "../PlayerOverview";
 import { useUserContext } from "../../../../shared/context/useUserContext";
 import { useMemo } from "react";
+import SharedBoard from "../SharedBoard";
 
 export default function ThreePlayerLayout({
   players,
@@ -46,7 +47,7 @@ export default function ThreePlayerLayout({
         />
       </Grid.Col>
       <Grid.Col span={12} style={{ border: "1px solid red" }}>
-        THIS IS THE CENTER
+        <SharedBoard />
       </Grid.Col>
       <Grid.Col span={{ base: 12, md: 12 }} style={{ border: "1px solid red" }}>
         <PlayerOverview
