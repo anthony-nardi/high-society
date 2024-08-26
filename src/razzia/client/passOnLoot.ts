@@ -1,7 +1,7 @@
 import { getFunctions, httpsCallable } from "firebase/functions";
 
 export type PassOnLootRequest = {
-  lobbyUID: number;
+  lobbyUID: string;
 };
 
 export default async function passOnLoot(passOnLootRequest: PassOnLootRequest) {

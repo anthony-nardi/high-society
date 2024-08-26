@@ -35,7 +35,7 @@ const router = createBrowserRouter([
 
 root.render(
   <React.StrictMode>
-    <MantineProvider defaultColorScheme="dark">
+    <MantineProvider defaultColorScheme="light">
       <Notifications position="top-left" />
       <RouterProvider router={router} />
     </MantineProvider>

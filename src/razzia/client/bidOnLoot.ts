@@ -1,7 +1,7 @@
 import { getFunctions, httpsCallable } from "firebase/functions";
 
 export type BidOnLootRequest = {
-  lobbyUID: number;
+  lobbyUID: string;
   amount: string;
 };
 

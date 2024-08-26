@@ -6,15 +6,12 @@ export type UseThiefRequest = {
   cardToSteal: LootCards[];
 };
 
-export default async function useThief(useThiefRequest: UseThiefRequest) {
+export default async function activateTheif(useThiefRequest: UseThiefRequest) {
   const functions = getFunctions();
-  const useThiefApi = httpsCallable<UseThiefRequest, void>(
-    functions,
-    "useThief"
-  );
+  const thiefApi = httpsCallable<UseThiefRequest, void>(functions, "useThief");
 
   try {
-    await useThiefApi(useThiefRequest);
+    await thiefApi(useThiefRequest);
   } catch (e) {
     console.error(e);
   }

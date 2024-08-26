@@ -18,6 +18,7 @@ import Tiara from "../assets/Tiara";
 import Transportation from "../assets/Transportation";
 
 export default function RevealedCard({ card }: { card: LootCards }) {
+  console.log(card);
   switch (card) {
     case "BODYGUARDS":
       return <BodyGuard />;

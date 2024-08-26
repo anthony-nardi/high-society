@@ -37,6 +37,7 @@ export default function PlayerGameState({
       <PlayerMoney
         availableMoney={player.availableMoney}
         money={player.money}
+        isLoggedInUserActivePlayer={!!isLoggedInUserActivePlayer}
       />
     </>
   );

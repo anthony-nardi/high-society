@@ -7,10 +7,14 @@ export default function Card({
   fill?: string;
   transform?: string;
 }) {
+  const defaultWidth = 175;
+  const defaultHeight = 250;
+  const scaleMult = 0.8;
+
   return (
     <svg
-      width="175"
-      height="250"
+      width={`${defaultWidth * scaleMult}`}
+      height={`${defaultHeight * scaleMult}`}
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 350 500"
     >

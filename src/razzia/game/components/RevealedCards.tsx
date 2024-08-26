@@ -9,13 +9,17 @@ export default function RevealedCards() {
     return null;
   }
 
-  return Object.values(LOOT_CARDS).map((card, index) => {
-    return <RevealedCard key={index} card={card} />;
-  });
+  // return Object.values(LOOT_CARDS).map((card, index) => {
+  //   return <RevealedCard key={index} card={card} />;
+  // });
 
-  // <div>
-  //   {(gameState.revealedCards || []).map((card, index) => (
-  //     <RevealedCard key={index} card={card} />
-  //   ))}
-  // </div>
+  return (
+    <>
+      {(gameState.revealedCards || []).map((card, index) => {
+        return card !== LOOT_CARDS.POLICE_RAIDS ? (
+          <RevealedCard key={index} card={card} />
+        ) : null;
+      })}
+    </>
+  );
 }
