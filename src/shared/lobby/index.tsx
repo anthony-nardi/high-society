@@ -8,7 +8,6 @@ import createLobby, { GameName } from "../../high-society/client/createLobby";
 import { useGameStateContext } from "../context/GameStateProvider";
 import { useUserContext } from "../context/useUserContext";
 import { useLobbyContext } from "../context/useLobbyContext";
-import isLocalhost from "../utils/isLocalhost";
 
 export default function Lobby({ gameName }: { gameName: GameName }) {
   const { user } = useUserContext();
@@ -18,21 +17,6 @@ export default function Lobby({ gameName }: { gameName: GameName }) {
   const [isReadying, setIsReadying] = useState<null | boolean>(null);
   const [isCreatingLobby, setIsCreatingLobby] = useState<null | boolean>(null);
   const [isAddingBot, setIsAddingBot] = useState<null | boolean>(null);
-
-  // Bots are always offered for No Thanks!. For High Society they are a
-  // debugging aid: shown when running locally, or when opted in via the
-  // `<game>:bots` localStorage key on a deployed build.
-  const showBotButton = useMemo(() => {
-    if (gameName === "no-thanks" || isLocalhost()) {
-      return true;
-    }
-    try {
-      return !!window.localStorage[`${gameName}:bots`];
-    } catch (e) {
-      console.log(e);
-      return false;
-    }
-  }, [gameName]);
 
   const isCurrentUserReady = useMemo(() => {
     if (!user || !lobbyData) return false;
@@ -137,15 +121,14 @@ export default function Lobby({ gameName }: { gameName: GameName }) {
                   Click here to ready!
                 </Button>
               )}
-              {showBotButton && (
-                <Button
-                  onClick={handleAddBot}
-                  loading={!!isAddingBot}
-                  disabled={!!isAddingBot}
-                >
-                  Add bot
-                </Button>
-              )}
+              <Button
+                variant="default"
+                onClick={handleAddBot}
+                loading={!!isAddingBot}
+                disabled={!!isAddingBot}
+              >
+                Add bot
+              </Button>
             </Flex>
             <PlayersList players={lobbyData.players} />
           </Flex>
