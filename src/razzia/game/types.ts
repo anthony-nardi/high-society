@@ -1,3 +1,5 @@
+import { LogEntry } from "../../shared/components/GameLog";
+
 export type GameStatus = "IN_PROGRESS" | "GAME_OVER";
 
 export type Notification = {
@@ -26,27 +28,16 @@ export const RESTAURANT = "RESTAURANT";
 export const THIEF = "THIEF";
 
 export const LOOT_CARDS = {
-  // JEWELS
   SCARAB,
   CROSS,
   BRACELET,
   TIARA,
   RING,
-
-  // BODYGUARDS,
   BODYGUARDS,
-
-  // COINS,
   COINS,
-
-  // POLICE_RAIDS,
   POLICE_RAIDS,
-
-  // CARS & DRIVERS
   CARS,
   DRIVERS,
-
-  // BUSINESSES
   CASINO,
   TRANSPORTATION,
   MOVIE_THEATER,
@@ -54,30 +45,42 @@ export const LOOT_CARDS = {
   REAL_ESTATE,
   NIGHTCLUB,
   RESTAURANT,
-
-  // THIEF
   THIEF,
 } as const;
 
 export type LootCards = (typeof LOOT_CARDS)[keyof typeof LOOT_CARDS];
 
+export type PlayerCards = {
+  jewels?: LootCards[];
+  bodyguards?: LootCards[];
+  coins?: LootCards[];
+  theives?: LootCards[];
+  cars?: LootCards[];
+  drivers?: LootCards[];
+  businesses?: LootCards[];
+};
+
+export type CardCategory = keyof PlayerCards;
+
 export type RazziaPlayerState = {
   email: string;
   lastActionAt: number;
-  cards: {
-    jewels?: string[];
-    bodyguards?: string[];
-    coins?: string[];
-    theives?: string[];
-    cars?: string[];
-    drivers?: string[];
-    businesses?: string[];
-  };
+  cards: PlayerCards;
   money?: string[];
   availableMoney?: string[];
   bid: string;
   score: number;
   isBot: boolean;
+};
+
+export type RoundState =
+  "NORMAL_AUCTION" | "FORCED_AUCTION" | "SCORING" | "ACTION";
+
+export type ScoreBreakdown = {
+  email: string;
+  round: number;
+  points: { [category: string]: number };
+  total: number;
 };
 
 export type RazziaGameState = {
@@ -87,12 +90,16 @@ export type RazziaGameState = {
   activePlayer: string;
   startAt: string;
   status: GameStatus;
-  roundState: "NORMAL_AUCTION" | "FORCED_AUCTION" | "SCORING" | "ACTION";
+  roundState: RoundState;
   notification?: Notification;
   revealedCards?: LootCards[];
   remainingCards: number;
   policeRaids: number;
+  raidLimit: number;
   money: string;
   round: 1 | 2 | 3;
   auctionTriggeringPlayer?: string;
+  scoring?: ScoreBreakdown[];
+  nextLobbyUID?: string;
+  log?: LogEntry[];
 };

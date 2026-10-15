@@ -1,3 +1,4 @@
+/** Loot card frame. Scales with its container: wrap it in a div with a width. */
 export default function Card({
   children,
   fill = "#000000",
@@ -7,16 +8,13 @@ export default function Card({
   fill?: string;
   transform?: string;
 }) {
-  const defaultWidth = 175;
-  const defaultHeight = 250;
-  const scaleMult = 0.8;
-
   return (
     <svg
-      width={`${defaultWidth * scaleMult}`}
-      height={`${defaultHeight * scaleMult}`}
+      width="100%"
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 350 500"
+      viewBox="0 0 290 440"
+      preserveAspectRatio="xMidYMid meet"
+      style={{ display: "block" }}
     >
       <rect
         x="5"

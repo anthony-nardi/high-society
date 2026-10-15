@@ -8,7 +8,7 @@ export default async function revealCard(revealCardRequest: RevealCardRequest) {
   const functions = getFunctions();
   const revealCardApi = httpsCallable<RevealCardRequest, void>(
     functions,
-    "revealCard"
+    "revealCard",
   );
 
   try {

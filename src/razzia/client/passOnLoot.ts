@@ -8,7 +8,7 @@ export default async function passOnLoot(passOnLootRequest: PassOnLootRequest) {
   const functions = getFunctions();
   const passOnLootApi = httpsCallable<PassOnLootRequest, void>(
     functions,
-    "passOnLoot"
+    "passOnLoot",
   );
 
   try {

@@ -9,7 +9,7 @@ export default async function bidOnLoot(bidOnLootRequest: BidOnLootRequest) {
   const functions = getFunctions();
   const bidOnLootApi = httpsCallable<BidOnLootRequest, void>(
     functions,
-    "bidOnLoot"
+    "bidOnLoot",
   );
 
   try {

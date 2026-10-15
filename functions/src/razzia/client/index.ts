@@ -1,507 +1,87 @@
-import { CallableRequest, onCall } from "firebase-functions/v2/https";
+import { CallableRequest, HttpsError, onCall } from "firebase-functions/v2/https";
 import {
   getEmailFromRequest,
   getGameState,
   isActivePlayerTakingAction,
   verifyRequestAuthentication,
 } from "../../high-society/helpers";
+import { LootCards, RazziaGameState } from "../types";
 import {
-  BODYGUARDS,
-  BRACELET,
-  CARS,
-  CASINO,
-  COINS,
-  CROSS,
-  DRIVERS,
-  LootCards,
-  MOVIE_THEATER,
-  NIGHTCLUB,
-  POLICE_RAIDS,
-  RACING,
-  RazziaGameState,
-  REAL_ESTATE,
-  RESTAURANT,
-  RING,
-  SCARAB,
-  TIARA,
-  TRANSPORTATION,
-} from "../types";
-import {
-  doesAtLeastOnePlayerHaveAvailableMoney,
-  getActivePlayer,
-  getPlayerWithHighestBid,
-  hasHitRaidLimit,
-  makeAllPlayersMoneyAvailable,
-  resetAllPlayersBid,
-  transferCategorizedCardsToPlayer,
-  updateActivePlayer,
-  updateActivePlayerForNewRound,
+  ActionResult,
+  bid,
+  initiateAuction,
+  pass,
+  revealCard,
+  saveGameState,
+  useThief,
 } from "../helpers";
-import { Notification } from "../../shared/types";
-import { updateGameState } from "../../shared/helpers";
+import { isActivePlayerBot, maybeTakeBotTurn } from "../helpers/bot";
 
-export const revealCard = onCall(
-  async (
-    request: CallableRequest<{
-      lobbyUID: string;
-    }>
-  ) => {
-    verifyRequestAuthentication(request);
-
-    const requestEmail = getEmailFromRequest(request);
-    const { lobbyUID } = request.data;
-
-    const gameState = await getGameState<RazziaGameState>(lobbyUID);
-
-    if (!isActivePlayerTakingAction(gameState, requestEmail)) {
-      return;
-    }
-
-    const activePlayer = getActivePlayer(gameState);
-
-    gameState.public.revealedCards = gameState.public.revealedCards || [];
-
-    const deck = gameState.private.deck;
-
-    const card = deck.shift();
-
-    gameState.public.remainingCards = deck.length;
-
-    if (!card) {
-      throw new Error("No more cards in the deck.");
-    }
-
-    if (gameState.public.revealedCards.length === 7) {
-      throw new Error("7 cards have been revealed already. Invalid action.");
-    }
-
-    if (card !== POLICE_RAIDS) {
-      gameState.public.revealedCards.push(card);
-
-      updateActivePlayer(gameState);
-
-      const notification: Notification = {
-        timestamp: Date.now(),
-        title: `${activePlayer?.email} has revealed the ${card}.`,
-      };
-
-      gameState.public.notification = notification;
-
-      await updateGameState(gameState, notification.title);
-    } else if (hasHitRaidLimit(gameState)) {
-      gameState.public.policeRaids = 0;
-      gameState.public.notification = {
-        timestamp: Date.now(),
-        title: "Police Raids have been reset.",
-      };
-
-      gameState.public.revealedCards = [];
-
-      if (gameState.public.round === 3) {
-        gameState.public.status = "GAME_OVER";
-        gameState.public.notification = {
-          timestamp: Date.now(),
-          title: "Game Over",
-        };
-      } else {
-        gameState.public.round += 1;
-        updateActivePlayerForNewRound(gameState);
-        makeAllPlayersMoneyAvailable(gameState);
-      }
-
-      await updateGameState(gameState, "Police Raids have been reset.");
-    } else {
-      gameState.public.policeRaids += 1;
-      gameState.public.notification = {
-        timestamp: Date.now(),
-        title: "Police Raids have been increased.",
-      };
-      gameState.public.roundState = "FORCED_AUCTION";
-      updateActivePlayer(gameState);
-      gameState.public.auctionTriggeringPlayer = activePlayer?.email;
-      await updateGameState(gameState, "Police Raids have been increased");
-    }
+// Bots may take many turns in a row (reveals, a whole auction), so after a
+// human acts let them play on, up to a sensible cap.
+async function letBotsPlay(gameState: RazziaGameState) {
+  let attempts = 40;
+  while (
+    gameState.public.status !== "GAME_OVER" &&
+    isActivePlayerBot(gameState) &&
+    attempts > 0
+  ) {
+    attempts--;
+    await maybeTakeBotTurn(gameState);
   }
+}
+
+async function run(
+  request: CallableRequest<{ lobbyUID: string }>,
+  action: (gameState: RazziaGameState) => ActionResult
+) {
+  verifyRequestAuthentication(request);
+
+  const requestEmail = getEmailFromRequest(request);
+  const gameState = await getGameState<RazziaGameState>(request.data.lobbyUID);
+
+  if (!gameState || !isActivePlayerTakingAction(gameState, requestEmail)) {
+    return;
+  }
+
+  const result = action(gameState);
+  if (!result.ok) {
+    throw new HttpsError("failed-precondition", result.reason);
+  }
+
+  await saveGameState(gameState);
+  await letBotsPlay(gameState);
+  return {};
+}
+
+export const revealCardFn = onCall(
+  async (request: CallableRequest<{ lobbyUID: string }>) =>
+    run(request, revealCard)
 );
 
-export const initiateAuction = onCall(
-  async (
-    request: CallableRequest<{
-      lobbyUID: string;
-    }>
-  ) => {
-    verifyRequestAuthentication(request);
-
-    const requestEmail = getEmailFromRequest(request);
-    const { lobbyUID } = request.data;
-
-    const gameState = await getGameState<RazziaGameState>(lobbyUID);
-
-    if (!isActivePlayerTakingAction(gameState, requestEmail)) {
-      return;
-    }
-
-    gameState.public.roundState = "NORMAL_AUCTION";
-    gameState.public.auctionTriggeringPlayer = gameState.public.activePlayer;
-
-    updateActivePlayer(gameState);
-
-    gameState.public.notification = {
-      timestamp: Date.now(),
-      title: `${gameState.public.activePlayer} has initiated an auction.`,
-    };
-
-    await updateGameState(gameState, "Auction initiated.");
-  }
+export const initiateAuctionFn = onCall(
+  async (request: CallableRequest<{ lobbyUID: string }>) =>
+    run(request, initiateAuction)
 );
 
-export const useThief = onCall(
-  async (
-    request: CallableRequest<{
-      lobbyUID: string;
-      cardToSteal: LootCards[];
-    }>
-  ) => {
-    verifyRequestAuthentication(request);
-
-    const requestEmail = getEmailFromRequest(request);
-    const { lobbyUID } = request.data;
-
-    const gameState = await getGameState<RazziaGameState>(lobbyUID);
-
-    if (!isActivePlayerTakingAction(gameState, requestEmail)) {
-      return;
-    }
-
-    // first check that the player has as many theif cards as they are trying to use
-    const activePlayer = getActivePlayer(gameState);
-
-    if (!activePlayer) {
-      throw new Error("Active player not found.");
-    }
-
-    activePlayer.cards = activePlayer.cards || {};
-    activePlayer.cards.theives = activePlayer.cards.theives || [];
-
-    if (activePlayer.cards.theives.length < request.data.cardToSteal.length) {
-      throw new Error("Player does not have enough thief cards.");
-    }
-
-    // check card to steal is in revealed cards
-    const cardToSteal = request.data.cardToSteal;
-    const revealedCards = gameState.public.revealedCards || [];
-
-    for (const card of cardToSteal) {
-      if (!revealedCards.includes(card)) {
-        throw new Error(`Card ${card} to steal is not in the revealed cards.`);
-      }
-
-      // Remove the thief from the active player's cards
-      activePlayer.cards.theives.pop();
-
-      // Move the card from the revealed cards to the active player
-      const cardIndex = revealedCards.indexOf(card);
-      const stolenCard = revealedCards.splice(cardIndex, 1)[0];
-
-      switch (stolenCard) {
-        case SCARAB:
-        case CROSS:
-        case BRACELET:
-        case TIARA:
-        case RING:
-          activePlayer.cards.jewels = activePlayer.cards.jewels || [];
-          activePlayer.cards.jewels.push(stolenCard);
-          break;
-        case BODYGUARDS:
-          activePlayer.cards.bodyguards = activePlayer.cards.bodyguards || [];
-          activePlayer.cards.bodyguards.push(stolenCard);
-          break;
-        case COINS:
-          activePlayer.cards.coins = activePlayer.cards.coins || [];
-          activePlayer.cards.coins.push(stolenCard);
-          break;
-        case CARS:
-          activePlayer.cards.cars = activePlayer.cards.cars || [];
-          activePlayer.cards.cars.push(stolenCard);
-          break;
-        case DRIVERS:
-          activePlayer.cards.drivers = activePlayer.cards.drivers || [];
-          activePlayer.cards.drivers.push(stolenCard);
-          break;
-        case CASINO:
-        case TRANSPORTATION:
-        case MOVIE_THEATER:
-        case RACING:
-        case REAL_ESTATE:
-        case NIGHTCLUB:
-        case RESTAURANT:
-          activePlayer.cards.businesses = activePlayer.cards.businesses || [];
-          activePlayer.cards.businesses.push(stolenCard);
-          break;
-        default:
-          throw new Error(`Invalid card ${stolenCard} to steal.`);
-      }
-    }
-
-    updateActivePlayer(gameState);
-
-    gameState.public.notification = {
-      timestamp: Date.now(),
-      title: `${activePlayer.email} has stolen the cards: ${cardToSteal.join(
-        ", "
-      )}.`,
-    };
-
-    await updateGameState(
-      gameState,
-      `${activePlayer.email} has stolen the cards: ${cardToSteal.join(", ")}.`
-    );
-  }
+export const useThiefFn = onCall(
+  async (request: CallableRequest<{ lobbyUID: string; cardToSteal: LootCards[] }>) =>
+    run(request, (gameState) => useThief(gameState, request.data.cardToSteal || []))
 );
 
-export const passOnLoot = onCall(
-  async (
-    request: CallableRequest<{
-      lobbyUID: string;
-    }>
-  ) => {
-    verifyRequestAuthentication(request);
-
-    const requestEmail = getEmailFromRequest(request);
-    const { lobbyUID } = request.data;
-
-    const gameState = await getGameState<RazziaGameState>(lobbyUID);
-
-    if (!isActivePlayerTakingAction(gameState, requestEmail)) {
-      return;
-    }
-
-    const activePlayer = getActivePlayer(gameState);
-
-    if (!activePlayer) {
-      throw new Error("Active player not found.");
-    }
-
-    if (activePlayer.email !== gameState.public.auctionTriggeringPlayer) {
-      updateActivePlayer(gameState);
-
-      gameState.public.notification = {
-        timestamp: Date.now(),
-        title: `${gameState.public.activePlayer} has passed.`,
-      };
-
-      await updateGameState(gameState, "Player has passed.");
-    } else {
-      const hasAnyPlayerBid = gameState.public.players.some(
-        (player) => player.bid
-      );
-
-      if (!hasAnyPlayerBid) {
-        // Throw if roundState is not "FORCED_AUCTION"
-        if (gameState.public.roundState !== "FORCED_AUCTION") {
-          throw new Error("Invalid action.");
-        }
-
-        gameState.public.notification = {
-          timestamp: Date.now(),
-          title: "No player has bid.",
-        };
-
-        gameState.public.roundState = "ACTION";
-
-        if (!doesAtLeastOnePlayerHaveAvailableMoney(gameState)) {
-          gameState.public.roundState = "SCORING";
-
-          if (gameState.public.round === 3) {
-            gameState.public.status = "GAME_OVER";
-            gameState.public.notification = {
-              timestamp: Date.now(),
-              title: "Game Over",
-            };
-          } else {
-            gameState.public.round += 1;
-            updateActivePlayerForNewRound(gameState);
-            makeAllPlayersMoneyAvailable(gameState);
-          }
-        }
-
-        await updateGameState(gameState, "No player has bid.");
-        return;
-      }
-      // The activePlayer is the last player to bid.
-      // Now we determine who wins the auction, award that
-      // player the revealedCards and the money from the auction.
-      // Then we set the activePlayer to the player after the
-      // forced auction starting player.
-      const highestBiddingPlayer = getPlayerWithHighestBid(gameState);
-
-      if (!highestBiddingPlayer) {
-        throw new Error("Highest bidding player not found.");
-      }
-
-      const highestBid = highestBiddingPlayer.bid;
-
-      // Remove the bid from the player's availableMoney and money.
-      highestBiddingPlayer.availableMoney =
-        highestBiddingPlayer.availableMoney || [];
-      highestBiddingPlayer.availableMoney =
-        highestBiddingPlayer.availableMoney.filter(
-          (money) => money !== highestBiddingPlayer.bid
-        );
-      highestBiddingPlayer.money = highestBiddingPlayer.money || [];
-      highestBiddingPlayer.money = highestBiddingPlayer.money.filter(
-        (money) => money !== highestBiddingPlayer.bid
-      );
-
-      // The players bid becomes the next money to be won.
-      gameState.public.money = highestBid;
-
-      // All player's bids are reset.
-      resetAllPlayersBid(gameState);
-
-      // Award the player the revealed cards and the money.
-      highestBiddingPlayer.money.push(gameState.public.money);
-      highestBiddingPlayer.cards = highestBiddingPlayer.cards || [];
-      transferCategorizedCardsToPlayer(gameState, highestBiddingPlayer);
-
-      updateActivePlayer(gameState);
-
-      gameState.public.notification = {
-        timestamp: Date.now(),
-        title: `${highestBiddingPlayer.email} has won the auction with a bid of ${highestBid}.`,
-      };
-
-      gameState.public.roundState = "ACTION";
-
-      if (!doesAtLeastOnePlayerHaveAvailableMoney(gameState)) {
-        gameState.public.roundState = "SCORING";
-
-        if (gameState.public.round === 3) {
-          gameState.public.status = "GAME_OVER";
-          gameState.public.notification = {
-            timestamp: Date.now(),
-            title: "Game Over",
-          };
-        } else {
-          gameState.public.round += 1;
-          updateActivePlayerForNewRound(gameState);
-          makeAllPlayersMoneyAvailable(gameState);
-        }
-      }
-
-      await updateGameState(
-        gameState,
-        `${highestBiddingPlayer.email} has won the auction with a bid of ${highestBid}.`
-      );
-    }
-  }
+export const passOnLootFn = onCall(
+  async (request: CallableRequest<{ lobbyUID: string }>) => run(request, pass)
 );
 
-export const bidOnLoot = onCall(
-  async (
-    request: CallableRequest<{
-      lobbyUID: string;
-      amount: string;
-    }>
-  ) => {
-    verifyRequestAuthentication(request);
-
-    const requestEmail = getEmailFromRequest(request);
-    const { lobbyUID } = request.data;
-
-    const gameState = await getGameState<RazziaGameState>(lobbyUID);
-
-    if (!isActivePlayerTakingAction(gameState, requestEmail)) {
-      return;
-    }
-
-    const activePlayer = getActivePlayer(gameState);
-
-    if (!activePlayer) {
-      throw new Error("Active player not found.");
-    }
-
-    activePlayer.bid = request.data.amount;
-
-    if (
-      gameState.public.activePlayer !== gameState.public.auctionTriggeringPlayer
-    ) {
-      updateActivePlayer(gameState);
-      gameState.public.notification = {
-        timestamp: Date.now(),
-        title: `${activePlayer.email} has bid ${activePlayer.bid}.`,
-      };
-      await updateGameState(
-        gameState,
-        `${activePlayer.email} has bid ${activePlayer.bid}.`
-      );
-      return;
-    }
-
-    // The activePlayer is the last player to bid.
-    // Now we determine who wins the auction, award that
-    // player the revealedCards and the money from the auction.
-    // Then we set the activePlayer to the player after the
-    // forced auction starting player.
-    const highestBiddingPlayer = getPlayerWithHighestBid(gameState);
-
-    if (!highestBiddingPlayer) {
-      throw new Error("Highest bidding player not found.");
-    }
-
-    const highestBid = highestBiddingPlayer.bid;
-
-    // Remove the bid from the player's availableMoney and money.
-    highestBiddingPlayer.availableMoney =
-      highestBiddingPlayer.availableMoney || [];
-    highestBiddingPlayer.availableMoney =
-      highestBiddingPlayer.availableMoney.filter(
-        (money) => money !== highestBiddingPlayer.bid
-      );
-    highestBiddingPlayer.money = highestBiddingPlayer.money || [];
-    highestBiddingPlayer.money = highestBiddingPlayer.money.filter(
-      (money) => money !== highestBiddingPlayer.bid
-    );
-
-    // The players bid becomes the next money to be won.
-    gameState.public.money = highestBid;
-
-    // All player's bids are reset.
-    resetAllPlayersBid(gameState);
-
-    // Award the player the revealed cards and the money.
-    highestBiddingPlayer.money.push(gameState.public.money);
-    highestBiddingPlayer.cards = highestBiddingPlayer.cards || [];
-    transferCategorizedCardsToPlayer(gameState, highestBiddingPlayer);
-
-    updateActivePlayer(gameState);
-
-    gameState.public.notification = {
-      timestamp: Date.now(),
-      title: `${highestBiddingPlayer.email} has won the auction with a bid of ${highestBid}.`,
-    };
-
-    gameState.public.roundState = "ACTION";
-
-    if (!doesAtLeastOnePlayerHaveAvailableMoney(gameState)) {
-      gameState.public.roundState = "SCORING";
-
-      if (gameState.public.round === 3) {
-        gameState.public.status = "GAME_OVER";
-        gameState.public.notification = {
-          timestamp: Date.now(),
-          title: "Game Over",
-        };
-      } else {
-        gameState.public.round += 1;
-        updateActivePlayerForNewRound(gameState);
-        makeAllPlayersMoneyAvailable(gameState);
-      }
-    }
-
-    await updateGameState(
-      gameState,
-      `${highestBiddingPlayer.email} has won the auction with a bid of ${highestBid}.`
-    );
-  }
+export const bidOnLootFn = onCall(
+  async (request: CallableRequest<{ lobbyUID: string; amount: string }>) =>
+    run(request, (gameState) => bid(gameState, String(request.data.amount)))
 );
+
+export {
+  revealCardFn as revealCard,
+  initiateAuctionFn as initiateAuction,
+  useThiefFn as useThief,
+  passOnLootFn as passOnLoot,
+  bidOnLootFn as bidOnLoot,
+};

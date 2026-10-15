@@ -5,12 +5,12 @@ export type InitiateAuctionRequest = {
 };
 
 export default async function initiateAuction(
-  initiateAuctionRequest: InitiateAuctionRequest
+  initiateAuctionRequest: InitiateAuctionRequest,
 ) {
   const functions = getFunctions();
   const initiateAuctionApi = httpsCallable<InitiateAuctionRequest, void>(
     functions,
-    "initiateAuction"
+    "initiateAuction",
   );
 
   try {

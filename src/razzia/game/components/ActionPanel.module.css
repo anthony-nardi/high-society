@@ -1,0 +1,29 @@
+/* Fixed strip along the bottom of the screen holding the player's actions. */
+.panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  padding: 12px 16px;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.55),
+    rgba(0, 0, 0, 0)
+  );
+  transition: background 300ms;
+}
+
+/* On the player's turn the strip warms up so the change is hard to miss. */
+.active {
+  background: linear-gradient(
+    to top,
+    rgba(255, 216, 107, 0.18),
+    rgba(255, 216, 107, 0)
+  );
+}
+
+/* Reserve room under the page content for the fixed panel. */
+.pageSpacer {
+  height: 220px;
+}
