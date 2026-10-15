@@ -13,7 +13,7 @@
 
   position: relative;
   width: 100%;
-  height: calc(var(--hs-card-h) * 2 + 64px);
+  height: calc(var(--hs-card-h) * 2 + 130px);
   pointer-events: none;
 }
 
@@ -74,7 +74,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  bottom: calc(var(--tray-lift) + var(--hs-card-h) + 6px);
+  bottom: calc(var(--tray-lift) + var(--hs-card-h) + 18px);
   text-align: center;
   font-size: 12px;
   letter-spacing: 2px;

@@ -1,4 +1,4 @@
-/* Fixed strip along the bottom of the screen holding the hand and bid tray. */
+/* Fixed strip along the bottom of the screen holding the controls, bid tray and hand. */
 .panel {
   position: fixed;
   left: 0;
@@ -9,7 +9,15 @@
   pointer-events: none;
 }
 
+/* Buttons stay on their own layer above any card. The hand below reserves
+   the vertical gap, so the controls sit comfortably above the tray. */
+.controls {
+  position: relative;
+  z-index: 200;
+  pointer-events: auto;
+}
+
 /* Reserve room under the page content for the fixed panel. */
 .pageSpacer {
-  height: calc(var(--hs-card-h) * 2 + 90px);
+  height: calc(var(--hs-card-h) * 2 + 200px);
 }

@@ -9,7 +9,6 @@ import { useServerNotification } from "../../shared/hooks/useServerNotification"
 import { HighSocietyGameState, HighSocietyPlayerState } from "./types";
 import { useLobbyContext } from "../../shared/context/useLobbyContext";
 import BidPanel from "./components/BidPanel";
-import BidControls from "./components/BidControls";
 import useBidding from "./hooks/useBidding";
 import panelClasses from "./components/BidPanel.module.css";
 
@@ -142,20 +141,6 @@ function ActiveGame({
             <Center>
               <Box>
                 <DeckOverview deckInfo={deckInfo} />
-                {loggedInPlayer && (
-                  <BidControls
-                    isActive={isActive}
-                    activePlayer={activePlayer}
-                    highestBidTotal={highestBidTotal}
-                    staged={bidding.staged}
-                    currentTotal={bidding.currentTotal}
-                    proposedTotal={bidding.proposedTotal}
-                    canBid={bidding.canBid}
-                    loading={bidding.loading}
-                    onBid={bidding.submitBid}
-                    onPass={bidding.pass}
-                  />
-                )}
               </Box>
             </Center>
           </Grid.Col>
@@ -182,8 +167,16 @@ function ActiveGame({
         <BidPanel
           cards={bidding.moneyCards}
           staged={bidding.staged}
+          isActive={isActive}
+          activePlayer={activePlayer}
+          highestBidTotal={highestBidTotal}
+          currentTotal={bidding.currentTotal}
+          proposedTotal={bidding.proposedTotal}
+          canBid={bidding.canBid}
+          loading={bidding.loading}
           onToggle={bidding.toggleCard}
-          disabled={!isActive || bidding.loading}
+          onBid={bidding.submitBid}
+          onPass={bidding.pass}
         />
       )}
     </>

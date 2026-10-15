@@ -1,4 +1,4 @@
-import { Button, Group, Stack, Text } from "@mantine/core";
+import { Button, Group, Text } from "@mantine/core";
 
 /** Pass / Bid actions with a one-line explanation of the current auction state. */
 export default function BidControls({
@@ -28,7 +28,7 @@ export default function BidControls({
   if (!isActive) {
     hint = `Waiting for ${activePlayer.split("@")[0]}.`;
   } else if (staged.length === 0) {
-    hint = `Highest bid is ${highestBidTotal}. Click cards in your hand to build a bid.`;
+    hint = `Highest bid is ${highestBidTotal}. Click cards to build your bid.`;
   } else if (proposedTotal > highestBidTotal) {
     hint = `Your bid would be ${proposedTotal} (${staged.join(" + ")}${
       currentTotal ? ` on top of ${currentTotal}` : ""
@@ -38,23 +38,21 @@ export default function BidControls({
   }
 
   return (
-    <Stack gap="xs" align="center" mt="md">
-      <Group gap="sm">
-        <Button
-          variant="default"
-          disabled={!isActive || loading}
-          loading={loading}
-          onClick={onPass}
-        >
-          Pass
-        </Button>
-        <Button disabled={!canBid} loading={loading} onClick={onBid}>
-          {staged.length > 0 ? `Bid ${proposedTotal}` : "Bid"}
-        </Button>
-      </Group>
-      <Text size="sm" c="dimmed" ta="center">
+    <Group gap="md" justify="center" wrap="wrap">
+      <Button
+        variant="default"
+        disabled={!isActive || loading}
+        loading={loading}
+        onClick={onPass}
+      >
+        Pass
+      </Button>
+      <Button disabled={!canBid} loading={loading} onClick={onBid}>
+        {staged.length > 0 ? `Bid ${proposedTotal}` : "Bid"}
+      </Button>
+      <Text size="sm" c="dimmed">
         {hint}
       </Text>
-    </Stack>
+    </Group>
   );
 }
