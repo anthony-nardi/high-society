@@ -1,8 +1,8 @@
-# High Society / No Thanks!
+# High Society / No Thanks! / Razzia!
 
-Two Reiner Knizia-style card games played online against friends or bots.
+Three Reiner Knizia-style card games played online against friends or bots.
 
-- `src/` — Vite + React 19 + Mantine 9 client (`/high-society`, `/no-thanks`)
+- `src/` — Vite + React 19 + Mantine 9 client (`/high-society`, `/no-thanks`, `/razzia`)
 - `functions/` — Firebase Cloud Functions holding all game logic (Node 22 runtime)
 - Realtime Database stores lobbies and game state; Google sign-in via Firebase Auth
 
@@ -17,7 +17,7 @@ yarn test                         # client tests (vitest + testing-library)
 yarn typecheck && yarn lint
 yarn build
 
-npm --prefix functions test       # game rules: bidding, passing, No Thanks! turns, bot search
+npm --prefix functions test       # game rules and bot search for all three games
 npm --prefix functions run lint
 npm --prefix functions run build
 ```
@@ -34,6 +34,10 @@ card only; the face-down deck is never read.
 - No Thanks! (`functions/src/no-thanks/helpers/botSearch.ts`): take or
   chip, scored by the official rule plus a bonus for runs that can still
   grow.
+- Razzia! (`functions/src/razzia/helpers/botSearch.ts`): auctions are
+  searched with Maxn driven by the pure rules in `helpers/rules.ts`; the
+  action phase (reveal, call, thief) uses a heuristic on the same
+  evaluation because every reveal hides a shuffled deck.
 
 Every bid, pass, chip and take is logged server-side and published with the
 final state, so the game over screen shows the whole game.

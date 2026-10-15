@@ -1,4 +1,4 @@
-export type GameName = "high-society" | "no-thanks";
+export type GameName = "high-society" | "no-thanks" | "razzia";
 
 export type GameStatus = "IN_PROGRESS" | "GAME_OVER";
 

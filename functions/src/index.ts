@@ -8,6 +8,13 @@ import {
   removebot,
 } from "./shared/client";
 import { placeChipOnActiveCard, takeActiveCard } from "./no-thanks/client";
+import {
+  bidOnLoot,
+  initiateAuction,
+  passOnLoot,
+  revealCard,
+  useThief,
+} from "./razzia/client";
 
 initializeApp();
 
@@ -25,3 +32,10 @@ exports.passturn = passturn;
 // No Thanks!
 exports.takeActiveCard = takeActiveCard;
 exports.placeChipOnActiveCard = placeChipOnActiveCard;
+
+// Razzia
+exports.revealCard = revealCard;
+exports.initiateAuction = initiateAuction;
+exports.useThief = useThief;
+exports.passOnLoot = passOnLoot;
+exports.bidOnLoot = bidOnLoot;

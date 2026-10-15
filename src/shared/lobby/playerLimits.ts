@@ -8,6 +8,8 @@ export const getMaxPlayers = (gameName: GameName): number => {
       return 5;
     case "no-thanks":
       return 7;
+    case "razzia":
+      return 5;
     default:
       return 0; // Default case, should never happen
   }
