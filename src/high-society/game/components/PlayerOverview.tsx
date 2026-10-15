@@ -8,21 +8,15 @@ import { useUserContext } from "../../../shared/context/useUserContext";
 export default function PlayerOverview({
   player,
   activePlayer,
-  highestBidTotal,
 }: {
   player: HighSocietyPlayerState;
   activePlayer: HighSocietyGameState["activePlayer"];
-  highestBidTotal: number;
 }) {
   const { user } = useUserContext();
 
   const isActivePlayer = useMemo(() => {
     return player.email === activePlayer;
   }, [player, activePlayer]);
-
-  const isLoggedInUserActivePlayer = useMemo(() => {
-    return user && user.email === activePlayer && isActivePlayer;
-  }, [user, activePlayer, isActivePlayer]);
 
   const styles = useMemo(() => {
     if (isActivePlayer) {
@@ -45,12 +39,8 @@ export default function PlayerOverview({
         />
       </Box>
 
-      <Box w={"50%"}>
-        <PlayerRoundState
-          player={player}
-          isLoggedInUserActivePlayer={!!isLoggedInUserActivePlayer}
-          highestBidTotal={highestBidTotal}
-        />
+      <Box w={"40%"}>
+        <PlayerRoundState player={player} />
       </Box>
     </Flex>
   );

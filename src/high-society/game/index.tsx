@@ -8,6 +8,8 @@ import { useUserContext } from "../../shared/context/useUserContext";
 import { useServerNotification } from "../../shared/hooks/useServerNotification";
 import { HighSocietyGameState } from "./types";
 import { useLobbyContext } from "../../shared/context/useLobbyContext";
+import BidPanel from "./components/BidPanel";
+import panelClasses from "./components/BidPanel.module.css";
 
 export default function Game() {
   const { user, isSignedIn } = useUserContext();
@@ -62,6 +64,16 @@ export default function Game() {
     return highestBid;
   }, [gameState]);
 
+  const loggedInPlayer = useMemo(() => {
+    if (!gameState || !user) {
+      return null;
+    }
+
+    return (
+      gameState.players.find((player) => player.email === user.email) || null
+    );
+  }, [gameState, user]);
+
   const isGameActive = useMemo(() => {
     return isSignedIn && gameState && gameState.status && lobbyId && user;
   }, [gameState, isSignedIn, lobbyId, user]);
@@ -106,7 +118,6 @@ export default function Game() {
                       <PlayerOverview
                         player={player}
                         activePlayer={activePlayer}
-                        highestBidTotal={highestBidTotal}
                       />
                     </Box>
                   </Grid.Col>
@@ -116,6 +127,15 @@ export default function Game() {
           </Grid.Col>
         </Grid>
       </Container>
+      {loggedInPlayer && <div className={panelClasses.pageSpacer} />}
+      {loggedInPlayer && (
+        <BidPanel
+          player={loggedInPlayer}
+          isActive={loggedInPlayer.email === activePlayer}
+          activePlayer={activePlayer}
+          highestBidTotal={highestBidTotal}
+        />
+      )}
     </>
   );
 }

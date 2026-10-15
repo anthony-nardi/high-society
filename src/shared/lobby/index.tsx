@@ -8,6 +8,7 @@ import createLobby, { GameName } from "../../high-society/client/createLobby";
 import { useGameStateContext } from "../context/GameStateProvider";
 import { useUserContext } from "../context/useUserContext";
 import { useLobbyContext } from "../context/useLobbyContext";
+import isLocalhost from "../utils/isLocalhost";
 
 export default function Lobby({ gameName }: { gameName: GameName }) {
   const { user } = useUserContext();
@@ -18,13 +19,18 @@ export default function Lobby({ gameName }: { gameName: GameName }) {
   const [isCreatingLobby, setIsCreatingLobby] = useState<null | boolean>(null);
   const [isAddingBot, setIsAddingBot] = useState<null | boolean>(null);
 
+  // Bots are always offered for No Thanks!. For High Society they are a
+  // debugging aid: shown when running locally, or when opted in via the
+  // `<game>:bots` localStorage key on a deployed build.
   const showBotButton = useMemo(() => {
+    if (gameName === "no-thanks" || isLocalhost()) {
+      return true;
+    }
     try {
-      return (
-        !!window.localStorage[`${gameName}:bots`] || gameName === "no-thanks"
-      );
+      return !!window.localStorage[`${gameName}:bots`];
     } catch (e) {
       console.log(e);
+      return false;
     }
   }, [gameName]);
 

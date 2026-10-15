@@ -1,3 +1,9 @@
+:root {
+  /* Money card size for the hand; everything in the bid panel derives from it. */
+  --hs-card-w: clamp(60px, 8vw, 100px);
+  --hs-card-h: calc(var(--hs-card-w) * 1.5);
+}
+
 /*// Glow Border Animation //*/
 
 .animated-border-box,

@@ -30,7 +30,10 @@ export default function PlayerGameState({
         <div style={{ marginBottom: "12px" }}>
           <b>{player.email.split("@")[0]}</b>
         </div>
-        <div>Money cards in hand: {(player.moneyCards || []).join(", ")}</div>
+        <div>
+          Money cards in hand: {(player.moneyCards || []).length} (shown
+          below)
+        </div>
         <div>Status cards: {renderedStatusCards}</div>
       </>
     );
