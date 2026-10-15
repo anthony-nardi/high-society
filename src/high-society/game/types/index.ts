@@ -1,15 +1,11 @@
+import { LogEntry } from "../../../shared/components/GameLog";
+
 export type GameStatus = "IN_PROGRESS" | "GAME_OVER";
 
 export type Notification = {
   title: string;
   message?: string;
   timestamp: number;
-};
-
-export type LogEntry = {
-  timestamp: number;
-  title: string;
-  message?: string;
 };
 
 export type HighSocietyPlayerState = {

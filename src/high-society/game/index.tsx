@@ -9,7 +9,7 @@ import { HighSocietyGameState, HighSocietyPlayerState } from "./types";
 import { useLobbyContext } from "../../shared/context/useLobbyContext";
 import BidPanel from "./components/BidPanel";
 import useBidding from "./hooks/useBidding";
-import useTurnAlert from "./hooks/useTurnAlert";
+import useTurnAlert from "../../shared/hooks/useTurnAlert";
 import { greenCardsRevealed } from "./cardInfo";
 import panelClasses from "./components/BidPanel.module.css";
 
@@ -147,7 +147,7 @@ function ActiveGame({
     highestBidTotal,
   });
 
-  useTurnAlert(isActive);
+  useTurnAlert(isActive, "High Society");
 
   return (
     <>

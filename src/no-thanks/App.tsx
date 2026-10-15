@@ -4,6 +4,7 @@ import initializeFirebase from "../shared/utils/initializeFirebase";
 import Login from "../shared/login";
 import Game from "./game";
 import GameTitle from "./game/components/GameTitle";
+import NoThanksRules from "./game/components/RulesDrawer";
 import { GameStateProvider } from "../shared/context/GameStateProvider";
 import { LobbyProvider } from "../shared/context/LobbyProvider";
 import { UserProvider } from "../shared/context/UserProvider";
@@ -16,6 +17,7 @@ function App() {
       <UserProvider>
         <LobbyProvider>
           <GameStateProvider gameName={"no-thanks"}>
+            <NoThanksRules />
             <GameTitle />
             <Login />
             <Lobby gameName={"no-thanks"} />

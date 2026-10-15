@@ -24,13 +24,19 @@ npm --prefix functions run build
 
 ## Bots
 
-High Society bots pick their move with a Maxn search (multiplayer minimax
+Bots in both games pick their move with a Maxn search (multiplayer minimax
 from [minimaxer](https://github.com/domw95/minimaxer)) over the current
-auction only; the face-down deck is never read. Candidate moves are a few
-raises plus pass, and finished auctions are scored by a heuristic in
-`functions/src/high-society/helpers/botSearch.ts` (status cards, money kept,
-and the risk of ending with the least money). No Thanks! bots use the simple
-rule-based player in `functions/src/no-thanks/helpers/simpleBot.ts`.
+card only; the face-down deck is never read.
+
+- High Society (`functions/src/high-society/helpers/botSearch.ts`): a few
+  raises plus pass, scored by status cards, money kept and the risk of
+  ending with the least money.
+- No Thanks! (`functions/src/no-thanks/helpers/botSearch.ts`): take or
+  chip, scored by the official rule plus a bonus for runs that can still
+  grow.
+
+Every bid, pass, chip and take is logged server-side and published with the
+final state, so the game over screen shows the whole game.
 
 ## Local Firebase
 

@@ -19,7 +19,7 @@ import { useUserContext } from "../../../shared/context/useUserContext";
 import CardFront from "../../card/CardFront";
 import MoneyCard from "../../card/MoneyCard";
 import { ScoredPlayer } from "../scoring";
-import GameLog from "./GameLog";
+import GameLog from "../../../shared/components/GameLog";
 
 const COLUMNS = 7;
 

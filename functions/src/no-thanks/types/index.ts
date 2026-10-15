@@ -4,6 +4,7 @@ import {
   GenericPlayerState,
   Notification,
 } from "../../shared/types";
+import { LogEntry } from "../../high-society/types";
 
 export type NoThanksPlayerState = GenericPlayerState & {
   email: string;
@@ -24,10 +25,16 @@ export type NoThanksPublicGameState = {
   chipsPlaced: number;
   remainingCards: number;
   notification?: Notification;
+  /** Set when a player starts a rematch after this game ends. */
+  nextLobbyUID?: string;
+  /** Full event log, only present once the game is over. */
+  log?: LogEntry[];
 };
 
 export type NoThanksPrivateGameState = {
   deck: number[];
+  /** Every event of the game; published to `public.log` when it ends. */
+  log?: LogEntry[];
 };
 
 export type NoThanksGameState = GenericGameState<NoThanksPlayerState> & {

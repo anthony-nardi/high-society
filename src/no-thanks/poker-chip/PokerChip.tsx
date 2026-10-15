@@ -2,11 +2,17 @@ const CHIP_COLOR = "#FF0000"; // Red color for the chip
 
 interface PokerChipProps {
   number: number;
+  size?: number;
 }
 
-export default function PokerChip({ number }: PokerChipProps) {
+export default function PokerChip({ number, size = 200 }: PokerChipProps) {
   return (
-    <svg width="200" height="200" viewBox="0 0 200 200">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 200 200"
+      aria-label={`${number} chips`}
+    >
       {/* Outer circle */}
       <circle
         cx="100"

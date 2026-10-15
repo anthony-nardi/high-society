@@ -4,7 +4,7 @@ import initializeFirebase from "../shared/utils/initializeFirebase";
 import Login from "../shared/login";
 import Game from "./game";
 import GameTitle from "./game/components/GameTitle";
-import RulesDrawer from "./game/components/RulesDrawer";
+import HighSocietyRules from "./game/components/RulesDrawer";
 import { GameStateProvider } from "../shared/context/GameStateProvider";
 import { LobbyProvider } from "../shared/context/LobbyProvider";
 import { UserProvider } from "../shared/context/UserProvider";
@@ -17,7 +17,7 @@ function App() {
       <UserProvider>
         <LobbyProvider>
           <GameStateProvider gameName={"high-society"}>
-            <RulesDrawer />
+            <HighSocietyRules />
             <GameTitle />
             <Login />
             <Lobby gameName="high-society" />

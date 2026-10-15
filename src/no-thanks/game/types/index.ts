@@ -1,3 +1,5 @@
+import { LogEntry } from "../../../shared/components/GameLog";
+
 export type GameStatus = "IN_PROGRESS" | "GAME_OVER";
 
 export type Notification = {
@@ -25,4 +27,8 @@ export type NoThanksGameState = {
   chipsPlaced: number;
   remainingCards: number;
   notification?: Notification;
+  /** Set when a player starts a rematch after this game ends. */
+  nextLobbyUID?: string;
+  /** Full event log, published by the server once the game is over. */
+  log?: LogEntry[];
 };

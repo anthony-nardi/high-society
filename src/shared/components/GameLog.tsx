@@ -1,6 +1,11 @@
 import { Paper, ScrollArea, Stack, Table, Text, Title } from "@mantine/core";
-import { LogEntry } from "../types";
-import displayName from "../../../shared/utils/displayName";
+import displayName from "../utils/displayName";
+
+export type LogEntry = {
+  timestamp: number;
+  title: string;
+  message?: string;
+};
 
 /** Replaces email addresses and bot ids in a server message with display names. */
 function prettify(text: string) {

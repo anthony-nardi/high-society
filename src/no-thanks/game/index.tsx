@@ -1,48 +1,36 @@
-import { Box, Center, Container, Grid, Loader } from "@mantine/core";
+import { Center, Container, Grid, Loader, Stack } from "@mantine/core";
 import { useMemo } from "react";
 import DeckOverview from "./components/DeckOverview";
 import PlayerOverview from "./components/PlayerOverview";
-import GameOver from "./components/GameOver.tsx";
+import GameOver from "./components/GameOver";
+import ActionPanel from "./components/ActionPanel";
 import useGameState from "../../shared/hooks/useGameState";
 import { useUserContext } from "../../shared/context/useUserContext";
-import { useServerNotification } from "../../shared/hooks/useServerNotification";
+import useTurnAlert from "../../shared/hooks/useTurnAlert";
 import { NoThanksGameState } from "./types";
-import { useLobbyContext } from "../../shared/context/useLobbyContext.tsx";
+import { useLobbyContext } from "../../shared/context/useLobbyContext";
+import panelClasses from "./components/ActionPanel.module.css";
 
 export default function Game() {
   const { user, isSignedIn } = useUserContext();
   const { lobbyId } = useLobbyContext();
   const { gameState, isLoading } = useGameState<NoThanksGameState>();
 
-  useServerNotification();
-
-  const deckInfo = useMemo(() => {
-    if (!gameState) {
+  const loggedInPlayer = useMemo(() => {
+    if (!gameState || !user) {
       return null;
     }
+    return (
+      gameState.players.find((player) => player.email === user.email) || null
+    );
+  }, [gameState, user]);
 
-    return {
-      activeCard: gameState.activeCard,
-      remainingCards: gameState.remainingCards,
-      chipsPlaced: gameState.chipsPlaced,
-    };
-  }, [gameState]);
+  const isActive =
+    !!gameState &&
+    !!loggedInPlayer &&
+    loggedInPlayer.email === gameState.activePlayer;
 
-  const playerInfo = useMemo(() => {
-    if (!gameState) {
-      return [];
-    }
-
-    return gameState.players;
-  }, [gameState]);
-
-  const activePlayer = useMemo(() => {
-    if (!gameState) {
-      return "";
-    }
-
-    return gameState.activePlayer;
-  }, [gameState]);
+  useTurnAlert(isActive && gameState?.status === "IN_PROGRESS", "No Thanks!");
 
   const isGameActive = useMemo(() => {
     return isSignedIn && gameState && gameState.status && lobbyId && user;
@@ -65,38 +53,50 @@ export default function Game() {
   }
 
   if (isGameOver) {
-    return <GameOver gameState={gameState} />;
+    return (
+      <GameOver gameState={gameState} lobbyId={lobbyId?.toString() as string} />
+    );
   }
+
+  const deckInfo = {
+    activeCard: gameState.activeCard,
+    remainingCards: gameState.remainingCards,
+    chipsPlaced: gameState.chipsPlaced,
+  };
 
   return (
     <>
-      <Container fluid my="xl">
+      <Container fluid px="md" py="md">
         <Grid>
-          <Grid.Col span={5}>
+          <Grid.Col span={{ base: 12, md: 5 }}>
             <Center>
-              <Box>
-                <DeckOverview deckInfo={deckInfo} />
-              </Box>
+              <DeckOverview deckInfo={deckInfo} />
             </Center>
           </Grid.Col>
-          <Grid.Col span="auto">
-            <Grid>
-              {playerInfo.map((player) => {
-                return (
-                  <Grid.Col span={12} key={player.email}>
-                    <Box>
-                      <PlayerOverview
-                        player={player}
-                        activePlayer={activePlayer}
-                      />
-                    </Box>
-                  </Grid.Col>
-                );
-              })}
-            </Grid>
+          <Grid.Col span={{ base: 12, md: 7 }}>
+            <Stack gap="sm">
+              {gameState.players.map((player) => (
+                <PlayerOverview
+                  key={player.email}
+                  player={player}
+                  activePlayer={gameState.activePlayer}
+                />
+              ))}
+            </Stack>
           </Grid.Col>
         </Grid>
       </Container>
+      {loggedInPlayer && <div className={panelClasses.pageSpacer} />}
+      {loggedInPlayer && (
+        <ActionPanel
+          isActive={isActive}
+          activePlayer={gameState.activePlayer}
+          activeCard={gameState.activeCard}
+          chipsPlaced={gameState.chipsPlaced || 0}
+          cards={loggedInPlayer.cards || []}
+          chips={loggedInPlayer.chips || 0}
+        />
+      )}
     </>
   );
 }

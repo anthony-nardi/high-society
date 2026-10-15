@@ -5,12 +5,12 @@ export type TakeActiveCardRequest = {
 };
 
 export default async function takeActiveCard(
-  takeActiveCardRequest: TakeActiveCardRequest
+  takeActiveCardRequest: TakeActiveCardRequest,
 ) {
   const functions = getFunctions();
   const takeActiveCardApi = httpsCallable<TakeActiveCardRequest, void>(
     functions,
-    "takeActiveCard"
+    "takeActiveCard",
   );
 
   try {
