@@ -11,9 +11,11 @@ export default function BidPanel({
   staged,
   isActive,
   activePlayer,
+  currentCard,
   highestBidTotal,
   currentTotal,
   proposedTotal,
+  moneyTotal,
   canBid,
   loading,
   onToggle,
@@ -24,9 +26,11 @@ export default function BidPanel({
   staged: string[];
   isActive: boolean;
   activePlayer: string;
+  currentCard: string;
   highestBidTotal: number;
   currentTotal: number;
   proposedTotal: number;
+  moneyTotal: number;
   canBid: boolean;
   loading: boolean;
   onToggle: (card: string) => void;
@@ -34,15 +38,20 @@ export default function BidPanel({
   onPass: () => void;
 }) {
   return (
-    <div className={classes.panel} data-testid="bid-panel">
+    <div
+      className={`${classes.panel} ${isActive ? classes.active : ""}`}
+      data-testid="bid-panel"
+    >
       <div className={classes.controls}>
         <BidControls
           isActive={isActive}
           activePlayer={activePlayer}
+          currentCard={currentCard}
           highestBidTotal={highestBidTotal}
           staged={staged}
           currentTotal={currentTotal}
           proposedTotal={proposedTotal}
+          moneyTotal={moneyTotal}
           canBid={canBid}
           loading={loading}
           onBid={onBid}

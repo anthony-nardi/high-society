@@ -1,7 +1,7 @@
-import { useMemo } from "react";
+import { Flex, Text } from "@mantine/core";
 import { HighSocietyPlayerState } from "../types";
-import { Flex } from "@mantine/core";
 import CardFront from "../../card/CardFront";
+import displayName from "../../../shared/utils/displayName";
 
 export default function PlayerGameState({
   player,
@@ -10,42 +10,36 @@ export default function PlayerGameState({
   player: HighSocietyPlayerState;
   loggedInUser: string;
 }) {
-  const renderedStatusCards = useMemo(() => {
-    if (!player.statusCards) {
-      return "None";
-    }
-
-    return (
-      <Flex>
-        {player.statusCards.map((card) => {
-          return <CardFront key={card} card={card} size="sm" />;
-        })}
-      </Flex>
-    );
-  }, [player.statusCards]);
-
-  if (loggedInUser === player.email) {
-    return (
-      <>
-        <div style={{ marginBottom: "12px" }}>
-          <b>{player.email.split("@")[0]}</b>
-        </div>
-        <div>
-          Money cards in hand: {(player.moneyCards || []).length} (shown
-          below)
-        </div>
-        <div>Status cards: {renderedStatusCards}</div>
-      </>
-    );
-  }
+  const statusCards = player.statusCards || [];
+  const isCurrentUser = loggedInUser === player.email;
+  const cardsInHand = (player.moneyCards || []).length;
 
   return (
     <>
-      <div style={{ marginBottom: "12px" }}>
-        <b>{player.email.split("@")[0]}</b>
-      </div>
-      <div>Money cards in hand: {(player.moneyCards || []).length}</div>
-      <div>Status cards: {renderedStatusCards}</div>
+      <Text fw={700} mb={4}>
+        {displayName(player.email)}
+        {isCurrentUser && (
+          <Text component="span" c="dimmed" fw={400}>
+            {" "}
+            (you)
+          </Text>
+        )}
+      </Text>
+      <Text size="sm" c="dimmed" mb={6}>
+        {cardsInHand} money card{cardsInHand === 1 ? "" : "s"} in hand
+        {isCurrentUser ? ", shown below" : ""}
+      </Text>
+      {statusCards.length === 0 ? (
+        <Text size="sm" c="dimmed">
+          No status cards yet
+        </Text>
+      ) : (
+        <Flex gap={4} wrap="wrap">
+          {statusCards.map((card, index) => (
+            <CardFront key={`${card}-${index}`} card={card} size="sm" />
+          ))}
+        </Flex>
+      )}
     </>
   );
 }

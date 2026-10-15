@@ -1,35 +1,30 @@
-import { Box } from "@mantine/core";
-import { LobbyData } from "../types";
+import { Text } from "@mantine/core";
+import { LobbyPlayer } from "../types";
 import { GameName } from "../../../high-society/client/createLobby";
+import { getMaxPlayers, MIN_PLAYERS } from "../playerLimits";
 
 interface ConnectedPlayersCountProps {
-  players: LobbyData["players"];
+  players: LobbyPlayer[];
   gameName: GameName;
 }
-
-const getColor = (playerCount: number) => (playerCount < 3 ? "red" : "green");
-
-const getMaxPlayers = (gameName: GameName): number => {
-  switch (gameName) {
-    case "high-society":
-      return 5;
-    case "no-thanks":
-      return 7;
-    default:
-      return 0; // Default case, should never happen
-  }
-};
 
 export default function ConnectedPlayersCount({
   players,
   gameName,
 }: ConnectedPlayersCountProps) {
   const maxPlayers = getMaxPlayers(gameName);
-  const color = getColor(players.length);
+  const missing = Math.max(0, MIN_PLAYERS - players.length);
 
   return (
-    <Box color={color}>
-      {players.length} / {maxPlayers}
-    </Box>
+    <div>
+      <Text fw={600}>
+        {players.length} / {maxPlayers} players
+      </Text>
+      <Text size="sm" c="dimmed">
+        {missing > 0
+          ? `Need ${missing} more to start`
+          : "Starts when everyone is ready"}
+      </Text>
+    </div>
   );
 }

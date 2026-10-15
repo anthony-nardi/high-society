@@ -1,6 +1,6 @@
 import { MantineProvider } from "@mantine/core";
-import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import ConnectedPlayersCount from "../ConnectedPlayersCount";
 import PlayersList from "../PlayersList";
 
@@ -20,18 +20,25 @@ describe("ConnectedPlayersCount", () => {
     const highSociety = renderWithMantine(
       <ConnectedPlayersCount players={players} gameName="high-society" />
     );
-    expect(highSociety.container.textContent).toContain("2 / 5");
+    expect(highSociety.container.textContent).toContain("2 / 5 players");
+    expect(highSociety.container.textContent).toContain("Need 1 more to start");
     highSociety.unmount();
 
     const noThanks = renderWithMantine(
-      <ConnectedPlayersCount players={players} gameName="no-thanks" />
+      <ConnectedPlayersCount
+        players={[...players, { email: "carol@example.com", ready: false }]}
+        gameName="no-thanks"
+      />
     );
-    expect(noThanks.container.textContent).toContain("2 / 7");
+    expect(noThanks.container.textContent).toContain("3 / 7 players");
+    expect(noThanks.container.textContent).toContain(
+      "Starts when everyone is ready"
+    );
   });
 });
 
 describe("PlayersList", () => {
-  it("lists every player with their ready state", () => {
+  it("lists every player by display name with their ready state", () => {
     renderWithMantine(
       <PlayersList
         players={[
@@ -41,9 +48,28 @@ describe("PlayersList", () => {
       />
     );
 
-    expect(screen.getByText("alice@example.com")).toBeTruthy();
-    expect(screen.getByText("bob@example.com")).toBeTruthy();
+    expect(screen.getByText("alice")).toBeTruthy();
+    expect(screen.getByText("bob")).toBeTruthy();
     expect(screen.getByText("Ready")).toBeTruthy();
-    expect(screen.getByText("Not Ready")).toBeTruthy();
+    expect(screen.getByText("Waiting")).toBeTruthy();
+  });
+
+  it("marks bots and lets them be removed", () => {
+    const onRemoveBot = vi.fn();
+    renderWithMantine(
+      <PlayersList
+        players={[
+          { email: "alice@example.com", ready: true },
+          { email: "Bot #1", ready: true, isBot: true },
+        ]}
+        onRemoveBot={onRemoveBot}
+      />
+    );
+
+    expect(screen.getByText("Bot 1")).toBeTruthy();
+    expect(screen.getByText("Bot")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Remove Bot 1" }));
+    expect(onRemoveBot).toHaveBeenCalledWith("Bot #1");
+    expect(screen.queryByRole("button", { name: /Remove alice/ })).toBeNull();
   });
 });

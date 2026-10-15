@@ -3,14 +3,17 @@ import { CreateLobbyResponse } from "../../shared/lobby/types";
 
 export type GameName = "high-society" | "no-thanks";
 
-export default async function createLobby(gameName: GameName) {
+export default async function createLobby(
+  gameName: GameName,
+  options: { rematchOf?: string } = {}
+) {
   const functions = getFunctions();
 
   const createLobby = httpsCallable<
-    { gameName: GameName },
+    { gameName: GameName; rematchOf?: string },
     CreateLobbyResponse
   >(functions, "createlobby");
-  const lobby = await createLobby({ gameName });
+  const lobby = await createLobby({ gameName, ...options });
 
   return lobby;
 }

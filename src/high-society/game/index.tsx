@@ -1,4 +1,4 @@
-import { Box, Center, Container, Grid, Loader } from "@mantine/core";
+import { Center, Container, Grid, Loader, Stack } from "@mantine/core";
 import { useMemo } from "react";
 import DeckOverview from "./components/DeckOverview";
 import PlayerOverview from "./components/PlayerOverview";
@@ -10,6 +10,8 @@ import { HighSocietyGameState, HighSocietyPlayerState } from "./types";
 import { useLobbyContext } from "../../shared/context/useLobbyContext";
 import BidPanel from "./components/BidPanel";
 import useBidding from "./hooks/useBidding";
+import useTurnAlert from "./hooks/useTurnAlert";
+import { greenCardsRevealed } from "./cardInfo";
 import panelClasses from "./components/BidPanel.module.css";
 
 export default function Game() {
@@ -65,6 +67,13 @@ export default function Game() {
     return highestBid;
   }, [gameState]);
 
+  const greenRevealed = useMemo(() => {
+    if (!gameState) {
+      return 0;
+    }
+    return greenCardsRevealed(gameState.players, gameState.currentStatusCard);
+  }, [gameState]);
+
   const loggedInPlayer = useMemo(() => {
     if (!gameState || !user) {
       return null;
@@ -105,6 +114,7 @@ export default function Game() {
       playerInfo={playerInfo}
       activePlayer={activePlayer}
       highestBidTotal={highestBidTotal}
+      greenRevealed={greenRevealed}
       loggedInPlayer={loggedInPlayer}
     />
   );
@@ -115,6 +125,7 @@ function ActiveGame({
   playerInfo,
   activePlayer,
   highestBidTotal,
+  greenRevealed,
   loggedInPlayer,
 }: {
   deckInfo: {
@@ -124,54 +135,58 @@ function ActiveGame({
   playerInfo: HighSocietyPlayerState[];
   activePlayer: string;
   highestBidTotal: number;
+  greenRevealed: number;
   loggedInPlayer: HighSocietyPlayerState | null;
 }) {
   const isActive = !!loggedInPlayer && loggedInPlayer.email === activePlayer;
   const bidding = useBidding({
-    player: loggedInPlayer || { email: "", lastActionAt: 0, moneyCards: [], hasPassed: false },
+    player: loggedInPlayer || {
+      email: "",
+      lastActionAt: 0,
+      moneyCards: [],
+      hasPassed: false,
+    },
     isActive,
     highestBidTotal,
   });
 
+  useTurnAlert(isActive);
+
   return (
     <>
-      <Container fluid my="xl">
+      <Container fluid px="md" py="md">
         <Grid>
-          <Grid.Col span={5}>
+          <Grid.Col span={{ base: 12, md: 5 }}>
             <Center>
-              <Box>
-                <DeckOverview deckInfo={deckInfo} />
-              </Box>
+              <DeckOverview deckInfo={deckInfo} greenRevealed={greenRevealed} />
             </Center>
           </Grid.Col>
-          <Grid.Col span="auto">
-            <Grid>
-              {playerInfo.map((player) => {
-                return (
-                  <Grid.Col span={12} key={player.email}>
-                    <Box>
-                      <PlayerOverview
-                        player={player}
-                        activePlayer={activePlayer}
-                      />
-                    </Box>
-                  </Grid.Col>
-                );
-              })}
-            </Grid>
+          <Grid.Col span={{ base: 12, md: 7 }}>
+            <Stack gap="sm">
+              {playerInfo.map((player) => (
+                <PlayerOverview
+                  key={player.email}
+                  player={player}
+                  activePlayer={activePlayer}
+                  highestBidTotal={highestBidTotal}
+                />
+              ))}
+            </Stack>
           </Grid.Col>
         </Grid>
       </Container>
       {loggedInPlayer && <div className={panelClasses.pageSpacer} />}
-      {loggedInPlayer && (
+      {loggedInPlayer && deckInfo && (
         <BidPanel
           cards={bidding.moneyCards}
           staged={bidding.staged}
           isActive={isActive}
           activePlayer={activePlayer}
+          currentCard={deckInfo.currentStatusCard}
           highestBidTotal={highestBidTotal}
           currentTotal={bidding.currentTotal}
           proposedTotal={bidding.proposedTotal}
+          moneyTotal={bidding.moneyTotal}
           canBid={bidding.canBid}
           loading={bidding.loading}
           onToggle={bidding.toggleCard}

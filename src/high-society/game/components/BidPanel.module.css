@@ -7,6 +7,21 @@
   z-index: 10;
   padding: 0 16px;
   pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.35),
+    rgba(0, 0, 0, 0) 60%
+  );
+  transition: background 300ms;
+}
+
+/* On the player's turn the whole strip warms up so the change is hard to miss. */
+.active {
+  background: linear-gradient(
+    to top,
+    rgba(255, 216, 107, 0.16),
+    rgba(255, 216, 107, 0) 70%
+  );
 }
 
 /* Buttons stay on their own layer above any card. The hand below reserves
@@ -19,5 +34,5 @@
 
 /* Reserve room under the page content for the fixed panel. */
 .pageSpacer {
-  height: calc(var(--hs-card-h) * 2 + 200px);
+  height: calc(var(--hs-card-h) * 2 + 220px);
 }

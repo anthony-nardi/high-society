@@ -29,6 +29,7 @@ export default function useBidding({
   // that are still held.
   const stagedInHand = staged.filter((card) => moneyCards.includes(card));
 
+  const moneyTotal = sum(moneyCards);
   const currentTotal = sum(player.currentBid || []);
   const stagedTotal = sum(stagedInHand);
   const proposedTotal = currentTotal + stagedTotal;
@@ -62,6 +63,7 @@ export default function useBidding({
 
   return {
     moneyCards,
+    moneyTotal,
     staged: stagedInHand,
     currentTotal,
     proposedTotal,

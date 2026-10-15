@@ -33,34 +33,48 @@ export const createlobby = onCall(
   async (
     request: CallableRequest<{
       gameName: "high-society" | "no-thanks";
+      /** A finished game this lobby is a rematch of; its players get a link. */
+      rematchOf?: string;
     }>
   ) => {
     verifyRequestAuthentication(request);
 
     const lobbyUID = Date.now().toString();
+    const { gameName, rematchOf } = request.data;
 
-    return getDatabase()
-      .ref("/lobbies/" + lobbyUID)
-      .set({
-        id: lobbyUID,
-        game: request.data.gameName,
-        players: [
-          {
-            email: request?.auth?.token.email || request?.auth?.token.uid,
-            ready: false,
-            joinedAt: Date.now().toString(),
-            isBot: false,
-            gameName: request.data.gameName,
-          },
-        ],
-      })
-      .then(() => {
-        logger.info(`New lobby created for ${request.data.gameName}`);
-        return { lobbyUID };
-      })
-      .catch((error: Error) => {
-        throw new HttpsError("unknown", error.message, error);
-      });
+    try {
+      await getDatabase()
+        .ref("/lobbies/" + lobbyUID)
+        .set({
+          id: lobbyUID,
+          game: gameName,
+          players: [
+            {
+              email: request?.auth?.token.email || request?.auth?.token.uid,
+              ready: false,
+              joinedAt: Date.now().toString(),
+              isBot: false,
+              gameName,
+            },
+          ],
+        });
+
+      if (rematchOf) {
+        const finished = await getDatabase()
+          .ref(`games/${rematchOf}/public`)
+          .get();
+        if (finished.val()?.status === "GAME_OVER") {
+          await getDatabase()
+            .ref(`games/${rematchOf}/public/nextLobbyUID`)
+            .set(lobbyUID);
+        }
+      }
+    } catch (error: any) {
+      throw new HttpsError("unknown", error.message, error);
+    }
+
+    logger.info(`New lobby created for ${gameName}`);
+    return { lobbyUID };
   }
 );
 
@@ -141,6 +155,37 @@ export const addbot = onCall(
 
     await updatePlayers(lobbyUID, playersSnapshotValue);
     logger.info("Lobby joined.");
+    return { lobbyUID };
+  }
+);
+
+export const removebot = onCall(
+  async (
+    request: CallableRequest<{
+      lobbyUID: string;
+      email: string;
+    }>
+  ) => {
+    checkAuthentication(request);
+
+    const { lobbyUID, email } = request.data;
+    const playersSnapshotValue = await getPlayers(lobbyUID);
+
+    const gameState = await getGameState(lobbyUID);
+    if (gameState) {
+      return;
+    }
+
+    const remaining = (playersSnapshotValue || []).filter(
+      (player: any) => !(player.isBot && player.email === email)
+    );
+
+    if (remaining.length === playersSnapshotValue.length) {
+      return;
+    }
+
+    await updatePlayers(lobbyUID, remaining);
+    logger.info(`Bot ${email} removed from lobby.`);
     return { lobbyUID };
   }
 );

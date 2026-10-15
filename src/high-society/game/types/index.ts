@@ -25,4 +25,6 @@ export type HighSocietyGameState = {
   currentStatusCard: string;
   remainingCards: number;
   notification?: Notification;
+  /** Set when a player starts a rematch after this game ends. */
+  nextLobbyUID?: string;
 };
