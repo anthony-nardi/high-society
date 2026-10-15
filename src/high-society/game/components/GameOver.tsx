@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { HighSocietyGameState } from "../types";
 import { getDatabase, onValue, ref } from "firebase/database";
 import {
@@ -16,6 +16,54 @@ import scoreGame from "../scoring";
 import displayName from "../../../shared/utils/displayName";
 import createLobby from "../../client/createLobby";
 import { useUserContext } from "../../../shared/context/useUserContext";
+import CardFront from "../../card/CardFront";
+import MoneyCard from "../../card/MoneyCard";
+import { ScoredPlayer } from "../scoring";
+
+const COLUMNS = 7;
+
+/** Second row under each player: their status cards and remaining money. */
+function PlayerCards({ player }: { player: ScoredPlayer }) {
+  const money = [...player.moneyCards].sort((a, b) => Number(a) - Number(b));
+  return (
+    <Group gap="xl" align="flex-start" wrap="wrap" py={4}>
+      <div>
+        <Text size="xs" c="dimmed" mb={4}>
+          Status cards
+        </Text>
+        {player.statusCards.length === 0 ? (
+          <Text size="sm" c="dimmed">
+            None
+          </Text>
+        ) : (
+          <Group gap={4} wrap="wrap">
+            {player.statusCards.map((card, index) => (
+              <CardFront key={`${card}-${index}`} card={card} size="sm" />
+            ))}
+          </Group>
+        )}
+      </div>
+      <div>
+        <Text size="xs" c="dimmed" mb={4}>
+          Money left ({player.moneyLeft})
+        </Text>
+        {money.length === 0 ? (
+          <Text size="sm" c="dimmed">
+            None
+          </Text>
+        ) : (
+          <Group gap={4} wrap="wrap" aria-label={`Money: ${money.join(", ")}`}>
+            {money.map((card) => (
+              <div key={card} style={{ width: 40 }}>
+                <MoneyCard value={card} />
+              </div>
+            ))}
+          </Group>
+        )}
+      </div>
+    </Group>
+  );
+}
 
 function formatMultiplier(multiplier: number) {
   if (multiplier === 1) return "—";
@@ -40,7 +88,7 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
 
   const results = useMemo(
     () => (gameData ? scoreGame(gameData.players) : []),
-    [gameData]
+    [gameData],
   );
   const winners = results.filter((p) => p.winner);
   const eliminated = results.filter((p) => p.eliminated);
@@ -70,8 +118,8 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
     winners.length === 1
       ? `${displayName(winners[0].email)} wins!`
       : winners.length > 1
-      ? `${winners.map((p) => displayName(p.email)).join(" and ")} share the win`
-      : "Nobody wins";
+        ? `${winners.map((p) => displayName(p.email)).join(" and ")} share the win`
+        : "Nobody wins";
 
   return (
     <Container size="md" px="md" py="xl">
@@ -94,7 +142,7 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
         </Center>
 
         <Table.ScrollContainer minWidth={560}>
-          <Table striped highlightOnHover withTableBorder>
+          <Table withTableBorder>
             <Table.Thead>
               <Table.Tr>
                 <Table.Th>#</Table.Th>
@@ -104,50 +152,52 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
                 <Table.Th>Multiplier</Table.Th>
                 <Table.Th>Score</Table.Th>
                 <Table.Th>Money left</Table.Th>
-                <Table.Th>Status cards</Table.Th>
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
               {results.map((player) => (
-                <Table.Tr
-                  key={player.email}
-                  style={{
-                    opacity: player.eliminated ? 0.6 : 1,
-                    fontWeight: player.winner ? 700 : undefined,
-                  }}
-                >
-                  <Table.Td>{player.rank}</Table.Td>
-                  <Table.Td>
-                    <Group gap="xs" wrap="nowrap">
-                      {displayName(player.email)}
-                      {player.email === user?.email && (
-                        <Text component="span" size="xs" c="dimmed">
-                          (you)
-                        </Text>
-                      )}
-                      {player.winner && (
-                        <Badge color="yellow" radius="sm">
-                          Winner
-                        </Badge>
-                      )}
-                      {player.eliminated && (
-                        <Badge color="red" variant="light" radius="sm">
-                          Least money
-                        </Badge>
-                      )}
-                    </Group>
-                  </Table.Td>
-                  <Table.Td>{player.luxury}</Table.Td>
-                  <Table.Td>{player.penalty ? `−${player.penalty}` : "—"}</Table.Td>
-                  <Table.Td>{formatMultiplier(player.multiplier)}</Table.Td>
-                  <Table.Td>{player.finalScore}</Table.Td>
-                  <Table.Td>{player.moneyLeft}</Table.Td>
-                  <Table.Td>
-                    {player.statusCards.length
-                      ? player.statusCards.join(", ")
-                      : "—"}
-                  </Table.Td>
-                </Table.Tr>
+                <Fragment key={player.email}>
+                  <Table.Tr
+                    style={{
+                      opacity: player.eliminated ? 0.6 : 1,
+                      fontWeight: player.winner ? 700 : undefined,
+                    }}
+                  >
+                    <Table.Td>{player.rank}</Table.Td>
+                    <Table.Td>
+                      <Group gap="xs" wrap="nowrap">
+                        {displayName(player.email)}
+                        {player.email === user?.email && (
+                          <Text component="span" size="xs" c="dimmed">
+                            (you)
+                          </Text>
+                        )}
+                        {player.winner && (
+                          <Badge color="yellow" radius="sm">
+                            Winner
+                          </Badge>
+                        )}
+                        {player.eliminated && (
+                          <Badge color="red" variant="light" radius="sm">
+                            Least money
+                          </Badge>
+                        )}
+                      </Group>
+                    </Table.Td>
+                    <Table.Td>{player.luxury}</Table.Td>
+                    <Table.Td>
+                      {player.penalty ? `−${player.penalty}` : "—"}
+                    </Table.Td>
+                    <Table.Td>{formatMultiplier(player.multiplier)}</Table.Td>
+                    <Table.Td>{player.finalScore}</Table.Td>
+                    <Table.Td>{player.moneyLeft}</Table.Td>
+                  </Table.Tr>
+                  <Table.Tr style={{ opacity: player.eliminated ? 0.6 : 1 }}>
+                    <Table.Td colSpan={COLUMNS}>
+                      <PlayerCards player={player} />
+                    </Table.Td>
+                  </Table.Tr>
+                </Fragment>
               ))}
             </Table.Tbody>
           </Table>
