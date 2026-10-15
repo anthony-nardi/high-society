@@ -5,7 +5,6 @@ import PlayerOverview from "./components/PlayerOverview";
 import GameOver from "./components/GameOver";
 import useGameState from "../../shared/hooks/useGameState";
 import { useUserContext } from "../../shared/context/useUserContext";
-import { useServerNotification } from "../../shared/hooks/useServerNotification";
 import { HighSocietyGameState, HighSocietyPlayerState } from "./types";
 import { useLobbyContext } from "../../shared/context/useLobbyContext";
 import BidPanel from "./components/BidPanel";
@@ -18,8 +17,6 @@ export default function Game() {
   const { user, isSignedIn } = useUserContext();
   const { lobbyId } = useLobbyContext();
   const { gameState, isLoading } = useGameState<HighSocietyGameState>();
-
-  useServerNotification();
 
   const deckInfo = useMemo(() => {
     if (!gameState) {
