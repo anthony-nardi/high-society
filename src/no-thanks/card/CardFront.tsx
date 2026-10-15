@@ -11,7 +11,7 @@ export default function CardFront({
   card: number;
   size: "sm" | "lg";
 }) {
-  const width = size === "sm" ? "40px" : "200px";
+  const width = size === "sm" ? "40px" : "var(--nt-deck-card-w, 200px)";
   const CARD_BACKGROUND_COLOR = getRainbowColor(card);
   const TEXT_COLOR = "#000";
   const BORDER_COLOR = "#fff";

@@ -5,7 +5,7 @@ export default function CardFront({
   card: string;
   size: "sm" | "lg";
 }) {
-  const width = size === "sm" ? "40px" : "200px";
+  const width = size === "sm" ? "40px" : "var(--hs-deck-card-w, 200px)";
 
   return (
     <span>

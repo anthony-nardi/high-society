@@ -40,7 +40,7 @@ export default function BidPanel({
 }) {
   return (
     <div
-      className={`${classes.panel} ${isActive ? classes.active : ""}`}
+      className={`${classes.panel} safe-bottom ${isActive ? classes.active : ""}`}
       data-testid="bid-panel"
     >
       <div

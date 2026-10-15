@@ -66,7 +66,7 @@ export default function ActionPanel({
 
   return (
     <div
-      className={`${classes.panel} ${isActive ? classes.active : ""}`}
+      className={`${classes.panel} safe-bottom ${isActive ? classes.active : ""}`}
       data-testid="action-panel"
     >
       <Stack gap={6} align="center">

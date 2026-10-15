@@ -151,7 +151,7 @@ function ActiveGame({
 
   return (
     <>
-      <Container fluid px="md" py="md">
+      <Container fluid px="md" pt={44} pb="md">
         <Grid>
           <Grid.Col span={{ base: 12, md: 5 }}>
             <Center>

@@ -32,3 +32,20 @@ describe("handLayout", () => {
     expect(outer.x).toBeLessThanOrEqual(280);
   });
 });
+
+describe("fanWidthFor", () => {
+  it("narrows the fan on a phone and caps it on a desktop", async () => {
+    const { fanWidthFor, MAX_TOTAL_WIDTH_PX, MIN_TOTAL_WIDTH_PX } = await import(
+      "../handLayout"
+    );
+    expect(fanWidthFor(1440, 100)).toBe(MAX_TOTAL_WIDTH_PX);
+    expect(fanWidthFor(375, 60)).toBe(375 - 60 - 48);
+    expect(fanWidthFor(300, 60)).toBe(MIN_TOTAL_WIDTH_PX);
+  });
+
+  it("keeps a narrow fan inside its width", () => {
+    const leftmost = handLayout(11, 0, 267);
+    const rightmost = handLayout(11, 10, 267);
+    expect(rightmost.x - leftmost.x).toBeLessThanOrEqual(267);
+  });
+});

@@ -12,9 +12,9 @@ export default function GameTitle() {
     <Stack h={200} justify="space-around" gap="md">
       <Center>
         <svg
-          width="800"
-          height="200"
           viewBox="0 0 800 200"
+          width="100%"
+          style={{ maxWidth: 800, height: "auto" }}
           xmlns="http://www.w3.org/2000/svg"
         >
           <defs>

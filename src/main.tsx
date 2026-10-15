@@ -5,6 +5,7 @@ import NoThanks from "./no-thanks/App";
 import reportWebVitals from "./reportWebVitals";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
+import "./shared/mobile.css";
 import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import { createBrowserRouter, RouterProvider } from "react-router";
