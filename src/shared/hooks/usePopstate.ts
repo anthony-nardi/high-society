@@ -1,15 +1,13 @@
-import { useEffect, useCallback } from "react";
+import { useEffect } from "react";
 
 const usePopstate = (callback: () => void) => {
-  const memoizedCallback = useCallback(callback, [callback]);
-
   useEffect(() => {
-    window.addEventListener("popstate", memoizedCallback);
+    window.addEventListener("popstate", callback);
 
     return () => {
-      window.removeEventListener("popstate", memoizedCallback);
+      window.removeEventListener("popstate", callback);
     };
-  }, [memoizedCallback]);
+  }, [callback]);
 };
 
 export default usePopstate;

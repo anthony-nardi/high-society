@@ -9,22 +9,11 @@ type UseLobbyDataState = {
   lobbyData: LobbyData | null;
 };
 
-// Function to subscribe to lobby data
-const subscribeToLobbyData = (
-  lobbyId: number,
-  setLobbyData: (data: LobbyData | null) => void,
-  setIsLoading: (isLoading: boolean) => void
-) => {
-  const db = getDatabase();
-  const lobbyRef = ref(db, `lobbies/${lobbyId}`);
-
-  const unsubscribe = onValue(lobbyRef, (snapshot) => {
-    const data = snapshot.val();
-    setLobbyData(data);
-    setIsLoading(false);
-  });
-
-  return unsubscribe;
+type Snapshot = {
+  // The lobby the data below belongs to, so a stale lobby's data is never
+  // shown while a newly selected lobby is still loading.
+  lobbyId: number | null;
+  data: LobbyData | null;
 };
 
 const useLobbyData = ({
@@ -34,30 +23,34 @@ const useLobbyData = ({
   lobbyId: number | null;
   user: User | null;
 }): UseLobbyDataState => {
-  const [isLoadingLobbyData, setIsLoading] = useState<boolean | null>(null);
-  const [lobbyData, setLobbyData] = useState<LobbyData | null>(null);
+  const [snapshot, setSnapshot] = useState<Snapshot>({
+    lobbyId: null,
+    data: null,
+  });
 
   useEffect(() => {
     if (!user || !lobbyId || typeof lobbyId !== "number") {
       return;
     }
-    setIsLoading(true);
 
-    const unsubscribe = subscribeToLobbyData(
-      lobbyId,
-      setLobbyData,
-      setIsLoading
-    );
+    const db = getDatabase();
+    const lobbyRef = ref(db, `lobbies/${lobbyId}`);
+
+    const unsubscribe = onValue(lobbyRef, (value) => {
+      setSnapshot({ lobbyId, data: value.val() });
+    });
 
     return () => {
       unsubscribe();
-      setIsLoading(false);
     };
   }, [lobbyId, user]);
 
+  const isSubscribed = !!user && !!lobbyId && typeof lobbyId === "number";
+  const hasDataForLobby = snapshot.lobbyId === lobbyId;
+
   return {
-    isLoadingLobbyData,
-    lobbyData,
+    isLoadingLobbyData: isSubscribed && !hasDataForLobby,
+    lobbyData: hasDataForLobby ? snapshot.data : null,
   };
 };
 

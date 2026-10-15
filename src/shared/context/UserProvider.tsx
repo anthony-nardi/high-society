@@ -1,19 +1,6 @@
 import { getAuth, User } from "firebase/auth";
-import { createContext, useCallback, useEffect, useState } from "react";
-
-export const UserContext = createContext<{
-  isSignedIn: null | boolean;
-  user: User | null;
-  handleSignInFailed: () => void;
-  handleSignInSuccess: (user: User) => void;
-  setUser: (user: User) => void;
-}>({
-  isSignedIn: null,
-  user: null,
-  handleSignInFailed: () => {},
-  handleSignInSuccess: () => {},
-  setUser: () => {},
-});
+import { useCallback, useEffect, useState } from "react";
+import { UserContext } from "./UserContext";
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [isSignedIn, setIsSignedIn] = useState<boolean | null>(null);

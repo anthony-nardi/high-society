@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { LobbyContext } from "./LobbyProvider";
+import { LobbyContext } from "./LobbyContext";
 
 export const useLobbyContext = () => {
   const context = useContext(LobbyContext);

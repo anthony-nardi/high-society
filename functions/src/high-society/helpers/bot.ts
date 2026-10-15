@@ -88,7 +88,7 @@ function buildGameStatePrompt(gameState: HighSocietyGameState) {
   prompt += "If passing, only return an array of the word 'Pass'\n";
   //   prompt += `Include a very brief explanation of your decision.\n`;
 
-  // eslint-disable-next-line
+   
   prompt += `Your response absolutely must be either a comma separated list of money cards to bid or the word 'Pass'.\n`;
 
   let gameStatePromptAddition = "";
@@ -109,7 +109,7 @@ function buildGameStatePrompt(gameState: HighSocietyGameState) {
 
   if (isMisfortuneCard) {
     gameStatePromptAddition +=
-      // eslint-disable-next-line max-len
+       
       "The current card for auction is a Misfortune Card. It is wise to bid to avoid taking the card because the first player to pass will receive it. Only pass if you can afford losing your bid. Consider that if other plays have bid they will lose their bid if you pass. So that means if a player hasn't yet placed a bid and you pass, they didn't lose anything. Don't overbid to avoid taking the card.";
   }
 

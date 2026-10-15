@@ -3,14 +3,16 @@ import { HighSocietyGameState } from "../types";
 import { getDatabase, onValue, ref } from "firebase/database";
 import { Box, Center, Flex } from "@mantine/core";
 
+type PlayerMetadata = {
+  finalScore: number;
+  moneyCards: string[];
+  statusCards: string[];
+  email: string;
+  moneyLeft: number;
+};
+
 type MapOfPlayersToMetadata = {
-  [key: string]: {
-    finalScore: number;
-    moneyCards: string[];
-    statusCards: string[];
-    email: string;
-    moneyLeft: number;
-  };
+  [key: string]: PlayerMetadata;
 };
 
 export default function GameOver({ lobbyId }: { lobbyId: string }) {
@@ -20,10 +22,12 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
 
     const lobbyRef = ref(db, "games/" + lobbyId + "/public");
 
-    onValue(lobbyRef, (snapshot) => {
+    const unsubscribe = onValue(lobbyRef, (snapshot) => {
       const data = snapshot.val() as HighSocietyGameState;
       setGameData(data);
     });
+
+    return () => unsubscribe();
   }, [lobbyId]);
 
   const mapOfPlayersToMetadata: null | MapOfPlayersToMetadata = useMemo(() => {
@@ -32,12 +36,13 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
     const metadata: MapOfPlayersToMetadata = {};
 
     for (const player of gameData.players) {
-      player.statusCards = player.statusCards || [];
+      const statusCards = player.statusCards || [];
+      const moneyCards = player.moneyCards || [];
 
       let multiplier = 1;
       let score = 0;
 
-      for (const card of player.statusCards) {
+      for (const card of statusCards) {
         if (card === "1/2") {
           multiplier = multiplier * 0.5;
         } else if (card === "2x") {
@@ -49,12 +54,12 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
 
       metadata[player.email] = {
         finalScore: score * multiplier,
-        moneyLeft: (player.moneyCards || []).reduce(
+        moneyLeft: moneyCards.reduce(
           (total, card) => Number(total) + Number(card),
           0
         ),
-        moneyCards: player.moneyCards || [],
-        statusCards: player.statusCards || [],
+        moneyCards,
+        statusCards,
         email: player.email,
       };
     }
@@ -114,40 +119,34 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
       return playersWithHighScore;
     }
 
-    // Player with most money left wins...
-
+    // Tied on score: the player with the most money left wins.
     if (playersWithHighScore.length > 1) {
-      // Player with most money left wins...
-      playersWithHighScore = playersWithHighScore.filter((email) => {
-        mapOfPlayersToMetadata[email].finalScore === highScore;
-      });
+      const mostMoneyLeft = Math.max(
+        ...playersWithHighScore.map(
+          (email) => mapOfPlayersToMetadata[email].moneyLeft
+        )
+      );
+      playersWithHighScore = playersWithHighScore.filter(
+        (email) => mapOfPlayersToMetadata[email].moneyLeft === mostMoneyLeft
+      );
     }
 
     if (playersWithHighScore.length === 1) {
       return playersWithHighScore;
     }
 
-    // if there is still a tie the player with the highest luxury card wins
-    if (playersWithHighScore.length > 1) {
-      let highestLuxuryCard = 10;
-      while (playersWithHighScore.length !== 1) {
-        playersWithHighScore = playersWithHighScore.filter((email) => {
-          return !!mapOfPlayersToMetadata[email].statusCards.find(
-            (card) => Number(card) === highestLuxuryCard
-          );
-        });
-
-        if (playersWithHighScore.length > 1) {
-          highestLuxuryCard--;
-        }
+    // Still tied: the player holding the highest luxury card wins.
+    for (let card = 10; card >= 1 && playersWithHighScore.length > 1; card--) {
+      const holders = playersWithHighScore.filter((email) =>
+        mapOfPlayersToMetadata[email].statusCards.includes(`${card}`)
+      );
+      if (holders.length > 0) {
+        playersWithHighScore = holders;
       }
     }
 
     return playersWithHighScore;
   }, [mapOfPlayersToMetadata, playersWithLeastMoneyRemaining]);
-
-  console.log(mapOfPlayersToMetadata);
-  console.log(winningPlayers);
 
   const renderedWinner = useMemo(() => {
     const renderedPlayersEndGame = [];
@@ -175,7 +174,6 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
             </Box>
           );
         } else {
-          console.log("pushing...", player.email);
           renderedPlayersEndGame.push(
             <Box p="xs" key={player.email}>
               <b>{player.email}</b>
@@ -190,7 +188,6 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
     } else {
       for (const playerEmail in mapOfPlayersToMetadata) {
         const player = mapOfPlayersToMetadata[playerEmail];
-        console.log("pushing...", player.email);
         renderedPlayersEndGame.push(
           <Box p="xs" key={player.email}>
             <b>{player.email}</b>

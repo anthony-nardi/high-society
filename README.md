@@ -1,30 +1,37 @@
-# React + TypeScript + Vite
+# High Society / No Thanks!
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Two Reiner Knizia-style card games played online against friends or bots.
 
-Currently, two official plugins are available:
+- `src/` — Vite + React 19 + Mantine 9 client (`/high-society`, `/no-thanks`)
+- `functions/` — Firebase Cloud Functions holding all game logic (Node 22 runtime)
+- Realtime Database stores lobbies and game state; Google sign-in via Firebase Auth
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Commands
 
-## Expanding the ESLint configuration
+```bash
+yarn install                      # client
+npm --prefix functions install    # functions
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+yarn dev                          # http://localhost:5173
+yarn test                         # client tests (vitest + testing-library)
+yarn typecheck && yarn lint
+yarn build
 
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+npm --prefix functions test       # game rules: bidding, passing, No Thanks! turns, bots
+npm --prefix functions run lint
+npm --prefix functions run build
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+## Local Firebase
+
+When the client is served from `localhost` it connects to the emulators
+(auth 9099, database 9000, functions 5001). Start them with the functions
+built:
+
+```bash
+npm --prefix functions run build
+firebase emulators:start --only auth,database,functions
+```
+
+Deploy with `firebase deploy` (hosting serves `dist/`, functions run their lint
+and build as a predeploy step).

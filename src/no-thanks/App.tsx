@@ -1,5 +1,4 @@
 import "./App.css";
-import "firebaseui/dist/firebaseui.css";
 import Lobby from "../shared/lobby";
 import initializeFirebase from "../shared/utils/initializeFirebase";
 import Login from "../shared/login";

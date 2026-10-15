@@ -1,9 +1,9 @@
-import admin from "firebase-admin";
+import { initializeApp } from "firebase-admin/app";
 import { bid, passturn } from "./high-society/client";
 import { addbot, createlobby, joinlobby, readyup } from "./shared/client";
 import { placeChipOnActiveCard, takeActiveCard } from "./no-thanks/client";
 
-admin.initializeApp();
+initializeApp();
 
 // Generic
 exports.createlobby = createlobby;
