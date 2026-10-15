@@ -6,9 +6,11 @@ import GameOver from "./components/GameOver";
 import useGameState from "../../shared/hooks/useGameState";
 import { useUserContext } from "../../shared/context/useUserContext";
 import { useServerNotification } from "../../shared/hooks/useServerNotification";
-import { HighSocietyGameState } from "./types";
+import { HighSocietyGameState, HighSocietyPlayerState } from "./types";
 import { useLobbyContext } from "../../shared/context/useLobbyContext";
 import BidPanel from "./components/BidPanel";
+import BidControls from "./components/BidControls";
+import useBidding from "./hooks/useBidding";
 import panelClasses from "./components/BidPanel.module.css";
 
 export default function Game() {
@@ -99,6 +101,40 @@ export default function Game() {
   }
 
   return (
+    <ActiveGame
+      deckInfo={deckInfo}
+      playerInfo={playerInfo}
+      activePlayer={activePlayer}
+      highestBidTotal={highestBidTotal}
+      loggedInPlayer={loggedInPlayer}
+    />
+  );
+}
+
+function ActiveGame({
+  deckInfo,
+  playerInfo,
+  activePlayer,
+  highestBidTotal,
+  loggedInPlayer,
+}: {
+  deckInfo: {
+    currentStatusCard: HighSocietyGameState["currentStatusCard"];
+    remainingCards: HighSocietyGameState["remainingCards"];
+  } | null;
+  playerInfo: HighSocietyPlayerState[];
+  activePlayer: string;
+  highestBidTotal: number;
+  loggedInPlayer: HighSocietyPlayerState | null;
+}) {
+  const isActive = !!loggedInPlayer && loggedInPlayer.email === activePlayer;
+  const bidding = useBidding({
+    player: loggedInPlayer || { email: "", lastActionAt: 0, moneyCards: [], hasPassed: false },
+    isActive,
+    highestBidTotal,
+  });
+
+  return (
     <>
       <Container fluid my="xl">
         <Grid>
@@ -106,6 +142,20 @@ export default function Game() {
             <Center>
               <Box>
                 <DeckOverview deckInfo={deckInfo} />
+                {loggedInPlayer && (
+                  <BidControls
+                    isActive={isActive}
+                    activePlayer={activePlayer}
+                    highestBidTotal={highestBidTotal}
+                    staged={bidding.staged}
+                    currentTotal={bidding.currentTotal}
+                    proposedTotal={bidding.proposedTotal}
+                    canBid={bidding.canBid}
+                    loading={bidding.loading}
+                    onBid={bidding.submitBid}
+                    onPass={bidding.pass}
+                  />
+                )}
               </Box>
             </Center>
           </Grid.Col>
@@ -130,10 +180,10 @@ export default function Game() {
       {loggedInPlayer && <div className={panelClasses.pageSpacer} />}
       {loggedInPlayer && (
         <BidPanel
-          player={loggedInPlayer}
-          isActive={loggedInPlayer.email === activePlayer}
-          activePlayer={activePlayer}
-          highestBidTotal={highestBidTotal}
+          cards={bidding.moneyCards}
+          staged={bidding.staged}
+          onToggle={bidding.toggleCard}
+          disabled={!isActive || bidding.loading}
         />
       )}
     </>
