@@ -129,6 +129,8 @@ export type RazziaPublicGameState = {
   round: 1 | 2 | 3;
   /** Who called or drew the auction; they bid last. */
   auctionTriggeringPlayer?: string;
+  /** Automatic auction for a full table: unsold loot is discarded. */
+  discardIfUnsold?: boolean;
   /** Scoring breakdowns, appended at each round end. */
   scoring?: ScoreBreakdown[];
   /** Set when a player starts a rematch after this game ends. */

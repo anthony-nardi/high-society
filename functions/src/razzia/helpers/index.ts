@@ -99,12 +99,15 @@ export function buildGameState(
   deck: LootCards[]
 ): RazziaGameState {
   const playersMetadata = createPlayers(players);
+  // The holder of the highest cheque starts (player A in every set).
+  const top = (p: RazziaPlayerState) => Math.max(...(p.money || []).map(Number));
+  const starter = playersMetadata.reduce((best, p) => (top(p) > top(best) ? p : best));
   return {
     public: {
       id: lobbyUID,
       game: "razzia",
       players: playersMetadata,
-      activePlayer: playersMetadata[0].email,
+      activePlayer: starter.email,
       startAt: Date.now().toString(),
       status: "IN_PROGRESS",
       roundState: "ACTION",

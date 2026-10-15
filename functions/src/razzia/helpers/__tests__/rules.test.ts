@@ -34,10 +34,11 @@ describe("setup", () => {
     const state = buildGameState("lobby", lobby, buildDeck());
     expect(state.public.players[0].money).toEqual(["2", "5", "8", "13"]);
     expect(state.public.players[2].availableMoney).toEqual(["4", "7", "10", "11"]);
-    expect(state.public.raidLimit).toBe(6);
+    expect(state.public.raidLimit).toBe(7);
     expect(state.public.money).toBe("1");
     expect(state.private.log).toHaveLength(1);
-    expect(raidLimitFor(5)).toBe(8);
+    expect(raidLimitFor(5)).toBe(7);
+    expect(raidLimitFor(2)).toBe(5);
   });
 });
 
@@ -60,13 +61,25 @@ describe("revealing", () => {
     expect(state.public.activePlayer).toBe("c");
   });
 
-  it("refuses a reveal when the table is full", () => {
+  it("starts an automatic auction on the seventh card and discards it if unsold", () => {
     const state = gameState([player("a"), player("b"), player("c")], ["COINS"], {
-      revealedCards: Array(7).fill("CARS"),
+      revealedCards: Array(6).fill("CARS"),
     });
-    const result = revealCard(state);
-    expect(result.ok).toBe(false);
-    expect(state.private.deck).toHaveLength(1);
+    expect(revealCard(state).ok).toBe(true);
+    expect(state.public.roundState).toBe("FORCED_AUCTION");
+    expect(state.public.revealedCards).toHaveLength(7);
+    expect(state.public.activePlayer).toBe("b");
+    pass(state);
+    pass(state);
+    expect(pass(state).ok).toBe(true); // the revealer may pass too
+    expect(state.public.revealedCards).toEqual([]);
+    expect(state.public.roundState).toBe("ACTION");
+  });
+
+  it("ends the round if the deck runs out", () => {
+    const state = gameState([player("a"), player("b")], []);
+    expect(revealCard(state).ok).toBe(true);
+    expect(state.public.round).toBe(2);
   });
 
   it("starts a forced auction on a police raid", () => {
@@ -110,9 +123,16 @@ describe("auctions", () => {
     return state;
   }
 
-  it("needs loot on the table to call", () => {
-    const state = gameState([player("a"), player("b")], ["CARS"]);
-    expect(initiateAuction(state).ok).toBe(false);
+  it("may be called with an empty table to swap cheques", () => {
+    const state = gameState(
+      [player("a"), player("b", { money: ["3", "6", "9", "12"] })],
+      ["CARS"]
+    );
+    expect(initiateAuction(state).ok).toBe(true);
+    pass(state); // b
+    expect(bid(state, "2").ok).toBe(true); // a must bid
+    expect(state.public.money).toBe("2");
+    expect(state.public.players[0].money?.sort()).toEqual(["1", "13", "5", "8"]);
   });
 
   it("goes round the table and ends with the caller", () => {
@@ -211,7 +231,16 @@ describe("thieves", () => {
       { revealedCards: ["COINS"] }
     );
     expect(useThief(state, ["CARS"]).ok).toBe(false);
-    expect(useThief(state, ["THIEF"]).ok).toBe(false);
+  });
+
+  it("may even steal a thief", () => {
+    const state = gameState(
+      [player("a", { cards: { theives: ["THIEF"] } }), player("b")],
+      ["CARS"],
+      { revealedCards: ["THIEF"] }
+    );
+    expect(useThief(state, ["THIEF"]).ok).toBe(true);
+    expect(state.public.players[0].cards.theives).toEqual(["THIEF"]);
   });
 });
 
@@ -259,6 +288,22 @@ describe("scoring", () => {
     const b = player("b", { money: ["2"] });
     expect(finalPoints(a, [a, b])).toEqual({ businesses: 2 + 5, money: 5 });
     expect(finalPoints(b, [a, b])).toEqual({ businesses: 0, money: -5 });
+
+    const tycoon = player("t", {
+      cards: {
+        businesses: [
+          "CASINO", "TRANSPORTATION", "MOVIE_THEATER", "RACING", "REAL_ESTATE",
+          "NIGHTCLUB", "RESTAURANT", "RESTAURANT", "RESTAURANT", "RESTAURANT",
+        ],
+      },
+    });
+    expect(finalPoints(tycoon, [tycoon]).businesses).toBe(10 + 10);
+    const six = player("s", {
+      cards: {
+        businesses: ["CASINO", "TRANSPORTATION", "MOVIE_THEATER", "RACING", "REAL_ESTATE", "NIGHTCLUB"],
+      },
+    });
+    expect(finalPoints(six, [six]).businesses).toBe(6);
   });
 
   it("ends the game after round three with final scoring published", () => {

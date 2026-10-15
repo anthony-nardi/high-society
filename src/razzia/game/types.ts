@@ -99,6 +99,8 @@ export type RazziaGameState = {
   money: string;
   round: 1 | 2 | 3;
   auctionTriggeringPlayer?: string;
+  /** Automatic auction for a full table: unsold loot is discarded. */
+  discardIfUnsold?: boolean;
   scoring?: ScoreBreakdown[];
   nextLobbyUID?: string;
   log?: LogEntry[];

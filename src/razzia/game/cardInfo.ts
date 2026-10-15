@@ -10,7 +10,7 @@ export type LootInfo = {
 const JEWEL_EFFECT =
   "Jewels: 3 kinds +5, 4 kinds +10, all 5 +15. None at all −5.";
 const BUSINESS_EFFECT =
-  "Businesses score at the end: 1 per kind, 6 kinds +10, all 7 +15, plus 3/4/5 of a kind +5/+10/+15.";
+  "Businesses score at the end: 1 per kind up to 6, all 7 kinds 10, plus 3 of a kind +5 and 4 of a kind +10.";
 
 export default function cardInfo(card: LootCards): LootInfo {
   switch (card) {
@@ -52,14 +52,14 @@ export default function cardInfo(card: LootCards): LootInfo {
         name: "Thief",
         category: "theives",
         effect:
-          "Spend it to take one card from the table, or keep it for +2 at round end.",
+          "Spend it to take any one card from the table, or keep it for +2 at round end.",
       };
     case "POLICE_RAIDS":
       return {
         name: "Police raid",
         category: "police",
         effect:
-          "Forces an auction. The final raid of the round ends it at once.",
+          "Forces an auction. The seventh police card of the round ends it at once.",
       };
     case "CASINO":
       return {

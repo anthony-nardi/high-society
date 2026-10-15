@@ -108,12 +108,7 @@ export default function SharedBoard({
               card={card}
               width="clamp(44px, 11vw, 76px)"
               selected={selected.includes(index)}
-              dimmed={selectable && card === "THIEF"}
-              onClick={
-                selectable && card !== "THIEF" && onToggle
-                  ? () => onToggle(index)
-                  : undefined
-              }
+              onClick={selectable && onToggle ? () => onToggle(index) : undefined}
             />
           ))}
         </Group>

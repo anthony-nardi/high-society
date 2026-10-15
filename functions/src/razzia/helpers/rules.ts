@@ -18,22 +18,13 @@ import { LogEntry } from "../../high-society/types";
  * driven by the bot search.
  */
 
-/** Loot cards on the table before a reveal is no longer allowed. */
+/** The seventh loot card on the table triggers an automatic auction. */
 export const MAX_REVEALED_CARDS = 7;
 export const ROUNDS = 3;
 
-/** Police raids that end the round, by number of players. */
+/** Police cards that end the round: the seventh, or the fifth with two players. */
 export function raidLimitFor(playerCount: number) {
-  switch (playerCount) {
-    case 2:
-      return 5;
-    case 3:
-      return 6;
-    case 4:
-      return 7;
-    default:
-      return 8;
-  }
+  return playerCount === 2 ? 5 : 7;
 }
 
 export function categoryOf(card: LootCards): CardCategory | null {
@@ -216,19 +207,17 @@ export function finalPoints(
   const points: { [category: string]: number } = {};
   const businesses = player.cards?.businesses || [];
 
+  // 1 to 6 different kinds score 1 to 6; all 7 score 10. Three of a kind
+  // adds 5 and four of a kind adds 10, for each kind.
   const kinds = new Set(businesses).size;
-  let businessPoints = 0;
-  if (kinds >= 7) businessPoints += 15;
-  else if (kinds === 6) businessPoints += 10;
-  else if (kinds >= 1) businessPoints += kinds;
+  let businessPoints = kinds >= 7 ? 10 : kinds;
 
   const perKind: { [kind: string]: number } = {};
   for (const business of businesses) {
     perKind[business] = (perKind[business] || 0) + 1;
   }
   for (const n of Object.values(perKind)) {
-    if (n >= 5) businessPoints += 15;
-    else if (n === 4) businessPoints += 10;
+    if (n >= 4) businessPoints += 10;
     else if (n === 3) businessPoints += 5;
   }
   points.businesses = businessPoints;
@@ -341,27 +330,44 @@ const fail = (reason: string): ActionResult => ({ ok: false, reason });
 export function canReveal(gameState: RazziaGameState) {
   return (
     gameState.public.roundState === "ACTION" &&
-    (gameState.public.revealedCards || []).length < MAX_REVEALED_CARDS &&
     gameState.private.deck.length > 0
   );
 }
 
-/** Draws the top card: loot joins the table, a police raid starts a forced auction or ends the round. */
+/**
+ * Draws the top card. Loot joins the table; the seventh loot card starts an
+ * automatic auction whose unsold loot is discarded. A police card starts a
+ * normal auction, and the final police card ends the round at once.
+ */
 export function revealCard(gameState: RazziaGameState): ActionResult {
   if (gameState.public.roundState !== "ACTION") return fail("Not in the action phase.");
   const revealed = gameState.public.revealedCards || [];
-  if (revealed.length >= MAX_REVEALED_CARDS) {
-    return fail("The table is full; call an auction instead.");
-  }
-  const card = gameState.private.deck.shift();
-  if (!card) return fail("No more cards in the deck.");
-  gameState.public.remainingCards = gameState.private.deck.length;
-
   const actor = gameState.public.activePlayer;
+
+  const card = gameState.private.deck.shift();
+  if (!card) {
+    // Not covered by the rulebook, which re-splits two piles instead; the
+    // only sane outcome is to score what everyone holds.
+    announce(gameState, "The deck is exhausted.", "The round ends.");
+    endRound(gameState);
+    return { ok: true };
+  }
+  gameState.public.remainingCards = gameState.private.deck.length;
 
   if (card !== LOOT_CARDS.POLICE_RAIDS) {
     gameState.public.revealedCards = [...revealed, card];
-    announce(gameState, `${actor} revealed ${card}.`);
+    if (gameState.public.revealedCards.length >= MAX_REVEALED_CARDS) {
+      gameState.public.roundState = "FORCED_AUCTION";
+      gameState.public.auctionTriggeringPlayer = actor;
+      gameState.public.discardIfUnsold = true;
+      announce(
+        gameState,
+        `${actor} revealed ${card}, the seventh card on the table.`,
+        "An auction starts automatically; if nobody bids the loot is discarded."
+      );
+    } else {
+      announce(gameState, `${actor} revealed ${card}.`);
+    }
     updateActivePlayer(gameState);
     return { ok: true };
   }
@@ -379,6 +385,7 @@ export function revealCard(gameState: RazziaGameState): ActionResult {
 
   gameState.public.roundState = "FORCED_AUCTION";
   gameState.public.auctionTriggeringPlayer = actor;
+  gameState.public.discardIfUnsold = false;
   announce(
     gameState,
     `${actor} drew a police raid (${gameState.public.policeRaids} of ${gameState.public.raidLimit}).`,
@@ -388,18 +395,17 @@ export function revealCard(gameState: RazziaGameState): ActionResult {
   return { ok: true };
 }
 
+/** An auction by order of the court may be called at any time, even with an empty table. */
 export function canCallAuction(gameState: RazziaGameState) {
-  return (
-    gameState.public.roundState === "ACTION" &&
-    (gameState.public.revealedCards || []).length > 0
-  );
+  return gameState.public.roundState === "ACTION";
 }
 
 export function initiateAuction(gameState: RazziaGameState): ActionResult {
-  if (!canCallAuction(gameState)) return fail("Nothing to auction.");
+  if (!canCallAuction(gameState)) return fail("Not in the action phase.");
   const actor = gameState.public.activePlayer;
   gameState.public.roundState = "NORMAL_AUCTION";
   gameState.public.auctionTriggeringPlayer = actor;
+  gameState.public.discardIfUnsold = false;
   announce(gameState, `${actor} called an auction.`);
   updateActivePlayer(gameState);
   return { ok: true };
@@ -409,11 +415,11 @@ export function canUseThief(gameState: RazziaGameState, player: RazziaPlayerStat
   return (
     gameState.public.roundState === "ACTION" &&
     (player.cards?.theives || []).length > 0 &&
-    (gameState.public.revealedCards || []).some((card) => card !== LOOT_CARDS.THIEF)
+    (gameState.public.revealedCards || []).length > 0
   );
 }
 
-/** Spends one thief per card taken straight from the table. */
+/** Spends one thief per booty card taken straight from the table (any card, thieves included). */
 export function useThief(
   gameState: RazziaGameState,
   cardsToSteal: LootCards[]
@@ -428,7 +434,6 @@ export function useThief(
   }
   const table = [...(gameState.public.revealedCards || [])];
   for (const card of cardsToSteal) {
-    if (card === LOOT_CARDS.THIEF) return fail("A thief cannot steal a thief.");
     const index = table.indexOf(card);
     if (index === -1) return fail(`${card} is not on the table.`);
     table.splice(index, 1);
@@ -449,8 +454,13 @@ function resolveAuction(gameState: RazziaGameState) {
   const caller = gameState.public.auctionTriggeringPlayer || gameState.public.activePlayer;
 
   if (!winner) {
-    if (gameState.public.roundState === "FORCED_AUCTION") {
+    if (gameState.public.discardIfUnsold) {
+      gameState.public.revealedCards = [];
+      announce(gameState, "Nobody bid. The seven cards are discarded.");
+    } else if (gameState.public.roundState === "FORCED_AUCTION") {
       announce(gameState, "Nobody bid. The loot stays on the table.");
+    } else {
+      announce(gameState, "Nobody bid.");
     }
     gameState.public.roundState = "ACTION";
   } else {
@@ -474,6 +484,7 @@ function resolveAuction(gameState: RazziaGameState) {
 
   for (const player of gameState.public.players) player.bid = "0";
   gameState.public.auctionTriggeringPlayer = undefined;
+  gameState.public.discardIfUnsold = false;
 
   if (!anyoneHasMoney(gameState)) {
     announce(gameState, "Everyone has spent their money.", "The round ends.");

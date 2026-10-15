@@ -11,8 +11,6 @@ import displayName from "../../../shared/utils/displayName";
 import MoneyCard from "./MoneyCard";
 import classes from "./ActionPanel.module.css";
 
-const MAX_REVEALED = 7;
-
 function highestBid(gameState: RazziaGameState) {
   return Math.max(0, ...gameState.players.map((p) => Number(p.bid) || 0));
 }
@@ -72,9 +70,9 @@ export default function ActionPanel({
     gameState.roundState === "NORMAL_AUCTION" &&
     floor === 0 &&
     biddable.length > 0;
-  const canReveal = loot.length < MAX_REVEALED && gameState.remainingCards > 0;
-  const canCall = loot.length > 0;
-  const canSteal = thieves > 0 && loot.some((c) => c !== "THIEF");
+  const canReveal = gameState.remainingCards > 0;
+  const canCall = true;
+  const canSteal = thieves > 0 && loot.length > 0;
 
   let hint: string;
   if (!isActive) {
@@ -100,15 +98,16 @@ export default function ActionPanel({
       } and the ${gameState.money} money card if nobody beats it.`;
     }
   } else if (!canReveal) {
-    hint = "The table is full. Call an auction.";
-  } else if (canCall) {
+    hint = "The deck is empty. Call an auction.";
+  } else if (loot.length > 0) {
     hint = `Reveal another card, or call an auction for the ${loot.length} card${
       loot.length === 1 ? "" : "s"
-    } on the table. ${gameState.raidLimit - gameState.policeRaids} more police raid${
+    } on the table. ${gameState.raidLimit - gameState.policeRaids} more police card${
       gameState.raidLimit - gameState.policeRaids === 1 ? "" : "s"
-    } end the round.`;
+    } end the round; the seventh loot card auctions itself.`;
   } else {
-    hint = "Reveal a card from the deck.";
+    hint =
+      "Reveal a card from the deck. You may also call an auction on an empty table to trade your cheque for the one in the centre.";
   }
 
   return (

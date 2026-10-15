@@ -58,9 +58,9 @@ describe("action phase", () => {
     expect(chooseActionMove(state)).toEqual({ type: "auction" });
   });
 
-  it("must call an auction when the table is full", () => {
-    const state = gameState([player("bot", { isBot: true }), player("a")], ["CARS"], {
-      revealedCards: Array(7).fill("CARS"),
+  it("calls an auction when the deck is empty", () => {
+    const state = gameState([player("bot", { isBot: true }), player("a")], [], {
+      revealedCards: ["COINS"],
     });
     expect(chooseActionMove(state)).toEqual({ type: "auction" });
   });
