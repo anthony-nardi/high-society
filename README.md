@@ -17,10 +17,20 @@ yarn test                         # client tests (vitest + testing-library)
 yarn typecheck && yarn lint
 yarn build
 
-npm --prefix functions test       # game rules: bidding, passing, No Thanks! turns, bots
+npm --prefix functions test       # game rules: bidding, passing, No Thanks! turns, bot search
 npm --prefix functions run lint
 npm --prefix functions run build
 ```
+
+## Bots
+
+High Society bots pick their move with a Maxn search (multiplayer minimax
+from [minimaxer](https://github.com/domw95/minimaxer)) over the current
+auction only; the face-down deck is never read. Candidate moves are a few
+raises plus pass, and finished auctions are scored by a heuristic in
+`functions/src/high-society/helpers/botSearch.ts` (status cards, money kept,
+and the risk of ending with the least money). No Thanks! bots use the simple
+rule-based player in `functions/src/no-thanks/helpers/simpleBot.ts`.
 
 ## Local Firebase
 
