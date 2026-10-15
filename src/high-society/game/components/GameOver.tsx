@@ -19,6 +19,7 @@ import { useUserContext } from "../../../shared/context/useUserContext";
 import CardFront from "../../card/CardFront";
 import MoneyCard from "../../card/MoneyCard";
 import { ScoredPlayer } from "../scoring";
+import GameLog from "./GameLog";
 
 const COLUMNS = 7;
 
@@ -222,6 +223,8 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
             join it.
           </Text>
         )}
+
+        <GameLog log={gameData.log || []} />
       </Stack>
     </Container>
   );

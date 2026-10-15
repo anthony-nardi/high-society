@@ -1,5 +1,6 @@
 import BidControls from "./BidControls";
 import Hand from "./Hand";
+import type { CSSProperties } from "react";
 import classes from "./BidPanel.module.css";
 
 /**
@@ -42,28 +43,33 @@ export default function BidPanel({
       className={`${classes.panel} ${isActive ? classes.active : ""}`}
       data-testid="bid-panel"
     >
-      <div className={classes.controls}>
-        <BidControls
-          isActive={isActive}
-          activePlayer={activePlayer}
-          currentCard={currentCard}
-          highestBidTotal={highestBidTotal}
-          staged={staged}
-          currentTotal={currentTotal}
-          proposedTotal={proposedTotal}
-          moneyTotal={moneyTotal}
-          canBid={canBid}
-          loading={loading}
-          onBid={onBid}
-          onPass={onPass}
+      <div
+        className={classes.stage}
+        style={{ "--tray-count": Math.max(staged.length, 1) } as CSSProperties}
+      >
+        <div className={classes.controls}>
+          <BidControls
+            isActive={isActive}
+            activePlayer={activePlayer}
+            currentCard={currentCard}
+            highestBidTotal={highestBidTotal}
+            staged={staged}
+            currentTotal={currentTotal}
+            proposedTotal={proposedTotal}
+            moneyTotal={moneyTotal}
+            canBid={canBid}
+            loading={loading}
+            onBid={onBid}
+            onPass={onPass}
+          />
+        </div>
+        <Hand
+          cards={cards}
+          selected={staged}
+          onToggle={onToggle}
+          disabled={!isActive || loading}
         />
       </div>
-      <Hand
-        cards={cards}
-        selected={staged}
-        onToggle={onToggle}
-        disabled={!isActive || loading}
-      />
     </div>
   );
 }

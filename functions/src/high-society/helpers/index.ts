@@ -1,7 +1,11 @@
 import { HttpsError, CallableRequest } from "firebase-functions/v2/https";
 import { logger } from "firebase-functions/v2";
 import { getDatabase } from "firebase-admin/database";
-import { HighSocietyGameState, HighSocietyPlayerState } from "../types";
+import {
+  HighSocietyGameState,
+  HighSocietyPlayerState,
+  LogEntry,
+} from "../types";
 import {
   shuffle,
   updateGameState,
@@ -56,6 +60,18 @@ export function isNoThanksGameState(
 export async function getGameState<T>(lobbyUID: string): Promise<T> {
   const gameState = await getDatabase().ref(`games/${lobbyUID}`).get();
   return gameState.val();
+}
+
+/**
+ * Records an event. The log stays private while the game runs (players only
+ * have their memory at the table) and is published when the game ends.
+ */
+export function appendLog(gameState: HighSocietyGameState, entry: LogEntry) {
+  gameState.private.log = [...(gameState.private.log || []), entry];
+}
+
+export function publishLog(gameState: HighSocietyGameState) {
+  gameState.public.log = gameState.private.log || [];
 }
 
 export function revealNewStatusCard(gameState: HighSocietyGameState) {
@@ -296,6 +312,12 @@ export async function createHighSocietyGameState(lobbyUID: string) {
       },
       private: {
         deck,
+        log: [
+          {
+            timestamp: Date.now(),
+            title: `Game started. ${deck[0]} revealed.`,
+          },
+        ],
       },
     })
     .then(() => {
@@ -358,11 +380,28 @@ export async function updateGameStateWithBid(
   };
 
   gameState.public.notification = notification;
+  appendLog(gameState, notification);
 
   await updateGameState(
     gameState,
     `Player ${activePlayer.email} bid ${bid.join(",")}`
   );
+}
+
+/** Logs the end of an auction, the next reveal, and publishes the log at game over. */
+function logResolution(
+  gameState: HighSocietyGameState,
+  notification: Notification
+) {
+  appendLog(gameState, notification);
+  if (gameState.public.status === "GAME_OVER") {
+    publishLog(gameState);
+  } else {
+    appendLog(gameState, {
+      timestamp: Date.now(),
+      title: `${gameState.public.currentStatusCard} revealed.`,
+    });
+  }
 }
 
 export async function updateGameStateWithPass(
@@ -411,6 +450,7 @@ export async function updateGameStateWithPass(
     };
 
     gameState.public.notification = notification;
+    logResolution(gameState, notification);
 
     return updateGameState(
       gameState,
@@ -469,6 +509,7 @@ export async function updateGameStateWithPass(
     };
 
     gameState.public.notification = notification;
+    logResolution(gameState, notification);
 
     return updateGameState(gameState, `Player ${auctionWinner} won auction.`);
   } else {
@@ -482,6 +523,7 @@ export async function updateGameStateWithPass(
     };
 
     gameState.public.notification = notification;
+    appendLog(gameState, notification);
 
     await updateGameState(gameState, `${activePlayer.email} has passed.`);
     return true;

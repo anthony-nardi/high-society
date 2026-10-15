@@ -27,6 +27,8 @@ import {
   updateGameStateWithBid,
   updateGameStateWithPass,
   updatePlayersBid,
+  appendLog,
+  publishLog,
 } from "..";
 import { gameState, player, STARTING_MONEY } from "./fixtures";
 
@@ -43,7 +45,7 @@ describe("bids", () => {
 
     expect(alice.currentBid).toEqual(["10", "2", "1"]);
     expect(alice.moneyCards).toEqual(
-      STARTING_MONEY.filter((c) => !["10", "2", "1"].includes(c))
+      STARTING_MONEY.filter((c) => !["10", "2", "1"].includes(c)),
     );
   });
 
@@ -65,7 +67,7 @@ describe("bids", () => {
         player("bob", { currentBid: ["12", "3"] }),
         player("carol", { currentBid: undefined }),
       ],
-      ["5"]
+      ["5"],
     );
     expect(getHighestCurrentBid(state)).toBe(15);
   });
@@ -81,7 +83,7 @@ describe("turn order", () => {
         player("dave"),
       ],
       ["5"],
-      { activePlayer: "alice" }
+      { activePlayer: "alice" },
     );
     expect(getNextPlayerIndex(state)).toBe(3);
 
@@ -92,7 +94,7 @@ describe("turn order", () => {
   it("counts players still in the auction", () => {
     const state = gameState(
       [player("alice"), player("bob", { hasPassed: true }), player("carol")],
-      ["5"]
+      ["5"],
     );
     expect(getPlayersActivelyBidding(state)).toBe(2);
   });
@@ -123,7 +125,9 @@ describe("status cards", () => {
     // Three greens already gone, one left and it is face up.
     expect(isGameOver(gameState([player("a")], ["1/2", "7", "3"]))).toBe(true);
     // Two greens left in the deck.
-    expect(isGameOver(gameState([player("a")], ["2x", "1/2", "7"]))).toBe(false);
+    expect(isGameOver(gameState([player("a")], ["2x", "1/2", "7"]))).toBe(
+      false,
+    );
     // One green left but a luxury card is face up.
     expect(isGameOver(gameState([player("a")], ["7", "2x"]))).toBe(false);
   });
@@ -170,7 +174,7 @@ describe("updateGameStateWithBid", () => {
     expect(alice.moneyCards).not.toContain("10");
     expect(state.public.activePlayer).toBe("bob");
     expect(state.public.notification?.title).toBe(
-      "alice has highest bid of 10."
+      "alice has highest bid of 10.",
     );
     expect(updateGameState).toHaveBeenCalledWith(state, "Player alice bid 10");
   });
@@ -220,13 +224,11 @@ describe("updateGameStateWithPass", () => {
     expect(bob.currentBid).toEqual([]);
     expect(bob.moneyCards).toEqual(["1"]);
     expect(alice.moneyCards).toEqual(["1", "10"]);
-    expect(state.public.players.every((p) => p.hasPassed === false)).toBe(
-      true
-    );
+    expect(state.public.players.every((p) => p.hasPassed === false)).toBe(true);
     expect(state.public.activePlayer).toBe("bob");
     expect(state.public.currentStatusCard).toBe("3");
     expect(state.public.notification?.title).toBe(
-      "bob won 7 for a total of 15."
+      "bob won 7 for a total of 15.",
     );
   });
 
@@ -240,7 +242,72 @@ describe("updateGameStateWithPass", () => {
     expect(state.public.currentStatusCard).toBe("1/2");
     expect(state.public.status).toBe("GAME_OVER");
     expect(state.public.notification?.message).toBe(
-      "1/2 was revealed. Game over."
+      "1/2 was revealed. Game over.",
     );
+  });
+});
+
+describe("game log", () => {
+  it("records bids and passes privately", async () => {
+    const state = gameState(
+      [player("a"), player("b"), player("c")],
+      ["7", "8"],
+    );
+
+    await updateGameStateWithBid(state, state.public.players[0], ["10"]);
+    state.public.activePlayer = "b";
+    await updateGameStateWithPass(state, state.public.players[1]);
+
+    const titles = (state.private.log || []).map((entry) => entry.title);
+    expect(titles).toEqual(["a has highest bid of 10.", "b passed."]);
+    expect(state.public.log).toBeUndefined();
+  });
+
+  it("logs the resolution and the next reveal", async () => {
+    const state = gameState(
+      [
+        player("a", { currentBid: ["10"] }),
+        player("b", { hasPassed: true }),
+        player("c"),
+      ],
+      ["7", "8", "2x", "2x", "2x", "1/2"],
+      { activePlayer: "c" },
+    );
+
+    await updateGameStateWithPass(state, state.public.players[2]);
+
+    const titles = (state.private.log || []).map((entry) => entry.title);
+    expect(titles).toEqual(["a won 7 for a total of 10.", "8 revealed."]);
+    expect(state.public.log).toBeUndefined();
+  });
+
+  it("publishes the whole log when the game ends", async () => {
+    const state = gameState(
+      [
+        player("a", { currentBid: ["10"] }),
+        player("b", { hasPassed: true }),
+        player("c"),
+      ],
+      ["2x", "1/2", "7"],
+      { activePlayer: "c" },
+    );
+    state.public.players[0].statusCards = ["2x", "2x"];
+    appendLog(state, { timestamp: 1, title: "Game started. 2x revealed." });
+
+    await updateGameStateWithPass(state, state.public.players[2]);
+
+    expect(state.public.status).toBe("GAME_OVER");
+    expect(state.public.log).toEqual(state.private.log);
+    expect(state.public.log?.map((entry) => entry.title)).toEqual([
+      "Game started. 2x revealed.",
+      "a won 2x for a total of 10.",
+    ]);
+    expect(state.public.log?.[1].message).toContain("Game over");
+  });
+
+  it("publishLog copies an empty log safely", () => {
+    const state = gameState([player("a")], ["7"]);
+    publishLog(state);
+    expect(state.public.log).toEqual([]);
   });
 });

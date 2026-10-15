@@ -69,8 +69,8 @@ export default function BidControls({
   };
 
   return (
-    <Stack gap={6} align="center">
-      <Group gap="sm" justify="center" wrap="wrap">
+    <Stack gap={6} align="flex-start">
+      <Group gap="sm" wrap="wrap">
         {isActive && (
           <Badge color="yellow" variant="filled" radius="sm" size="lg">
             Your turn
@@ -110,7 +110,7 @@ export default function BidControls({
           </>
         )}
       </Group>
-      <Text size="sm" c={confirmingPass ? "red.3" : "dimmed"} ta="center">
+      <Text size="sm" c={confirmingPass ? "red.3" : "dimmed"}>
         {confirmingPass
           ? `Passing on a misfortune card means you take it. ${info.effect}. Everyone else loses their bid.`
           : hint}

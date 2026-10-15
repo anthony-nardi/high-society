@@ -1,6 +1,14 @@
 {
   "rules": {
-    ".read": "auth.uid !== null",
-    ".write": "auth.uid !== null"
+    "lobbies": {
+      ".read": "auth.uid !== null"
+    },
+    "games": {
+      "$lobbyUID": {
+        "public": {
+          ".read": "auth.uid !== null"
+        }
+      }
+    }
   }
 }

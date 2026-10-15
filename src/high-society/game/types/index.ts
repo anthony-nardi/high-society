@@ -6,6 +6,12 @@ export type Notification = {
   timestamp: number;
 };
 
+export type LogEntry = {
+  timestamp: number;
+  title: string;
+  message?: string;
+};
+
 export type HighSocietyPlayerState = {
   email: string;
   lastActionAt: number;
@@ -27,4 +33,6 @@ export type HighSocietyGameState = {
   notification?: Notification;
   /** Set when a player starts a rematch after this game ends. */
   nextLobbyUID?: string;
+  /** Full event log, published by the server once the game is over. */
+  log?: LogEntry[];
 };

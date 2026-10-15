@@ -4,16 +4,15 @@
  *   - the tray (selected cards) in a straight, upright row above the fan
  */
 .hand {
-  --tray-gap: 10px;
-  --tray-lift: calc(var(--hs-card-h) + 56px);
+  /* Same formula as .stage in BidPanel.module.css, for standalone use. */
   --tray-step: min(
     calc(var(--hs-card-w) + var(--tray-gap)),
-    calc(min(100vw - 32px, 720px) / var(--tray-count, 1))
+    calc(min(100vw - 32px, 600px) / var(--tray-count, 1))
   );
 
   position: relative;
   width: 100%;
-  height: calc(var(--hs-card-h) * 2 + 130px);
+  height: calc(var(--hs-card-h) * 2 + 60px);
   pointer-events: none;
 }
 
