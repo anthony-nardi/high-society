@@ -1,3 +1,14 @@
+:root {
+  /* Money card size for the hand; everything in the bid panel derives from it. */
+  --hs-card-w: clamp(60px, 8vw, 100px);
+  --hs-card-h: calc(var(--hs-card-w) * 1.5);
+  /* Deck and revealed card: two of these sit side by side on a phone. */
+  --hs-deck-card-w: clamp(120px, 40vw, 200px);
+  /* Bid tray: gap between tray cards and how far it floats above the fan. */
+  --tray-gap: 10px;
+  --tray-lift: calc(var(--hs-card-h) + 24px);
+}
+
 /*// Glow Border Animation //*/
 
 .animated-border-box,

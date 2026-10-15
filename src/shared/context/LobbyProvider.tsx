@@ -1,22 +1,10 @@
-import { createContext, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import getLobbyIdFromURL from "../utils/getLobbyIdFromURL";
 import usePopstate from "../hooks/usePopstate";
 import useLobbyData from "../lobby/hooks/useLobbyData";
 import useJoinLobby from "../lobby/hooks/useJoinLobby";
-import { LobbyData } from "../lobby/types";
 import { useUserContext } from "./useUserContext";
-
-export const LobbyContext = createContext<{
-  lobbyId: null | number;
-  isLoadingLobbyData: boolean | null;
-  lobbyData: LobbyData | null;
-  isJoiningLobby: boolean | null;
-}>({
-  lobbyId: null,
-  isLoadingLobbyData: null,
-  lobbyData: null,
-  isJoiningLobby: null,
-});
+import { LobbyContext } from "./LobbyContext";
 
 export const LobbyProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useUserContext();

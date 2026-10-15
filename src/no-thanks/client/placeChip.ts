@@ -8,7 +8,7 @@ export default async function placeChip(placeChipRequest: PlaceChipRequest) {
   const functions = getFunctions();
   const placeChipOnActiveCardApi = httpsCallable<PlaceChipRequest, void>(
     functions,
-    "placeChipOnActiveCard"
+    "placeChipOnActiveCard",
   );
 
   try {

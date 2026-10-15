@@ -1,0 +1,18 @@
+/* Touch and small-screen tweaks shared by both games. */
+
+/* No 300ms tap delay and no accidental double-tap zoom on controls. */
+button,
+[role="button"] {
+  touch-action: manipulation;
+}
+
+/* Keep the page from scrolling sideways when something is a little too wide. */
+html,
+body {
+  overflow-x: hidden;
+}
+
+/* Fixed bottom panels clear the iPhone home indicator. */
+.safe-bottom {
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+}

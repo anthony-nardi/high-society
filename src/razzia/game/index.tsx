@@ -2,7 +2,6 @@ import { Center, Container, Loader } from "@mantine/core";
 import { useMemo } from "react";
 import useGameState from "../../shared/hooks/useGameState";
 import { useUserContext } from "../../shared/context/useUserContext";
-import { useServerNotification } from "../../shared/hooks/useServerNotification";
 import { RazziaGameState } from "./types";
 import { useLobbyContext } from "../../shared/context/useLobbyContext";
 import ThreePlayerLayout from "./components/board-layout/ThreePlayerLayout";
@@ -13,8 +12,6 @@ export default function Game() {
   const { user, isSignedIn } = useUserContext();
   const { lobbyId } = useLobbyContext();
   const { gameState, isLoading } = useGameState<RazziaGameState>();
-
-  useServerNotification();
 
   const playerInfo = useMemo(() => {
     if (!gameState) {

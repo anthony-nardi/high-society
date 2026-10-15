@@ -1,3 +1,8 @@
+:root {
+  /* The face-up card sits beside the chip pile, so it shrinks on a phone. */
+  --nt-deck-card-w: clamp(130px, 42vw, 200px);
+}
+
 /*// Glow Border Animation //*/
 
 .animated-border-box,

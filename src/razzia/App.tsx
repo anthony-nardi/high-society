@@ -1,9 +1,8 @@
 import "./App.css";
-import "firebaseui/dist/firebaseui.css";
 import Lobby from "../shared/lobby";
 import initializeFirebase from "../shared/utils/initializeFirebase";
 import Login from "../shared/login";
-import GameTitle from "./game/components/GameTitle.tsx";
+import GameTitle from "./game/components/GameTitle";
 import { GameStateProvider } from "../shared/context/GameStateProvider";
 import { LobbyProvider } from "../shared/context/LobbyProvider";
 import { UserProvider } from "../shared/context/UserProvider";

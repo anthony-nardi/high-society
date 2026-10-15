@@ -6,9 +6,10 @@ import Razzia from "./razzia/App";
 import reportWebVitals from "./reportWebVitals";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
+import "./shared/mobile.css";
 import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement

@@ -25,10 +25,22 @@ export type PublicGameState = {
   currentStatusCard: string;
   remainingCards: number;
   notification?: Notification;
+  /** Set when a player starts a rematch after this game ends. */
+  nextLobbyUID?: string;
+  /** Full event log, only present once the game is over. */
+  log?: LogEntry[];
+};
+
+export type LogEntry = {
+  timestamp: number;
+  title: string;
+  message?: string;
 };
 
 export type PrivateGameState = {
   deck: string[];
+  /** Every event of the game; published to `public.log` when it ends. */
+  log?: LogEntry[];
 };
 
 export type HighSocietyGameState = GenericGameState<HighSocietyPlayerState> & {

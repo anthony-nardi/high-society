@@ -1,13 +1,25 @@
 import { useCallback, useMemo, useState } from "react";
 import PlayersList from "./components/PlayersList";
-import { Button, Center, Flex, Grid, Loader } from "@mantine/core";
+import {
+  Button,
+  Center,
+  Container,
+  Group,
+  Loader,
+  Stack,
+  Text,
+} from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import ConnectedPlayersCount from "./components/ConnectedPlayersCount";
+import { getMaxPlayers, MIN_PLAYERS } from "./playerLimits";
 import readyUp from "../../high-society/client/readyUp";
 import addBot from "../../high-society/client/addBot";
+import removeBot from "../../high-society/client/removeBot";
 import createLobby, { GameName } from "../../high-society/client/createLobby";
 import { useGameStateContext } from "../context/GameStateProvider";
 import { useUserContext } from "../context/useUserContext";
 import { useLobbyContext } from "../context/useLobbyContext";
+import displayName from "../utils/displayName";
 
 export default function Lobby({ gameName }: { gameName: GameName }) {
   const { user } = useUserContext();
@@ -17,28 +29,31 @@ export default function Lobby({ gameName }: { gameName: GameName }) {
   const [isReadying, setIsReadying] = useState<null | boolean>(null);
   const [isCreatingLobby, setIsCreatingLobby] = useState<null | boolean>(null);
   const [isAddingBot, setIsAddingBot] = useState<null | boolean>(null);
+  const [removingBot, setRemovingBot] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
-  const showBotButton = useMemo(() => {
-    try {
-      return (
-        !!window.localStorage[`${gameName}:bots`] || gameName === "no-thanks"
-      );
-    } catch (e) {
-      console.log(e);
-    }
-  }, [gameName]);
+  const players = useMemo(() => lobbyData?.players || [], [lobbyData]);
 
   const isCurrentUserReady = useMemo(() => {
-    if (!user || !lobbyData) return false;
+    if (!user) return false;
+    const currentUser = players.find((player) => player.email === user.email);
+    return (currentUser && currentUser.ready) || false;
+  }, [user, players]);
 
-    if ("players" in lobbyData) {
-      const currentUser = lobbyData.players.find(
-        (player) => player.email === user.email
-      );
-
-      return (currentUser && currentUser.ready) || false;
+  const status = useMemo(() => {
+    const missing = MIN_PLAYERS - players.length;
+    if (missing > 0) {
+      return `Waiting for ${missing} more player${missing === 1 ? "" : "s"}. Share the invite link or add a bot.`;
     }
-  }, [user, lobbyData]);
+    const notReady = players.filter((player) => !player.ready);
+    if (notReady.length === 0) {
+      return "Everyone is ready. Starting…";
+    }
+    if (!isCurrentUserReady) {
+      return "Press Ready when you are set. The game starts as soon as everyone is ready.";
+    }
+    return `Waiting for ${notReady.map((p) => displayName(p.email)).join(", ")} to ready up.`;
+  }, [players, isCurrentUserReady]);
 
   const handleCreateLobby = useCallback(async () => {
     setIsCreatingLobby(true);
@@ -48,6 +63,21 @@ export default function Lobby({ gameName }: { gameName: GameName }) {
 
     setIsCreatingLobby(false);
   }, [gameName]);
+
+  const handleCopyInvite = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch (e) {
+      console.log(e);
+      notifications.show({
+        title: "Could not copy",
+        message: window.location.href,
+        color: "yellow",
+      });
+    }
+  }, []);
 
   const handleAddBot = useCallback(async () => {
     if (!user || !user.email || !lobbyId) {
@@ -62,6 +92,19 @@ export default function Lobby({ gameName }: { gameName: GameName }) {
 
     setIsAddingBot(false);
   }, [user, lobbyId]);
+
+  const handleRemoveBot = useCallback(
+    async (email: string) => {
+      if (!lobbyId) return;
+      setRemovingBot(email);
+      try {
+        await removeBot({ lobbyUID: lobbyId, email });
+      } finally {
+        setRemovingBot(null);
+      }
+    },
+    [lobbyId]
+  );
 
   const handleReadyUp = useCallback(async () => {
     if (!user || !user.email || !lobbyId) {
@@ -104,47 +147,54 @@ export default function Lobby({ gameName }: { gameName: GameName }) {
     );
   }
 
-  if (!lobbyData || !lobbyData.players.length) {
+  if (!lobbyData || !players.length) {
     return <Center>Lobby does not exist.</Center>;
   }
 
+  const isFull = players.length >= getMaxPlayers(gameName);
+
   return (
-    <Grid>
-      <Grid.Col span={{ base: 6, md: 6, lg: 6 }} offset={3}>
-        <Center>
-          <Flex direction={"column"}>
-            <Flex
-              justify={"space-between"}
-              align={"end"}
-              styles={{ root: { marginBottom: "16px" } }}
+    <Container size="xs" px="md">
+      <Stack gap="md">
+        <Group justify="space-between" align="flex-start" wrap="wrap">
+          <ConnectedPlayersCount gameName={gameName} players={players} />
+          <Group gap="xs">
+            <Button variant="default" onClick={handleCopyInvite}>
+              {copied ? "Link copied" : "Copy invite link"}
+            </Button>
+            <Button
+              variant="default"
+              onClick={handleAddBot}
+              loading={!!isAddingBot}
+              disabled={!!isAddingBot || isFull}
+              title={isFull ? "The lobby is full" : undefined}
             >
-              <ConnectedPlayersCount
-                gameName={gameName}
-                players={(lobbyData && lobbyData.players) || []}
-              />
-              {!isCurrentUserReady && (
-                <Button
-                  onClick={handleReadyUp}
-                  loading={!!isReadying}
-                  disabled={!!isReadying}
-                >
-                  Click here to ready!
-                </Button>
-              )}
-              {showBotButton && (
-                <Button
-                  onClick={handleAddBot}
-                  loading={!!isAddingBot}
-                  disabled={!!isAddingBot}
-                >
-                  Add bot
-                </Button>
-              )}
-            </Flex>
-            <PlayersList players={lobbyData.players} />
-          </Flex>
-        </Center>
-      </Grid.Col>
-    </Grid>
+              Add bot
+            </Button>
+          </Group>
+        </Group>
+
+        <PlayersList
+          players={players}
+          onRemoveBot={handleRemoveBot}
+          removingBot={removingBot}
+        />
+
+        <Text size="sm" c="dimmed" ta="center" aria-live="polite">
+          {status}
+        </Text>
+
+        {!isCurrentUserReady && (
+          <Button
+            size="lg"
+            onClick={handleReadyUp}
+            loading={!!isReadying}
+            disabled={!!isReadying}
+          >
+            I'm ready
+          </Button>
+        )}
+      </Stack>
+    </Container>
   );
 }

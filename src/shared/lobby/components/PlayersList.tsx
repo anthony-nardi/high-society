@@ -1,46 +1,70 @@
-import { LobbyData } from "../types";
-import { useMemo } from "react";
-import { Badge, Center } from "@mantine/core";
+import { LobbyPlayer } from "../types";
+import { ActionIcon, Badge, Group, Stack, Text } from "@mantine/core";
+import displayName, { isBotName } from "../../utils/displayName";
 
 export default function PlayersList({
   players,
+  onRemoveBot,
+  removingBot,
 }: {
-  players: LobbyData["players"];
+  players: LobbyPlayer[];
+  /** When given, bots get a remove control. */
+  onRemoveBot?: (email: string) => void;
+  removingBot?: string | null;
 }) {
-  const renderedUsers = useMemo(() => {
-    return players.map((player) => {
-      const rootStyle = {
-        border: "1px solid red",
-        padding: "32px",
-        borderRadius: "8px",
-        marginBottom: "8px",
-      };
-      if (player.ready) {
-        rootStyle.border = "1px solid green";
-      }
-
-      return (
-        <Center
-          styles={{
-            root: rootStyle,
-          }}
-          key={player.email}
-        >
-          <span>{player.email}</span>
-          <Badge
-            autoContrast
-            ml="xl"
-            variant="outline"
-            color={player.ready ? "green" : "red"}
-            size="xl"
-            radius="sm"
+  return (
+    <Stack gap="xs" data-testid="players-list">
+      {players.map((player) => {
+        const isBot = player.isBot || isBotName(player.email);
+        return (
+          <Group
+            key={player.email}
+            justify="space-between"
+            wrap="nowrap"
+            px="md"
+            py="sm"
+            style={{
+              border: "1px solid var(--mantine-color-default-border)",
+              borderRadius: 8,
+              background: "var(--mantine-color-default)",
+            }}
           >
-            {player.ready ? <span>Ready</span> : <span>Not Ready</span>}
-          </Badge>
-        </Center>
-      );
-    });
-  }, [players]);
-
-  return <>{renderedUsers}</>;
+            <Group gap="sm" wrap="nowrap">
+              <Text component="span" fz="lg" aria-hidden="true">
+                {isBot ? "🤖" : "🙂"}
+              </Text>
+              <div>
+                <Text fw={600}>{displayName(player.email)}</Text>
+                <Text size="xs" c="dimmed">
+                  {isBot ? "Bot" : player.email}
+                </Text>
+              </div>
+            </Group>
+            <Group gap="xs" wrap="nowrap">
+              <Badge
+                variant={player.ready ? "filled" : "outline"}
+                color={player.ready ? "green" : "gray"}
+                radius="sm"
+              >
+                {player.ready ? "Ready" : "Waiting"}
+              </Badge>
+              {isBot && onRemoveBot && (
+                <ActionIcon
+                  variant="subtle"
+                  color="gray"
+                  aria-label={`Remove ${displayName(player.email)}`}
+                  title="Remove bot"
+                  loading={removingBot === player.email}
+                  disabled={!!removingBot}
+                  onClick={() => onRemoveBot(player.email)}
+                >
+                  ✕
+                </ActionIcon>
+              )}
+            </Group>
+          </Group>
+        );
+      })}
+    </Stack>
+  );
 }

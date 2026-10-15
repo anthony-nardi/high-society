@@ -1,20 +1,22 @@
-import { Box, Center, Container, Grid, Loader } from "@mantine/core";
+import { Center, Container, Grid, Loader, Stack } from "@mantine/core";
 import { useMemo } from "react";
 import DeckOverview from "./components/DeckOverview";
 import PlayerOverview from "./components/PlayerOverview";
 import GameOver from "./components/GameOver";
 import useGameState from "../../shared/hooks/useGameState";
 import { useUserContext } from "../../shared/context/useUserContext";
-import { useServerNotification } from "../../shared/hooks/useServerNotification";
-import { HighSocietyGameState } from "./types";
+import { HighSocietyGameState, HighSocietyPlayerState } from "./types";
 import { useLobbyContext } from "../../shared/context/useLobbyContext";
+import BidPanel from "./components/BidPanel";
+import useBidding from "./hooks/useBidding";
+import useTurnAlert from "../../shared/hooks/useTurnAlert";
+import { greenCardsRevealed } from "./cardInfo";
+import panelClasses from "./components/BidPanel.module.css";
 
 export default function Game() {
   const { user, isSignedIn } = useUserContext();
   const { lobbyId } = useLobbyContext();
   const { gameState, isLoading } = useGameState<HighSocietyGameState>();
-
-  useServerNotification();
 
   const deckInfo = useMemo(() => {
     if (!gameState) {
@@ -62,6 +64,23 @@ export default function Game() {
     return highestBid;
   }, [gameState]);
 
+  const greenRevealed = useMemo(() => {
+    if (!gameState) {
+      return 0;
+    }
+    return greenCardsRevealed(gameState.players, gameState.currentStatusCard);
+  }, [gameState]);
+
+  const loggedInPlayer = useMemo(() => {
+    if (!gameState || !user) {
+      return null;
+    }
+
+    return (
+      gameState.players.find((player) => player.email === user.email) || null
+    );
+  }, [gameState, user]);
+
   const isGameActive = useMemo(() => {
     return isSignedIn && gameState && gameState.status && lobbyId && user;
   }, [gameState, isSignedIn, lobbyId, user]);
@@ -87,35 +106,91 @@ export default function Game() {
   }
 
   return (
+    <ActiveGame
+      deckInfo={deckInfo}
+      playerInfo={playerInfo}
+      activePlayer={activePlayer}
+      highestBidTotal={highestBidTotal}
+      greenRevealed={greenRevealed}
+      loggedInPlayer={loggedInPlayer}
+    />
+  );
+}
+
+function ActiveGame({
+  deckInfo,
+  playerInfo,
+  activePlayer,
+  highestBidTotal,
+  greenRevealed,
+  loggedInPlayer,
+}: {
+  deckInfo: {
+    currentStatusCard: HighSocietyGameState["currentStatusCard"];
+    remainingCards: HighSocietyGameState["remainingCards"];
+  } | null;
+  playerInfo: HighSocietyPlayerState[];
+  activePlayer: string;
+  highestBidTotal: number;
+  greenRevealed: number;
+  loggedInPlayer: HighSocietyPlayerState | null;
+}) {
+  const isActive = !!loggedInPlayer && loggedInPlayer.email === activePlayer;
+  const bidding = useBidding({
+    player: loggedInPlayer || {
+      email: "",
+      lastActionAt: 0,
+      moneyCards: [],
+      hasPassed: false,
+    },
+    isActive,
+    highestBidTotal,
+  });
+
+  useTurnAlert(isActive, "High Society");
+
+  return (
     <>
-      <Container fluid my="xl">
+      <Container fluid px="md" pt={44} pb="md">
         <Grid>
-          <Grid.Col span={5}>
+          <Grid.Col span={{ base: 12, md: 5 }}>
             <Center>
-              <Box>
-                <DeckOverview deckInfo={deckInfo} />
-              </Box>
+              <DeckOverview deckInfo={deckInfo} greenRevealed={greenRevealed} />
             </Center>
           </Grid.Col>
-          <Grid.Col span="auto">
-            <Grid>
-              {playerInfo.map((player) => {
-                return (
-                  <Grid.Col span={12} key={player.email}>
-                    <Box>
-                      <PlayerOverview
-                        player={player}
-                        activePlayer={activePlayer}
-                        highestBidTotal={highestBidTotal}
-                      />
-                    </Box>
-                  </Grid.Col>
-                );
-              })}
-            </Grid>
+          <Grid.Col span={{ base: 12, md: 7 }}>
+            <Stack gap="sm">
+              {playerInfo.map((player) => (
+                <PlayerOverview
+                  key={player.email}
+                  player={player}
+                  activePlayer={activePlayer}
+                  highestBidTotal={highestBidTotal}
+                />
+              ))}
+            </Stack>
           </Grid.Col>
         </Grid>
       </Container>
+      {loggedInPlayer && <div className={panelClasses.pageSpacer} />}
+      {loggedInPlayer && deckInfo && (
+        <BidPanel
+          cards={bidding.moneyCards}
+          staged={bidding.staged}
+          isActive={isActive}
+          activePlayer={activePlayer}
+          currentCard={deckInfo.currentStatusCard}
+          highestBidTotal={highestBidTotal}
+          currentTotal={bidding.currentTotal}
+          proposedTotal={bidding.proposedTotal}
+          moneyTotal={bidding.moneyTotal}
+          canBid={bidding.canBid}
+          loading={bidding.loading}
+          onToggle={bidding.toggleCard}
+          onBid={bidding.submitBid}
+          onPass={bidding.pass}
+        />
+      )}
     </>
   );
 }

@@ -1,0 +1,67 @@
+/* Fixed strip along the bottom of the screen holding the controls, bid tray and hand. */
+.panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  padding: 0 16px;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.35),
+    rgba(0, 0, 0, 0) 60%
+  );
+  transition: background 300ms;
+}
+
+/* On the player's turn the whole strip warms up so the change is hard to miss. */
+.active {
+  background: linear-gradient(
+    to top,
+    rgba(255, 216, 107, 0.16),
+    rgba(255, 216, 107, 0) 70%
+  );
+}
+
+/* Shares the tray geometry with the hand so the controls can sit beside it. */
+.stage {
+  --tray-step: min(
+    calc(var(--hs-card-w) + var(--tray-gap)),
+    calc(min(100vw - 32px, 600px) / var(--tray-count, 1))
+  );
+  position: relative;
+}
+
+/* Buttons stay on their own layer above any card. On narrow screens they
+   sit above the hand; from md up they float to the right of the bid tray. */
+.controls {
+  position: relative;
+  z-index: 200;
+  pointer-events: auto;
+  padding-bottom: 8px;
+}
+
+@media (min-width: 62em) {
+  .controls {
+    position: absolute;
+    bottom: var(--tray-lift);
+    left: calc(50% + (var(--tray-count, 1) * var(--tray-step)) / 2 + 24px);
+    height: var(--hs-card-h);
+    display: flex;
+    align-items: center;
+    width: 300px;
+    padding-bottom: 0;
+  }
+}
+
+/* Reserve room under the page content for the fixed panel. */
+.pageSpacer {
+  height: calc(var(--hs-card-h) * 2 + 170px);
+}
+
+@media (min-width: 62em) {
+  .pageSpacer {
+    height: calc(var(--hs-card-h) * 2 + 80px);
+  }
+}

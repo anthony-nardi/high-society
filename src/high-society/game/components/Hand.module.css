@@ -1,0 +1,83 @@
+/*
+ * Two rows share one coordinate space so a card animates between them:
+ *   - the fan (unselected cards) along the bottom edge
+ *   - the tray (selected cards) in a straight, upright row above the fan
+ */
+.hand {
+  /* Same formula as .stage in BidPanel.module.css, for standalone use. */
+  --tray-step: min(
+    calc(var(--hs-card-w) + var(--tray-gap)),
+    calc(min(100vw - 32px, 600px) / var(--tray-count, 1))
+  );
+
+  position: relative;
+  width: 100%;
+  height: calc(var(--hs-card-h) * 2 + 60px);
+  pointer-events: none;
+}
+
+.card {
+  --x: 0px;
+  --y: 0px;
+  --r: 0deg;
+  --slot: 0;
+
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: var(--hs-card-w);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  pointer-events: auto;
+  transform-origin: 50% 130%;
+  transform: translateX(calc(-50% + var(--x))) translateY(var(--y))
+    rotate(var(--r));
+  transition:
+    transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    filter 160ms ease-out;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));
+}
+
+.card:hover:not(:disabled),
+.card:focus-visible {
+  transform: translateX(calc(-50% + var(--x)))
+    translateY(calc(var(--y) - 28px)) rotate(var(--r)) scale(1.06);
+  z-index: 100 !important;
+  outline: none;
+}
+
+/* Selected cards sit upright in the tray, in selection order. */
+.selected,
+.selected:focus-visible {
+  transform: translateX(calc(-50% + var(--slot) * var(--tray-step)))
+    translateY(calc(-1 * var(--tray-lift))) rotate(0deg);
+  filter: drop-shadow(0 0 12px #ffd86b) drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));
+  z-index: calc(50 + var(--slot-index, 0)) !important;
+}
+
+.selected:hover:not(:disabled) {
+  transform: translateX(calc(-50% + var(--slot) * var(--tray-step)))
+    translateY(calc(-1 * var(--tray-lift) + 8px)) rotate(0deg) scale(0.98);
+}
+
+.card:disabled {
+  cursor: not-allowed;
+  filter: brightness(0.75) saturate(0.6)
+    drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));
+}
+
+.trayLabel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--tray-lift) + var(--hs-card-h) + 18px);
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--mantine-color-dimmed);
+  pointer-events: none;
+}

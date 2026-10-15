@@ -3,13 +3,14 @@ import { firebaseConfig } from "../../high-society/constants/firebaseConfig";
 import { connectDatabaseEmulator, getDatabase } from "firebase/database";
 import { connectAuthEmulator, getAuth } from "firebase/auth";
 import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
+import isLocalhost from "./isLocalhost";
 
 export default function initializeFirebase() {
   console.log("Initialize Firebase");
 
   initializeApp(firebaseConfig);
 
-  if (window.location.hostname === "localhost") {
+  if (isLocalhost()) {
     const db = getDatabase();
     const auth = getAuth();
     const functions = getFunctions();

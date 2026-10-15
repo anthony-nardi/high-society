@@ -2,10 +2,13 @@ export type CreateLobbyResponse = {
   lobbyUID: number;
 };
 
+export type LobbyPlayer = {
+  email: string;
+  ready: boolean;
+  isBot?: boolean;
+};
+
 export type LobbyData = {
   id: string;
-  players: {
-    email: string;
-    ready: boolean;
-  }[];
+  players: LobbyPlayer[];
 };

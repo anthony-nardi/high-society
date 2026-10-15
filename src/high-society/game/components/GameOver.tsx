@@ -1,216 +1,231 @@
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { HighSocietyGameState } from "../types";
 import { getDatabase, onValue, ref } from "firebase/database";
-import { Box, Center, Flex } from "@mantine/core";
+import {
+  Badge,
+  Button,
+  Center,
+  Container,
+  Group,
+  Stack,
+  Table,
+  Text,
+  Title,
+} from "@mantine/core";
+import scoreGame from "../scoring";
+import displayName from "../../../shared/utils/displayName";
+import createLobby from "../../client/createLobby";
+import { useUserContext } from "../../../shared/context/useUserContext";
+import CardFront from "../../card/CardFront";
+import MoneyCard from "../../card/MoneyCard";
+import { ScoredPlayer } from "../scoring";
+import GameLog from "../../../shared/components/GameLog";
 
-type MapOfPlayersToMetadata = {
-  [key: string]: {
-    finalScore: number;
-    moneyCards: string[];
-    statusCards: string[];
-    email: string;
-    moneyLeft: number;
-  };
-};
+const COLUMNS = 7;
+
+/** Second row under each player: their status cards and remaining money. */
+function PlayerCards({ player }: { player: ScoredPlayer }) {
+  const money = [...player.moneyCards].sort((a, b) => Number(a) - Number(b));
+  return (
+    <Group gap="xl" align="flex-start" wrap="wrap" py={4}>
+      <div>
+        <Text size="xs" c="dimmed" mb={4}>
+          Status cards
+        </Text>
+        {player.statusCards.length === 0 ? (
+          <Text size="sm" c="dimmed">
+            None
+          </Text>
+        ) : (
+          <Group gap={4} wrap="wrap">
+            {player.statusCards.map((card, index) => (
+              <CardFront key={`${card}-${index}`} card={card} size="sm" />
+            ))}
+          </Group>
+        )}
+      </div>
+      <div>
+        <Text size="xs" c="dimmed" mb={4}>
+          Money left ({player.moneyLeft})
+        </Text>
+        {money.length === 0 ? (
+          <Text size="sm" c="dimmed">
+            None
+          </Text>
+        ) : (
+          <Group gap={4} wrap="wrap" aria-label={`Money: ${money.join(", ")}`}>
+            {money.map((card) => (
+              <div key={card} style={{ width: 40 }}>
+                <MoneyCard value={card} />
+              </div>
+            ))}
+          </Group>
+        )}
+      </div>
+    </Group>
+  );
+}
+
+function formatMultiplier(multiplier: number) {
+  if (multiplier === 1) return "—";
+  return multiplier > 1 ? `×${multiplier}` : `×1/${1 / multiplier}`;
+}
 
 export default function GameOver({ lobbyId }: { lobbyId: string }) {
+  const { user } = useUserContext();
   const [gameData, setGameData] = useState<null | HighSocietyGameState>(null);
+  const [isCreating, setIsCreating] = useState(false);
+
   useEffect(() => {
     const db = getDatabase();
-
     const lobbyRef = ref(db, "games/" + lobbyId + "/public");
 
-    onValue(lobbyRef, (snapshot) => {
-      const data = snapshot.val() as HighSocietyGameState;
-      setGameData(data);
+    const unsubscribe = onValue(lobbyRef, (snapshot) => {
+      setGameData(snapshot.val() as HighSocietyGameState);
     });
+
+    return () => unsubscribe();
   }, [lobbyId]);
 
-  const mapOfPlayersToMetadata: null | MapOfPlayersToMetadata = useMemo(() => {
-    if (!gameData) return null;
+  const results = useMemo(
+    () => (gameData ? scoreGame(gameData.players) : []),
+    [gameData],
+  );
+  const winners = results.filter((p) => p.winner);
+  const eliminated = results.filter((p) => p.eliminated);
+  const nextLobbyUID = gameData?.nextLobbyUID;
 
-    const metadata: MapOfPlayersToMetadata = {};
+  const goToLobby = useCallback((uid: string) => {
+    window.location.hash = `#${uid}`;
+    // The hash change alone does not fire popstate in every browser.
+    window.dispatchEvent(new PopStateEvent("popstate"));
+  }, []);
 
-    for (const player of gameData.players) {
-      player.statusCards = player.statusCards || [];
-
-      let multiplier = 1;
-      let score = 0;
-
-      for (const card of player.statusCards) {
-        if (card === "1/2") {
-          multiplier = multiplier * 0.5;
-        } else if (card === "2x") {
-          multiplier = multiplier * 2;
-        } else {
-          score = score + Number(card);
-        }
-      }
-
-      metadata[player.email] = {
-        finalScore: score * multiplier,
-        moneyLeft: (player.moneyCards || []).reduce(
-          (total, card) => Number(total) + Number(card),
-          0
-        ),
-        moneyCards: player.moneyCards || [],
-        statusCards: player.statusCards || [],
-        email: player.email,
-      };
+  const handlePlayAgain = useCallback(async () => {
+    setIsCreating(true);
+    try {
+      const lobby = await createLobby("high-society", { rematchOf: lobbyId });
+      goToLobby(String(lobby.data.lobbyUID));
+    } finally {
+      setIsCreating(false);
     }
+  }, [lobbyId, goToLobby]);
 
-    return metadata;
-  }, [gameData]);
+  if (!gameData) {
+    return null;
+  }
 
-  const playersWithLeastMoneyRemaining = useMemo(() => {
-    let moneyLeft = 1000;
-    let playersWithLowestTotal: string[] = [];
-
-    if (!mapOfPlayersToMetadata) {
-      return [];
-    }
-
-    for (const metadata in mapOfPlayersToMetadata) {
-      if (mapOfPlayersToMetadata[metadata].moneyLeft === moneyLeft) {
-        moneyLeft = mapOfPlayersToMetadata[metadata].moneyLeft;
-
-        playersWithLowestTotal.push(mapOfPlayersToMetadata[metadata].email);
-      } else if (mapOfPlayersToMetadata[metadata].moneyLeft < moneyLeft) {
-        moneyLeft = mapOfPlayersToMetadata[metadata].moneyLeft;
-        playersWithLowestTotal = [mapOfPlayersToMetadata[metadata].email];
-      }
-    }
-
-    return playersWithLowestTotal;
-  }, [mapOfPlayersToMetadata]);
-
-  const winningPlayers = useMemo(() => {
-    if (!mapOfPlayersToMetadata) return [];
-
-    let highScore: number | undefined;
-    let playersWithHighScore: string[] = [];
-
-    for (const metadata in mapOfPlayersToMetadata) {
-      if (
-        playersWithLeastMoneyRemaining.includes(
-          mapOfPlayersToMetadata[metadata].email
-        )
-      ) {
-        continue;
-      }
-
-      if (
-        !highScore ||
-        mapOfPlayersToMetadata[metadata].finalScore > highScore
-      ) {
-        highScore = mapOfPlayersToMetadata[metadata].finalScore;
-        playersWithHighScore = [mapOfPlayersToMetadata[metadata].email];
-      } else if (mapOfPlayersToMetadata[metadata].finalScore === highScore) {
-        playersWithHighScore.push(mapOfPlayersToMetadata[metadata].email);
-      }
-    }
-
-    if (playersWithHighScore.length === 1) {
-      return playersWithHighScore;
-    }
-
-    // Player with most money left wins...
-
-    if (playersWithHighScore.length > 1) {
-      // Player with most money left wins...
-      playersWithHighScore = playersWithHighScore.filter((email) => {
-        mapOfPlayersToMetadata[email].finalScore === highScore;
-      });
-    }
-
-    if (playersWithHighScore.length === 1) {
-      return playersWithHighScore;
-    }
-
-    // if there is still a tie the player with the highest luxury card wins
-    if (playersWithHighScore.length > 1) {
-      let highestLuxuryCard = 10;
-      while (playersWithHighScore.length !== 1) {
-        playersWithHighScore = playersWithHighScore.filter((email) => {
-          return !!mapOfPlayersToMetadata[email].statusCards.find(
-            (card) => Number(card) === highestLuxuryCard
-          );
-        });
-
-        if (playersWithHighScore.length > 1) {
-          highestLuxuryCard--;
-        }
-      }
-    }
-
-    return playersWithHighScore;
-  }, [mapOfPlayersToMetadata, playersWithLeastMoneyRemaining]);
-
-  console.log(mapOfPlayersToMetadata);
-  console.log(winningPlayers);
-
-  const renderedWinner = useMemo(() => {
-    const renderedPlayersEndGame = [];
-
-    if (mapOfPlayersToMetadata && winningPlayers.length === 1) {
-      for (const playerEmail in mapOfPlayersToMetadata) {
-        const isWinner = winningPlayers[0] === playerEmail;
-        const player = mapOfPlayersToMetadata[playerEmail];
-        if (isWinner) {
-          renderedPlayersEndGame.push(
-            <Box key={player.email}>
-              <div className="animated-border-box">
-                <Box p="xs">
-                  <b>{player.email} has won!</b>
-                  <div>Money left: ${player.moneyLeft}</div>
-                  <div>
-                    Cards in hand: {(player.moneyCards || []).join(", ")}
-                  </div>
-                  <div>
-                    Status cards: {(player.statusCards || []).join(", ")}
-                  </div>
-                  <b>Final score: {player.finalScore}</b>
-                </Box>
-              </div>
-            </Box>
-          );
-        } else {
-          console.log("pushing...", player.email);
-          renderedPlayersEndGame.push(
-            <Box p="xs" key={player.email}>
-              <b>{player.email}</b>
-              <div>Money left: ${player.moneyLeft}</div>
-              <div>Cards in hand: {(player.moneyCards || []).join(", ")}</div>
-              <div>Status cards: {(player.statusCards || []).join(", ")}</div>
-              <b>Final score: {player.finalScore}</b>
-            </Box>
-          );
-        }
-      }
-    } else {
-      for (const playerEmail in mapOfPlayersToMetadata) {
-        const player = mapOfPlayersToMetadata[playerEmail];
-        console.log("pushing...", player.email);
-        renderedPlayersEndGame.push(
-          <Box p="xs" key={player.email}>
-            <b>{player.email}</b>
-            <div>Money left: ${player.moneyLeft}</div>
-            <div>Cards in hand: {(player.moneyCards || []).join(", ")}</div>
-            <div>Status cards: {(player.statusCards || []).join(", ")}</div>
-            <b>Final score: {player.finalScore}</b>
-          </Box>
-        );
-      }
-    }
-    return renderedPlayersEndGame;
-  }, [mapOfPlayersToMetadata, winningPlayers]);
+  const headline =
+    winners.length === 1
+      ? `${displayName(winners[0].email)} wins!`
+      : winners.length > 1
+        ? `${winners.map((p) => displayName(p.email)).join(" and ")} share the win`
+        : "Nobody wins";
 
   return (
-    <Center>
-      <Flex direction="column">
-        <h1 style={{ padding: "8px" }}>Game Over</h1>
-        {renderedWinner}
-      </Flex>
-    </Center>
+    <Container size="md" px="md" py="xl">
+      <Stack gap="lg">
+        <Center>
+          <Stack gap={4} align="center">
+            <Title order={1}>Game over</Title>
+            <Title order={3} c="yellow.4">
+              {headline}
+            </Title>
+            {eliminated.length > 0 && (
+              <Text size="sm" c="dimmed" ta="center">
+                {eliminated.map((p) => displayName(p.email)).join(", ")}{" "}
+                {eliminated.length === 1 ? "had" : "shared"} the least money
+                left and {eliminated.length === 1 ? "is" : "are"} out of the
+                running.
+              </Text>
+            )}
+          </Stack>
+        </Center>
+
+        <Table.ScrollContainer minWidth={560}>
+          <Table withTableBorder>
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th>#</Table.Th>
+                <Table.Th>Player</Table.Th>
+                <Table.Th>Luxury</Table.Th>
+                <Table.Th>Scandal</Table.Th>
+                <Table.Th>Multiplier</Table.Th>
+                <Table.Th>Score</Table.Th>
+                <Table.Th>Money left</Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
+              {results.map((player) => (
+                <Fragment key={player.email}>
+                  <Table.Tr
+                    style={{
+                      opacity: player.eliminated ? 0.6 : 1,
+                      fontWeight: player.winner ? 700 : undefined,
+                    }}
+                  >
+                    <Table.Td>{player.rank}</Table.Td>
+                    <Table.Td>
+                      <Group gap="xs" wrap="nowrap">
+                        {displayName(player.email)}
+                        {player.email === user?.email && (
+                          <Text component="span" size="xs" c="dimmed">
+                            (you)
+                          </Text>
+                        )}
+                        {player.winner && (
+                          <Badge color="yellow" radius="sm">
+                            Winner
+                          </Badge>
+                        )}
+                        {player.eliminated && (
+                          <Badge color="red" variant="light" radius="sm">
+                            Least money
+                          </Badge>
+                        )}
+                      </Group>
+                    </Table.Td>
+                    <Table.Td>{player.luxury}</Table.Td>
+                    <Table.Td>
+                      {player.penalty ? `−${player.penalty}` : "—"}
+                    </Table.Td>
+                    <Table.Td>{formatMultiplier(player.multiplier)}</Table.Td>
+                    <Table.Td>{player.finalScore}</Table.Td>
+                    <Table.Td>{player.moneyLeft}</Table.Td>
+                  </Table.Tr>
+                  <Table.Tr style={{ opacity: player.eliminated ? 0.6 : 1 }}>
+                    <Table.Td colSpan={COLUMNS}>
+                      <PlayerCards player={player} />
+                    </Table.Td>
+                  </Table.Tr>
+                </Fragment>
+              ))}
+            </Table.Tbody>
+          </Table>
+        </Table.ScrollContainer>
+
+        <Center>
+          <Group>
+            {nextLobbyUID ? (
+              <Button onClick={() => goToLobby(nextLobbyUID)}>
+                Join the rematch
+              </Button>
+            ) : (
+              <Button onClick={handlePlayAgain} loading={isCreating}>
+                Play again
+              </Button>
+            )}
+          </Group>
+        </Center>
+        {!nextLobbyUID && (
+          <Text size="xs" c="dimmed" ta="center">
+            Play again opens a new lobby and gives everyone here a button to
+            join it.
+          </Text>
+        )}
+
+        <GameLog log={gameData.log || []} />
+      </Stack>
+    </Container>
   );
 }
