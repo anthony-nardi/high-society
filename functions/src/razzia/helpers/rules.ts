@@ -82,7 +82,7 @@ function announce(gameState: RazziaGameState, title: string, message?: string) {
 
 export function getActivePlayer(gameState: RazziaGameState) {
   return gameState.public.players.find(
-    (player) => player.email === gameState.public.activePlayer
+    (player) => player.email === gameState.public.activePlayer,
   );
 }
 
@@ -112,14 +112,14 @@ export function updateActivePlayer(gameState: RazziaGameState) {
 
 export function anyoneHasMoney(gameState: RazziaGameState) {
   return gameState.public.players.some(
-    (player) => (player.availableMoney || []).length > 0
+    (player) => (player.availableMoney || []).length > 0,
   );
 }
 
 export function highestBid(gameState: RazziaGameState) {
   return Math.max(
     0,
-    ...gameState.public.players.map((player) => Number(player.bid) || 0)
+    ...gameState.public.players.map((player) => Number(player.bid) || 0),
   );
 }
 
@@ -137,7 +137,10 @@ export function isAuction(gameState: RazziaGameState) {
 }
 
 /** Money tokens the player may bid now: available and above the table. */
-export function biddableMoney(gameState: RazziaGameState, player: RazziaPlayerState) {
+export function biddableMoney(
+  gameState: RazziaGameState,
+  player: RazziaPlayerState,
+) {
   const floor = highestBid(gameState);
   return (player.availableMoney || []).filter((money) => Number(money) > floor);
 }
@@ -149,7 +152,9 @@ export function biddableMoney(gameState: RazziaGameState, player: RazziaPlayerSt
 export function canPass(gameState: RazziaGameState, player: RazziaPlayerState) {
   if (player.email !== gameState.public.auctionTriggeringPlayer) return true;
   if (gameState.public.roundState === "FORCED_AUCTION") return true;
-  return highestBid(gameState) > 0 || biddableMoney(gameState, player).length === 0;
+  return (
+    highestBid(gameState) > 0 || biddableMoney(gameState, player).length === 0
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -163,7 +168,7 @@ function count(cards: LootCards[] | undefined) {
 /** Points scored at the end of every round (jewels, bodyguards, coins, cars, thieves). */
 export function roundPoints(
   player: RazziaPlayerState,
-  everyone: RazziaPlayerState[]
+  everyone: RazziaPlayerState[],
 ): { [category: string]: number } {
   const cards = player.cards || {};
   const points: { [category: string]: number } = {};
@@ -202,7 +207,7 @@ export function roundPoints(
 /** Points scored only at the end of the game (businesses and money). */
 export function finalPoints(
   player: RazziaPlayerState,
-  everyone: RazziaPlayerState[]
+  everyone: RazziaPlayerState[],
 ): { [category: string]: number } {
   const points: { [category: string]: number } = {};
   const businesses = player.cards?.businesses || [];
@@ -223,7 +228,7 @@ export function finalPoints(
   points.businesses = businessPoints;
 
   const totals = everyone.map((p) =>
-    (p.money || []).reduce((sum, m) => sum + Number(m), 0)
+    (p.money || []).reduce((sum, m) => sum + Number(m), 0),
   );
   const mine = (player.money || []).reduce((sum, m) => sum + Number(m), 0);
   const most = Math.max(...totals);
@@ -241,7 +246,7 @@ export function finalPoints(
 
 function recordScores(
   gameState: RazziaGameState,
-  compute: (player: RazziaPlayerState) => { [category: string]: number }
+  compute: (player: RazziaPlayerState) => { [category: string]: number },
 ) {
   gameState.public.scoring = gameState.public.scoring || [];
   for (const player of gameState.public.players) {
@@ -315,7 +320,7 @@ export function endRound(gameState: RazziaGameState) {
   announce(
     gameState,
     `Round ${round} is over. Round ${round + 1} begins.`,
-    `${starter} holds the highest Money token and starts.`
+    `${starter} holds the highest Money token and starts.`,
   );
 }
 
@@ -340,7 +345,8 @@ export function canReveal(gameState: RazziaGameState) {
  * normal auction, and the final police raid ends the round at once.
  */
 export function revealCard(gameState: RazziaGameState): ActionResult {
-  if (gameState.public.roundState !== "ACTION") return fail("Not in the action phase.");
+  if (gameState.public.roundState !== "ACTION")
+    return fail("Not in the action phase.");
   const revealed = gameState.public.revealedCards || [];
   const actor = gameState.public.activePlayer;
 
@@ -359,11 +365,12 @@ export function revealCard(gameState: RazziaGameState): ActionResult {
     if (gameState.public.revealedCards.length >= MAX_REVEALED_CARDS) {
       gameState.public.roundState = "FORCED_AUCTION";
       gameState.public.auctionTriggeringPlayer = actor;
+      gameState.public.auctionPassed = [];
       gameState.public.discardIfUnsold = true;
       announce(
         gameState,
         `${actor} revealed ${card}, the seventh card on the table.`,
-        "An auction starts automatically; if nobody bids the loot is discarded."
+        "An auction starts automatically; if nobody bids the loot is discarded.",
       );
     } else {
       announce(gameState, `${actor} revealed ${card}.`);
@@ -377,7 +384,7 @@ export function revealCard(gameState: RazziaGameState): ActionResult {
     announce(
       gameState,
       `${actor} drew the final police raid.`,
-      "The round ends at once; loot still on the table is lost."
+      "The round ends at once; loot still on the table is lost.",
     );
     endRound(gameState);
     return { ok: true };
@@ -385,11 +392,12 @@ export function revealCard(gameState: RazziaGameState): ActionResult {
 
   gameState.public.roundState = "FORCED_AUCTION";
   gameState.public.auctionTriggeringPlayer = actor;
+  gameState.public.auctionPassed = [];
   gameState.public.discardIfUnsold = false;
   announce(
     gameState,
     `${actor} drew a police raid (${gameState.public.policeRaids} of ${gameState.public.raidLimit}).`,
-    "The loot goes up for auction."
+    "The loot goes up for auction.",
   );
   updateActivePlayer(gameState);
   return { ok: true };
@@ -405,13 +413,17 @@ export function initiateAuction(gameState: RazziaGameState): ActionResult {
   const actor = gameState.public.activePlayer;
   gameState.public.roundState = "NORMAL_AUCTION";
   gameState.public.auctionTriggeringPlayer = actor;
+  gameState.public.auctionPassed = [];
   gameState.public.discardIfUnsold = false;
   announce(gameState, `${actor} called an auction.`);
   updateActivePlayer(gameState);
   return { ok: true };
 }
 
-export function canUseThief(gameState: RazziaGameState, player: RazziaPlayerState) {
+export function canUseThief(
+  gameState: RazziaGameState,
+  player: RazziaPlayerState,
+) {
   return (
     gameState.public.roundState === "ACTION" &&
     (player.cards?.theives || []).length > 0 &&
@@ -422,11 +434,12 @@ export function canUseThief(gameState: RazziaGameState, player: RazziaPlayerStat
 /** Spends one thief per booty card taken straight from the table (any card, thieves included). */
 export function useThief(
   gameState: RazziaGameState,
-  cardsToSteal: LootCards[]
+  cardsToSteal: LootCards[],
 ): ActionResult {
   const player = getActivePlayer(gameState);
   if (!player) return fail("Active player not found.");
-  if (gameState.public.roundState !== "ACTION") return fail("Not in the action phase.");
+  if (gameState.public.roundState !== "ACTION")
+    return fail("Not in the action phase.");
   if (cardsToSteal.length === 0) return fail("Choose at least one card.");
   const thieves = player.cards?.theives || [];
   if (thieves.length < cardsToSteal.length) {
@@ -443,7 +456,10 @@ export function useThief(
   for (const card of cardsToSteal) addCardToPlayer(player, card);
   gameState.public.revealedCards = table;
 
-  announce(gameState, `${player.email} used a thief to take ${cardsToSteal.join(", ")}.`);
+  announce(
+    gameState,
+    `${player.email} used a thief to take ${cardsToSteal.join(", ")}.`,
+  );
   updateActivePlayer(gameState);
   return { ok: true };
 }
@@ -451,7 +467,8 @@ export function useThief(
 /** Awards the table and the centre money to the highest bidder, then moves on. */
 function resolveAuction(gameState: RazziaGameState) {
   const winner = getPlayerWithHighestBid(gameState);
-  const caller = gameState.public.auctionTriggeringPlayer || gameState.public.activePlayer;
+  const caller =
+    gameState.public.auctionTriggeringPlayer || gameState.public.activePlayer;
 
   if (!winner) {
     if (gameState.public.discardIfUnsold) {
@@ -466,7 +483,9 @@ function resolveAuction(gameState: RazziaGameState) {
   } else {
     const bid = winner.bid;
     const centre = gameState.public.money;
-    winner.availableMoney = (winner.availableMoney || []).filter((m) => m !== bid);
+    winner.availableMoney = (winner.availableMoney || []).filter(
+      (m) => m !== bid,
+    );
     winner.money = [...(winner.money || []).filter((m) => m !== bid), centre];
     gameState.public.money = bid;
 
@@ -477,7 +496,7 @@ function resolveAuction(gameState: RazziaGameState) {
     announce(
       gameState,
       `${winner.email} won the auction with ${bid}.`,
-      `They take ${loot.length} card${loot.length === 1 ? "" : "s"} and the ${centre} Money token.`
+      `They take ${loot.length} card${loot.length === 1 ? "" : "s"} and the ${centre} Money token.`,
     );
     gameState.public.roundState = "ACTION";
   }
@@ -485,6 +504,7 @@ function resolveAuction(gameState: RazziaGameState) {
   for (const player of gameState.public.players) player.bid = "0";
   delete gameState.public.auctionTriggeringPlayer;
   gameState.public.discardIfUnsold = false;
+  gameState.public.auctionPassed = [];
 
   if (!anyoneHasMoney(gameState)) {
     announce(gameState, "Everyone has spent their money.", "The round ends.");
@@ -522,6 +542,10 @@ export function pass(gameState: RazziaGameState): ActionResult {
   if (!canPass(gameState, player)) {
     return fail("You called this auction, so you must bid.");
   }
+  gameState.public.auctionPassed = [
+    ...(gameState.public.auctionPassed || []),
+    player.email,
+  ];
   announce(gameState, `${player.email} passed.`);
 
   if (player.email === gameState.public.auctionTriggeringPlayer) {

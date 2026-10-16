@@ -101,6 +101,8 @@ export type RazziaGameState = {
   auctionTriggeringPlayer?: string;
   /** Automatic auction for a full table: unsold loot is discarded. */
   discardIfUnsold?: boolean;
+  /** Players who passed in the current auction, in order. */
+  auctionPassed?: string[];
   scoring?: ScoreBreakdown[];
   nextLobbyUID?: string;
   log?: LogEntry[];

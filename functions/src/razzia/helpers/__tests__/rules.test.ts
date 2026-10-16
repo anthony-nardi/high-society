@@ -151,6 +151,7 @@ describe("auctions", () => {
     expect(biddableMoney(state, state.public.players[2])).toEqual(["7", "10", "11"]);
     expect(pass(state).ok).toBe(true);
     expect(state.public.activePlayer).toBe("a");
+    expect(state.public.auctionPassed).toEqual(["c"]);
   });
 
   it("makes the caller bid when nobody else did", () => {
@@ -180,6 +181,7 @@ describe("auctions", () => {
     // Play resumes after the caller.
     expect(state.public.activePlayer).toBe("b");
     expect(state.public.players.every((p) => p.bid === "0")).toBe(true);
+    expect(state.public.auctionPassed).toEqual([]);
   });
 
   it("lets a forced auction end with no bids and the loot kept", () => {

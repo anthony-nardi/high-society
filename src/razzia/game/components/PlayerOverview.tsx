@@ -22,6 +22,42 @@ export default function PlayerOverview({
   const auction =
     gameState.roundState === "NORMAL_AUCTION" ||
     gameState.roundState === "FORCED_AUCTION";
+  const passed = (gameState.auctionPassed || []).includes(player.email);
+  const isCaller = player.email === gameState.auctionTriggeringPlayer;
+  const sittingOut = available.length === 0;
+
+  // What this player has done in the auction so far.
+  let auctionStatus: {
+    label: string;
+    color: string;
+    variant: "filled" | "light" | "outline";
+  } | null = null;
+  if (auction) {
+    if (bid)
+      auctionStatus = {
+        label: `Bid ${bid}`,
+        color: "yellow",
+        variant: "filled",
+      };
+    else if (passed)
+      auctionStatus = { label: "Passed", color: "gray", variant: "light" };
+    else if (sittingOut)
+      auctionStatus = {
+        label: "Sitting out",
+        color: "gray",
+        variant: "outline",
+      };
+    else if (isActivePlayer)
+      auctionStatus = { label: "Deciding…", color: "yellow", variant: "light" };
+    else if (isCaller)
+      auctionStatus = { label: "Bids last", color: "gray", variant: "outline" };
+    else
+      auctionStatus = {
+        label: "Yet to bid",
+        color: "blue",
+        variant: "outline",
+      };
+  }
 
   return (
     <Box
@@ -88,14 +124,14 @@ export default function PlayerOverview({
               width={44}
             />
           ))}
-          {auction && bid && (
-            <Badge color="yellow" radius="sm">
-              Bid {bid}
-            </Badge>
-          )}
-          {auction && player.email === gameState.auctionTriggeringPlayer && (
-            <Badge variant="outline" color="gray" radius="sm">
-              Bids last
+          {auctionStatus && (
+            <Badge
+              color={auctionStatus.color}
+              variant={auctionStatus.variant}
+              radius="sm"
+              data-testid="auction-status"
+            >
+              {auctionStatus.label}
             </Badge>
           )}
         </Group>
