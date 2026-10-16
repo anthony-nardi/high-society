@@ -5,6 +5,7 @@ import displayName, { isBotName } from "../../../shared/utils/displayName";
 import { CATEGORY_LABELS, CATEGORY_ORDER, totalCards } from "../cardInfo";
 import LootCard from "./LootCard";
 import MoneyCard from "./MoneyCard";
+import formatMoney from "../money";
 
 export default function PlayerOverview({
   player,
@@ -34,7 +35,11 @@ export default function PlayerOverview({
     variant: "filled" | "light" | "outline";
   } | null = null;
   if (bid) {
-    auctionStatus = { label: `Bid ${bid}`, color: "yellow", variant: "filled" };
+    auctionStatus = {
+      label: `Bid ${formatMoney(bid)}`,
+      color: "yellow",
+      variant: "filled",
+    };
   } else if (sittingOut && gameState.status === "IN_PROGRESS") {
     auctionStatus = {
       label: "Sitting out: no tokens left",

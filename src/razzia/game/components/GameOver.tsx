@@ -18,6 +18,7 @@ import { useUserContext } from "../../../shared/context/useUserContext";
 import GameLog from "../../../shared/components/GameLog";
 import { CATEGORY_LABELS, CATEGORY_ORDER } from "../cardInfo";
 import LootCard from "./LootCard";
+import formatMoney from "../money";
 
 export default function GameOver({
   gameState,
@@ -177,6 +178,7 @@ export default function GameOver({
                             <Text size="sm">
                               {[...(state?.money || [])]
                                 .sort((a, b) => Number(a) - Number(b))
+                                .map(formatMoney)
                                 .join(", ") || "—"}
                             </Text>
                           </div>

@@ -1,8 +1,10 @@
 import type { CSSProperties } from "react";
+import formatMoney from "../money";
 
 /**
- * A Money token. "available" means it can still be bid this round; a won
- * card is face down until the next round.
+ * A Money token drawn as a banded stack of bills, printed in thousands.
+ * "available" means it can still be bid this round; a won token is face
+ * down until the next round.
  */
 export default function MoneyCard({
   amount,
@@ -34,48 +36,56 @@ export default function MoneyCard({
     transition: "transform 150ms, box-shadow 150ms, opacity 150ms",
   };
 
+  const bill = available ? "#2e8b57" : "#3a4a3f";
+  const billDark = available ? "#1b5634" : "#26312a";
+  const band = available ? "#f6edd0" : "#9a9a8a";
+  const value = formatMoney(amount);
+
   const art = (
     <svg
-      viewBox="0 0 120 80"
+      viewBox="0 0 120 84"
       width="100%"
       aria-hidden="true"
       style={{ display: "block" }}
     >
+      {/* Two bills underneath, then the top bill with its band. */}
+      <rect x="10" y="22" width="104" height="52" rx="6" fill={billDark} />
+      <rect
+        x="6"
+        y="14"
+        width="104"
+        height="52"
+        rx="6"
+        fill={billDark}
+        stroke="#0f2e1c"
+        strokeWidth="1.5"
+      />
       <rect
         x="2"
-        y="2"
-        width="116"
-        height="76"
-        rx="10"
-        fill={available ? "#2F6B4F" : "#3a3f3a"}
-        stroke="#D9B44A"
-        strokeWidth="4"
-      />
-      <rect
-        x="12"
-        y="12"
-        width="96"
-        height="56"
+        y="6"
+        width="104"
+        height="52"
         rx="6"
-        fill={available ? "#3B7A5B" : "#4a504a"}
-        stroke="#D9B44A"
+        fill={bill}
+        stroke="#0f2e1c"
         strokeWidth="2"
       />
+      <rect x="2" y="20" width="104" height="24" fill={band} opacity="0.95" />
       <text
-        x="60"
-        y="48"
+        x="54"
+        y="37"
         textAnchor="middle"
-        fontSize="34"
+        fontSize={value.length > 6 ? 15 : 17}
         fontWeight="700"
-        fill="#F3E6B0"
-        fontFamily="Georgia, serif"
+        fill="#1c1f24"
+        fontFamily="Georgia, 'Times New Roman', serif"
       >
-        {amount}
+        {value}
       </text>
     </svg>
   );
 
-  const label = `Money token ${amount}${available ? "" : " (spent or won this round)"}`;
+  const label = `Money token ${value}${available ? "" : " (spent or won this round)"}`;
 
   if (onClick) {
     return (

@@ -9,6 +9,7 @@ import passOnLoot from "../../client/passOnLoot";
 import { useLobbyContext } from "../../../shared/context/useLobbyContext";
 import displayName from "../../../shared/utils/displayName";
 import MoneyCard from "./MoneyCard";
+import formatMoney from "../money";
 import classes from "./ActionPanel.module.css";
 
 function highestBid(gameState: RazziaGameState) {
@@ -83,19 +84,19 @@ export default function ActionPanel({
     if (biddable.length === 0) {
       hint =
         floor > 0
-          ? `Nothing in your hand beats ${floor}. You have to pass.`
+          ? `Nothing in your hand beats ${formatMoney(floor)}. You have to pass.`
           : "You have no money left to bid.";
     } else if (mustBid) {
       hint = "You called this auction and nobody bid, so you must bid.";
     } else if (floor > 0) {
-      hint = `Highest bid is ${floor}. Pick a Money token above it, or pass.`;
+      hint = `Highest bid is ${formatMoney(floor)}. Pick a Money token above it, or pass.`;
     } else {
       hint = "No bids yet. Pick a Money token to bid, or pass.";
     }
     if (chosenMoney) {
-      hint = `Bid ${chosenMoney}: you would get the ${loot.length} loot card${
+      hint = `Bid ${formatMoney(chosenMoney)}: you would get the ${loot.length} loot card${
         loot.length === 1 ? "" : "s"
-      } and the ${gameState.money} Money token if nobody beats it.`;
+      } and the ${formatMoney(gameState.money)} Money token if nobody beats it.`;
     }
   } else if (!canReveal) {
     hint = "The deck is empty. Call an auction.";
@@ -180,7 +181,7 @@ export default function ActionPanel({
                   call(() => bidOnLoot({ lobbyUID, amount: chosenMoney }))
                 }
               >
-                {chosenMoney ? `Bid ${chosenMoney}` : "Bid"}
+                {chosenMoney ? `Bid ${formatMoney(chosenMoney)}` : "Bid"}
               </Button>
               <Button
                 variant="default"
