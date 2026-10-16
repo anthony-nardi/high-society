@@ -90,7 +90,6 @@ export default function Game() {
           <Grid.Col span={{ base: 12, md: 5 }}>
             <SharedBoard
               gameState={gameState}
-              viewer={loggedInPlayer}
               selectable={stealMode}
               selected={stealMode ? stealIndexes : []}
               onToggle={toggleSteal}

@@ -38,6 +38,8 @@ describe("cardInfo", () => {
     expect(cardInfo("SCARAB").category).toBe("jewels");
     expect(cardInfo("POLICE_RAIDS").category).toBe("police");
     expect(cardInfo("RESTAURANT").name).toBe("Restaurant");
+    expect(cardInfo("TRANSPORTATION").name).toBe("Transportation");
+    expect(cardInfo("SCARAB").kind).toBe("jewel");
   });
 
   it("counts cards across categories", () => {

@@ -2,7 +2,11 @@ import { Button, Drawer } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import type { ReactNode } from "react";
 
-/** A "How to play" button pinned to the top-right corner, opening the rules. */
+/**
+ * A "How to play" button pinned to the top-right corner that opens and
+ * closes the rules. The drawer has no close cross of its own, since that
+ * would sit under this button.
+ */
 export default function RulesDrawer({
   title,
   children,
@@ -10,17 +14,18 @@ export default function RulesDrawer({
   title: string;
   children: ReactNode;
 }) {
-  const [opened, { open, close }] = useDisclosure(false);
+  const [opened, { toggle, close }] = useDisclosure(false);
 
   return (
     <>
       <Button
-        variant="subtle"
+        variant={opened ? "filled" : "subtle"}
         size="xs"
-        onClick={open}
-        style={{ position: "fixed", top: 12, right: 12, zIndex: 300 }}
+        onClick={toggle}
+        aria-expanded={opened}
+        style={{ position: "fixed", top: 12, right: 12, zIndex: 1100 }}
       >
-        How to play
+        {opened ? "Close" : "How to play"}
       </Button>
       <Drawer
         opened={opened}
@@ -28,6 +33,8 @@ export default function RulesDrawer({
         title={title}
         position="right"
         size="md"
+        withCloseButton={false}
+        zIndex={1000}
       >
         {children}
       </Drawer>

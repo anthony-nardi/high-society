@@ -3,106 +3,104 @@ import { CardCategory, LootCards, PlayerCards } from "./types";
 export type LootInfo = {
   name: string;
   category: CardCategory | "police";
-  /** Short scoring rule shown on hover and in the rules. */
+  /** Plain-language kind, e.g. "jewel" or "business". */
+  kind: string;
+  /** How the card scores, shown on hover and in the rules. */
   effect: string;
 };
 
-const JEWEL_EFFECT =
-  "Jewels: 3 kinds +5, 4 kinds +10, all 5 +15. None at all −5.";
-const BUSINESS_EFFECT =
-  "Businesses score at the end: 1 per kind up to 6, all 7 kinds 10, plus 3 of a kind +5 and 4 of a kind +10.";
+export const JEWEL_EFFECT =
+  "Each round, different jewels score: 3 kinds +5, 4 kinds +10, all 5 kinds +15. No jewels at all −5. Discarded after scoring.";
+export const BODYGUARD_EFFECT =
+  "Each round the player with the most bodyguards scores +5 and the fewest −2. Kept between rounds.";
+export const COIN_EFFECT = "+3 each round. Discarded after scoring.";
+export const CAR_EFFECT =
+  "+1 each round, but only if you also hold at least one driver. Kept between rounds.";
+export const DRIVER_EFFECT =
+  "+1 each round and unlocks your cars. Discarded after scoring.";
+export const THIEF_EFFECT =
+  "On your turn, spend it to take any one card from the table. Unused thieves score +2 at round end, then are discarded.";
+export const BUSINESS_EFFECT =
+  "Scored once at the end of the game: 1 point per different business up to 6, all 7 kinds 10, plus 3 of a kind +5 and 4 of a kind +10. Kept between rounds.";
+export const POLICE_EFFECT =
+  "Not loot. Drawing one forces an auction for the table; the seventh police card of the round ends the round at once.";
+
+const jewel = (name: string): LootInfo => ({
+  name,
+  category: "jewels",
+  kind: "jewel",
+  effect: JEWEL_EFFECT,
+});
+const business = (name: string): LootInfo => ({
+  name,
+  category: "businesses",
+  kind: "business",
+  effect: BUSINESS_EFFECT,
+});
 
 export default function cardInfo(card: LootCards): LootInfo {
   switch (card) {
     case "SCARAB":
-      return { name: "Scarab", category: "jewels", effect: JEWEL_EFFECT };
+      return jewel("Scarab");
     case "CROSS":
-      return { name: "Cross", category: "jewels", effect: JEWEL_EFFECT };
+      return jewel("Cross");
     case "BRACELET":
-      return { name: "Bracelet", category: "jewels", effect: JEWEL_EFFECT };
+      return jewel("Bracelet");
     case "TIARA":
-      return { name: "Tiara", category: "jewels", effect: JEWEL_EFFECT };
+      return jewel("Tiara");
     case "RING":
-      return { name: "Ring", category: "jewels", effect: JEWEL_EFFECT };
+      return jewel("Ring");
     case "BODYGUARDS":
       return {
         name: "Bodyguard",
         category: "bodyguards",
-        effect:
-          "Most bodyguards +5, fewest −2 each round. Kept between rounds.",
+        kind: "bodyguard",
+        effect: BODYGUARD_EFFECT,
       };
     case "COINS":
-      return { name: "Coins", category: "coins", effect: "+3 each round." };
-    case "CARS":
       return {
-        name: "Car",
-        category: "cars",
-        effect:
-          "+1 per car each round, but only if you hold a driver. Kept between rounds.",
+        name: "Coins",
+        category: "coins",
+        kind: "coins",
+        effect: COIN_EFFECT,
       };
+    case "CARS":
+      return { name: "Car", category: "cars", kind: "car", effect: CAR_EFFECT };
     case "DRIVERS":
       return {
         name: "Driver",
         category: "drivers",
-        effect:
-          "+1 each round and unlocks your cars. Discarded after the round.",
+        kind: "driver",
+        effect: DRIVER_EFFECT,
       };
     case "THIEF":
       return {
         name: "Thief",
         category: "theives",
-        effect:
-          "Spend it to take any one card from the table, or keep it for +2 at round end.",
+        kind: "thief",
+        effect: THIEF_EFFECT,
       };
     case "POLICE_RAIDS":
       return {
         name: "Police raid",
         category: "police",
-        effect:
-          "Forces an auction. The seventh police card of the round ends it at once.",
+        kind: "police",
+        effect: POLICE_EFFECT,
       };
     case "CASINO":
-      return {
-        name: "Casino",
-        category: "businesses",
-        effect: BUSINESS_EFFECT,
-      };
+      return business("Casino");
     case "TRANSPORTATION":
-      return {
-        name: "Transport",
-        category: "businesses",
-        effect: BUSINESS_EFFECT,
-      };
+      return business("Transportation");
     case "MOVIE_THEATER":
-      return {
-        name: "Movie theater",
-        category: "businesses",
-        effect: BUSINESS_EFFECT,
-      };
+      return business("Movie theater");
     case "RACING":
-      return {
-        name: "Racing",
-        category: "businesses",
-        effect: BUSINESS_EFFECT,
-      };
+      return business("Horse racing");
     case "REAL_ESTATE":
-      return {
-        name: "Real estate",
-        category: "businesses",
-        effect: BUSINESS_EFFECT,
-      };
+      return business("Real estate");
     case "NIGHTCLUB":
-      return {
-        name: "Nightclub",
-        category: "businesses",
-        effect: BUSINESS_EFFECT,
-      };
+      return business("Nightclub");
     case "RESTAURANT":
-      return {
-        name: "Restaurant",
-        category: "businesses",
-        effect: BUSINESS_EFFECT,
-      };
+      return business("Restaurant");
   }
 }
 
@@ -125,6 +123,25 @@ export const CATEGORY_ORDER: CardCategory[] = [
   "businesses",
   "theives",
 ];
+
+/** The cards that make up each category, for legends. */
+export const CATEGORY_CARDS: { [key in CardCategory]: LootCards[] } = {
+  jewels: ["SCARAB", "CROSS", "BRACELET", "TIARA", "RING"],
+  bodyguards: ["BODYGUARDS"],
+  coins: ["COINS"],
+  cars: ["CARS"],
+  drivers: ["DRIVERS"],
+  businesses: [
+    "CASINO",
+    "TRANSPORTATION",
+    "MOVIE_THEATER",
+    "RACING",
+    "REAL_ESTATE",
+    "NIGHTCLUB",
+    "RESTAURANT",
+  ],
+  theives: ["THIEF"],
+};
 
 export function totalCards(cards: PlayerCards | undefined) {
   return CATEGORY_ORDER.reduce(

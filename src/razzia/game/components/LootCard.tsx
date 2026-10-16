@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { Text, Tooltip } from "@mantine/core";
 import { LootCards } from "../types";
 import cardInfo from "../cardInfo";
 import BodyGuard from "../assets/Bodyguard";
@@ -60,7 +61,10 @@ export function LootArt({ card }: { card: LootCards }) {
   }
 }
 
-/** A loot card at a given width, optionally captioned, with its rule as a tooltip. */
+/**
+ * A loot card at a given width, optionally captioned. Hovering, focusing
+ * or tapping it explains what the card is and how it scores.
+ */
 export default function LootCard({
   card,
   width = 72,
@@ -98,7 +102,7 @@ export default function LootCard({
         ? "0 0 14px rgba(255, 80, 80, 0.8)"
         : undefined,
     opacity: dimmed ? 0.45 : 1,
-    cursor: onClick ? "pointer" : undefined,
+    cursor: onClick ? "pointer" : "help",
     transition: "transform 150ms, box-shadow 150ms",
     ...style,
   };
@@ -122,29 +126,54 @@ export default function LootCard({
     </>
   );
 
+  const label = (
+    <div>
+      <Text size="sm" fw={700}>
+        {info.name}
+        <Text component="span" fw={400} c="dimmed">
+          {" "}
+          · {info.kind}
+        </Text>
+      </Text>
+      <Text size="xs">{info.effect}</Text>
+    </div>
+  );
+
+  const tooltipProps = {
+    label,
+    multiline: true,
+    w: 260,
+    withArrow: true,
+    events: { hover: true, focus: true, touch: true },
+    openDelay: 150,
+  } as const;
+
   if (onClick) {
     return (
-      <button
-        type="button"
-        onClick={onClick}
-        aria-pressed={selected}
-        aria-label={info.name}
-        title={`${info.name}: ${info.effect}`}
-        style={{ ...frame, padding: 0, border: 0, background: "none" }}
-      >
-        {content}
-      </button>
+      <Tooltip {...tooltipProps}>
+        <button
+          type="button"
+          onClick={onClick}
+          aria-pressed={selected}
+          aria-label={`${info.name}: ${info.effect}`}
+          style={{ ...frame, padding: 0, border: 0, background: "none" }}
+        >
+          {content}
+        </button>
+      </Tooltip>
     );
   }
 
   return (
-    <div
-      role="img"
-      aria-label={info.name}
-      title={`${info.name}: ${info.effect}`}
-      style={frame}
-    >
-      {content}
-    </div>
+    <Tooltip {...tooltipProps}>
+      <div
+        role="img"
+        tabIndex={0}
+        aria-label={`${info.name}: ${info.effect}`}
+        style={frame}
+      >
+        {content}
+      </div>
+    </Tooltip>
   );
 }
