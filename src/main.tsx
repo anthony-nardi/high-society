@@ -12,7 +12,7 @@ import { Notifications } from "@mantine/notifications";
 import { createBrowserRouter, RouterProvider } from "react-router";
 
 const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
+  document.getElementById("root") as HTMLElement,
 );
 
 const router = createBrowserRouter([
@@ -36,11 +36,11 @@ const router = createBrowserRouter([
 
 root.render(
   <React.StrictMode>
-    <MantineProvider defaultColorScheme="light">
+    <MantineProvider forceColorScheme="dark">
       <Notifications position="top-left" />
       <RouterProvider router={router} />
     </MantineProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );
 
 // If you want to start measuring performance in your app, pass a function

@@ -47,8 +47,8 @@ export default function RazziaRules() {
       <Stack gap="md">
         <Text fs="italic">
           Night falls and the gangsters gather to divide up the city, but time
-          is against them. At dawn, with the arrival of the sun, Ra will impose
-          justice!
+          is against them. At dawn, with the arrival of the sun, the police will
+          impose justice!
         </Text>
         <Text>
           Each player is the capo of a Mafia family with three Money tokens to
