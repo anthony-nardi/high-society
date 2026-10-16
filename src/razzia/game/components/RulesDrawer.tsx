@@ -41,8 +41,8 @@ export default function RazziaRules() {
             bid yourself.
           </List.Item>
           <List.Item>
-            Use a thief: take any one card straight from the table per thief,
-            as many thieves as you like at once.
+            Use a thief: take any one card straight from the table per thief, as
+            many thieves as you like at once.
           </List.Item>
           <List.Item>
             In a forced auction the player who drew the raid bids last and may

@@ -60,19 +60,25 @@ export function LootArt({ card }: { card: LootCards }) {
   }
 }
 
-/** A loot card at a given width, with its name and rule as a tooltip. */
+/** A loot card at a given width, optionally captioned, with its rule as a tooltip. */
 export default function LootCard({
   card,
   width = 72,
+  caption = false,
   selected = false,
   dimmed = false,
+  highlighted = false,
   onClick,
   style,
 }: {
   card: LootCards;
   width?: number | string;
+  /** Show the card's name underneath. */
+  caption?: boolean;
   selected?: boolean;
   dimmed?: boolean;
+  /** Draws attention, e.g. the police card that started the auction. */
+  highlighted?: boolean;
   onClick?: () => void;
   style?: CSSProperties;
 }) {
@@ -81,15 +87,40 @@ export default function LootCard({
     width,
     flex: "0 0 auto",
     borderRadius: 8,
-    outline: selected ? "3px solid var(--mantine-color-yellow-5)" : undefined,
-    boxShadow: selected ? "0 0 12px rgba(255, 216, 107, 0.7)" : undefined,
+    outline: selected
+      ? "3px solid var(--mantine-color-yellow-5)"
+      : highlighted
+        ? "3px solid var(--mantine-color-red-5)"
+        : undefined,
+    boxShadow: selected
+      ? "0 0 12px rgba(255, 216, 107, 0.7)"
+      : highlighted
+        ? "0 0 14px rgba(255, 80, 80, 0.8)"
+        : undefined,
     opacity: dimmed ? 0.45 : 1,
     cursor: onClick ? "pointer" : undefined,
     transition: "transform 150ms, box-shadow 150ms",
     ...style,
   };
 
-  const content = <LootArt card={card} />;
+  const content = (
+    <>
+      <LootArt card={card} />
+      {caption && (
+        <div
+          style={{
+            fontSize: 11,
+            lineHeight: 1.1,
+            textAlign: "center",
+            marginTop: 3,
+            color: "var(--mantine-color-dimmed)",
+          }}
+        >
+          {info.name}
+        </div>
+      )}
+    </>
+  );
 
   if (onClick) {
     return (

@@ -8,7 +8,7 @@ import { notifications } from "@mantine/notifications";
  */
 export default async function callFunction<Request>(
   name: string,
-  request: Request
+  request: Request,
 ) {
   const api = httpsCallable<Request, void>(getFunctions(), name);
   try {
