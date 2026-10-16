@@ -7,6 +7,7 @@ import Bracelet from "../assets/Bracelet";
 import Car from "../assets/Car";
 import Casino from "../assets/Casino";
 import Cross from "../assets/Cross";
+import GoldCoins from "../assets/GoldCoins";
 import Driver from "../assets/Driver";
 import Movie from "../assets/Movie";
 import NightClub from "../assets/NightClub";
@@ -32,6 +33,8 @@ export function LootArt({ card }: { card: LootCards }) {
       return <Casino />;
     case "CROSS":
       return <Cross />;
+    case "COINS":
+      return <GoldCoins />;
     case "DRIVERS":
       return <Driver />;
     case "MOVIE_THEATER":
