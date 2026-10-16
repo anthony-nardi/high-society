@@ -22,7 +22,7 @@ import { LogEntry } from "../../high-society/types";
 export const MAX_REVEALED_CARDS = 7;
 export const ROUNDS = 3;
 
-/** Police cards that end the round: the seventh, or the fifth with two players. */
+/** Ra cards that end the round: the seventh, or the fifth with two players. */
 export function raidLimitFor(playerCount: number) {
   return playerCount === 2 ? 5 : 7;
 }
@@ -136,7 +136,7 @@ export function isAuction(gameState: RazziaGameState) {
   );
 }
 
-/** Money cards the player may bid now: available and above the table. */
+/** Money tokens the player may bid now: available and above the table. */
 export function biddableMoney(gameState: RazziaGameState, player: RazziaPlayerState) {
   const floor = highestBid(gameState);
   return (player.availableMoney || []).filter((money) => Number(money) > floor);
@@ -315,7 +315,7 @@ export function endRound(gameState: RazziaGameState) {
   announce(
     gameState,
     `Round ${round} is over. Round ${round + 1} begins.`,
-    `${starter} holds the highest money card and starts.`
+    `${starter} holds the highest Money token and starts.`
   );
 }
 
@@ -336,8 +336,8 @@ export function canReveal(gameState: RazziaGameState) {
 
 /**
  * Draws the top card. Loot joins the table; the seventh loot card starts an
- * automatic auction whose unsold loot is discarded. A police card starts a
- * normal auction, and the final police card ends the round at once.
+ * automatic auction whose unsold loot is discarded. A Ra card starts a
+ * normal auction, and the final Ra card ends the round at once.
  */
 export function revealCard(gameState: RazziaGameState): ActionResult {
   if (gameState.public.roundState !== "ACTION") return fail("Not in the action phase.");
@@ -376,7 +376,7 @@ export function revealCard(gameState: RazziaGameState): ActionResult {
   if (gameState.public.policeRaids >= gameState.public.raidLimit) {
     announce(
       gameState,
-      `${actor} drew the final police raid.`,
+      `${actor} drew the final Ra card.`,
       "The round ends at once; loot still on the table is lost."
     );
     endRound(gameState);
@@ -388,7 +388,7 @@ export function revealCard(gameState: RazziaGameState): ActionResult {
   gameState.public.discardIfUnsold = false;
   announce(
     gameState,
-    `${actor} drew a police raid (${gameState.public.policeRaids} of ${gameState.public.raidLimit}).`,
+    `${actor} drew a Ra card (${gameState.public.policeRaids} of ${gameState.public.raidLimit}).`,
     "The loot goes up for auction."
   );
   updateActivePlayer(gameState);
@@ -477,7 +477,7 @@ function resolveAuction(gameState: RazziaGameState) {
     announce(
       gameState,
       `${winner.email} won the auction with ${bid}.`,
-      `They take ${loot.length} card${loot.length === 1 ? "" : "s"} and the ${centre} money card.`
+      `They take ${loot.length} card${loot.length === 1 ? "" : "s"} and the ${centre} Money token.`
     );
     gameState.public.roundState = "ACTION";
   }
@@ -502,7 +502,7 @@ export function bid(gameState: RazziaGameState, amount: string): ActionResult {
   if (!player) return fail("Active player not found.");
   if (!isAuction(gameState)) return fail("No auction is running.");
   if (!biddableMoney(gameState, player).includes(amount)) {
-    return fail(`${amount} is not a money card you can bid now.`);
+    return fail(`${amount} is not a Money token you can bid now.`);
   }
   player.bid = amount;
   announce(gameState, `${player.email} bid ${amount}.`);

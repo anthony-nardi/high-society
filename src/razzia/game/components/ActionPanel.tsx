@@ -18,7 +18,7 @@ function highestBid(gameState: RazziaGameState) {
 /**
  * Fixed strip along the bottom. In the action phase: reveal, call an
  * auction, or use a thief (pick cards on the table first). In an auction:
- * pick one of your money cards and bid, or pass.
+ * pick one of your Money tokens and bid, or pass.
  */
 export default function ActionPanel({
   gameState,
@@ -88,26 +88,26 @@ export default function ActionPanel({
     } else if (mustBid) {
       hint = "You called this auction and nobody bid, so you must bid.";
     } else if (floor > 0) {
-      hint = `Highest bid is ${floor}. Pick a money card above it, or pass.`;
+      hint = `Highest bid is ${floor}. Pick a Money token above it, or pass.`;
     } else {
-      hint = "No bids yet. Pick a money card to bid, or pass.";
+      hint = "No bids yet. Pick a Money token to bid, or pass.";
     }
     if (chosenMoney) {
       hint = `Bid ${chosenMoney}: you would get the ${loot.length} loot card${
         loot.length === 1 ? "" : "s"
-      } and the ${gameState.money} money card if nobody beats it.`;
+      } and the ${gameState.money} Money token if nobody beats it.`;
     }
   } else if (!canReveal) {
     hint = "The deck is empty. Call an auction.";
   } else if (loot.length > 0) {
     hint = `Reveal another card, or call an auction for the ${loot.length} card${
       loot.length === 1 ? "" : "s"
-    } on the table. ${gameState.raidLimit - gameState.policeRaids} more police card${
+    } on the table. ${gameState.raidLimit - gameState.policeRaids} more Ra card${
       gameState.raidLimit - gameState.policeRaids === 1 ? "" : "s"
     } end the round; the seventh loot card auctions itself.`;
   } else {
     hint =
-      "Reveal a card from the deck. You may also call an auction on an empty table to trade your cheque for the one in the centre.";
+      "Reveal a card from the deck. You may also call an auction on an empty table to swap a Money token for the one on the board.";
   }
 
   return (
@@ -121,7 +121,7 @@ export default function ActionPanel({
             gap={6}
             justify="center"
             wrap="wrap"
-            aria-label="Your money cards"
+            aria-label="Your Money tokens"
           >
             {available.map((amount) => (
               <MoneyCard

@@ -13,7 +13,7 @@ export const JEWEL_EFFECT =
   "Each round, different jewels score: 3 kinds +5, 4 kinds +10, all 5 kinds +15. No jewels at all −5. Discarded after scoring.";
 export const BODYGUARD_EFFECT =
   "Each round the player with the most bodyguards scores +5 and the fewest −2. Kept between rounds.";
-export const COIN_EFFECT = "+3 each round. Discarded after scoring.";
+export const COIN_EFFECT = "+3 points each round. Discarded after scoring.";
 export const CAR_EFFECT =
   "+1 each round, but only if you also hold at least one driver. Kept between rounds.";
 export const DRIVER_EFFECT =
@@ -23,7 +23,7 @@ export const THIEF_EFFECT =
 export const BUSINESS_EFFECT =
   "Scored once at the end of the game: 1 point per different business up to 6, all 7 kinds 10, plus 3 of a kind +5 and 4 of a kind +10. Kept between rounds.";
 export const POLICE_EFFECT =
-  "Not loot. Drawing one forces an auction for the table; the seventh police card of the round ends the round at once.";
+  "Not loot. When a Ra card is revealed the game stops for a normal auction of the loot on the table. The seventh Ra card of the round ends the round at once.";
 
 const jewel = (name: string): LootInfo => ({
   name,
@@ -59,9 +59,9 @@ export default function cardInfo(card: LootCards): LootInfo {
       };
     case "COINS":
       return {
-        name: "Coins",
+        name: "Gold coins",
         category: "coins",
-        kind: "coins",
+        kind: "gold coins",
         effect: COIN_EFFECT,
       };
     case "CARS":
@@ -82,9 +82,9 @@ export default function cardInfo(card: LootCards): LootInfo {
       };
     case "POLICE_RAIDS":
       return {
-        name: "Police raid",
+        name: "Ra card",
         category: "police",
-        kind: "police",
+        kind: "Ra",
         effect: POLICE_EFFECT,
       };
     case "CASINO":
@@ -92,9 +92,9 @@ export default function cardInfo(card: LootCards): LootInfo {
     case "TRANSPORTATION":
       return business("Transportation");
     case "MOVIE_THEATER":
-      return business("Movie theater");
+      return business("Movie theatre");
     case "RACING":
-      return business("Horse racing");
+      return business("Racing");
     case "REAL_ESTATE":
       return business("Real estate");
     case "NIGHTCLUB":
@@ -107,7 +107,7 @@ export default function cardInfo(card: LootCards): LootInfo {
 export const CATEGORY_LABELS: { [key in CardCategory]: string } = {
   jewels: "Jewels",
   bodyguards: "Bodyguards",
-  coins: "Coins",
+  coins: "Gold coins",
   theives: "Thieves",
   cars: "Cars",
   drivers: "Drivers",

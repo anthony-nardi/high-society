@@ -122,7 +122,7 @@ export type RazziaPublicGameState = {
   revealedCards?: LootCards[];
   remainingCards: number;
   policeRaids: number;
-  /** Police raids that end the round, by player count. */
+  /** Ra cards that end the round, by player count. */
   raidLimit: number;
   /** The money card in the centre, won by the next auction winner. */
   money: string;

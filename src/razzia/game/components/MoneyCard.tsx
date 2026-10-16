@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 
 /**
- * A money card. "available" means it can still be bid this round; a won
+ * A Money token. "available" means it can still be bid this round; a won
  * card is face down until the next round.
  */
 export default function MoneyCard({
@@ -75,7 +75,7 @@ export default function MoneyCard({
     </svg>
   );
 
-  const label = `Money ${amount}${available ? "" : " (spent or won this round)"}`;
+  const label = `Money token ${amount}${available ? "" : " (spent or won this round)"}`;
 
   if (onClick) {
     return (

@@ -80,13 +80,20 @@ export function buildDeck(): LootCards[] {
   return deck;
 }
 
-export function createPlayers(players: PlayerInLobby[]): RazziaPlayerState[] {
+/**
+ * @param setOrder which starting-money set each seat gets; the rulebook
+ * deals the sets at random, so callers shuffle it. Defaults to seat order.
+ */
+export function createPlayers(
+  players: PlayerInLobby[],
+  setOrder: number[] = players.map((_, i) => i)
+): RazziaPlayerState[] {
   return players.map((player, index) => ({
     email: player.email,
     lastActionAt: 0,
     cards: emptyCards(),
-    money: startingMoneyFor(players.length, index),
-    availableMoney: startingMoneyFor(players.length, index),
+    money: startingMoneyFor(players.length, setOrder[index]),
+    availableMoney: startingMoneyFor(players.length, setOrder[index]),
     isBot: !!player.isBot,
     score: 0,
     bid: "0",
@@ -96,9 +103,10 @@ export function createPlayers(players: PlayerInLobby[]): RazziaPlayerState[] {
 export function buildGameState(
   lobbyUID: string,
   players: PlayerInLobby[],
-  deck: LootCards[]
+  deck: LootCards[],
+  setOrder?: number[]
 ): RazziaGameState {
-  const playersMetadata = createPlayers(players);
+  const playersMetadata = createPlayers(players, setOrder);
   // The holder of the highest cheque starts (player A in every set).
   const top = (p: RazziaPlayerState) => Math.max(...(p.money || []).map(Number));
   const starter = playersMetadata.reduce((best, p) => (top(p) > top(best) ? p : best));
@@ -138,10 +146,12 @@ export const createRazziaGameState = async (lobbyUID: string) => {
 
   const deck = buildDeck();
   shuffle(deck);
+  const setOrder = players.map((_, i) => i);
+  shuffle(setOrder);
 
   return getDatabase()
     .ref(`/games/${lobbyUID}`)
-    .set(buildGameState(lobbyUID, players, deck))
+    .set(buildGameState(lobbyUID, players, deck, setOrder))
     .then(() => {
       logger.info("New game created.");
       return { lobbyUID, message: "New game created." };

@@ -34,7 +34,7 @@ card only; the face-down deck is never read.
 - No Thanks! (`functions/src/no-thanks/helpers/botSearch.ts`): take or
   chip, scored by the official rule plus a bonus for runs that can still
   grow.
-- Razzia! (`functions/src/razzia/helpers/botSearch.ts`): auctions are
+- Razzia! (2020 Primigenio edition wording; `functions/src/razzia/helpers/botSearch.ts`): auctions are
   searched with Maxn driven by the pure rules in `helpers/rules.ts`; the
   action phase (reveal, call, thief) uses a heuristic on the same
   evaluation because every reveal hides a shuffled deck.

@@ -35,6 +35,12 @@ describe("setup", () => {
     expect(state.public.players[0].money).toEqual(["2", "5", "8", "13"]);
     expect(state.public.players[2].availableMoney).toEqual(["4", "7", "10", "11"]);
     expect(state.public.raidLimit).toBe(7);
+
+    // Sets can be dealt in any order; the highest token still starts.
+    const dealt = buildGameState("lobby", lobby, buildDeck(), [2, 0, 1]);
+    expect(dealt.public.players[0].money).toEqual(["4", "7", "10", "11"]);
+    expect(dealt.public.players[1].money).toEqual(["2", "5", "8", "13"]);
+    expect(dealt.public.activePlayer).toBe("b");
     expect(state.public.money).toBe("1");
     expect(state.private.log).toHaveLength(1);
     expect(raidLimitFor(5)).toBe(7);

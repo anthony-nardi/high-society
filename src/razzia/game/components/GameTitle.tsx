@@ -19,7 +19,10 @@ export default function GameTitle() {
         </Title>
       </Center>
       <Center>
-        <Text c="dimmed">Bid for loot, dodge the police. 3 to 5 players.</Text>
+        <Text c="dimmed" ta="center" px="md">
+          Night falls and the gangsters gather to divide up the city, but time
+          is against them. At dawn, Ra will impose justice. 3 to 5 players.
+        </Text>
       </Center>
     </Stack>
   );

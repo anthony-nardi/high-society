@@ -45,42 +45,71 @@ export default function RazziaRules() {
   return (
     <RulesDrawer title="How to play Razzia!">
       <Stack gap="md">
+        <Text fs="italic">
+          Night falls and the gangsters gather to divide up the city, but time
+          is against them. At dawn, with the arrival of the sun, Ra will impose
+          justice!
+        </Text>
         <Text>
-          Gangsters bid for loot over three rounds. Reveal cards onto the table,
-          call an auction when the pile is worth it, and watch the police: the
-          seventh police card ends the round with the loot still on the table.
+          Each player is the capo of a Mafia family with three Money tokens to
+          spend in each of three rounds (four with three players). Win auctions
+          for loot, but do not wait too long: as soon as seven Ra cards have
+          been revealed there is a raid and the round is over at once. The most
+          points after three rounds wins.
         </Text>
 
-        <Title order={4}>Money</Title>
+        <Title order={4}>Money tokens</Title>
         <List>
           <List.Item>
-            Each player starts with a set of numbered cheques. The 1 sits in the
-            centre.
+            Each player is dealt a set of Money tokens at random. The 1,000
+            token starts face up on the board.
           </List.Item>
           <List.Item>
-            A bid is one cheque. The winner pays it into the centre and takes
-            the cheque that was there, face down until next round.
+            A bid is one Money token. The winner places it on the board and
+            takes the token that was there, face down until the next round.
           </List.Item>
           <List.Item>
-            Once you have used all your cheques for the round you sit out until
-            it ends.
+            Once you have used all your Money tokens for the round you take no
+            more turns until it ends.
+          </List.Item>
+          <List.Item>
+            The player holding the highest Money token starts each round.
           </List.Item>
         </List>
 
-        <Title order={4}>Your turn</Title>
+        <Title order={4}>Your turn: one of three actions</Title>
         <List>
           <List.Item>
-            Reveal a card: loot joins the table. The seventh loot card starts an
-            automatic auction, and if nobody bids all seven are discarded.
+            <b>Reveal a card.</b> Loot goes face up next to the board. A Ra card
+            interrupts the game for a normal auction. The seventh loot card on
+            the table triggers an automatic normal auction, and if nobody bids
+            all seven are returned to the box.
           </List.Item>
           <List.Item>
-            Call an auction, even with nothing on the table: everyone after you
-            bids once or passes, and you bid last. If nobody else bid you must
-            bid yourself.
+            <b>Play a thief.</b> Take any face-up loot card from the table. Use
+            as many thieves as you like at once; each is discarded.
           </List.Item>
           <List.Item>
-            Use a thief: take any one card straight from the table per thief, as
-            many thieves as you like at once.
+            <b>Call a court-ordered auction.</b> Same as a normal auction,
+            except that if everyone else passes you must bid. Useful with only
+            one or two loot cards out, to put pressure on the high tokens.
+          </List.Item>
+        </List>
+
+        <Title order={4}>Auctions</Title>
+        <List>
+          <List.Item>
+            Starting left of the player who revealed the Ra card or called the
+            auction, each player bids one Money token higher than the current
+            bid, or passes. The player who started it bids last.
+          </List.Item>
+          <List.Item>
+            The highest bidder takes all the loot on the table and the Money
+            token on the board. Everyone else takes their token back. Ra cards
+            stay out.
+          </List.Item>
+          <List.Item>
+            If everyone passes a normal auction, the loot stays on the table.
           </List.Item>
         </List>
 
@@ -89,22 +118,22 @@ export default function RazziaRules() {
           Hover over or tap any card in the game for the same explanation.
         </Text>
         <LegendRow
-          title="Jewels (scored every round)"
+          title="Jewels (every round)"
           cards={CATEGORY_CARDS.jewels}
           text={JEWEL_EFFECT}
         />
         <LegendRow
-          title="Bodyguards (scored every round)"
+          title="Bodyguards (every round)"
           cards={CATEGORY_CARDS.bodyguards}
           text={BODYGUARD_EFFECT}
         />
         <LegendRow
-          title="Coins (scored every round)"
+          title="Gold coins (every round)"
           cards={CATEGORY_CARDS.coins}
           text={COIN_EFFECT}
         />
         <LegendRow
-          title="Cars and drivers (scored every round)"
+          title="Cars and drivers (every round)"
           cards={[...CATEGORY_CARDS.cars, ...CATEGORY_CARDS.drivers]}
           text={`Car: ${CAR_EFFECT} Driver: ${DRIVER_EFFECT}`}
         />
@@ -114,12 +143,12 @@ export default function RazziaRules() {
           text={THIEF_EFFECT}
         />
         <LegendRow
-          title="Businesses (scored at the end of the game)"
+          title="Businesses (end of the game)"
           cards={CATEGORY_CARDS.businesses}
           text={BUSINESS_EFFECT}
         />
         <LegendRow
-          title="Police raid"
+          title="Ra cards"
           cards={["POLICE_RAIDS"]}
           text={POLICE_EFFECT}
         />
@@ -127,10 +156,11 @@ export default function RazziaRules() {
         <Title order={4}>End of the game</Title>
         <List>
           <List.Item>
-            After round three, businesses score as above, and the player with
-            the most money in cheques scores +5 while the least scores −5.
+            After the third round, businesses score as above. Each player also
+            adds up all their Money tokens, revealed and hidden: the highest sum
+            scores +5 and the lowest −5, ties sharing.
           </List.Item>
-          <List.Item>Highest total wins. Ties share the win.</List.Item>
+          <List.Item>The most points wins. Ties share the win.</List.Item>
         </List>
       </Stack>
     </RulesDrawer>
