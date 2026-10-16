@@ -74,7 +74,7 @@ export default function GameOver({
           </Stack>
         </Center>
 
-        <Table.ScrollContainer minWidth={480}>
+        <Table.ScrollContainer minWidth={360}>
           <Table withTableBorder>
             <Table.Thead>
               <Table.Tr>

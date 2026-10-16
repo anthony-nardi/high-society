@@ -111,6 +111,25 @@ export default function ActionPanel({
       "Reveal a card from the deck. You may also call an auction on an empty table to swap a Money token for the one on the board.";
   }
 
+  // Off turn, the panel shrinks to one line so the table has the screen.
+  if (!isActive && !stealing) {
+    return (
+      <div
+        className={`${classes.panel} ${classes.compact} safe-bottom`}
+        data-testid="action-panel"
+      >
+        <Text size="sm" c="dimmed" ta="center">
+          Waiting for {displayName(gameState.activePlayer)}. You have{" "}
+          {available.length} Money token{available.length === 1 ? "" : "s"}
+          {thieves > 0
+            ? ` and ${thieves} thief${thieves === 1 ? "" : "s"}`
+            : ""}
+          .
+        </Text>
+      </div>
+    );
+  }
+
   return (
     <div
       className={`${classes.panel} safe-bottom ${isActive ? classes.active : ""}`}

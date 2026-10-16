@@ -1,5 +1,5 @@
 import { Badge, Box, Group, Stack, Text } from "@mantine/core";
-import { RazziaGameState, RazziaPlayerState } from "../types";
+import { LootCards, RazziaGameState, RazziaPlayerState } from "../types";
 import { useUserContext } from "../../../shared/context/useUserContext";
 import displayName, { isBotName } from "../../../shared/utils/displayName";
 import { CATEGORY_LABELS, CATEGORY_ORDER, totalCards } from "../cardInfo";
@@ -151,13 +151,35 @@ export default function PlayerOverview({
           (category) => (player.cards?.[category] || []).length > 0,
         ).map((category) => {
           const cards = player.cards[category] || [];
+          // Jewels and businesses differ by kind, so show each kind once with
+          // a count; the other suits are all the same card.
+          const counts = new Map<LootCards, number>();
+          for (const card of cards)
+            counts.set(card, (counts.get(card) || 0) + 1);
           return (
-            <Group key={category} gap={4} align="center" wrap="wrap">
+            <Group key={category} gap={6} align="center" wrap="wrap">
               <Text size="xs" c="dimmed" w={78}>
                 {CATEGORY_LABELS[category]} ({cards.length})
               </Text>
-              {cards.map((card, index) => (
-                <LootCard key={`${card}-${index}`} card={card} width={30} />
+              {[...counts.entries()].map(([card, n]) => (
+                <div key={card} style={{ position: "relative" }}>
+                  <LootCard card={card} width={34} />
+                  {n > 1 && (
+                    <Badge
+                      size="xs"
+                      circle
+                      color="dark"
+                      style={{
+                        position: "absolute",
+                        top: -6,
+                        right: -8,
+                        border: "1px solid var(--mantine-color-default-border)",
+                      }}
+                    >
+                      {n}
+                    </Badge>
+                  )}
+                </div>
               ))}
             </Group>
           );

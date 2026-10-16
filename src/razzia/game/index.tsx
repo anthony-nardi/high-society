@@ -111,7 +111,15 @@ export default function Game() {
           </Grid.Col>
         </Grid>
       </Container>
-      {loggedInPlayer && <div className={panelClasses.pageSpacer} />}
+      {loggedInPlayer && (
+        <div
+          className={
+            isActive || stealMode
+              ? panelClasses.pageSpacer
+              : panelClasses.pageSpacerCompact
+          }
+        />
+      )}
       {loggedInPlayer && (
         <ActionPanel
           gameState={gameState}

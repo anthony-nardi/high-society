@@ -23,7 +23,15 @@
   );
 }
 
+.compact {
+  padding: 8px 16px;
+}
+
 /* Reserve room under the page content for the fixed panel. */
 .pageSpacer {
   height: 220px;
+}
+
+.pageSpacerCompact {
+  height: 72px;
 }
