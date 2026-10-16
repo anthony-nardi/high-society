@@ -309,7 +309,7 @@ export function endRound(gameState: RazziaGameState) {
   }
   gameState.public.round = (round + 1) as 1 | 2 | 3;
   gameState.public.roundState = "ACTION";
-  gameState.public.auctionTriggeringPlayer = undefined;
+  delete gameState.public.auctionTriggeringPlayer;
   const starter = startingPlayerForNewRound(gameState);
   if (starter) gameState.public.activePlayer = starter;
   announce(
@@ -483,7 +483,7 @@ function resolveAuction(gameState: RazziaGameState) {
   }
 
   for (const player of gameState.public.players) player.bid = "0";
-  gameState.public.auctionTriggeringPlayer = undefined;
+  delete gameState.public.auctionTriggeringPlayer;
   gameState.public.discardIfUnsold = false;
 
   if (!anyoneHasMoney(gameState)) {

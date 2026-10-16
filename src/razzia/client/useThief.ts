@@ -1,4 +1,4 @@
-import { getFunctions, httpsCallable } from "firebase/functions";
+import callFunction from "./callFunction";
 import { LootCards } from "../game/types";
 
 export type UseThiefRequest = {
@@ -6,13 +6,6 @@ export type UseThiefRequest = {
   cardToSteal: LootCards[];
 };
 
-export default async function activateTheif(useThiefRequest: UseThiefRequest) {
-  const functions = getFunctions();
-  const thiefApi = httpsCallable<UseThiefRequest, void>(functions, "useThief");
-
-  try {
-    await thiefApi(useThiefRequest);
-  } catch (e) {
-    console.error(e);
-  }
+export default async function activateThief(request: UseThiefRequest) {
+  await callFunction<UseThiefRequest>("useThief", request);
 }

@@ -1,21 +1,7 @@
-import { getFunctions, httpsCallable } from "firebase/functions";
+import callFunction from "./callFunction";
 
-export type InitiateAuctionRequest = {
-  lobbyUID: string;
-};
+export type InitiateAuctionRequest = { lobbyUID: string };
 
-export default async function initiateAuction(
-  initiateAuctionRequest: InitiateAuctionRequest,
-) {
-  const functions = getFunctions();
-  const initiateAuctionApi = httpsCallable<InitiateAuctionRequest, void>(
-    functions,
-    "initiateAuction",
-  );
-
-  try {
-    await initiateAuctionApi(initiateAuctionRequest);
-  } catch (e) {
-    console.error(e);
-  }
+export default async function initiateAuction(request: InitiateAuctionRequest) {
+  await callFunction<InitiateAuctionRequest>("initiateAuction", request);
 }

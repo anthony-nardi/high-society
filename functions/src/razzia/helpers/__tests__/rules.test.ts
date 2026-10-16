@@ -341,3 +341,45 @@ describe("scoring", () => {
     });
   });
 });
+
+function findUndefined(value: unknown, path = "root"): string | null {
+  if (value === undefined) return path;
+  if (Array.isArray(value)) {
+    for (let i = 0; i < value.length; i++) {
+      const hit = findUndefined(value[i], `${path}[${i}]`);
+      if (hit) return hit;
+    }
+  } else if (value && typeof value === "object") {
+    for (const [key, child] of Object.entries(value)) {
+      const hit = findUndefined(child, `${path}.${key}`);
+      if (hit) return hit;
+    }
+  }
+  return null;
+}
+
+describe("database safety", () => {
+  // The Realtime Database rejects any write containing undefined, which
+  // silently broke the caller's winning bid once.
+  it("never leaves undefined in the state after an auction or a round end", () => {
+    const state = gameState(
+      [player("a"), player("b", { money: ["3", "6", "9", "12"] }), player("c", { money: ["4", "7", "10", "11"] })],
+      ["POLICE_RAIDS", "COINS"],
+      { revealedCards: ["COINS"] }
+    );
+    initiateAuction(state);
+    pass(state);
+    pass(state);
+    bid(state, "2"); // caller must bid; resolves the auction
+    expect(findUndefined(state)).toBeNull();
+
+    revealCard(state); // police: forced auction
+    pass(state);
+    pass(state);
+    pass(state);
+    expect(findUndefined(state)).toBeNull();
+
+    endRound(state);
+    expect(findUndefined(state)).toBeNull();
+  });
+});

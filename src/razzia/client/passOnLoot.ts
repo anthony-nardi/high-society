@@ -1,19 +1,7 @@
-import { getFunctions, httpsCallable } from "firebase/functions";
+import callFunction from "./callFunction";
 
-export type PassOnLootRequest = {
-  lobbyUID: string;
-};
+export type PassOnLootRequest = { lobbyUID: string };
 
-export default async function passOnLoot(passOnLootRequest: PassOnLootRequest) {
-  const functions = getFunctions();
-  const passOnLootApi = httpsCallable<PassOnLootRequest, void>(
-    functions,
-    "passOnLoot",
-  );
-
-  try {
-    await passOnLootApi(passOnLootRequest);
-  } catch (e) {
-    console.error(e);
-  }
+export default async function passOnLoot(request: PassOnLootRequest) {
+  await callFunction<PassOnLootRequest>("passOnLoot", request);
 }
