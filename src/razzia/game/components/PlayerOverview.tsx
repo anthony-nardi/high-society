@@ -26,27 +26,24 @@ export default function PlayerOverview({
   const isCaller = player.email === gameState.auctionTriggeringPlayer;
   const sittingOut = available.length === 0;
 
-  // What this player has done in the auction so far.
+  // What this player has done in the auction so far, or that they are out
+  // of Money tokens for the rest of the round.
   let auctionStatus: {
     label: string;
     color: string;
     variant: "filled" | "light" | "outline";
   } | null = null;
-  if (auction) {
-    if (bid)
-      auctionStatus = {
-        label: `Bid ${bid}`,
-        color: "yellow",
-        variant: "filled",
-      };
-    else if (passed)
+  if (bid) {
+    auctionStatus = { label: `Bid ${bid}`, color: "yellow", variant: "filled" };
+  } else if (sittingOut && gameState.status === "IN_PROGRESS") {
+    auctionStatus = {
+      label: "Sitting out: no tokens left",
+      color: "gray",
+      variant: "outline",
+    };
+  } else if (auction) {
+    if (passed)
       auctionStatus = { label: "Passed", color: "gray", variant: "light" };
-    else if (sittingOut)
-      auctionStatus = {
-        label: "Sitting out",
-        color: "gray",
-        variant: "outline",
-      };
     else if (isActivePlayer)
       auctionStatus = { label: "Deciding…", color: "yellow", variant: "light" };
     else if (isCaller)
