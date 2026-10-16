@@ -22,7 +22,7 @@ import { LogEntry } from "../../high-society/types";
 export const MAX_REVEALED_CARDS = 7;
 export const ROUNDS = 3;
 
-/** Ra cards that end the round: the seventh, or the fifth with two players. */
+/** police raids that end the round: the seventh, or the fifth with two players. */
 export function raidLimitFor(playerCount: number) {
   return playerCount === 2 ? 5 : 7;
 }
@@ -336,8 +336,8 @@ export function canReveal(gameState: RazziaGameState) {
 
 /**
  * Draws the top card. Loot joins the table; the seventh loot card starts an
- * automatic auction whose unsold loot is discarded. A Ra card starts a
- * normal auction, and the final Ra card ends the round at once.
+ * automatic auction whose unsold loot is discarded. A police raid starts a
+ * normal auction, and the final police raid ends the round at once.
  */
 export function revealCard(gameState: RazziaGameState): ActionResult {
   if (gameState.public.roundState !== "ACTION") return fail("Not in the action phase.");
@@ -376,7 +376,7 @@ export function revealCard(gameState: RazziaGameState): ActionResult {
   if (gameState.public.policeRaids >= gameState.public.raidLimit) {
     announce(
       gameState,
-      `${actor} drew the final Ra card.`,
+      `${actor} drew the final police raid.`,
       "The round ends at once; loot still on the table is lost."
     );
     endRound(gameState);
@@ -388,7 +388,7 @@ export function revealCard(gameState: RazziaGameState): ActionResult {
   gameState.public.discardIfUnsold = false;
   announce(
     gameState,
-    `${actor} drew a Ra card (${gameState.public.policeRaids} of ${gameState.public.raidLimit}).`,
+    `${actor} drew a police raid (${gameState.public.policeRaids} of ${gameState.public.raidLimit}).`,
     "The loot goes up for auction."
   );
   updateActivePlayer(gameState);

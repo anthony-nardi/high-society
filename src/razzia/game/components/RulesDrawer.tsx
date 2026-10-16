@@ -53,9 +53,9 @@ export default function RazziaRules() {
         <Text>
           Each player is the capo of a Mafia family with three Money tokens to
           spend in each of three rounds (four with three players). Win auctions
-          for loot, but do not wait too long: as soon as seven Ra cards have
-          been revealed there is a raid and the round is over at once. The most
-          points after three rounds wins.
+          for loot, but do not wait too long: as soon as seven police raids have
+          been revealed the round is over at once. The most points after three
+          rounds wins.
         </Text>
 
         <Title order={4}>Money tokens</Title>
@@ -80,10 +80,10 @@ export default function RazziaRules() {
         <Title order={4}>Your turn: one of three actions</Title>
         <List>
           <List.Item>
-            <b>Reveal a card.</b> Loot goes face up next to the board. A Ra card
-            interrupts the game for a normal auction. The seventh loot card on
-            the table triggers an automatic normal auction, and if nobody bids
-            all seven are returned to the box.
+            <b>Reveal a card.</b> Loot goes face up next to the board. A police
+            raid interrupts the game for a normal auction. The seventh loot card
+            on the table triggers an automatic normal auction, and if nobody
+            bids all seven are returned to the box.
           </List.Item>
           <List.Item>
             <b>Play a thief.</b> Take any face-up loot card from the table. Use
@@ -99,14 +99,14 @@ export default function RazziaRules() {
         <Title order={4}>Auctions</Title>
         <List>
           <List.Item>
-            Starting left of the player who revealed the Ra card or called the
-            auction, each player bids one Money token higher than the current
-            bid, or passes. The player who started it bids last.
+            Starting left of the player who revealed the police raid or called
+            the auction, each player bids one Money token higher than the
+            current bid, or passes. The player who started it bids last.
           </List.Item>
           <List.Item>
             The highest bidder takes all the loot on the table and the Money
-            token on the board. Everyone else takes their token back. Ra cards
-            stay out.
+            token on the board. Everyone else takes their token back. police
+            raids stay out.
           </List.Item>
           <List.Item>
             If everyone passes a normal auction, the loot stays on the table.
@@ -148,7 +148,7 @@ export default function RazziaRules() {
           text={BUSINESS_EFFECT}
         />
         <LegendRow
-          title="Ra cards"
+          title="Police raids"
           cards={["POLICE_RAIDS"]}
           text={POLICE_EFFECT}
         />

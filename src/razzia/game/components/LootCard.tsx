@@ -81,7 +81,7 @@ export default function LootCard({
   caption?: boolean;
   selected?: boolean;
   dimmed?: boolean;
-  /** Draws attention, e.g. the Ra card that started the auction. */
+  /** Draws attention, e.g. the police raid that started the auction. */
   highlighted?: boolean;
   onClick?: () => void;
   style?: CSSProperties;

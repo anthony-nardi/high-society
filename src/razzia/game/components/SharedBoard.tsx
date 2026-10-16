@@ -7,7 +7,7 @@ import displayName from "../../../shared/utils/displayName";
 const CARD_WIDTH = "clamp(52px, 12vw, 84px)";
 const POLICE_WIDTH = "clamp(34px, 7vw, 52px)";
 
-/** Round, Ra cards laid out face up, the Money token on the board, the deck and the loot on the table. */
+/** Round, police raids laid out face up, the Money token on the board, the deck and the loot on the table. */
 export default function SharedBoard({
   gameState,
   selectable = false,
@@ -35,7 +35,7 @@ export default function SharedBoard({
 
   let auctionText: string | null = null;
   if (raidAuction) {
-    auctionText = `${caller} revealed a Ra card, so the loot is up for auction. ${caller} bids last and may pass; if nobody bids the loot stays.`;
+    auctionText = `${caller} revealed a police raid, so the loot is up for auction. ${caller} bids last and may pass; if nobody bids the loot stays.`;
   } else if (fullTableAuction) {
     auctionText = `Seven cards on the table: automatic auction. ${caller} bids last. If nobody bids, all seven are discarded.`;
   } else if (auction) {
@@ -67,7 +67,7 @@ export default function SharedBoard({
         >
           <Text size="sm" ta="center" fw={600}>
             {raidAuction
-              ? "Ra card: normal auction"
+              ? "Police raid: normal auction"
               : fullTableAuction
                 ? "Automatic auction"
                 : "Auction"}
@@ -78,15 +78,15 @@ export default function SharedBoard({
         </Paper>
       )}
 
-      {/* Ra cards laid out face up, with empty slots up to the one that ends the round. */}
+      {/* police raids laid out face up, with empty slots up to the one that ends the round. */}
       <Stack gap={4} align="center" w="100%">
         <Text size="xs" c="dimmed">
-          Ra cards: {gameState.policeRaids} of {gameState.raidLimit}.{" "}
+          Police raids: {gameState.policeRaids} of {gameState.raidLimit}.{" "}
           {raidsLeft === 1
             ? "The next one ends the round."
             : `${raidsLeft} more end the round.`}
         </Text>
-        <Group gap={4} justify="center" wrap="wrap" aria-label="Ra cards">
+        <Group gap={4} justify="center" wrap="wrap" aria-label="Police raids">
           {Array.from({ length: gameState.raidLimit }, (_, i) =>
             i < gameState.policeRaids ? (
               <LootCard

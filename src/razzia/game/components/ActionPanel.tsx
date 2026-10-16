@@ -102,7 +102,7 @@ export default function ActionPanel({
   } else if (loot.length > 0) {
     hint = `Reveal another card, or call an auction for the ${loot.length} card${
       loot.length === 1 ? "" : "s"
-    } on the table. ${gameState.raidLimit - gameState.policeRaids} more Ra card${
+    } on the table. ${gameState.raidLimit - gameState.policeRaids} more police raid${
       gameState.raidLimit - gameState.policeRaids === 1 ? "" : "s"
     } end the round; the seventh loot card auctions itself.`;
   } else {

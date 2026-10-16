@@ -21,7 +21,8 @@ export default function GameTitle() {
       <Center>
         <Text c="dimmed" ta="center" px="md">
           Night falls and the gangsters gather to divide up the city, but time
-          is against them. At dawn, Ra will impose justice. 3 to 5 players.
+          is against them. At dawn, the police will impose justice. 3 to 5
+          players.
         </Text>
       </Center>
     </Stack>

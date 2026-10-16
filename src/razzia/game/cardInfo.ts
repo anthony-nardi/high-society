@@ -23,7 +23,7 @@ export const THIEF_EFFECT =
 export const BUSINESS_EFFECT =
   "Scored once at the end of the game: 1 point per different business up to 6, all 7 kinds 10, plus 3 of a kind +5 and 4 of a kind +10. Kept between rounds.";
 export const POLICE_EFFECT =
-  "Not loot. When a Ra card is revealed the game stops for a normal auction of the loot on the table. The seventh Ra card of the round ends the round at once.";
+  "Not loot. When a police raid is revealed the game stops for a normal auction of the loot on the table. The seventh police raid of the round ends the round at once.";
 
 const jewel = (name: string): LootInfo => ({
   name,
@@ -82,9 +82,9 @@ export default function cardInfo(card: LootCards): LootInfo {
       };
     case "POLICE_RAIDS":
       return {
-        name: "Ra card",
+        name: "Police raid",
         category: "police",
-        kind: "Ra",
+        kind: "police",
         effect: POLICE_EFFECT,
       };
     case "CASINO":

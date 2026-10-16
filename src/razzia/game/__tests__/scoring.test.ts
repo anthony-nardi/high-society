@@ -39,7 +39,7 @@ describe("cardInfo", () => {
     expect(cardInfo("POLICE_RAIDS").category).toBe("police");
     expect(cardInfo("RESTAURANT").name).toBe("Restaurant");
     expect(cardInfo("TRANSPORTATION").name).toBe("Transportation");
-    expect(cardInfo("POLICE_RAIDS").name).toBe("Ra card");
+    expect(cardInfo("POLICE_RAIDS").name).toBe("Police raid");
     expect(cardInfo("COINS").name).toBe("Gold coins");
     expect(cardInfo("SCARAB").kind).toBe("jewel");
   });
