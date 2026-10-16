@@ -44,8 +44,6 @@ export default function PlayerOverview({
   } else if (auction) {
     if (passed)
       auctionStatus = { label: "Passed", color: "gray", variant: "light" };
-    else if (isActivePlayer)
-      auctionStatus = { label: "Deciding…", color: "yellow", variant: "light" };
     else if (isCaller)
       auctionStatus = { label: "Bids last", color: "gray", variant: "outline" };
     else
@@ -75,19 +73,38 @@ export default function PlayerOverview({
         transition: "border-color 200ms, box-shadow 200ms",
       }}
     >
-      {isActivePlayer && (
-        <Badge
-          color="yellow"
-          variant="filled"
-          radius="sm"
+      {(auctionStatus || isActivePlayer) && (
+        <Group
+          gap={6}
+          wrap="nowrap"
           style={{ position: "absolute", top: -10, left: 12 }}
         >
-          {isCurrentUser
-            ? "Your turn"
-            : isBotName(player.email)
-              ? "Bot thinking…"
-              : "Their turn"}
-        </Badge>
+          {auctionStatus && (
+            <Badge
+              color={auctionStatus.color}
+              variant={auctionStatus.variant}
+              radius="sm"
+              data-testid="auction-status"
+              style={{
+                background:
+                  auctionStatus.variant === "outline"
+                    ? "var(--mantine-color-body)"
+                    : undefined,
+              }}
+            >
+              {auctionStatus.label}
+            </Badge>
+          )}
+          {isActivePlayer && (
+            <Badge color="yellow" variant="filled" radius="sm">
+              {isCurrentUser
+                ? "Your turn"
+                : isBotName(player.email)
+                  ? "Bot thinking…"
+                  : "Their turn"}
+            </Badge>
+          )}
+        </Group>
       )}
 
       <Group justify="space-between" align="flex-start" wrap="wrap" gap="sm">
@@ -121,16 +138,6 @@ export default function PlayerOverview({
               width={44}
             />
           ))}
-          {auctionStatus && (
-            <Badge
-              color={auctionStatus.color}
-              variant={auctionStatus.variant}
-              radius="sm"
-              data-testid="auction-status"
-            >
-              {auctionStatus.label}
-            </Badge>
-          )}
         </Group>
       </Group>
 
