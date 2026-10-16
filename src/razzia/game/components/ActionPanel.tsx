@@ -152,11 +152,13 @@ export default function ActionPanel({
               <Button
                 disabled={loading || stealSelection.length === 0}
                 loading={loading}
-                onClick={() =>
-                  call(() =>
+                onClick={async () => {
+                  await call(() =>
                     activateThief({ lobbyUID, cardToSteal: stealSelection }),
-                  )
-                }
+                  );
+                  // Leave pick mode whether or not the steal went through.
+                  onCancelStealing();
+                }}
               >
                 Steal {stealSelection.length || ""}
               </Button>
