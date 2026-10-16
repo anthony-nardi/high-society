@@ -2,7 +2,7 @@ import { NoThanksGameState, NoThanksPlayerState } from "../../types";
 
 export function player(
   email: string,
-  overrides: Partial<NoThanksPlayerState> = {}
+  overrides: Partial<NoThanksPlayerState> = {},
 ): NoThanksPlayerState {
   return {
     email,
@@ -17,7 +17,7 @@ export function player(
 export function gameState(
   players: NoThanksPlayerState[],
   deck: number[],
-  overrides: Partial<NoThanksGameState["public"]> = {}
+  overrides: Partial<NoThanksGameState["public"]> = {},
 ): NoThanksGameState {
   return {
     public: {

@@ -10,11 +10,11 @@ import {
 import { BotMove, chooseBotMove, SearchOptions } from "./botSearch";
 
 /** Minimum time a bot "thinks" so its moves are readable at the table. */
-export const BOT_TURN_MIN_MS = 3000;
+export const BOT_TURN_MIN_MS = 1500;
 
 export function isValidSuggestedBid(
   gameState: HighSocietyGameState,
-  suggestedAction: string[]
+  suggestedAction: string[],
 ) {
   const activePlayer = getActivePlayer(gameState);
   const highestBid = getHighestCurrentBid(gameState);
@@ -31,7 +31,7 @@ export function isValidSuggestedBid(
   for (const card of suggestedAction) {
     if (!moneyCards.includes(card)) {
       console.log(
-        `${card} is not in ${JSON.stringify(activePlayer.moneyCards)}`
+        `${card} is not in ${JSON.stringify(activePlayer.moneyCards)}`,
       );
       return false;
     }
@@ -48,7 +48,7 @@ export type BotTurnOptions = {
 
 export async function maybeTakeBotTurn(
   gameState: HighSocietyGameState,
-  { minimumTurnMs = BOT_TURN_MIN_MS, search }: BotTurnOptions = {}
+  { minimumTurnMs = BOT_TURN_MIN_MS, search }: BotTurnOptions = {},
 ) {
   const activePlayer = getActivePlayer(gameState);
 

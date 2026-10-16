@@ -10,7 +10,9 @@ export default async function callFunction<Request>(
   name: string,
   request: Request,
 ) {
-  const api = httpsCallable<Request, void>(getFunctions(), name);
+  const api = httpsCallable<Request, void>(getFunctions(), name, {
+    timeout: 300_000,
+  });
   try {
     await api(request);
   } catch (e) {

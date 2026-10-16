@@ -112,7 +112,7 @@ function revealNewActiveCard(gameState: NoThanksGameState) {
 
 function giveActiveCardToPlayer(
   gameState: NoThanksGameState,
-  player: NoThanksPlayerState
+  player: NoThanksPlayerState,
 ) {
   player.cards = player.cards || [];
   if (gameState.public.activeCard) {
@@ -123,7 +123,7 @@ function giveActiveCardToPlayer(
 
 function givePlacedChipsToPlayer(
   gameState: NoThanksGameState,
-  player: NoThanksPlayerState
+  player: NoThanksPlayerState,
 ) {
   player.chips += gameState.public.chipsPlaced;
   gameState.public.chipsPlaced = 0;
@@ -131,10 +131,10 @@ function givePlacedChipsToPlayer(
 
 export function updatePlayersGameStateWithTakeActiveCard(
   gameState: NoThanksGameState,
-  activePlayer: NoThanksPlayerState
+  activePlayer: NoThanksPlayerState,
 ) {
   const player = gameState.public.players.find(
-    (p) => p.email === activePlayer.email
+    (p) => p.email === activePlayer.email,
   );
   if (player) {
     updatePlayerLastAction(player);
@@ -145,10 +145,10 @@ export function updatePlayersGameStateWithTakeActiveCard(
 
 export function updatePlayersGameStateWithPlaceChip(
   gameState: NoThanksGameState,
-  activePlayer: NoThanksPlayerState
+  activePlayer: NoThanksPlayerState,
 ) {
   const player = gameState.public.players.find(
-    (p) => p.email === activePlayer.email
+    (p) => p.email === activePlayer.email,
   );
   if (player) {
     updatePlayerLastAction(player);
@@ -159,7 +159,7 @@ export function updatePlayersGameStateWithPlaceChip(
 
 export function getNextPlayerIndex(gameState: NoThanksGameState) {
   const activePlayerIndex = gameState.public.players.findIndex(
-    (player) => player.email === gameState.public.activePlayer
+    (player) => player.email === gameState.public.activePlayer,
   );
   return (activePlayerIndex + 1) % gameState.public.players.length;
 }
@@ -176,14 +176,14 @@ export function isGameOver(gameState: NoThanksGameState) {
 
 export function getActivePlayer(gameState: NoThanksGameState) {
   return gameState.public.players.find(
-    (player) => player.email === gameState.public.activePlayer
+    (player) => player.email === gameState.public.activePlayer,
   );
 }
 
 /** The active player takes the card and its chips; the next card is revealed. */
 export async function updateGameStateWithTakingCardAction(
   gameState: NoThanksGameState,
-  activePlayer: NoThanksPlayerState
+  activePlayer: NoThanksPlayerState,
 ) {
   const activeCard = gameState.public.activeCard;
   const chipsPlaced = gameState.public.chipsPlaced;
@@ -220,7 +220,7 @@ export async function updateGameStateWithTakingCardAction(
 /** The active player pays a chip onto the card and the turn moves on. */
 export async function updateGameStateWithPlacingChipAction(
   gameState: NoThanksGameState,
-  activePlayer: NoThanksPlayerState
+  activePlayer: NoThanksPlayerState,
 ) {
   const activeCard = gameState.public.activeCard;
 

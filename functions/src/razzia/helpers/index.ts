@@ -86,7 +86,7 @@ export function buildDeck(): LootCards[] {
  */
 export function createPlayers(
   players: PlayerInLobby[],
-  setOrder: number[] = players.map((_, i) => i)
+  setOrder: number[] = players.map((_, i) => i),
 ): RazziaPlayerState[] {
   return players.map((player, index) => ({
     email: player.email,
@@ -104,12 +104,15 @@ export function buildGameState(
   lobbyUID: string,
   players: PlayerInLobby[],
   deck: LootCards[],
-  setOrder?: number[]
+  setOrder?: number[],
 ): RazziaGameState {
   const playersMetadata = createPlayers(players, setOrder);
   // The holder of the highest cheque starts (player A in every set).
-  const top = (p: RazziaPlayerState) => Math.max(...(p.money || []).map(Number));
-  const starter = playersMetadata.reduce((best, p) => (top(p) > top(best) ? p : best));
+  const top = (p: RazziaPlayerState) =>
+    Math.max(...(p.money || []).map(Number));
+  const starter = playersMetadata.reduce((best, p) =>
+    top(p) > top(best) ? p : best,
+  );
   return {
     public: {
       id: lobbyUID,
@@ -165,6 +168,6 @@ export const createRazziaGameState = async (lobbyUID: string) => {
 export async function saveGameState(gameState: RazziaGameState) {
   await updateGameState(
     gameState,
-    gameState.public.notification?.title || "Razzia state updated."
+    gameState.public.notification?.title || "Razzia state updated.",
   );
 }

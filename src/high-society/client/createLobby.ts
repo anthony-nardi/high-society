@@ -5,7 +5,7 @@ export type GameName = "high-society" | "no-thanks" | "razzia";
 
 export default async function createLobby(
   gameName: GameName,
-  options: { rematchOf?: string } = {}
+  options: { rematchOf?: string } = {},
 ) {
   const functions = getFunctions();
 

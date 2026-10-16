@@ -1,4 +1,8 @@
 import { CallableRequest, onCall } from "firebase-functions/v2/https";
+
+// A human move may be followed by a chain of bot moves, each paused so it
+// can be read at the table, so give the request plenty of time.
+const MOVE_OPTIONS = { timeoutSeconds: 300 };
 import {
   getActivePlayer,
   getEmailFromRequest,
@@ -30,10 +34,11 @@ async function letBotsPlay(gameState: NoThanksGameState) {
 }
 
 export const takeActiveCard = onCall(
+  MOVE_OPTIONS,
   async (
     request: CallableRequest<{
       lobbyUID: string;
-    }>
+    }>,
   ) => {
     verifyRequestAuthentication(request);
 
@@ -50,14 +55,15 @@ export const takeActiveCard = onCall(
 
     await updateGameStateWithTakingCardAction(gameState, activePlayer);
     await letBotsPlay(gameState);
-  }
+  },
 );
 
 export const placeChipOnActiveCard = onCall(
+  MOVE_OPTIONS,
   async (
     request: CallableRequest<{
       lobbyUID: string;
-    }>
+    }>,
   ) => {
     verifyRequestAuthentication(request);
 
@@ -78,5 +84,5 @@ export const placeChipOnActiveCard = onCall(
 
     await updateGameStateWithPlacingChipAction(gameState, activePlayer);
     await letBotsPlay(gameState);
-  }
+  },
 );

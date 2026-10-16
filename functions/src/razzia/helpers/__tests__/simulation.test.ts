@@ -76,12 +76,24 @@ function chequesInPlay(state: RazziaGameState) {
   return all.map(Number).sort((a, b) => a - b);
 }
 
-function checkInvariants(state: RazziaGameState, initialCheques: number[], step: number) {
+function checkInvariants(
+  state: RazziaGameState,
+  initialCheques: number[],
+  step: number,
+) {
   const where = `step ${step}, round ${state.public.round}, ${state.public.roundState}`;
   expect(findUndefined(state), where).toBeNull();
   expect(chequesInPlay(state), where).toEqual(initialCheques);
   expect(state.public.remainingCards, where).toBe(state.private.deck.length);
-  expect((state.public.revealedCards || []).length, where).toBeLessThanOrEqual(7);
+  // The public tally of revealed cards accounts for every card that left the deck.
+  const tallied = Object.values(state.public.revealedCounts || {}).reduce(
+    (a, b) => a + b,
+    0,
+  );
+  expect(tallied, where).toBe(120 - state.private.deck.length);
+  expect((state.public.revealedCards || []).length, where).toBeLessThanOrEqual(
+    7,
+  );
   expect(state.public.policeRaids, where).toBeLessThan(state.public.raidLimit);
   expect(state.public.round, where).toBeGreaterThanOrEqual(1);
   expect(state.public.round, where).toBeLessThanOrEqual(3);
@@ -89,12 +101,17 @@ function checkInvariants(state: RazziaGameState, initialCheques: number[], step:
   for (const player of state.public.players) {
     const money = player.money || [];
     for (const m of player.availableMoney || []) {
-      expect(money, `${where}: ${player.email} available ${m} not held`).toContain(m);
+      expect(
+        money,
+        `${where}: ${player.email} available ${m} not held`,
+      ).toContain(m);
     }
     if (!isAuction(state)) {
       expect(player.bid, `${where}: stale bid for ${player.email}`).toBe("0");
     } else if (player.bid !== "0") {
-      expect(player.availableMoney, `${where}: bid not from hand`).toContain(player.bid);
+      expect(player.availableMoney, `${where}: bid not from hand`).toContain(
+        player.bid,
+      );
     }
     for (const card of player.cards?.theives || []) expect(card).toBe("THIEF");
   }
@@ -102,7 +119,10 @@ function checkInvariants(state: RazziaGameState, initialCheques: number[], step:
   if (state.public.status === "IN_PROGRESS") {
     const active = getActivePlayer(state);
     expect(active, where).toBeDefined();
-    expect((active?.availableMoney || []).length, `${where}: active player is broke`).toBeGreaterThan(0);
+    expect(
+      (active?.availableMoney || []).length,
+      `${where}: active player is broke`,
+    ).toBeGreaterThan(0);
     if (isAuction(state)) {
       expect(state.public.auctionTriggeringPlayer, where).toBeDefined();
     }
@@ -110,11 +130,15 @@ function checkInvariants(state: RazziaGameState, initialCheques: number[], step:
 }
 
 /** A human who plays any legal move at random. */
-function randomLegalMove(state: RazziaGameState, random: () => number): BotMove {
+function randomLegalMove(
+  state: RazziaGameState,
+  random: () => number,
+): BotMove {
   const player = getActivePlayer(state)!;
   const moves: BotMove[] = [];
   if (isAuction(state)) {
-    for (const amount of biddableMoney(state, player)) moves.push({ type: "bid", amount });
+    for (const amount of biddableMoney(state, player))
+      moves.push({ type: "bid", amount });
     if (canPass(state, player)) moves.push({ type: "pass" });
   } else {
     if (canReveal(state)) moves.push({ type: "reveal" });
@@ -125,7 +149,10 @@ function randomLegalMove(state: RazziaGameState, random: () => number): BotMove 
       moves.push({ type: "thief", cards: [card] });
     }
   }
-  expect(moves.length, "a player with the turn must have a legal move").toBeGreaterThan(0);
+  expect(
+    moves.length,
+    "a player with the turn must have a legal move",
+  ).toBeGreaterThan(0);
   return moves[Math.floor(random() * moves.length)];
 }
 
@@ -142,13 +169,18 @@ async function playOut(state: RazziaGameState, seed: number, maxSteps = 3000) {
     } else {
       const move = randomLegalMove(state, random);
       const result = applyBotMove(state, move);
-      expect(result.ok, `human move ${move.type} rejected: ${(result as { reason?: string }).reason}`).toBe(true);
+      expect(
+        result.ok,
+        `human move ${move.type} rejected: ${(result as { reason?: string }).reason}`,
+      ).toBe(true);
     }
     steps++;
     checkInvariants(state, initialCheques, steps);
   }
 
-  expect(state.public.status, `game did not finish in ${maxSteps} steps`).toBe("GAME_OVER");
+  expect(state.public.status, `game did not finish in ${maxSteps} steps`).toBe(
+    "GAME_OVER",
+  );
   return steps;
 }
 
@@ -179,29 +211,39 @@ describe("full game simulation", () => {
     [4, 4],
     [5, 5],
     [5, 6],
-  ])("%i bots finish a game (seed %i)", async (playerCount, seed) => {
-    const state = newGame(playerCount, seed);
-    const steps = await playOut(state, seed);
-    checkFinalState(state);
-    expect(steps).toBeGreaterThan(30);
-  }, 60_000);
+  ])(
+    "%i bots finish a game (seed %i)",
+    async (playerCount, seed) => {
+      const state = newGame(playerCount, seed);
+      const steps = await playOut(state, seed);
+      checkFinalState(state);
+      expect(steps).toBeGreaterThan(30);
+    },
+    60_000,
+  );
 
   it.each([
     [3, 11],
     [4, 12],
     [5, 13],
-  ])("a random human among %i players finishes a game (seed %i)", async (playerCount, seed) => {
-    const state = newGame(playerCount, seed, ["p1"]);
-    await playOut(state, seed);
-    checkFinalState(state);
-  }, 60_000);
+  ])(
+    "a random human among %i players finishes a game (seed %i)",
+    async (playerCount, seed) => {
+      const state = newGame(playerCount, seed, ["p1"]);
+      await playOut(state, seed);
+      checkFinalState(state);
+    },
+    60_000,
+  );
 
   it("rejects illegal human moves without changing the state", () => {
     const state = newGame(3, 21);
     const before = JSON.stringify(state);
     expect(applyBotMove(state, { type: "bid", amount: "2" }).ok).toBe(false);
     expect(applyBotMove(state, { type: "pass" }).ok).toBe(false);
-    expect(applyBotMove(state, { type: "thief", cards: ["COINS"] }).ok).toBe(false);
+    expect(applyBotMove(state, { type: "thief", cards: ["COINS"] }).ok).toBe(
+      false,
+    );
     expect(JSON.stringify(state)).toBe(before);
   });
 });

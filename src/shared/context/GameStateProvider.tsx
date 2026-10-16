@@ -8,10 +8,10 @@ import { RazziaGameState } from "../../razzia/game/types";
 type GameState<T extends string> = T extends "high-society"
   ? HighSocietyGameState
   : T extends "no-thanks"
-  ? NoThanksGameState
-  : T extends "razzia"
-  ? RazziaGameState
-  : never;
+    ? NoThanksGameState
+    : T extends "razzia"
+      ? RazziaGameState
+      : never;
 
 const HighSocietyContext = createContext<{
   isGameStatusLoading: boolean | null;
@@ -45,7 +45,7 @@ export function useHighSocietyGameState(): {
   const context = useContext(HighSocietyContext);
   if (!context)
     throw new Error(
-      "HighSocietyGameState must be used within a HighSocietyProvider"
+      "HighSocietyGameState must be used within a HighSocietyProvider",
     );
   return context;
 }
@@ -73,7 +73,7 @@ export function useRazziaGameState(): {
 
 // eslint-disable-next-line
 export function useGameStateContext<T extends string>(
-  gameType: T
+  gameType: T,
 ): {
   gameState: GameState<T>;
   isGameStatusLoading: boolean | null;

@@ -8,6 +8,7 @@ import NoThanksRules from "./game/components/RulesDrawer";
 import { GameStateProvider } from "../shared/context/GameStateProvider";
 import { LobbyProvider } from "../shared/context/LobbyProvider";
 import { UserProvider } from "../shared/context/UserProvider";
+import SoundToggle from "../shared/components/SoundToggle";
 
 initializeFirebase();
 
@@ -17,6 +18,7 @@ function App() {
       <UserProvider>
         <LobbyProvider>
           <GameStateProvider gameName={"no-thanks"}>
+            <SoundToggle />
             <NoThanksRules />
             <GameTitle />
             <Login />

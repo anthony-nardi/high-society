@@ -12,6 +12,7 @@ vi.mock("../../../shared/helpers", () => ({
 
 import {
   auctionMoves,
+  policeOdds,
   bestThiefTarget,
   chooseActionMove,
   chooseBotMove,
@@ -37,8 +38,11 @@ describe("evaluation", () => {
 
   it("prefers more money and more points", () => {
     const state = gameState(
-      [player("rich", { score: 10 }), player("poor", { score: 0, money: ["2"], availableMoney: ["2"] })],
-      []
+      [
+        player("rich", { score: 10 }),
+        player("poor", { score: 0, money: ["2"], availableMoney: ["2"] }),
+      ],
+      [],
     );
     const [rich, poor] = evaluate(state);
     expect(rich).toBeGreaterThan(poor);
@@ -47,14 +51,21 @@ describe("evaluation", () => {
 
 describe("action phase", () => {
   it("reveals when the table is empty", () => {
-    const state = gameState([player("bot", { isBot: true }), player("a"), player("b")], ["CARS"]);
+    const state = gameState(
+      [player("bot", { isBot: true }), player("a"), player("b")],
+      ["CARS"],
+    );
     expect(chooseActionMove(state)).toEqual({ type: "reveal" });
   });
 
   it("calls an auction for a rich table", () => {
-    const state = gameState([player("bot", { isBot: true }), player("a"), player("b")], ["CARS"], {
-      revealedCards: ["COINS", "COINS", "COINS", "DRIVERS", "CARS", "CARS"],
-    });
+    const state = gameState(
+      [player("bot", { isBot: true }), player("a"), player("b")],
+      ["CARS"],
+      {
+        revealedCards: ["COINS", "COINS", "COINS", "DRIVERS", "CARS", "CARS"],
+      },
+    );
     expect(chooseActionMove(state)).toEqual({ type: "auction" });
   });
 
@@ -67,27 +78,86 @@ describe("action phase", () => {
 
   it("steals coins with a thief but not a lone car", () => {
     const rich = gameState(
-      [player("bot", { isBot: true, cards: { theives: ["THIEF"] } }), player("a")],
+      [
+        player("bot", { isBot: true, cards: { theives: ["THIEF"] } }),
+        player("a"),
+      ],
       ["CARS"],
-      { revealedCards: ["COINS", "CARS"] }
+      { revealedCards: ["COINS", "CARS"] },
     );
     expect(bestThiefTarget(rich, rich.public.players[0])).toBe("COINS");
     expect(chooseActionMove(rich)).toEqual({ type: "thief", cards: ["COINS"] });
 
     const poor = gameState(
-      [player("bot", { isBot: true, cards: { theives: ["THIEF"] } }), player("a")],
+      [
+        player("bot", { isBot: true, cards: { theives: ["THIEF"] } }),
+        player("a"),
+      ],
       ["CARS"],
-      { revealedCards: ["CARS"] }
+      { revealedCards: ["CARS"] },
     );
     expect(bestThiefTarget(poor, poor.public.players[0])).toBeNull();
   });
 });
 
+describe("deck knowledge", () => {
+  it("counts police cards from what has been revealed", () => {
+    const state = gameState(
+      [player("a"), player("b")],
+      Array(50).fill("CARS"),
+      {
+        revealedCounts: { POLICE_RAIDS: 14, CARS: 20 },
+      },
+    );
+    expect(policeOdds(state)).toEqual({
+      policeLeft: 7,
+      cardsLeft: 50,
+      probability: 7 / 50,
+    });
+    const fresh = gameState(
+      [player("a"), player("b")],
+      Array(120).fill("CARS"),
+    );
+    expect(policeOdds(fresh).probability).toBeCloseTo(21 / 120);
+  });
+
+  it("cashes in a decent table when the last raid is likely, but keeps revealing when it is not", () => {
+    const table = ["COINS", "DRIVERS", "CARS"] as const;
+    const risky = gameState(
+      [player("bot", { isBot: true }), player("a"), player("b")],
+      Array(20).fill("CARS"),
+      {
+        revealedCards: [...table],
+        policeRaids: 6,
+        raidLimit: 7,
+        revealedCounts: { POLICE_RAIDS: 11 },
+      },
+    );
+    expect(chooseActionMove(risky)).toEqual({ type: "auction" });
+
+    const safe = gameState(
+      [player("bot", { isBot: true }), player("a"), player("b")],
+      Array(20).fill("CARS"),
+      {
+        revealedCards: [...table],
+        policeRaids: 1,
+        raidLimit: 7,
+        revealedCounts: { POLICE_RAIDS: 20 },
+      },
+    );
+    expect(chooseActionMove(safe)).toEqual({ type: "reveal" });
+  });
+});
+
 describe("auction phase", () => {
   it("offers the cheapest bids then a pass", () => {
-    const state = gameState([player("a"), player("bot", { isBot: true }), player("c")], [], {
-      revealedCards: ["COINS"],
-    });
+    const state = gameState(
+      [player("a"), player("bot", { isBot: true }), player("c")],
+      [],
+      {
+        revealedCards: ["COINS"],
+      },
+    );
     initiateAuction(state); // bot to move
     expect(auctionMoves(state)).toEqual([
       { type: "bid", amount: "2" },
@@ -101,7 +171,7 @@ describe("auction phase", () => {
     const junk = gameState(
       [player("a"), player("bot", { isBot: true }), player("c")],
       [],
-      { revealedCards: ["CARS"] }
+      { revealedCards: ["CARS"] },
     );
     initiateAuction(junk);
     expect(searchAuctionMove(junk, search)).toEqual({ type: "pass" });
@@ -109,7 +179,17 @@ describe("auction phase", () => {
     const rich = gameState(
       [player("a"), player("bot", { isBot: true }), player("c")],
       [],
-      { revealedCards: ["COINS", "COINS", "COINS", "DRIVERS", "CARS", "CARS", "SCARAB"] }
+      {
+        revealedCards: [
+          "COINS",
+          "COINS",
+          "COINS",
+          "DRIVERS",
+          "CARS",
+          "CARS",
+          "SCARAB",
+        ],
+      },
     );
     initiateAuction(rich);
     const move = searchAuctionMove(rich, search);
@@ -118,9 +198,13 @@ describe("auction phase", () => {
 
   it("bids as the caller when forced to", () => {
     const state = gameState(
-      [player("bot", { isBot: true }), player("a", { availableMoney: [] }), player("b", { availableMoney: [] })],
+      [
+        player("bot", { isBot: true }),
+        player("a", { availableMoney: [] }),
+        player("b", { availableMoney: [] }),
+      ],
       [],
-      { revealedCards: ["CARS"] }
+      { revealedCards: ["CARS"] },
     );
     initiateAuction(state);
     expect(state.public.activePlayer).toBe("bot");
@@ -144,7 +228,7 @@ describe("maybeTakeBotTurn", () => {
         player("bot2", { isBot: true }),
       ],
       ["POLICE_RAIDS", "CARS"],
-      { revealedCards: ["COINS", "COINS"] }
+      { revealedCards: ["COINS", "COINS"] },
     );
     revealCard(state); // human draws a raid: forced auction, bot1 to move
     expect(state.public.roundState).toBe("FORCED_AUCTION");

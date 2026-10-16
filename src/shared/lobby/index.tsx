@@ -103,7 +103,7 @@ export default function Lobby({ gameName }: { gameName: GameName }) {
         setRemovingBot(null);
       }
     },
-    [lobbyId]
+    [lobbyId],
   );
 
   const handleReadyUp = useCallback(async () => {

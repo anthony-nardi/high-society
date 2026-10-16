@@ -78,7 +78,7 @@ describe("turn order", () => {
   it("advances to the next player and wraps around", () => {
     const state = gameState(
       [player("alice"), player("bob"), player("carol")],
-      [20, 7]
+      [20, 7],
     );
 
     expect(getNextPlayerIndex(state)).toBe(1);

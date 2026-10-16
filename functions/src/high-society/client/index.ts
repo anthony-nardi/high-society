@@ -1,4 +1,8 @@
 import { CallableRequest, onCall } from "firebase-functions/v2/https";
+
+// A human move may be followed by a chain of bot moves, each paused so it
+// can be read at the table, so give the request plenty of time.
+const MOVE_OPTIONS = { timeoutSeconds: 300 };
 import {
   getActivePlayer,
   getEmailFromRequest,
@@ -13,11 +17,12 @@ import { HighSocietyGameState } from "../types";
 import { isActivePlayerBot, maybeTakeBotTurn } from "../helpers/bot";
 
 export const bid = onCall(
+  MOVE_OPTIONS,
   async (
     request: CallableRequest<{
       lobbyUID: string;
       bid: string[];
-    }>
+    }>,
   ) => {
     verifyRequestAuthentication(request);
 
@@ -52,14 +57,15 @@ export const bid = onCall(
     }
 
     return {};
-  }
+  },
 );
 
 export const passturn = onCall(
+  MOVE_OPTIONS,
   async (
     request: CallableRequest<{
       lobbyUID: string;
-    }>
+    }>,
   ) => {
     verifyRequestAuthentication(request);
 
@@ -92,5 +98,5 @@ export const passturn = onCall(
       attemptsToLetBotMakeMove--;
       await maybeTakeBotTurn(gameState);
     }
-  }
+  },
 );

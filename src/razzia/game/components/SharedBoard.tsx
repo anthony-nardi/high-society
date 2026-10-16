@@ -48,8 +48,19 @@ export default function SharedBoard({
         <Badge variant="light" radius="sm" size="lg">
           Round {gameState.round} of 3
         </Badge>
-        <Badge variant="light" color="gray" radius="sm" size="lg">
-          {gameState.remainingCards} in the deck
+        <Badge
+          variant="light"
+          color="gray"
+          radius="sm"
+          size="lg"
+          title="Everyone can count: 21 police raids in the deck minus those revealed so far."
+        >
+          {gameState.remainingCards} in the deck,{" "}
+          {Math.max(
+            0,
+            21 - ((gameState.revealedCounts || {}).POLICE_RAIDS || 0),
+          )}{" "}
+          police raids
         </Badge>
       </Group>
 

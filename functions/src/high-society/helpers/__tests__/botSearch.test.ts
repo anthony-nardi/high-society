@@ -38,8 +38,8 @@ describe("auction simulation", () => {
           player("bot", { isBot: true, statusCards: ["2x"] }),
         ],
         ["7", "8", "2x"],
-        { activePlayer: "bot" }
-      )
+        { activePlayer: "bot" },
+      ),
     );
 
     expect(state.activePlayer).toBe(1);
@@ -52,7 +52,7 @@ describe("auction simulation", () => {
 
   it("moves bid cards out of the hand and passes the turn", () => {
     const state = toAuctionState(
-      gameState([player("alice"), player("bob")], ["7", "8"])
+      gameState([player("alice"), player("bob")], ["7", "8"]),
     );
 
     const next = applyMove(state, ["12", "3"]);
@@ -73,8 +73,8 @@ describe("auction simulation", () => {
           player("bob"),
         ],
         ["7", "8"],
-        { activePlayer: "bob" }
-      )
+        { activePlayer: "bob" },
+      ),
     );
 
     const next = applyMove(state, "pass");
@@ -94,8 +94,8 @@ describe("auction simulation", () => {
           player("bob", { currentBid: ["12"], moneyCards: ["2"] }),
         ],
         ["-5", "8"],
-        { activePlayer: "bob" }
-      )
+        { activePlayer: "bob" },
+      ),
     );
 
     const next = applyMove(state, "pass");
@@ -109,7 +109,7 @@ describe("auction simulation", () => {
 
   it("lets the thief remove the lowest luxury card", () => {
     const state = toAuctionState(
-      gameState([player("alice", { statusCards: ["9", "3"] })], ["-", "8"])
+      gameState([player("alice", { statusCards: ["9", "3"] })], ["-", "8"]),
     );
 
     const next = applyMove(state, "pass");
@@ -124,8 +124,8 @@ describe("candidate moves", () => {
       gameState(
         [player("alice", { currentBid: ["20"] }), player("bob")],
         ["7", "8"],
-        { activePlayer: "bob" }
-      )
+        { activePlayer: "bob" },
+      ),
     );
 
     const moves = candidateMoves(state);
@@ -149,7 +149,7 @@ describe("candidate moves", () => {
 
   it("only passes when the hand is empty", () => {
     const state = toAuctionState(
-      gameState([player("alice", { moneyCards: [] }), player("bob")], ["7"])
+      gameState([player("alice", { moneyCards: [] }), player("bob")], ["7"]),
     );
 
     expect(candidateMoves(state)).toEqual(["pass"]);
@@ -164,8 +164,8 @@ describe("evaluation", () => {
           player("rich", { statusCards: ["10", "2x"] }),
           player("poor", { statusCards: ["-5", "1/2"] }),
         ],
-        ["7"]
-      )
+        ["7"],
+      ),
     );
     state.resolved = true;
 
@@ -182,8 +182,8 @@ describe("evaluation", () => {
           player("broke", { moneyCards: ["1"] }),
           player("flush", { moneyCards: ["1", "2"] }),
         ],
-        ["7"]
-      )
+        ["7"],
+      ),
     );
     state.resolved = true;
 
@@ -197,7 +197,7 @@ describe("chooseBotMove", () => {
   it("bids on a valuable card when nobody has bid yet", () => {
     const state = gameState(
       [player("bot", { isBot: true }), player("alice"), player("bob")],
-      ["10", "2x", "3", "1/2", "2x", "2x"]
+      ["10", "2x", "3", "1/2", "2x", "2x"],
     );
 
     const move = chooseBotMove(state, search);
@@ -213,7 +213,7 @@ describe("chooseBotMove", () => {
     const state = gameState(
       [player("alice", { currentBid: ["20"] }), player("bot", { isBot: true })],
       ["1", "2x", "3", "1/2", "2x", "2x"],
-      { activePlayer: "bot" }
+      { activePlayer: "bot" },
     );
 
     expect(chooseBotMove(state, search)).toBe("pass");
@@ -221,9 +221,12 @@ describe("chooseBotMove", () => {
 
   it("never proposes a bid below the highest bid", () => {
     const state = gameState(
-      [player("alice", { currentBid: ["25", "20"] }), player("bot", { isBot: true })],
+      [
+        player("alice", { currentBid: ["25", "20"] }),
+        player("bot", { isBot: true }),
+      ],
       ["10", "2x", "3", "1/2", "2x", "2x"],
-      { activePlayer: "bot" }
+      { activePlayer: "bot" },
     );
 
     const move = chooseBotMove(state, search);
@@ -247,7 +250,7 @@ describe("maybeTakeBotTurn", () => {
   it("applies the searched move to the game state", async () => {
     const state = gameState(
       [player("bot", { isBot: true }), player("alice"), player("bob")],
-      ["10", "2x", "3", "1/2", "2x", "2x"]
+      ["10", "2x", "3", "1/2", "2x", "2x"],
     );
 
     await maybeTakeBotTurn(state, { minimumTurnMs: 0, search });
@@ -255,7 +258,7 @@ describe("maybeTakeBotTurn", () => {
     const bot = state.public.players[0];
     expect(bot.currentBid?.length).toBeGreaterThan(0);
     expect(bot.moneyCards.length + (bot.currentBid?.length ?? 0)).toBe(
-      STARTING_MONEY.length
+      STARTING_MONEY.length,
     );
     expect(state.public.activePlayer).toBe("alice");
     expect(state.public.notification?.title).toContain("bot has highest bid");
@@ -268,7 +271,7 @@ describe("maybeTakeBotTurn", () => {
         player("bot", { isBot: true, moneyCards: [] }),
       ],
       ["10", "2x", "3", "1/2", "2x", "2x"],
-      { activePlayer: "bot" }
+      { activePlayer: "bot" },
     );
 
     await maybeTakeBotTurn(state, { minimumTurnMs: 0, search });

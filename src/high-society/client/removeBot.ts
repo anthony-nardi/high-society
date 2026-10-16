@@ -10,7 +10,7 @@ export default async function removeBot(request: RemoveBotRequest) {
 
   const removeBotApi = httpsCallable<RemoveBotRequest, void>(
     functions,
-    "removebot"
+    "removebot",
   );
 
   await removeBotApi(request);

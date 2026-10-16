@@ -18,7 +18,7 @@ export const MIN_TOTAL_WIDTH_PX = 220;
 export function fanWidthFor(viewportWidth: number, cardWidth: number) {
   return Math.max(
     MIN_TOTAL_WIDTH_PX,
-    Math.min(MAX_TOTAL_WIDTH_PX, viewportWidth - cardWidth - 48)
+    Math.min(MAX_TOTAL_WIDTH_PX, viewportWidth - cardWidth - 48),
   );
 }
 const ARC_HEIGHT_FACTOR = 0.5;
@@ -31,7 +31,7 @@ const ARC_HEIGHT_FACTOR = 0.5;
 export function handLayout(
   count: number,
   index: number,
-  maxTotalWidth = MAX_TOTAL_WIDTH_PX
+  maxTotalWidth = MAX_TOTAL_WIDTH_PX,
 ): CardPlacement {
   if (count <= 1) {
     return { x: 0, y: 0, rotate: 0 };
@@ -42,7 +42,7 @@ export function handLayout(
 
   const anglePerCard = Math.min(
     MAX_ANGLE_PER_CARD_DEG,
-    MAX_TOTAL_SPREAD_DEG / (count - 1)
+    MAX_TOTAL_SPREAD_DEG / (count - 1),
   );
   const step = Math.min(MAX_STEP_PX, maxTotalWidth / (count - 1));
   const sag = (o: number) => o * o * anglePerCard * ARC_HEIGHT_FACTOR;

@@ -1,4 +1,12 @@
-import { CallableRequest, HttpsError, onCall } from "firebase-functions/v2/https";
+import {
+  CallableRequest,
+  HttpsError,
+  onCall,
+} from "firebase-functions/v2/https";
+
+// A human move may be followed by a chain of bot moves, each paused so it
+// can be read at the table, so give the request plenty of time.
+const MOVE_OPTIONS = { timeoutSeconds: 300 };
 import {
   getEmailFromRequest,
   getGameState,
@@ -33,7 +41,7 @@ async function letBotsPlay(gameState: RazziaGameState) {
 
 async function run(
   request: CallableRequest<{ lobbyUID: string }>,
-  action: (gameState: RazziaGameState) => ActionResult
+  action: (gameState: RazziaGameState) => ActionResult,
 ) {
   verifyRequestAuthentication(request);
 
@@ -55,27 +63,36 @@ async function run(
 }
 
 export const revealCardFn = onCall(
+  MOVE_OPTIONS,
   async (request: CallableRequest<{ lobbyUID: string }>) =>
-    run(request, revealCard)
+    run(request, revealCard),
 );
 
 export const initiateAuctionFn = onCall(
+  MOVE_OPTIONS,
   async (request: CallableRequest<{ lobbyUID: string }>) =>
-    run(request, initiateAuction)
+    run(request, initiateAuction),
 );
 
 export const useThiefFn = onCall(
-  async (request: CallableRequest<{ lobbyUID: string; cardToSteal: LootCards[] }>) =>
-    run(request, (gameState) => useThief(gameState, request.data.cardToSteal || []))
+  MOVE_OPTIONS,
+  async (
+    request: CallableRequest<{ lobbyUID: string; cardToSteal: LootCards[] }>,
+  ) =>
+    run(request, (gameState) =>
+      useThief(gameState, request.data.cardToSteal || []),
+    ),
 );
 
 export const passOnLootFn = onCall(
-  async (request: CallableRequest<{ lobbyUID: string }>) => run(request, pass)
+  MOVE_OPTIONS,
+  async (request: CallableRequest<{ lobbyUID: string }>) => run(request, pass),
 );
 
 export const bidOnLootFn = onCall(
+  MOVE_OPTIONS,
   async (request: CallableRequest<{ lobbyUID: string; amount: string }>) =>
-    run(request, (gameState) => bid(gameState, String(request.data.amount)))
+    run(request, (gameState) => bid(gameState, String(request.data.amount))),
 );
 
 export {

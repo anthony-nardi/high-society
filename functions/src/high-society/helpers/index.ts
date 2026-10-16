@@ -40,19 +40,19 @@ export function verifyRequestAuthentication(request: CallableRequest) {
     // Throwing an HttpsError so that the client gets the error details.
     throw new HttpsError(
       "failed-precondition",
-      "The function must be " + "called while authenticated."
+      "The function must be " + "called while authenticated.",
     );
   }
 }
 
 export function isHighSocietyGameState(
-  gameStateSnapshot: any
+  gameStateSnapshot: any,
 ): gameStateSnapshot is HighSocietyGameState {
   return gameStateSnapshot.public.gameName === "high-society";
 }
 
 export function isNoThanksGameState(
-  gameStateSnapshot: any
+  gameStateSnapshot: any,
 ): gameStateSnapshot is NoThanksGameState {
   return gameStateSnapshot.public.gameName === "no-thanks";
 }
@@ -109,10 +109,10 @@ export function isGameOver(gameState: HighSocietyGameState) {
 }
 
 export function getDoesBiddingRoundEndOnFirstPass(
-  gameState: HighSocietyGameState
+  gameState: HighSocietyGameState,
 ) {
   return STATUS_CARDS_THAT_END_ROUND_ON_FIRST_PASS.includes(
-    gameState.public.currentStatusCard
+    gameState.public.currentStatusCard,
   );
 }
 
@@ -122,23 +122,23 @@ export function getEmailFromRequest(request: CallableRequest) {
 
 export function isActivePlayerTakingAction(
   gameState: GenericGameState,
-  requestEmail: string
+  requestEmail: string,
 ) {
   return gameState.public.activePlayer === requestEmail;
 }
 
 export function getActivePlayerIndex(gameState: HighSocietyGameState) {
   return gameState.public.players.findIndex(
-    (player) => player.email === gameState.public.activePlayer
+    (player) => player.email === gameState.public.activePlayer,
   );
 }
 
 // Generic function to get the active player
 export function getActivePlayer<T extends GenericPlayerState>(
-  gameState: GenericGameState<T>
+  gameState: GenericGameState<T>,
 ): T {
   const activePlayerIndex = gameState.public.players.findIndex(
-    (player) => player.email === gameState.public.activePlayer
+    (player) => player.email === gameState.public.activePlayer,
   );
 
   return gameState.public.players[activePlayerIndex];
@@ -173,11 +173,11 @@ export function getNextPlayerIndex(gameState: HighSocietyGameState) {
 
 export function updatePlayersBid(
   player: HighSocietyPlayerState,
-  bid: string[]
+  bid: string[],
 ) {
   player.currentBid = (player.currentBid || []).concat(bid);
   const updatedMoneyCards = player.moneyCards.filter(
-    (card) => !bid.includes(card)
+    (card) => !bid.includes(card),
   );
   player.moneyCards = updatedMoneyCards;
 }
@@ -191,7 +191,7 @@ export function updateNextActivePlayer(gameState: HighSocietyGameState) {
 
 export function giveCurrentStatusCardToPlayer(
   player: HighSocietyPlayerState,
-  gameState: HighSocietyGameState
+  gameState: HighSocietyGameState,
 ) {
   player.statusCards = player.statusCards || [];
   player.statusCards.push(gameState.public.currentStatusCard);
@@ -199,7 +199,7 @@ export function giveCurrentStatusCardToPlayer(
 
 export function maybeUseMinusCard(
   player: HighSocietyPlayerState,
-  gameState: HighSocietyGameState
+  gameState: HighSocietyGameState,
 ) {
   player.statusCards = player.statusCards || [];
 
@@ -240,7 +240,7 @@ export function getPlayersActivelyBidding(gameState: HighSocietyGameState) {
 
 export function awardPlayerWithCurrentStatusCard(
   player: HighSocietyPlayerState,
-  gameState: HighSocietyGameState
+  gameState: HighSocietyGameState,
 ) {
   player.statusCards = player.statusCards || [];
 
@@ -339,7 +339,7 @@ export function getHighestCurrentBid(gameState: HighSocietyGameState) {
   players.forEach((player) => {
     const playersBid = (player.currentBid || []).reduce(
       (sum, current) => Number(sum) + Number(current),
-      0
+      0,
     );
 
     if (playersBid > highestBid) {
@@ -363,7 +363,7 @@ export async function wait(milliseconds: number) {
 export async function updateGameStateWithBid(
   gameState: HighSocietyGameState,
   activePlayer: HighSocietyPlayerState,
-  bid: string[]
+  bid: string[],
 ) {
   updatePlayerLastAction(activePlayer);
   updatePlayersBid(activePlayer, bid);
@@ -371,7 +371,7 @@ export async function updateGameStateWithBid(
 
   const totalBid = bid.reduce(
     (sum: number, current) => Number(sum) + Number(current),
-    0
+    0,
   );
 
   const notification: Notification = {
@@ -384,14 +384,14 @@ export async function updateGameStateWithBid(
 
   await updateGameState(
     gameState,
-    `Player ${activePlayer.email} bid ${bid.join(",")}`
+    `Player ${activePlayer.email} bid ${bid.join(",")}`,
   );
 }
 
 /** Logs the end of an auction, the next reveal, and publishes the log at game over. */
 function logResolution(
   gameState: HighSocietyGameState,
-  notification: Notification
+  notification: Notification,
 ) {
   appendLog(gameState, notification);
   if (gameState.public.status === "GAME_OVER") {
@@ -406,7 +406,7 @@ function logResolution(
 
 export async function updateGameStateWithPass(
   gameState: HighSocietyGameState,
-  activePlayer: HighSocietyPlayerState
+  activePlayer: HighSocietyPlayerState,
 ) {
   const doesBiddingRoundEndOnFirstPass =
     getDoesBiddingRoundEndOnFirstPass(gameState);
@@ -454,7 +454,7 @@ export async function updateGameStateWithPass(
 
     return updateGameState(
       gameState,
-      `${activePlayer.email} is the first to pass and receives ${cardAwarded}.`
+      `${activePlayer.email} is the first to pass and receives ${cardAwarded}.`,
     );
   }
 
@@ -480,7 +480,7 @@ export async function updateGameStateWithPass(
       if (player.hasPassed === false) {
         totalBid = (player.currentBid || []).reduce(
           (sum: number, current: string) => Number(sum) + Number(current),
-          0
+          0,
         );
 
         awardPlayerWithCurrentStatusCard(player, gameState);

@@ -16,7 +16,7 @@ export const STARTING_MONEY = [
 
 export function player(
   email: string,
-  overrides: Partial<HighSocietyPlayerState> = {}
+  overrides: Partial<HighSocietyPlayerState> = {},
 ): HighSocietyPlayerState {
   return {
     email,
@@ -33,7 +33,7 @@ export function player(
 export function gameState(
   players: HighSocietyPlayerState[],
   deck: string[],
-  overrides: Partial<HighSocietyGameState["public"]> = {}
+  overrides: Partial<HighSocietyGameState["public"]> = {},
 ): HighSocietyGameState {
   return {
     public: {

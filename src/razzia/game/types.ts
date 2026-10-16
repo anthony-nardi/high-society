@@ -103,6 +103,8 @@ export type RazziaGameState = {
   discardIfUnsold?: boolean;
   /** Players who passed in the current auction, in order. */
   auctionPassed?: string[];
+  /** How many of each card have been revealed this game: what a player counting cards would know. */
+  revealedCounts?: { [card: string]: number };
   scoring?: ScoreBreakdown[];
   nextLobbyUID?: string;
   log?: LogEntry[];

@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState } from "react";
 import useGameState from "../../shared/hooks/useGameState";
 import { useUserContext } from "../../shared/context/useUserContext";
 import useTurnAlert from "../../shared/hooks/useTurnAlert";
+import useGameSounds from "../../shared/hooks/useGameSounds";
 import { LootCards, RazziaGameState } from "./types";
 import { useLobbyContext } from "../../shared/context/useLobbyContext";
 import SharedBoard from "./components/SharedBoard";
@@ -15,6 +16,8 @@ export default function Game() {
   const { user, isSignedIn } = useUserContext();
   const { lobbyId } = useLobbyContext();
   const { gameState, isLoading } = useGameState<RazziaGameState>();
+
+  useGameSounds(gameState?.notification);
   const [stealing, setStealing] = useState(false);
   const [stealIndexes, setStealIndexes] = useState<number[]>([]);
 

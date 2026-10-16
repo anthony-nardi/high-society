@@ -359,6 +359,10 @@ export function revealCard(gameState: RazziaGameState): ActionResult {
     return { ok: true };
   }
   gameState.public.remainingCards = gameState.private.deck.length;
+  gameState.public.revealedCounts = {
+    ...(gameState.public.revealedCounts || {}),
+    [card]: ((gameState.public.revealedCounts || {})[card] || 0) + 1,
+  };
 
   if (card !== LOOT_CARDS.POLICE_RAIDS) {
     gameState.public.revealedCards = [...revealed, card];

@@ -68,7 +68,7 @@ export function toCardState(gameState: NoThanksGameState): CardState {
     chips: player.chips || 0,
   }));
   const activePlayer = gameState.public.players.findIndex(
-    (player) => player.email === gameState.public.activePlayer
+    (player) => player.email === gameState.public.activePlayer,
   );
 
   return {
@@ -167,7 +167,10 @@ type SearchNode = Node<CardState, BotMove, number>;
 /** Runs a Maxn search from the state and returns the active player's best move. */
 export function searchBestMove(
   state: CardState,
-  { timeoutMs = DEFAULT_SEARCH_TIMEOUT_MS, depth = DEFAULT_SEARCH_DEPTH }: SearchOptions = {}
+  {
+    timeoutMs = DEFAULT_SEARCH_TIMEOUT_MS,
+    depth = DEFAULT_SEARCH_DEPTH,
+  }: SearchOptions = {},
 ): BotMove {
   if (candidateMoves(state).length === 1) {
     return "take";
@@ -189,7 +192,7 @@ export function searchBestMove(
       next.resolved ? NODE_LEAF : NODE_INNER,
       next,
       move,
-      0
+      0,
     );
     child.activePlayer = next.activePlayer;
     return child;
@@ -205,7 +208,7 @@ export function searchBestMove(
 /** Convenience wrapper working directly on the stored game state. */
 export function chooseBotMove(
   gameState: NoThanksGameState,
-  options?: SearchOptions
+  options?: SearchOptions,
 ): BotMove {
   return searchBestMove(toCardState(gameState), options);
 }

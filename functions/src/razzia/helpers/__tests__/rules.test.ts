@@ -33,7 +33,12 @@ describe("setup", () => {
     }));
     const state = buildGameState("lobby", lobby, buildDeck());
     expect(state.public.players[0].money).toEqual(["2", "5", "8", "13"]);
-    expect(state.public.players[2].availableMoney).toEqual(["4", "7", "10", "11"]);
+    expect(state.public.players[2].availableMoney).toEqual([
+      "4",
+      "7",
+      "10",
+      "11",
+    ]);
     expect(state.public.raidLimit).toBe(7);
 
     // Sets can be dealt in any order; the highest token still starts.
@@ -50,7 +55,10 @@ describe("setup", () => {
 
 describe("revealing", () => {
   it("puts loot on the table and passes the turn", () => {
-    const state = gameState([player("a"), player("b"), player("c")], ["COINS", "CARS"]);
+    const state = gameState(
+      [player("a"), player("b"), player("c")],
+      ["COINS", "CARS"],
+    );
     expect(revealCard(state).ok).toBe(true);
     expect(state.public.revealedCards).toEqual(["COINS"]);
     expect(state.public.remainingCards).toBe(1);
@@ -61,16 +69,20 @@ describe("revealing", () => {
   it("skips players with no money left", () => {
     const state = gameState(
       [player("a"), player("b", { availableMoney: [] }), player("c")],
-      ["COINS"]
+      ["COINS"],
     );
     revealCard(state);
     expect(state.public.activePlayer).toBe("c");
   });
 
   it("starts an automatic auction on the seventh card and discards it if unsold", () => {
-    const state = gameState([player("a"), player("b"), player("c")], ["COINS"], {
-      revealedCards: Array(6).fill("CARS"),
-    });
+    const state = gameState(
+      [player("a"), player("b"), player("c")],
+      ["COINS"],
+      {
+        revealedCards: Array(6).fill("CARS"),
+      },
+    );
     expect(revealCard(state).ok).toBe(true);
     expect(state.public.roundState).toBe("FORCED_AUCTION");
     expect(state.public.revealedCards).toHaveLength(7);
@@ -89,9 +101,13 @@ describe("revealing", () => {
   });
 
   it("starts a forced auction on a police raid", () => {
-    const state = gameState([player("a"), player("b"), player("c")], ["POLICE_RAIDS"], {
-      revealedCards: ["COINS"],
-    });
+    const state = gameState(
+      [player("a"), player("b"), player("c")],
+      ["POLICE_RAIDS"],
+      {
+        revealedCards: ["COINS"],
+      },
+    );
     revealCard(state);
     expect(state.public.roundState).toBe("FORCED_AUCTION");
     expect(state.public.policeRaids).toBe(1);
@@ -103,7 +119,7 @@ describe("revealing", () => {
     const state = gameState(
       [player("a", { cards: { coins: ["COINS"] } }), player("b"), player("c")],
       ["POLICE_RAIDS"],
-      { revealedCards: ["COINS"], policeRaids: 5, raidLimit: 6 }
+      { revealedCards: ["COINS"], policeRaids: 5, raidLimit: 6 },
     );
     revealCard(state);
     expect(state.public.round).toBe(2);
@@ -123,7 +139,7 @@ describe("auctions", () => {
         player("c", { money: ["4", "7", "10", "11"] }),
       ],
       ["CARS"],
-      { revealedCards: revealed as never }
+      { revealedCards: revealed as never },
     );
     initiateAuction(state);
     return state;
@@ -132,13 +148,18 @@ describe("auctions", () => {
   it("may be called with an empty table to swap cheques", () => {
     const state = gameState(
       [player("a"), player("b", { money: ["3", "6", "9", "12"] })],
-      ["CARS"]
+      ["CARS"],
     );
     expect(initiateAuction(state).ok).toBe(true);
     pass(state); // b
     expect(bid(state, "2").ok).toBe(true); // a must bid
     expect(state.public.money).toBe("2");
-    expect(state.public.players[0].money?.sort()).toEqual(["1", "13", "5", "8"]);
+    expect(state.public.players[0].money?.sort()).toEqual([
+      "1",
+      "13",
+      "5",
+      "8",
+    ]);
   });
 
   it("goes round the table and ends with the caller", () => {
@@ -148,7 +169,11 @@ describe("auctions", () => {
     expect(bid(state, "6").ok).toBe(true);
     expect(state.public.activePlayer).toBe("c");
     expect(bid(state, "4").ok).toBe(false); // below the table
-    expect(biddableMoney(state, state.public.players[2])).toEqual(["7", "10", "11"]);
+    expect(biddableMoney(state, state.public.players[2])).toEqual([
+      "7",
+      "10",
+      "11",
+    ]);
     expect(pass(state).ok).toBe(true);
     expect(state.public.activePlayer).toBe("a");
     expect(state.public.auctionPassed).toEqual(["c"]);
@@ -185,9 +210,13 @@ describe("auctions", () => {
   });
 
   it("lets a forced auction end with no bids and the loot kept", () => {
-    const state = gameState([player("a"), player("b"), player("c")], ["POLICE_RAIDS"], {
-      revealedCards: ["CARS"],
-    });
+    const state = gameState(
+      [player("a"), player("b"), player("c")],
+      ["POLICE_RAIDS"],
+      {
+        revealedCards: ["CARS"],
+      },
+    );
     revealCard(state);
     pass(state); // b
     pass(state); // c
@@ -205,7 +234,7 @@ describe("auctions", () => {
         player("c", { money: ["4"], availableMoney: [] }),
       ],
       ["CARS"],
-      { revealedCards: ["BODYGUARDS"] }
+      { revealedCards: ["BODYGUARDS"] },
     );
     initiateAuction(state);
     expect(state.public.activePlayer).toBe("a"); // nobody else can bid
@@ -223,7 +252,7 @@ describe("thieves", () => {
     const state = gameState(
       [player("a", { cards: { theives: ["THIEF", "THIEF"] } }), player("b")],
       ["CARS"],
-      { revealedCards: ["COINS", "CARS"] }
+      { revealedCards: ["COINS", "CARS"] },
     );
     expect(useThief(state, ["COINS"]).ok).toBe(true);
     expect(state.public.players[0].cards.coins).toEqual(["COINS"]);
@@ -236,7 +265,7 @@ describe("thieves", () => {
     const state = gameState(
       [player("a", { cards: { theives: ["THIEF"] } }), player("b")],
       ["CARS"],
-      { revealedCards: ["COINS"] }
+      { revealedCards: ["COINS"] },
     );
     expect(useThief(state, ["CARS"]).ok).toBe(false);
   });
@@ -245,7 +274,7 @@ describe("thieves", () => {
     const state = gameState(
       [player("a", { cards: { theives: ["THIEF"] } }), player("b")],
       ["CARS"],
-      { revealedCards: ["THIEF"] }
+      { revealedCards: ["THIEF"] },
     );
     expect(useThief(state, ["THIEF"]).ok).toBe(true);
     expect(state.public.players[0].cards.theives).toEqual(["THIEF"]);
@@ -300,15 +329,30 @@ describe("scoring", () => {
     const tycoon = player("t", {
       cards: {
         businesses: [
-          "CASINO", "TRANSPORTATION", "MOVIE_THEATER", "RACING", "REAL_ESTATE",
-          "NIGHTCLUB", "RESTAURANT", "RESTAURANT", "RESTAURANT", "RESTAURANT",
+          "CASINO",
+          "TRANSPORTATION",
+          "MOVIE_THEATER",
+          "RACING",
+          "REAL_ESTATE",
+          "NIGHTCLUB",
+          "RESTAURANT",
+          "RESTAURANT",
+          "RESTAURANT",
+          "RESTAURANT",
         ],
       },
     });
     expect(finalPoints(tycoon, [tycoon]).businesses).toBe(10 + 10);
     const six = player("s", {
       cards: {
-        businesses: ["CASINO", "TRANSPORTATION", "MOVIE_THEATER", "RACING", "REAL_ESTATE", "NIGHTCLUB"],
+        businesses: [
+          "CASINO",
+          "TRANSPORTATION",
+          "MOVIE_THEATER",
+          "RACING",
+          "REAL_ESTATE",
+          "NIGHTCLUB",
+        ],
       },
     });
     expect(finalPoints(six, [six]).businesses).toBe(6);
@@ -317,11 +361,13 @@ describe("scoring", () => {
   it("ends the game after round three with final scoring published", () => {
     const state = gameState(
       [
-        player("a", { cards: { coins: ["COINS"], jewels: ["RING"], businesses: ["CASINO"] } }),
+        player("a", {
+          cards: { coins: ["COINS"], jewels: ["RING"], businesses: ["CASINO"] },
+        }),
         player("b"),
       ],
       [],
-      { round: 3 }
+      { round: 3 },
     );
     endRound(state);
     expect(state.public.status).toBe("GAME_OVER");
@@ -334,8 +380,18 @@ describe("scoring", () => {
 
   it("keeps bodyguards, cars and businesses between rounds", () => {
     const state = gameState(
-      [player("a", { cards: { coins: ["COINS"], cars: ["CARS"], businesses: ["RACING"], bodyguards: ["BODYGUARDS"] } }), player("b")],
-      []
+      [
+        player("a", {
+          cards: {
+            coins: ["COINS"],
+            cars: ["CARS"],
+            businesses: ["RACING"],
+            bodyguards: ["BODYGUARDS"],
+          },
+        }),
+        player("b"),
+      ],
+      [],
     );
     endRound(state);
     expect(state.public.players[0].cards).toEqual({
@@ -371,9 +427,13 @@ describe("database safety", () => {
   // silently broke the caller's winning bid once.
   it("never leaves undefined in the state after an auction or a round end", () => {
     const state = gameState(
-      [player("a"), player("b", { money: ["3", "6", "9", "12"] }), player("c", { money: ["4", "7", "10", "11"] })],
+      [
+        player("a"),
+        player("b", { money: ["3", "6", "9", "12"] }),
+        player("c", { money: ["4", "7", "10", "11"] }),
+      ],
       ["POLICE_RAIDS", "COINS"],
-      { revealedCards: ["COINS"] }
+      { revealedCards: ["COINS"] },
     );
     initiateAuction(state);
     pass(state);

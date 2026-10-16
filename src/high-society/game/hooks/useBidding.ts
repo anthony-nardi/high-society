@@ -43,7 +43,7 @@ export default function useBidding({
     setStaged((previous) =>
       previous.includes(card)
         ? previous.filter((c) => c !== card)
-        : [...previous, card]
+        : [...previous, card],
     );
   }, []);
 

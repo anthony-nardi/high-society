@@ -7,7 +7,7 @@ afterEach(cleanup);
 describe("Hand", () => {
   it("renders every card in ascending order", () => {
     render(
-      <Hand cards={["25", "1", "10"]} selected={[]} onToggle={() => {}} />
+      <Hand cards={["25", "1", "10"]} selected={[]} onToggle={() => {}} />,
     );
 
     const labels = screen
@@ -24,14 +24,14 @@ describe("Hand", () => {
 
     expect(onToggle).toHaveBeenCalledWith("1");
     expect(
-      screen.getByRole("button", { name: "Money card 2" }).getAttribute(
-        "aria-pressed"
-      )
+      screen
+        .getByRole("button", { name: "Money card 2" })
+        .getAttribute("aria-pressed"),
     ).toBe("true");
     expect(
-      screen.getByRole("button", { name: "Money card 1" }).getAttribute(
-        "aria-pressed"
-      )
+      screen
+        .getByRole("button", { name: "Money card 1" })
+        .getAttribute("aria-pressed"),
     ).toBe("false");
   });
 

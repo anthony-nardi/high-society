@@ -16,7 +16,7 @@ const checkAuthentication = (request: CallableRequest<any>) => {
   if (!request.auth) {
     throw new HttpsError(
       "failed-precondition",
-      "The function must be called while authenticated."
+      "The function must be called while authenticated.",
     );
   }
 };
@@ -49,7 +49,7 @@ export const createlobby = onCall(
       gameName: GameName;
       /** A finished game this lobby is a rematch of; its players get a link. */
       rematchOf?: string;
-    }>
+    }>,
   ) => {
     verifyRequestAuthentication(request);
 
@@ -57,31 +57,46 @@ export const createlobby = onCall(
     const { gameName, rematchOf } = request.data;
 
     try {
-      await getDatabase()
-        .ref("/lobbies/" + lobbyUID)
-        .set({
-          id: lobbyUID,
-          game: gameName,
-          players: [
-            {
-              email: request?.auth?.token.email || request?.auth?.token.uid,
-              ready: false,
-              joinedAt: Date.now().toString(),
-              isBot: false,
-              gameName,
-            },
-          ],
-        });
+      const players: any[] = [
+        {
+          email: request?.auth?.token.email || request?.auth?.token.uid,
+          ready: false,
+          joinedAt: Date.now().toString(),
+          isBot: false,
+          gameName,
+        },
+      ];
 
+      // A rematch brings the finished game's bots along, already ready.
+      let finished: any = null;
       if (rematchOf) {
-        const finished = await getDatabase()
+        const snapshot = await getDatabase()
           .ref(`games/${rematchOf}/public`)
           .get();
-        if (finished.val()?.status === "GAME_OVER") {
-          await getDatabase()
-            .ref(`games/${rematchOf}/public/nextLobbyUID`)
-            .set(lobbyUID);
+        finished = snapshot.val();
+        if (finished?.status === "GAME_OVER") {
+          for (const player of finished.players || []) {
+            if (player.isBot) {
+              players.push({
+                email: player.email,
+                ready: true,
+                joinedAt: Date.now().toString(),
+                isBot: true,
+                gameName,
+              });
+            }
+          }
         }
+      }
+
+      await getDatabase()
+        .ref("/lobbies/" + lobbyUID)
+        .set({ id: lobbyUID, game: gameName, players });
+
+      if (finished?.status === "GAME_OVER") {
+        await getDatabase()
+          .ref(`games/${rematchOf}/public/nextLobbyUID`)
+          .set(lobbyUID);
       }
     } catch (error: any) {
       throw new HttpsError("unknown", error.message, error);
@@ -89,7 +104,7 @@ export const createlobby = onCall(
 
     logger.info(`New lobby created for ${gameName}`);
     return { lobbyUID };
-  }
+  },
 );
 
 export const joinlobby = onCall(
@@ -97,7 +112,7 @@ export const joinlobby = onCall(
     request: CallableRequest<{
       lobbyUID: string;
       email: string;
-    }>
+    }>,
   ) => {
     checkAuthentication(request);
 
@@ -117,7 +132,7 @@ export const joinlobby = onCall(
     }
 
     const doesPlayerExist = playersSnapshotValue.find(
-      (player: any) => player.email === email
+      (player: any) => player.email === email,
     );
 
     if (doesPlayerExist) return;
@@ -133,14 +148,14 @@ export const joinlobby = onCall(
     await updatePlayers(lobbyUID, playersSnapshotValue);
     logger.info("Lobby joined.");
     return { lobbyUID };
-  }
+  },
 );
 
 export const addbot = onCall(
   async (
     request: CallableRequest<{
       lobbyUID: string;
-    }>
+    }>,
   ) => {
     checkAuthentication(request);
 
@@ -170,7 +185,7 @@ export const addbot = onCall(
     await updatePlayers(lobbyUID, playersSnapshotValue);
     logger.info("Lobby joined.");
     return { lobbyUID };
-  }
+  },
 );
 
 export const removebot = onCall(
@@ -178,7 +193,7 @@ export const removebot = onCall(
     request: CallableRequest<{
       lobbyUID: string;
       email: string;
-    }>
+    }>,
   ) => {
     checkAuthentication(request);
 
@@ -191,7 +206,7 @@ export const removebot = onCall(
     }
 
     const remaining = (playersSnapshotValue || []).filter(
-      (player: any) => !(player.isBot && player.email === email)
+      (player: any) => !(player.isBot && player.email === email),
     );
 
     if (remaining.length === playersSnapshotValue.length) {
@@ -201,7 +216,7 @@ export const removebot = onCall(
     await updatePlayers(lobbyUID, remaining);
     logger.info(`Bot ${email} removed from lobby.`);
     return { lobbyUID };
-  }
+  },
 );
 
 export const readyup = onCall(
@@ -209,7 +224,7 @@ export const readyup = onCall(
     request: CallableRequest<{
       email: string;
       lobbyUID: string;
-    }>
+    }>,
   ) => {
     checkAuthentication(request);
 
@@ -241,5 +256,5 @@ export const readyup = onCall(
     await updatePlayers(lobbyUID, playersSnapshotValue);
     logger.info("Lobby joined.");
     return { lobbyUID };
-  }
+  },
 );

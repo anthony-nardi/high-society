@@ -84,7 +84,7 @@ export function toAuctionState(gameState: HighSocietyGameState): AuctionState {
     passed: !!player.hasPassed,
   }));
   const activePlayer = gameState.public.players.findIndex(
-    (player) => player.email === gameState.public.activePlayer
+    (player) => player.email === gameState.public.activePlayer,
   );
 
   return {
@@ -280,7 +280,7 @@ export function evaluate(state: AuctionState): number[] {
   const luxuryOut =
     settled.players.reduce(
       (total, p) => total + sum(p.status.filter(isLuxury)),
-      0
+      0,
     ) +
     (isLuxury(settled.card) &&
     !settled.players.some((p) => p.status.includes(settled.card))
@@ -300,7 +300,7 @@ export function evaluate(state: AuctionState): number[] {
   const expectedSpend = Math.max(
     2,
     ((luxuryLeft * MONEY_PER_LUXURY_POINT) / settled.players.length) *
-      (1 - progress)
+      (1 - progress),
   );
   const eliminationPenalty =
     ELIMINATION_PENALTY *
@@ -333,7 +333,10 @@ type SearchNode = Node<AuctionState, BotMove, number>;
 /** Runs a Maxn search from the state and returns the active player's best move. */
 export function searchBestMove(
   state: AuctionState,
-  { timeoutMs = DEFAULT_SEARCH_TIMEOUT_MS, depth = DEFAULT_SEARCH_DEPTH }: SearchOptions = {}
+  {
+    timeoutMs = DEFAULT_SEARCH_TIMEOUT_MS,
+    depth = DEFAULT_SEARCH_DEPTH,
+  }: SearchOptions = {},
 ): BotMove {
   const moves = candidateMoves(state);
   if (moves.length === 1) {
@@ -356,7 +359,7 @@ export function searchBestMove(
       next.resolved ? NODE_LEAF : NODE_INNER,
       next,
       move,
-      0
+      0,
     );
     child.activePlayer = next.activePlayer;
     return child;
@@ -372,7 +375,7 @@ export function searchBestMove(
 /** Convenience wrapper working directly on the stored game state. */
 export function chooseBotMove(
   gameState: HighSocietyGameState,
-  options?: SearchOptions
+  options?: SearchOptions,
 ): BotMove {
   return searchBestMove(toAuctionState(gameState), options);
 }

@@ -12,7 +12,10 @@ describe("GameLog", () => {
         <GameLog
           log={[
             { timestamp: 1000, title: "Game started. 7 revealed." },
-            { timestamp: 66000, title: "alice@example.com has highest bid of 10." },
+            {
+              timestamp: 66000,
+              title: "alice@example.com has highest bid of 10.",
+            },
             {
               timestamp: 70000,
               title: "Bot #1 passes and receives -5.",
@@ -20,7 +23,7 @@ describe("GameLog", () => {
             },
           ]}
         />
-      </MantineProvider>
+      </MantineProvider>,
     );
 
     expect(screen.getByText("Game started. 7 revealed.")).toBeTruthy();
@@ -34,7 +37,7 @@ describe("GameLog", () => {
     render(
       <MantineProvider>
         <GameLog log={[]} />
-      </MantineProvider>
+      </MantineProvider>,
     );
     expect(screen.queryByTestId("game-log")).toBeNull();
     expect(screen.queryByText("Game log")).toBeNull();

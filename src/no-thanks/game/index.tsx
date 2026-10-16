@@ -7,6 +7,7 @@ import ActionPanel from "./components/ActionPanel";
 import useGameState from "../../shared/hooks/useGameState";
 import { useUserContext } from "../../shared/context/useUserContext";
 import useTurnAlert from "../../shared/hooks/useTurnAlert";
+import useGameSounds from "../../shared/hooks/useGameSounds";
 import { NoThanksGameState } from "./types";
 import { useLobbyContext } from "../../shared/context/useLobbyContext";
 import panelClasses from "./components/ActionPanel.module.css";
@@ -15,6 +16,8 @@ export default function Game() {
   const { user, isSignedIn } = useUserContext();
   const { lobbyId } = useLobbyContext();
   const { gameState, isLoading } = useGameState<NoThanksGameState>();
+
+  useGameSounds(gameState?.notification);
 
   const loggedInPlayer = useMemo(() => {
     if (!gameState || !user) {

@@ -10,6 +10,7 @@ import { useLobbyContext } from "../../shared/context/useLobbyContext";
 import BidPanel from "./components/BidPanel";
 import useBidding from "./hooks/useBidding";
 import useTurnAlert from "../../shared/hooks/useTurnAlert";
+import useGameSounds from "../../shared/hooks/useGameSounds";
 import { greenCardsRevealed } from "./cardInfo";
 import panelClasses from "./components/BidPanel.module.css";
 
@@ -17,6 +18,8 @@ export default function Game() {
   const { user, isSignedIn } = useUserContext();
   const { lobbyId } = useLobbyContext();
   const { gameState, isLoading } = useGameState<HighSocietyGameState>();
+
+  useGameSounds(gameState?.notification);
 
   const deckInfo = useMemo(() => {
     if (!gameState) {

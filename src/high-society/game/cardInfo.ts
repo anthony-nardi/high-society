@@ -74,14 +74,14 @@ export default function cardInfo(card: string): CardInfo {
 /** Green cards already out of the deck, counting the one on the table. */
 export function greenCardsRevealed(
   players: { statusCards?: string[] }[],
-  currentCard: string
+  currentCard: string,
 ) {
   const held = players.reduce(
     (count, player) =>
       count +
       (player.statusCards || []).filter((card) => GREEN_CARDS.includes(card))
         .length,
-    0
+    0,
   );
   return held + (GREEN_CARDS.includes(currentCard) ? 1 : 0);
 }

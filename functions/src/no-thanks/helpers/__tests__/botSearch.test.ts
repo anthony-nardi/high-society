@@ -35,10 +35,14 @@ describe("cardPoints", () => {
 describe("card simulation", () => {
   it("converts the stored game state", () => {
     const state = toCardState(
-      gameState([player("alice", { cards: [9] }), player("bot", { chips: 4 })], [10, 30], {
-        chipsPlaced: 2,
-        activePlayer: "bot",
-      })
+      gameState(
+        [player("alice", { cards: [9] }), player("bot", { chips: 4 })],
+        [10, 30],
+        {
+          chipsPlaced: 2,
+          activePlayer: "bot",
+        },
+      ),
     );
     expect(state.activePlayer).toBe(1);
     expect(state.card).toBe(10);
@@ -58,7 +62,7 @@ describe("card simulation", () => {
 
   it("gives the card and the chips to whoever takes it", () => {
     const state = toCardState(
-      gameState([player("a"), player("b")], [20], { chipsPlaced: 3 })
+      gameState([player("a"), player("b")], [20], { chipsPlaced: 3 }),
     );
     const next = applyMove(state, "take");
     expect(next.players[0].cards).toEqual([20]);
@@ -68,12 +72,11 @@ describe("card simulation", () => {
   });
 
   it("only offers a chip to players who have one", () => {
-    expect(candidateMoves(toCardState(gameState([player("a")], [20])))).toEqual([
-      "take",
-      "chip",
-    ]);
+    expect(candidateMoves(toCardState(gameState([player("a")], [20])))).toEqual(
+      ["take", "chip"],
+    );
     expect(
-      candidateMoves(toCardState(gameState([player("a", { chips: 0 })], [20])))
+      candidateMoves(toCardState(gameState([player("a", { chips: 0 })], [20]))),
     ).toEqual(["take"]);
   });
 });
@@ -82,9 +85,12 @@ describe("evaluation", () => {
   it("prefers fewer points and more chips", () => {
     const state = toCardState(
       gameState(
-        [player("light", { cards: [5], chips: 8 }), player("heavy", { cards: [30], chips: 2 })],
-        [20]
-      )
+        [
+          player("light", { cards: [5], chips: 8 }),
+          player("heavy", { cards: [30], chips: 2 }),
+        ],
+        [20],
+      ),
     );
     state.resolved = true;
     const [light, heavy] = evaluate(state);
@@ -92,7 +98,10 @@ describe("evaluation", () => {
   });
 
   it("treats a card that joins a run as nearly free", () => {
-    const base = gameState([player("a", { cards: [21, 22] }), player("b")], [20]);
+    const base = gameState(
+      [player("a", { cards: [21, 22] }), player("b")],
+      [20],
+    );
     const joined = toCardState(base);
     joined.players[0].cards.push(20);
     joined.resolved = true;
@@ -105,16 +114,22 @@ describe("evaluation", () => {
 
 describe("chooseBotMove", () => {
   it("places a chip on a high card nobody wants", () => {
-    const state = gameState([player("bot", { isBot: true }), player("a"), player("b")], [35, 20, 10]);
+    const state = gameState(
+      [player("bot", { isBot: true }), player("a"), player("b")],
+      [35, 20, 10],
+    );
     expect(chooseBotMove(state, search)).toBe("chip");
   });
 
   it("takes a card that extends its run when an opponent would otherwise grab it", () => {
     // Bob has no chips left, so passing the 22 on hands it to him for free.
     const state = gameState(
-      [player("bot", { isBot: true, cards: [21] }), player("bob", { chips: 0 })],
+      [
+        player("bot", { isBot: true, cards: [21] }),
+        player("bob", { chips: 0 }),
+      ],
       [22, 30, 10],
-      { chipsPlaced: 3 }
+      { chipsPlaced: 3 },
     );
     expect(chooseBotMove(state, search)).toBe("take");
   });
@@ -124,7 +139,7 @@ describe("chooseBotMove", () => {
     const state = gameState(
       [player("bot", { isBot: true, cards: [21] }), player("a"), player("b")],
       [22, 30, 10],
-      { chipsPlaced: 3 }
+      { chipsPlaced: 3 },
     );
     expect(chooseBotMove(state, search)).toBe("chip");
   });
@@ -133,7 +148,7 @@ describe("chooseBotMove", () => {
     const state = gameState(
       [player("bot", { isBot: true }), player("a"), player("b")],
       [5, 30, 10],
-      { chipsPlaced: 7 }
+      { chipsPlaced: 7 },
     );
     expect(chooseBotMove(state, search)).toBe("take");
   });
@@ -141,7 +156,7 @@ describe("chooseBotMove", () => {
   it("must take when it has no chips", () => {
     const state = gameState(
       [player("bot", { isBot: true, chips: 0 }), player("a"), player("b")],
-      [35, 20, 10]
+      [35, 20, 10],
     );
     expect(chooseBotMove(state, search)).toBe("take");
   });
@@ -158,7 +173,7 @@ describe("maybeTakeBotTurn", () => {
   it("applies the searched move and logs it", async () => {
     const state = gameState(
       [player("bot", { isBot: true }), player("alice"), player("bob")],
-      [35, 20, 10]
+      [35, 20, 10],
     );
     await maybeTakeBotTurn(state, { minimumTurnMs: 0, search });
     expect(state.public.chipsPlaced).toBe(1);

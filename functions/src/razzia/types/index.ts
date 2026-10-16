@@ -99,7 +99,8 @@ export type RazziaPlayerState = GenericPlayerState & {
   isBot: boolean;
 };
 
-export type RoundState = "NORMAL_AUCTION" | "FORCED_AUCTION" | "SCORING" | "ACTION";
+export type RoundState =
+  "NORMAL_AUCTION" | "FORCED_AUCTION" | "SCORING" | "ACTION";
 
 /** How a round's or the game's points broke down, for the game over screen. */
 export type ScoreBreakdown = {
@@ -133,6 +134,8 @@ export type RazziaPublicGameState = {
   discardIfUnsold?: boolean;
   /** Players who passed in the current auction, in order. */
   auctionPassed?: string[];
+  /** How many of each card have been revealed this game: what a player counting cards would know. */
+  revealedCounts?: { [card: string]: number };
   /** Scoring breakdowns, appended at each round end. */
   scoring?: ScoreBreakdown[];
   /** Set when a player starts a rematch after this game ends. */

@@ -53,7 +53,7 @@ export function updatePlayerLastAction(player: GenericPlayerState) {
 
 export function updateGameState<T extends GenericPlayerState>(
   gameState: GenericGameState<T>,
-  message: string
+  message: string,
 ) {
   return getDatabase()
     .ref("/games/" + gameState.public.id)

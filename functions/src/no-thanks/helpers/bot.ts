@@ -8,7 +8,7 @@ import { wait } from "../../high-society/helpers";
 import { BotMove, chooseBotMove, SearchOptions } from "./botSearch";
 
 /** Minimum time a bot "thinks" so its moves are readable at the table. */
-export const BOT_TURN_MIN_MS = 3000;
+export const BOT_TURN_MIN_MS = 1500;
 
 export type BotTurnOptions = {
   /** Lower bound on the turn's duration; 0 skips the pause (tests). */
@@ -18,7 +18,7 @@ export type BotTurnOptions = {
 
 export async function maybeTakeBotTurn(
   gameState: NoThanksGameState,
-  { minimumTurnMs = BOT_TURN_MIN_MS, search }: BotTurnOptions = {}
+  { minimumTurnMs = BOT_TURN_MIN_MS, search }: BotTurnOptions = {},
 ) {
   const activePlayer = getActivePlayer(gameState);
 

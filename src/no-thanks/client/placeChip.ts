@@ -9,6 +9,7 @@ export default async function placeChip(placeChipRequest: PlaceChipRequest) {
   const placeChipOnActiveCardApi = httpsCallable<PlaceChipRequest, void>(
     functions,
     "placeChipOnActiveCard",
+    { timeout: 300_000 },
   );
 
   try {

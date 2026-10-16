@@ -18,7 +18,7 @@ describe("ConnectedPlayersCount", () => {
     ];
 
     const highSociety = renderWithMantine(
-      <ConnectedPlayersCount players={players} gameName="high-society" />
+      <ConnectedPlayersCount players={players} gameName="high-society" />,
     );
     expect(highSociety.container.textContent).toContain("2 / 5 players");
     expect(highSociety.container.textContent).toContain("Need 1 more to start");
@@ -28,11 +28,11 @@ describe("ConnectedPlayersCount", () => {
       <ConnectedPlayersCount
         players={[...players, { email: "carol@example.com", ready: false }]}
         gameName="no-thanks"
-      />
+      />,
     );
     expect(noThanks.container.textContent).toContain("3 / 7 players");
     expect(noThanks.container.textContent).toContain(
-      "Starts when everyone is ready"
+      "Starts when everyone is ready",
     );
   });
 });
@@ -45,7 +45,7 @@ describe("PlayersList", () => {
           { email: "alice@example.com", ready: true },
           { email: "bob@example.com", ready: false },
         ]}
-      />
+      />,
     );
 
     expect(screen.getByText("alice")).toBeTruthy();
@@ -63,7 +63,7 @@ describe("PlayersList", () => {
           { email: "Bot #1", ready: true, isBot: true },
         ]}
         onRemoveBot={onRemoveBot}
-      />
+      />,
     );
 
     expect(screen.getByText("Bot 1")).toBeTruthy();

@@ -7,7 +7,9 @@ export type BidRequest = {
 
 export default async function bid(bidRequest: BidRequest) {
   const functions = getFunctions();
-  const bidApi = httpsCallable<BidRequest, void>(functions, "bid");
+  const bidApi = httpsCallable<BidRequest, void>(functions, "bid", {
+    timeout: 300_000,
+  });
 
   try {
     await bidApi(bidRequest);

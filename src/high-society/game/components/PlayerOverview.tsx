@@ -50,8 +50,8 @@ export default function PlayerOverview({
           {isCurrentUser
             ? "Your turn"
             : isBotName(player.email)
-            ? "Bot thinking…"
-            : "Their turn"}
+              ? "Bot thinking…"
+              : "Their turn"}
         </Badge>
       )}
       <Box>

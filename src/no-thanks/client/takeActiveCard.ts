@@ -11,6 +11,7 @@ export default async function takeActiveCard(
   const takeActiveCardApi = httpsCallable<TakeActiveCardRequest, void>(
     functions,
     "takeActiveCard",
+    { timeout: 300_000 },
   );
 
   try {

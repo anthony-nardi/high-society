@@ -13,14 +13,17 @@ import {
 import { BotMove, chooseBotMove, SearchOptions } from "./botSearch";
 
 /** Minimum time a bot "thinks" so its moves are readable at the table. */
-export const BOT_TURN_MIN_MS = 2500;
+export const BOT_TURN_MIN_MS = 1500;
 
 export type BotTurnOptions = {
   minimumTurnMs?: number;
   search?: SearchOptions;
 };
 
-export function applyBotMove(gameState: RazziaGameState, move: BotMove): ActionResult {
+export function applyBotMove(
+  gameState: RazziaGameState,
+  move: BotMove,
+): ActionResult {
   switch (move.type) {
     case "reveal":
       return revealCard(gameState);
@@ -37,7 +40,7 @@ export function applyBotMove(gameState: RazziaGameState, move: BotMove): ActionR
 
 export async function maybeTakeBotTurn(
   gameState: RazziaGameState,
-  { minimumTurnMs = BOT_TURN_MIN_MS, search }: BotTurnOptions = {}
+  { minimumTurnMs = BOT_TURN_MIN_MS, search }: BotTurnOptions = {},
 ) {
   const activePlayer = getActivePlayer(gameState);
   if (!activePlayer?.isBot) return;

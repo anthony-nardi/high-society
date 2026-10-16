@@ -35,9 +35,8 @@ describe("handLayout", () => {
 
 describe("fanWidthFor", () => {
   it("narrows the fan on a phone and caps it on a desktop", async () => {
-    const { fanWidthFor, MAX_TOTAL_WIDTH_PX, MIN_TOTAL_WIDTH_PX } = await import(
-      "../handLayout"
-    );
+    const { fanWidthFor, MAX_TOTAL_WIDTH_PX, MIN_TOTAL_WIDTH_PX } =
+      await import("../handLayout");
     expect(fanWidthFor(1440, 100)).toBe(MAX_TOTAL_WIDTH_PX);
     expect(fanWidthFor(375, 60)).toBe(375 - 60 - 48);
     expect(fanWidthFor(300, 60)).toBe(MIN_TOTAL_WIDTH_PX);

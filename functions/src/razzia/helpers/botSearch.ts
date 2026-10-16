@@ -50,6 +50,23 @@ const TOTAL_MONEY_WEIGHT = 0.15;
 const BUSINESS_FUTURE_WEIGHT = 0.6;
 /** Loot worth at least this much makes the bot call an auction early in the round. */
 const CALL_THRESHOLD = 7;
+/** Police cards in the full deck; the bot counts them like a player would. */
+const POLICE_IN_DECK = 21;
+
+/**
+ * What a card-counting player knows about the next card: nothing about its
+ * order, only the deck's composition minus everything revealed so far.
+ */
+export function policeOdds(gameState: RazziaGameState) {
+  const revealed = (gameState.public.revealedCounts || {}).POLICE_RAIDS || 0;
+  const policeLeft = Math.max(0, POLICE_IN_DECK - revealed);
+  const cardsLeft = gameState.public.remainingCards;
+  return {
+    policeLeft,
+    cardsLeft,
+    probability: cardsLeft > 0 ? policeLeft / cardsLeft : 0,
+  };
+}
 
 const sum = (money: string[] | undefined) =>
   (money || []).reduce((total, m) => total + Number(m), 0);
@@ -68,7 +85,7 @@ export function evaluate(gameState: RazziaGameState): number[] {
   return players.map((player) => {
     const round = Object.values(roundPoints(player, players)).reduce(
       (a, b) => a + b,
-      0
+      0,
     );
     const business = finalPoints(player, players).businesses || 0;
     return (
@@ -137,7 +154,7 @@ export function auctionMoves(gameState: RazziaGameState): BotMove[] {
 
 export function applyAuctionMove(
   gameState: RazziaGameState,
-  move: BotMove
+  move: BotMove,
 ): RazziaGameState {
   const next = cloneForSearch(gameState);
   if (move.type === "bid") bid(next, move.amount);
@@ -152,7 +169,10 @@ export type SearchOptions = { timeoutMs?: number; depth?: number };
 /** Maxn over the current auction from the active player's point of view. */
 export function searchAuctionMove(
   gameState: RazziaGameState,
-  { timeoutMs = DEFAULT_SEARCH_TIMEOUT_MS, depth = DEFAULT_SEARCH_DEPTH }: SearchOptions = {}
+  {
+    timeoutMs = DEFAULT_SEARCH_TIMEOUT_MS,
+    depth = DEFAULT_SEARCH_DEPTH,
+  }: SearchOptions = {},
 ): BotMove {
   const moves = auctionMoves(gameState);
   if (moves.length === 1) return moves[0];
@@ -171,8 +191,16 @@ export function searchAuctionMove(
   tree.CreateChildNode = (parent, move) => {
     const next = applyAuctionMove(parent.gamestate, move);
     const resolved = !isAuction(next) || next.public.status === "GAME_OVER";
-    const child: SearchNode = new Node(resolved ? NODE_LEAF : NODE_INNER, next, move, 0);
-    child.activePlayer = Math.max(0, getPlayerIndex(next, next.public.activePlayer));
+    const child: SearchNode = new Node(
+      resolved ? NODE_LEAF : NODE_INNER,
+      next,
+      move,
+      0,
+    );
+    child.activePlayer = Math.max(
+      0,
+      getPlayerIndex(next, next.public.activePlayer),
+    );
     return child;
   };
   tree.getScores = (node) => {
@@ -186,7 +214,7 @@ export function searchAuctionMove(
 /** Best single card to steal with a thief, if any is worth it. */
 export function bestThiefTarget(
   gameState: RazziaGameState,
-  player: RazziaPlayerState
+  player: RazziaPlayerState,
 ): LootCards | null {
   const index = getPlayerIndex(gameState, player.email);
   const before = evaluate(gameState)[index];
@@ -225,19 +253,32 @@ export function chooseActionMove(gameState: RazziaGameState): BotMove {
   if (!reveal) return { type: "auction" };
   if (!call) return { type: "reveal" };
 
-  // The closer the raids are to ending the round, the sooner it is worth
-  // cashing in what is on the table.
+  // Revealing risks a police raid: a forced auction now, or with the last
+  // raid the loss of everything on the table. The likelier that is, and the
+  // nearer the round's end, the sooner it is worth cashing in the table.
   const raidsLeft = gameState.public.raidLimit - gameState.public.policeRaids;
-  const threshold = Math.max(2, CALL_THRESHOLD - (6 - Math.min(6, raidsLeft)));
+  const { probability } = policeOdds(gameState);
+  const endRisk = raidsLeft === 1 ? 1 : raidsLeft === 2 ? 0.4 : 0.15;
   const value = lootValueFor(gameState, player.email);
+  const threshold = Math.max(
+    1.5,
+    CALL_THRESHOLD - 10 * probability - 4 * endRisk,
+  );
   const canAfford = biddableMoney(gameState, player).length > 0;
 
-  return value >= threshold && canAfford ? { type: "auction" } : { type: "reveal" };
+  // With the final raid looming, the expected loss from one more reveal is
+  // the table's value times the raid chance; call when that outweighs the
+  // modest gain of another card.
+  const expectedLoss = raidsLeft === 1 ? value * probability : 0;
+
+  return (value >= threshold || expectedLoss > 1.5) && canAfford
+    ? { type: "auction" }
+    : { type: "reveal" };
 }
 
 export function chooseBotMove(
   gameState: RazziaGameState,
-  options?: SearchOptions
+  options?: SearchOptions,
 ): BotMove {
   if (isAuction(gameState)) return searchAuctionMove(gameState, options);
   return chooseActionMove(gameState);

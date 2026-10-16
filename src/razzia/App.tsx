@@ -7,6 +7,7 @@ import RazziaRules from "./game/components/RulesDrawer";
 import { GameStateProvider } from "../shared/context/GameStateProvider";
 import { LobbyProvider } from "../shared/context/LobbyProvider";
 import { UserProvider } from "../shared/context/UserProvider";
+import SoundToggle from "../shared/components/SoundToggle";
 import Game from "./game";
 
 initializeFirebase();
@@ -17,6 +18,7 @@ function App() {
       <UserProvider>
         <LobbyProvider>
           <GameStateProvider gameName={"razzia"}>
+            <SoundToggle />
             <RazziaRules />
             <GameTitle />
             <Login />

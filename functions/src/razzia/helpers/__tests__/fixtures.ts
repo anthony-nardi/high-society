@@ -3,7 +3,7 @@ import { emptyCards } from "../rules";
 
 export function player(
   email: string,
-  overrides: Partial<RazziaPlayerState> = {}
+  overrides: Partial<RazziaPlayerState> = {},
 ): RazziaPlayerState {
   const money = overrides.money || ["2", "5", "8", "13"];
   return {
@@ -22,7 +22,7 @@ export function player(
 export function gameState(
   players: RazziaPlayerState[],
   deck: LootCards[],
-  overrides: Partial<RazziaGameState["public"]> = {}
+  overrides: Partial<RazziaGameState["public"]> = {},
 ): RazziaGameState {
   return {
     public: {

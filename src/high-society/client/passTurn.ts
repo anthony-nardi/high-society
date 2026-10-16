@@ -6,7 +6,9 @@ export type PassTurnRequest = {
 
 export default async function passTurn(passTurnRequest: PassTurnRequest) {
   const functions = getFunctions();
-  const passTurn = httpsCallable<PassTurnRequest, void>(functions, "passturn");
+  const passTurn = httpsCallable<PassTurnRequest, void>(functions, "passturn", {
+    timeout: 300_000,
+  });
 
   try {
     await passTurn(passTurnRequest);

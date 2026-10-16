@@ -24,7 +24,7 @@ export type GenericPlayerState = {
 
 // Define the GenericGameState type
 export type GenericGameState<
-  PlayerType extends GenericPlayerState = GenericPlayerState
+  PlayerType extends GenericPlayerState = GenericPlayerState,
 > = {
   public: {
     id: string;
