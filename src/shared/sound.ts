@@ -19,7 +19,8 @@ export type SoundKind =
   | "stoneJump"
   | "stoneFlip"
   | "stoneClatter"
-  | "stoneScore";
+  | "stoneScore"
+  | "train";
 
 const MUTE_KEY = "sound:muted";
 const MUTE_EVENT = "sound:mute-changed";
@@ -185,6 +186,73 @@ const SOUNDS: { [kind in SoundKind]: Note[] } = {
     ...knock(0.36, 250, 0.5),
     ...lift(0.42, 0.8),
   ],
+  // A passenger carried: a few chugs, then a steam whistle chord that bends up.
+  train: [
+    {
+      frequency: 0,
+      at: 0,
+      length: 0.06,
+      volume: 0.5,
+      noiseFrequency: 500,
+      noiseQ: 0.8,
+    },
+    {
+      frequency: 0,
+      at: 0.12,
+      length: 0.06,
+      volume: 0.5,
+      noiseFrequency: 500,
+      noiseQ: 0.8,
+    },
+    {
+      frequency: 0,
+      at: 0.22,
+      length: 0.06,
+      volume: 0.55,
+      noiseFrequency: 550,
+      noiseQ: 0.8,
+    },
+    {
+      frequency: 0,
+      at: 0.3,
+      length: 0.06,
+      volume: 0.55,
+      noiseFrequency: 550,
+      noiseQ: 0.8,
+    },
+    {
+      frequency: 392,
+      at: 0.36,
+      length: 0.55,
+      type: "triangle",
+      volume: 0.55,
+      glideTo: 415,
+    },
+    {
+      frequency: 493.88,
+      at: 0.36,
+      length: 0.55,
+      type: "triangle",
+      volume: 0.5,
+      glideTo: 523.25,
+    },
+    {
+      frequency: 622.25,
+      at: 0.36,
+      length: 0.55,
+      type: "sine",
+      volume: 0.45,
+      glideTo: 659.25,
+    },
+    {
+      frequency: 0,
+      at: 0.36,
+      length: 0.5,
+      volume: 0.25,
+      noiseFrequency: 2400,
+      noiseQ: 0.5,
+    },
+  ],
   // A ring lifted off for keeps, with a small chord behind it.
   stoneScore: [
     ...lift(0, 1.2),
@@ -286,7 +354,7 @@ export function soundForEvent(title: string): SoundKind | null {
   if (/^\S+ plays (mercenary|a scarecrow|drummer|heroine|courtesan)/.test(text))
     return "card";
   if (/ wins \w+ with \d/.test(text)) return "win";
-  if (/carries a passenger/.test(text)) return "win";
+  if (/carries a passenger/.test(text)) return "train";
   if (/lays \w+ track/.test(text)) return "stonePlace";
   if (/takes a \w+ share/.test(text)) return "card";
   if (/has nowhere to build|has no passenger to carry/.test(text))

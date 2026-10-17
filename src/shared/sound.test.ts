@@ -100,7 +100,7 @@ describe("soundForEvent", () => {
     expect(soundForEvent("a lays Blue track in Boston.")).toBe("stonePlace");
     expect(
       soundForEvent("a carries a passenger from Boston to Albany for $3."),
-    ).toBe("win");
+    ).toBe("train");
     expect(soundForEvent("Round 2 begins.")).toBe("turn");
     expect(soundForEvent("a wins!")).toBe("fanfare");
     expect(soundForEvent("The game is a draw.")).toBe("fanfare");

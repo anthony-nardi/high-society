@@ -17,40 +17,60 @@ import { useLobbyContext } from "../../shared/context/useLobbyContext";
 import TurnBanner from "../../shared/components/TurnBanner";
 import displayName from "../../shared/utils/displayName";
 import { Railroad, RideTheRailsGameState } from "./types";
-import Map, { Highlight } from "./components/Map";
+import Map, { Highlight, Leg } from "./components/Map";
 import PlayerOverview from "./components/PlayerOverview";
 import ActionPanel, { Pending } from "./components/ActionPanel";
 import GameOver from "./components/GameOver";
+import TurnOrder from "./components/TurnOrder";
+import Legend from "./components/Legend";
 import takeRideTheRailsShare from "../client/takeRideTheRailsShare";
 import buildRideTheRailsTrack from "../client/buildRideTheRailsTrack";
 import endRideTheRailsBuild from "../client/endRideTheRailsBuild";
 import rideTheRails from "../client/rideTheRails";
 import {
+  applyBuild,
   cityName,
   COLOURS,
   label,
   legalHexes,
+  legsOf,
   openRailroads,
+  railroadsFor,
   RAILROADS,
   ridableCities,
   sharesOf,
   traceJourney,
 } from "./board";
 import panelClasses from "./components/ActionPanel.module.css";
-import tableClasses from "../../shared/table.module.css";
+import classes from "./rails.module.css";
+
+/** A locomotive shown before the server confirms it lives this long at most. */
+const OPTIMISTIC_TTL_MS = 8000;
 
 export default function Game() {
   const { user, isSignedIn } = useUserContext();
   const { lobbyId } = useLobbyContext();
-  const { gameState, isLoading } = useGameState<RideTheRailsGameState>();
+  const { gameState: serverState, isLoading } =
+    useGameState<RideTheRailsGameState>();
   const [loading, setLoading] = useState(false);
   const [pendingState, setPendingState] = useState<{
     key: string;
     pending: Pending;
   }>({ key: "", pending: null });
+  const [preview, setPreview] = useState<{
+    turn: number;
+    at: number;
+    state: RideTheRailsGameState;
+  } | null>(null);
 
-  useGameSounds(gameState?.notification);
-  useBotNudge(lobbyId, gameState);
+  useGameSounds(serverState?.notification);
+  useBotNudge(lobbyId, serverState);
+
+  // What the table shows: the server's state, or a locomotive laid a moment ago.
+  const gameState =
+    serverState && preview && preview.turn === serverState.turn
+      ? preview.state
+      : serverState;
 
   const me = useMemo(() => {
     if (!gameState || !user) return null;
@@ -76,11 +96,37 @@ export default function Game() {
   const call = useCallback(async (fn: () => Promise<unknown>) => {
     setLoading(true);
     try {
-      await fn();
+      return await fn();
     } finally {
       setLoading(false);
     }
   }, []);
+
+  const build = useCallback(
+    (railroad: Railroad, hex: number) => {
+      if (!serverState || !gameState) return;
+      const at = Date.now();
+      setPreview({
+        turn: serverState.turn,
+        at,
+        state: applyBuild(gameState, railroad, hex),
+      });
+      // Never show a locomotive the server has not confirmed for long.
+      window.setTimeout(
+        () => setPreview((p) => (p && p.at === at ? null : p)),
+        OPTIMISTIC_TTL_MS,
+      );
+      void call(async () => {
+        const accepted = await buildRideTheRailsTrack({
+          lobbyUID,
+          railroad,
+          hex,
+        });
+        if (!accepted) setPreview(null);
+      });
+    },
+    [serverState, gameState, call, lobbyUID],
+  );
 
   // The one railroad you hold is chosen for you when building.
   const buildRailroad: Railroad | null = useMemo(() => {
@@ -100,10 +146,14 @@ export default function Game() {
 
   const highlights = useMemo(() => {
     const h: { [hex: number]: Highlight } = {};
-    if (!gameState || !me || !acting || loading) return h;
-    if (gameState.phase === "BUILD" && buildRailroad) {
-      for (const hex of legalHexes(gameState, me, buildRailroad))
-        h[hex] = "selectable";
+    if (!gameState || !me || !acting) return h;
+    if (gameState.phase === "BUILD") {
+      const railroads = buildRailroad
+        ? [buildRailroad]
+        : openRailroads(gameState).filter((r) => sharesOf(me, r) > 0);
+      for (const r of railroads)
+        for (const hex of legalHexes(gameState, me, r)) h[hex] = "selectable";
+      if (pending?.kind === "pick") h[pending.hex] = "selected";
     } else if (gameState.phase === "RIDE") {
       if (!journey) {
         for (const city of ridableCities(gameState)) h[city] = "selectable";
@@ -114,15 +164,20 @@ export default function Game() {
       }
     }
     return h;
-  }, [gameState, me, acting, loading, buildRailroad, journey, traced]);
+  }, [gameState, me, acting, buildRailroad, pending, journey, traced]);
 
   const handleHex = useCallback(
     (hex: number) => {
       if (!gameState || !me || !acting || loading) return;
-      if (gameState.phase === "BUILD" && buildRailroad) {
-        const railroad = buildRailroad;
-        if (pending?.kind !== "build") setPending({ kind: "build", railroad });
-        void call(() => buildRideTheRailsTrack({ lobbyUID, railroad, hex }));
+      if (gameState.phase === "BUILD") {
+        if (buildRailroad) {
+          build(buildRailroad, hex);
+          return;
+        }
+        const options = railroadsFor(gameState, me, hex);
+        if (options.length === 1) build(options[0], hex);
+        else if (options.length > 1)
+          setPending({ kind: "pick", hex, railroads: options });
       } else if (gameState.phase === "RIDE") {
         if (!journey) {
           setPending({ kind: "ride", journey: { start: hex, legs: [] } });
@@ -150,12 +205,10 @@ export default function Game() {
       acting,
       loading,
       buildRailroad,
-      pending,
+      build,
       journey,
       traced,
       setPending,
-      call,
-      lobbyUID,
     ],
   );
 
@@ -163,7 +216,7 @@ export default function Game() {
     isSignedIn && gameState && gameState.status && lobbyId && user;
   const isGameOver = isGameActive && gameState?.status === "GAME_OVER";
 
-  if (gameState === null) return null;
+  if (!gameState) return null;
   if (isLoading) {
     return (
       <Center>
@@ -177,21 +230,28 @@ export default function Game() {
     );
   }
 
-  const routeHexes = traced
-    ? traced.route.hexes
-    : gameState.phase === "RIDE" || gameState.lastMove?.type === "ride"
-      ? gameState.lastRide?.hexes
-      : undefined;
   const lastRide = gameState.lastRide;
+  const showLastRide =
+    !!lastRide &&
+    !traced &&
+    (gameState.phase === "RIDE" || gameState.lastMove?.type === "ride");
+  const legs: Leg[] | undefined = traced
+    ? legsOf(gameState, journey as NonNullable<typeof journey>)
+    : showLastRide
+      ? legsOf(gameState, lastRide.journey)
+      : undefined;
+  const replayKey =
+    showLastRide && lastRide.email !== me?.email
+      ? `${gameState.turn}:${lastRide.email}`
+      : undefined;
 
   return (
     <>
       <TurnBanner active={acting && inProgress} />
       <Container fluid px="md" pt={44} pb="md">
-        <div className={tableClasses.table}>
+        <div className={classes.table}>
           <div
-            className={`${tableClasses.board} ${loading ? tableClasses.boardPending : ""}`}
-            style={{ order: 1 }}
+            className={`${classes.board} ${loading && gameState.phase !== "BUILD" ? classes.boardPending : ""}`}
             aria-busy={loading}
           >
             <Stack gap="xs" align="center">
@@ -230,13 +290,16 @@ export default function Game() {
                   {(gameState.passengers || []).length} passengers
                 </Badge>
               </Group>
+              <TurnOrder gameState={gameState} />
               <Map
                 gameState={gameState}
                 highlights={highlights}
                 onHex={handleHex}
-                routeHexes={routeHexes}
+                legs={legs}
+                replayKey={replayKey}
               />
-              {lastRide && !traced && (
+              <Legend />
+              {showLastRide && (
                 <Text size="sm" c="dimmed" ta="center">
                   {displayName(lastRide.email)} carried a passenger from{" "}
                   {cityName(lastRide.journey.start)} to{" "}
@@ -254,10 +317,7 @@ export default function Game() {
               )}
             </Stack>
           </div>
-          <div
-            className={tableClasses.players}
-            style={{ order: 2, gridTemplateColumns: "1fr" }}
-          >
+          <div className={classes.players}>
             <Stack gap="sm">
               {gameState.order.map((email) => {
                 const player = gameState.players.find((p) => p.email === email);
@@ -284,17 +344,16 @@ export default function Game() {
         <ActionPanel
           gameState={gameState}
           me={me}
-          pending={
-            pending ||
-            (buildRailroad && gameState.phase === "BUILD"
-              ? { kind: "build", railroad: buildRailroad }
-              : null)
-          }
+          pending={pending}
           loading={loading}
           onShare={(railroad) =>
             void call(() => takeRideTheRailsShare({ lobbyUID, railroad }))
           }
           onRailroad={(railroad) => setPending({ kind: "build", railroad })}
+          onBuildAt={(railroad, hex) => {
+            setPending(null);
+            build(railroad, hex);
+          }}
           onEndBuild={() => void call(() => endRideTheRailsBuild({ lobbyUID }))}
           onLeg={(railroad, to) => {
             if (!journey) return;

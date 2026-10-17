@@ -320,3 +320,74 @@ export function ridableCities(gameState: RideTheRailsGameState) {
     RAILROADS.some((r) => linksFrom(gameState, r, city).length > 0),
   );
 }
+
+/** The journey split into legs, each with the hexes it walks, start included. */
+export function legsOf(
+  gameState: RideTheRailsGameState,
+  journey: Journey,
+): { railroad: Railroad; hexes: number[] }[] {
+  const used = new Set<number>([journey.start]);
+  const out: { railroad: Railroad; hexes: number[] }[] = [];
+  let at = journey.start;
+  for (const leg of journey.legs) {
+    const link = linksFrom(gameState, leg.railroad, at, used).find(
+      (l) => l.to === leg.to,
+    );
+    if (!link) break;
+    for (const h of link.path) used.add(h);
+    out.push({ railroad: leg.railroad, hexes: [at, ...link.path] });
+    at = leg.to;
+  }
+  return out;
+}
+
+/** Shows a locomotive at once while the server is asked; bonuses wait for the server. */
+export function applyBuild(
+  gameState: RideTheRailsGameState,
+  railroad: Railroad,
+  hex: number,
+): RideTheRailsGameState {
+  return {
+    ...gameState,
+    track: {
+      ...(gameState.track || {}),
+      [railroad]: [...trackOf(gameState, railroad), hex],
+    },
+    supply: { ...gameState.supply, [railroad]: gameState.supply[railroad] - 1 },
+    built: gameState.built + 1,
+    mountainBuilt: gameState.mountainBuilt || isMountain(hex),
+    lastMove: { type: "build", email: gameState.activePlayer, railroad, hex },
+  };
+}
+
+/** Every link of a railroad, counted once per pair of cities. */
+export function linkCount(
+  gameState: RideTheRailsGameState,
+  railroad: Railroad,
+) {
+  let n = 0;
+  for (const city of CITIES) {
+    if (!trackOf(gameState, railroad).includes(city)) continue;
+    n += linksFrom(gameState, railroad, city).filter((l) => l.to > city).length;
+  }
+  return n;
+}
+
+/** Whether a player has already acted in the current phase. */
+export function hasActed(gameState: RideTheRailsGameState, email: string) {
+  const i = gameState.order.indexOf(email);
+  if (i < 0) return false;
+  return gameState.phase === "SHARE" ? i > gameState.seat : i < gameState.seat;
+}
+
+/** Railroads the player could lay in a hex right now. */
+export function railroadsFor(
+  gameState: RideTheRailsGameState,
+  player: RideTheRailsPlayerState,
+  hex: number,
+): Railroad[] {
+  return openRailroads(gameState).filter(
+    (r) =>
+      sharesOf(player, r) > 0 && !placementProblem(gameState, player, r, hex),
+  );
+}

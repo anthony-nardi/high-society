@@ -1,0 +1,133 @@
+/* Layout for Ride the Rails: the map above the players on phones, beside them on wide screens. */
+.table {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.board {
+  min-width: 0;
+  transition: opacity 150ms ease;
+}
+
+.boardPending {
+  opacity: 0.85;
+}
+
+.players {
+  min-width: 0;
+}
+
+@media (min-width: 68em) {
+  .table {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 16px;
+  }
+}
+
+/* The map viewport with its zoom buttons. */
+.mapFrame {
+  position: relative;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.zoomButtons {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 2;
+}
+
+.zoomButtons button {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  background: rgba(255, 255, 255, 0.92);
+  color: #222;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.zoomButtons button:active {
+  background: #ffd86b;
+}
+
+.hint {
+  position: absolute;
+  left: 10px;
+  bottom: 8px;
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+}
+
+/* Money floating up off a player card after a payout. */
+.floatUp {
+  position: absolute;
+  right: 12px;
+  top: 8px;
+  font-weight: 800;
+  color: var(--mantine-color-green-4);
+  pointer-events: none;
+  animation: float-up 1.6s ease-out forwards;
+}
+
+@keyframes float-up {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-26px);
+  }
+}
+
+/* The turn-order strip. */
+.order {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.seat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 12px;
+  font-weight: 600;
+  transition:
+    opacity 200ms,
+    background 200ms;
+}
+
+.seatActive {
+  background: rgba(255, 216, 107, 0.2);
+  border-color: var(--mantine-color-yellow-5);
+}
+
+.seatDone {
+  opacity: 0.4;
+}
+
+.arrow {
+  opacity: 0.6;
+  font-size: 12px;
+}
