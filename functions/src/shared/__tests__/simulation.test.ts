@@ -4,6 +4,12 @@ import { GAMES } from "../registry";
 import { GAME_INFO, GAME_NAMES } from "../gameInfo";
 import { GameName, GenericGameState, PlayerInLobby } from "../types";
 import { GameModule } from "../game";
+import * as zertz from "../../zertz/helpers/botSearch";
+import * as yinsh from "../../yinsh/helpers/botSearch";
+import * as dvonn from "../../dvonn/helpers/botSearch";
+import * as gipf from "../../gipf/helpers/botSearch";
+import * as lyngk from "../../lyngk/helpers/botSearch";
+import * as shangriLa from "../../shangri-la/helpers/botSearch";
 
 /*
  * Simulation: every game is played to the end many times with random legal
@@ -193,6 +199,41 @@ function randomPayload(
 
 const SUMMARY_LOG = process.env.SIMULATION_LOG || "simulation-summary.log";
 
+/**
+ * The board games enumerate their legal moves; a random one of those is
+ * far better coverage than hoping the fuzzer lands on a coordinate.
+ */
+type Mover = (state: State, random: () => number) => State | null;
+const pickFrom = <T>(xs: T[], random: () => number) =>
+  xs[Math.floor(random() * xs.length)];
+function inPlace<S, M>(
+  moves: (s: S) => M[],
+  apply: (s: S, m: M) => { ok: boolean },
+): Mover {
+  return (state, random) => {
+    const options = moves(state as unknown as S);
+    if (!options.length) return null;
+    const copy = JSON.parse(JSON.stringify(state)) as State;
+    const result = apply(copy as unknown as S, pickFrom(options, random));
+    return result.ok ? copy : null;
+  };
+}
+const MOVERS: Partial<Record<GameName, Mover>> = {
+  zertz: (state, random) => {
+    const options = zertz.turnMoves(state as never);
+    if (!options.length) return null;
+    return zertz.applyTurn(
+      state as never,
+      pickFrom(options, random),
+    ) as unknown as State;
+  },
+  yinsh: inPlace(yinsh.turnMoves, yinsh.applyMove),
+  dvonn: inPlace(dvonn.turnMoves, dvonn.applyMove),
+  gipf: inPlace(gipf.turnMoves, gipf.applyMove),
+  lyngk: inPlace(lyngk.turnMoves, lyngk.applyMove),
+  "shangri-la": inPlace(shangriLa.turnMoves, shangriLa.applyMove),
+};
+
 type Finding = { game: GameName; seed: number; step: number; message: string };
 
 type Loose = Record<string, any>;
@@ -311,6 +352,16 @@ function simulate(
 
     // Fuzz: random payloads against every action. Rejections must leave the state alone; nothing may throw.
     let played = false;
+    // Board games: usually a random legal move from the game's own list.
+    const mover = MOVERS[game];
+    if (mover && random() < 0.75) {
+      const next = mover(state, random);
+      if (next) {
+        state = next;
+        played = true;
+        randomMoves++;
+      }
+    }
     for (let attempt = 0; attempt < 24 && !played; attempt++) {
       const [name, action] = actions[Math.floor(random() * actions.length)];
       const payload = randomPayload(state, random);
@@ -423,7 +474,7 @@ function simulate(
 }
 
 describe("simulation", () => {
-  const seeds = [5, 101];
+  const seeds = [5, 101, 777, 2026];
   for (const game of GAME_NAMES) {
     it(`plays ${game} to the end with random legal moves and fuzzed actions`, () => {
       const findings: Finding[] = [];
