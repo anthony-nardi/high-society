@@ -1,8 +1,8 @@
-# High Society / No Thanks! / Razzia! / Family Inc.
+# High Society / No Thanks! / Razzia! / Family Inc. / ZÈRTZ
 
-Four Reiner Knizia-style card and chip games played online against friends or bots.
+Five board and card games played online against friends or bots.
 
-- `src/` — Vite + React 19 + Mantine 9 client (`/high-society`, `/no-thanks`, `/razzia`, `/family-inc`)
+- `src/` — Vite + React 19 + Mantine 9 client (`/high-society`, `/no-thanks`, `/razzia`, `/family-inc`, `/zertz`)
 - `functions/` — Firebase Cloud Functions holding all game logic (Node 22 runtime)
 - Realtime Database stores lobbies and game state; Google sign-in via Firebase Auth
 
@@ -56,6 +56,10 @@ card only; the face-down deck is never read.
   push-your-luck turn against a face-down pile is a chance problem, so the
   bot runs expectimax over the pile's public composition: stop versus one
   more draw, with steals and the risk of being stolen from in the leaf.
+
+- ZÈRTZ (`functions/src/zertz/helpers/botSearch.ts`): two players, no
+  chance, so a time-limited negamax with alpha-beta pruning over whole
+  turns (placement plus ring removal, or a full capture chain).
 
 Every bid, pass, chip and take is logged server-side and published with the
 final state, so the game over screen shows the whole game.

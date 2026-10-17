@@ -5,6 +5,7 @@ import type { HighSocietyGameState } from "../../high-society/game/types";
 import type { NoThanksGameState } from "../../no-thanks/game/types";
 import type { RazziaGameState } from "../../razzia/game/types";
 import type { FamilyIncGameState } from "../../family-inc/game/types";
+import type { ZertzGameState } from "../../zertz/game/types";
 
 /** The public state each game's screens read. */
 export type GameStateFor<T extends GameName> = T extends "high-society"
@@ -15,7 +16,9 @@ export type GameStateFor<T extends GameName> = T extends "high-society"
       ? RazziaGameState
       : T extends "family-inc"
         ? FamilyIncGameState
-        : never;
+        : T extends "zertz"
+          ? ZertzGameState
+          : never;
 
 type ContextValue = {
   isGameStatusLoading: boolean | null;

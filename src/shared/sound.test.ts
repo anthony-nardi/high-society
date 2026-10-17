@@ -19,6 +19,9 @@ describe("soundForEvent", () => {
     expect(soundForEvent("a drew a 7.")).toBe("chip");
     expect(soundForEvent("a busted on a 7 after 2 draws and receives a diamond.")).toBe("alarm");
     expect(soundForEvent("a stops with 12 points of chips and steals 2×4 from b.")).toBe("win");
+    expect(soundForEvent("a jumps 1,3 to 3,3 and captures a white marble.")).toBe("win");
+    expect(soundForEvent("a places a gray marble on 4,3.")).toBe("chip");
+    expect(soundForEvent("a removes ring 4,0.")).toBe("card");
     expect(soundForEvent("Something else entirely")).toBeNull();
   });
 });

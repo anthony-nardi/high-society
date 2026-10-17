@@ -4,6 +4,7 @@ import highSociety from "../high-society/module";
 import noThanks from "../no-thanks/module";
 import razzia from "../razzia/module";
 import familyInc from "../family-inc/module";
+import zertz from "../zertz/module";
 
 /** Every playable game, keyed by the name stored in lobbies and states. */
 export const GAMES: { [name in GameName]: GameModule<any> } = {
@@ -11,6 +12,7 @@ export const GAMES: { [name in GameName]: GameModule<any> } = {
   "no-thanks": noThanks,
   razzia,
   "family-inc": familyInc,
+  zertz,
 };
 
 export function getGameModule(name: GameName): GameModule<any> {

@@ -57,6 +57,11 @@ describe("game registry", () => {
       "drawChip",
       "stopTurn",
     ]);
+    expect(Object.keys(GAMES.zertz.actions).sort()).toEqual([
+      "captureMarble",
+      "placeMarble",
+      "removeRing",
+    ]);
   });
 
   it("creates a playable state and lets bots finish from it", () => {

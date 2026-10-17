@@ -17,6 +17,7 @@ import {
   useThief,
 } from "./razzia/client";
 import { drawChip, stopTurn } from "./family-inc/client";
+import { captureMarble, placeMarble, removeRing } from "./zertz/client";
 
 initializeApp();
 
@@ -46,3 +47,8 @@ exports.bidOnLoot = bidOnLoot;
 // Family Inc.
 exports.drawChip = drawChip;
 exports.stopTurn = stopTurn;
+
+// ZÈRTZ
+exports.placeMarble = placeMarble;
+exports.removeRing = removeRing;
+exports.captureMarble = captureMarble;
