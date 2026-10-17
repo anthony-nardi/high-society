@@ -4,6 +4,7 @@ import HighSociety from "./high-society/App";
 import NoThanks from "./no-thanks/App";
 import FamilyInc from "./family-inc/App";
 import Zertz from "./zertz/App";
+import Yinsh from "./yinsh/App";
 import Razzia from "./razzia/App";
 import reportWebVitals from "./reportWebVitals";
 import "@mantine/core/styles.css";
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
   {
     path: "/zertz",
     element: <Zertz />,
+  },
+  {
+    path: "/yinsh",
+    element: <Yinsh />,
   },
 ]);
 

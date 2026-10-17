@@ -18,6 +18,12 @@ import {
 } from "./razzia/client";
 import { drawChip, stopTurn } from "./family-inc/client";
 import { captureMarble, placeMarble, removeRing } from "./zertz/client";
+import {
+  moveYinshRing,
+  placeYinshRing,
+  removeYinshRing,
+  removeYinshRow,
+} from "./yinsh/client";
 
 initializeApp();
 
@@ -52,3 +58,9 @@ exports.stopTurn = stopTurn;
 exports.placeMarble = placeMarble;
 exports.removeRing = removeRing;
 exports.captureMarble = captureMarble;
+
+// YINSH
+exports.placeYinshRing = placeYinshRing;
+exports.moveYinshRing = moveYinshRing;
+exports.removeYinshRow = removeYinshRow;
+exports.removeYinshRing = removeYinshRing;

@@ -158,7 +158,8 @@ export function soundForEvent(title: string): SoundKind | null {
   )
     return "alarm";
   if (/busted/.test(text)) return "alarm";
-  if (/captures|isolates/.test(text)) return "win";
+  if (/captures|isolates|removes a ring|removes a row/.test(text)) return "win";
+  if (/moves a ring|places a \w+ ring/.test(text)) return "chip";
   if (/places a \w+ marble/.test(text)) return "chip";
   if (/removes ring/.test(text)) return "card";
   if (/won|has taken|used a thief|steals|banks|wins/.test(text)) return "win";

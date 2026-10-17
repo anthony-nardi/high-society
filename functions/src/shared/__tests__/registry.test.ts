@@ -62,6 +62,12 @@ describe("game registry", () => {
       "placeMarble",
       "removeRing",
     ]);
+    expect(Object.keys(GAMES.yinsh.actions).sort()).toEqual([
+      "moveYinshRing",
+      "placeYinshRing",
+      "removeYinshRing",
+      "removeYinshRow",
+    ]);
   });
 
   it("creates a playable state and lets bots finish from it", () => {
