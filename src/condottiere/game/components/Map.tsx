@@ -1,12 +1,17 @@
 import { CondottiereGameState } from "../types";
-import { BORDERS, colourOf, controllerOf, REGIONS } from "../board";
-import BoardSurface from "../../../shared/components/BoardSurface";
+import { CELLS, colourOf, controllerOf, OUTLINE, REGIONS } from "../board";
 
 export type Highlight = "selectable" | "selected" | "battlefield" | "last";
 
-const BOX = { minX: 0, minY: 0, width: 100, height: 100 };
+const INK = "#2b1d12";
+const PARCHMENT = "#efe0bf";
+const LAND = "#f7eed8";
+const DOT = "#7a1f1f";
 
-/** Italy as a graph of region plaques; markers in player colours, the Pope and the battlefield marked. */
+const points = (poly: [number, number][]) =>
+  poly.map(([x, y]) => `${x},${y}`).join(" ");
+
+/** A parchment map of Italy cut into regions, each with one dot: the control marker. */
 export default function Map({
   gameState,
   highlights,
@@ -18,11 +23,11 @@ export default function Map({
 }) {
   return (
     <svg
-      viewBox="0 0 100 100"
+      viewBox="0 0 104 120"
       width="100%"
       style={{
         display: "block",
-        maxWidth: 640,
+        maxWidth: 520,
         margin: "0 auto",
         touchAction: "manipulation",
         userSelect: "none",
@@ -31,32 +36,62 @@ export default function Map({
       role="group"
       aria-label="The map of Italy"
     >
-      <BoardSurface id="condottiere" box={BOX} radius={6} />
-      {BORDERS.map(([a, b]) => (
-        <line
-          key={`${a}-${b}`}
-          x1={REGIONS[a].x}
-          y1={REGIONS[a].y}
-          x2={REGIONS[b].x}
-          y2={REGIONS[b].y}
-          stroke="rgba(28,16,6,0.55)"
-          strokeWidth="0.7"
-        />
-      ))}
+      <defs>
+        <filter id="condottiere-paper" x="0" y="0" width="100%" height="100%">
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.9"
+            numOctaves="2"
+            seed="3"
+            result="noise"
+          />
+          <feColorMatrix
+            in="noise"
+            type="matrix"
+            values="0 0 0 0 0.45  0 0 0 0 0.35  0 0 0 0 0.2  0 0 0 0.08 0"
+          />
+        </filter>
+      </defs>
+      <rect
+        x="0"
+        y="0"
+        width="104"
+        height="120"
+        rx="2"
+        fill={PARCHMENT}
+        stroke="rgba(0,0,0,0.35)"
+        strokeWidth="0.6"
+      />
+      <rect
+        x="0"
+        y="0"
+        width="104"
+        height="120"
+        filter="url(#condottiere-paper)"
+        opacity="0.7"
+      />
+      <polygon
+        points={points(OUTLINE)}
+        fill={LAND}
+        stroke={INK}
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
+
       {REGIONS.map((info, index) => {
         const h = highlights[index];
         const owner = controllerOf(gameState, index);
         const clickable = !!onClick && (h === "selectable" || h === "selected");
         const isBattle = gameState.battlefield === index;
         const isPope = gameState.pope === index;
-        const ring =
-          h === "selected"
-            ? "#ffd86b"
-            : h === "selectable"
-              ? "rgba(255, 216, 107, 0.75)"
-              : isBattle
-                ? "#ff6b6b"
-                : "rgba(0,0,0,0.55)";
+        const colour = owner ? colourOf(gameState, owner) : undefined;
+        const fill = isBattle
+          ? "rgba(255, 107, 107, 0.28)"
+          : h === "selectable" || h === "selected"
+            ? "rgba(255, 216, 107, 0.3)"
+            : colour
+              ? `${colour}55`
+              : "transparent";
         return (
           <g
             key={index}
@@ -71,48 +106,51 @@ export default function Map({
                 onClick(index);
             }}
           >
-            <circle cx={info.x} cy={info.y} r="6.5" fill="transparent" />
-            <circle
-              cx={info.x + 0.4}
-              cy={info.y + 0.5}
-              r="4.6"
-              fill="#000"
-              opacity="0.4"
-            />
-            <circle
-              className={
-                h === "selectable" || h === "selected"
-                  ? "target-disc"
-                  : undefined
+            <polygon
+              className={clickable ? "target-disc" : undefined}
+              points={points(CELLS[index])}
+              fill={fill}
+              stroke={
+                h === "selected"
+                  ? "#d9a300"
+                  : h === "selectable"
+                    ? "#d9a300"
+                    : INK
               }
-              cx={info.x}
-              cy={info.y}
-              r="4.6"
-              fill={owner ? colourOf(gameState, owner) : "#f1e4c6"}
-              stroke={ring}
-              strokeWidth={h || isBattle ? 0.9 : 0.4}
-              strokeDasharray={h === "selectable" ? "1 0.6" : undefined}
+              strokeWidth={h ? 1.2 : 0.9}
+              strokeDasharray={h === "selectable" ? "1.6 1" : undefined}
+              strokeLinejoin="round"
             />
             {isBattle && (
               <circle
                 className="row-glow"
                 cx={info.x}
                 cy={info.y}
-                r="6"
+                r="4.5"
                 fill="rgba(255,107,107,0.25)"
-                stroke="#ff6b6b"
+                stroke="#c0392b"
                 strokeWidth="0.5"
                 aria-hidden="true"
               />
             )}
+            {owner && (
+              <circle
+                cx={info.x}
+                cy={info.y}
+                r="2.6"
+                fill={colour}
+                stroke={INK}
+                strokeWidth="0.5"
+              />
+            )}
+            {!owner && <circle cx={info.x} cy={info.y} r="1.5" fill={DOT} />}
             {isPope && (
               <text
-                x={info.x}
-                y={info.y + 1.6}
-                textAnchor="middle"
-                fontSize="4.5"
-                fill={owner ? "#fff" : "#4a2c6a"}
+                x={info.x + 3.2}
+                y={info.y - 2}
+                fontSize="4.2"
                 fontWeight="800"
+                fill="#4a2c6a"
                 style={{ pointerEvents: "none" }}
               >
                 ✝
@@ -120,11 +158,12 @@ export default function Map({
             )}
             <text
               x={info.x}
-              y={info.y + 8.6}
+              y={info.y + 5.4}
               textAnchor="middle"
-              fontSize="2.6"
+              fontSize="2.4"
               fontWeight="700"
-              fill="#f6edd0"
+              fill={INK}
+              opacity="0.8"
               style={{ pointerEvents: "none" }}
             >
               {info.name}
