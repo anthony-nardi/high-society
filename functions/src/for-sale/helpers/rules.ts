@@ -123,11 +123,11 @@ function dealProperties(
   starter: ForSalePlayerState,
 ) {
   const n = gameState.public.players.length;
-  const onOffer = gameState.private.propertyDeck
-    .splice(0, n)
-    .sort((a, b) => a - b);
+  const propertyDeck = gameState.private.propertyDeck || [];
+  const onOffer = propertyDeck.splice(0, n).sort((a, b) => a - b);
   gameState.public.onOffer = onOffer;
-  gameState.public.propertiesLeft = gameState.private.propertyDeck.length;
+  gameState.private.propertyDeck = propertyDeck;
+  gameState.public.propertiesLeft = propertyDeck.length;
   gameState.public.round += 1;
   gameState.public.highBid = 0;
   delete gameState.public.highBidder;
@@ -152,11 +152,11 @@ function nextChooser(gameState: ForSaleGameState) {
 
 function dealCheques(gameState: ForSaleGameState) {
   const n = gameState.public.players.length;
-  const cheques = gameState.private.chequeDeck
-    .splice(0, n)
-    .sort((a, b) => a - b);
+  const chequeDeck = gameState.private.chequeDeck || [];
+  const cheques = chequeDeck.splice(0, n).sort((a, b) => a - b);
   gameState.public.cheques = cheques;
-  gameState.public.chequesLeft = gameState.private.chequeDeck.length;
+  gameState.private.chequeDeck = chequeDeck;
+  gameState.public.chequesLeft = chequeDeck.length;
   gameState.public.round += 1;
   delete gameState.public.chosen;
   delete gameState.private.choices;
@@ -307,7 +307,8 @@ export function pass(gameState: ForSaleGameState): ActionResult {
       gameState,
       `${winner.email} wins #${last}${winner.bid ? ` for ${money(winner.bid)}` : " for nothing"}.`,
     );
-    if (gameState.private.propertyDeck.length === 0) startSelling(gameState);
+    if ((gameState.private.propertyDeck || []).length === 0)
+      startSelling(gameState);
     else dealProperties(gameState, winner);
     return { ok: true };
   }
@@ -381,6 +382,6 @@ function resolveSales(gameState: ForSaleGameState) {
     gameState,
     `Sold: ${sales.map((s) => `${s.email} #${s.property} for ${money(s.cheque)}`).join("; ")}.`,
   );
-  if (gameState.private.chequeDeck.length === 0) finish(gameState);
+  if ((gameState.private.chequeDeck || []).length === 0) finish(gameState);
   else dealCheques(gameState);
 }

@@ -34,7 +34,7 @@ import {
 export function cloneForSearch(gameState: AcquireGameState): AcquireGameState {
   return {
     public: JSON.parse(JSON.stringify(gameState.public)),
-    private: { bag: [...gameState.private.bag], log: [] },
+    private: { bag: [...(gameState.private.bag || [])], log: [] },
   };
 }
 

@@ -82,7 +82,7 @@ const base = (over: Partial<ShangriLaGameState>): ShangriLaGameState => ({
   startAt: "0",
   status: "IN_PROGRESS",
   phase: "PLAY",
-  villages: Array.from({ length: 13 }, () => ({})),
+  villages: Array.from({ length: 13 }, (_, id) => ({ id })),
   bridges: ALL_BRIDGES.filter(([a, b]) => a !== 6 && b !== 6),
   turn: 5,
   passes: 0,
@@ -144,15 +144,16 @@ describe("Shangri-La table", () => {
   it("recruits up to two students and sends a journey to a neighbour", () => {
     const villages = Array.from(
       { length: 13 },
-      () => ({}) as ShangriLaGameState["villages"][number],
+      (_, id) => ({ id }) as ShangriLaGameState["villages"][number],
     );
     villages[0] = {
+      id: 0,
       spaces: {
         HEALER: { owner: "a@example.com", student: true },
         PRIEST: { owner: "a@example.com" },
       },
     };
-    villages[1] = { spaces: { RAINMAKER: { owner: "Bot #1" } } };
+    villages[1] = { id: 1, spaces: { RAINMAKER: { owner: "Bot #1" } } };
     current = base({ villages });
     renderGame();
 

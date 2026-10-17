@@ -13,12 +13,14 @@ describe("map", () => {
     const state = {
       villages: [
         {
+          id: 0,
           spaces: {
             HEALER: { owner: "a", student: true },
             PRIEST: { owner: "a" },
           },
         },
         {
+          id: 1,
           spaces: {
             HEALER: { owner: "b" },
             RAINMAKER: { owner: "b" },

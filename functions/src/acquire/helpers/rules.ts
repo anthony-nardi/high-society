@@ -324,11 +324,13 @@ function drawTiles(gameState: AcquireGameState, player: AcquirePlayerState) {
   for (let i = hand.length - 1; i >= 0; i--) {
     if (analyse(gameState, hand[i]).kind === "dead") hand.splice(i, 1);
   }
-  while (hand.length < HAND_SIZE && gameState.private.bag.length) {
-    hand.push(gameState.private.bag.shift() as Tile);
+  const bag = gameState.private.bag || [];
+  while (hand.length < HAND_SIZE && bag.length) {
+    hand.push(bag.shift() as Tile);
   }
+  gameState.private.bag = bag;
   player.tiles = hand.sort(compareTiles);
-  gameState.public.bagCount = gameState.private.bag.length;
+  gameState.public.bagCount = bag.length;
 }
 
 function endTurn(gameState: AcquireGameState) {
@@ -339,7 +341,7 @@ function endTurn(gameState: AcquireGameState) {
 
   // Nothing left to play anywhere: the game cannot go on.
   if (
-    gameState.private.bag.length === 0 &&
+    (gameState.private.bag || []).length === 0 &&
     gameState.public.players.every(
       (p) => playableTiles(gameState, p).length === 0,
     )
@@ -482,7 +484,7 @@ function startMerger(
   };
   announce(
     gameState,
-    `${label(survivor)} takes over ${merger.defunct.map(label).join(" and ")}.`,
+    `${label(survivor)} takes over ${(merger.defunct || []).map(label).join(" and ")}.`,
   );
   nextDefunct(gameState);
 }
@@ -492,7 +494,7 @@ function nextDefunct(gameState: AcquireGameState) {
   const merger = gameState.public.merger as NonNullable<
     AcquireGameState["public"]["merger"]
   >;
-  const chain = merger.defunct.shift();
+  const chain = merger.defunct?.shift();
   if (!chain) {
     completeMerger(gameState);
     return;

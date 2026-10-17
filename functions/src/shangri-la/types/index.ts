@@ -27,6 +27,8 @@ export type Phase =
 export type Space = { owner: string; student?: boolean };
 
 export type Village = {
+  /** Always present, so an empty village still survives a save: the database drops empty objects. */
+  id: number;
   spaces?: { [type in Master]?: Space };
   /** A Stone of the Wise Men: no bridges left, nothing changes here again. */
   stone?: boolean;

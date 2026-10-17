@@ -78,8 +78,9 @@ export function buildShangriLaGameState(
     isBot: !!player.isBot,
   }));
   const starter = playersMetadata[Math.floor(random() * seats.length)];
-  const villages: Village[] = VILLAGES.map(() => ({}));
-  if (seats.length <= 3) villages[RED_VILLAGE] = { stone: true };
+  const villages: Village[] = VILLAGES.map((_, id) => ({ id }));
+  if (seats.length <= 3)
+    villages[RED_VILLAGE] = { id: RED_VILLAGE, stone: true };
 
   return {
     public: {

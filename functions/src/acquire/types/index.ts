@@ -50,8 +50,8 @@ export type ChainState = {
 export type Merger = {
   tile: Tile;
   survivor?: Chain;
-  /** Chains still to absorb, largest first. */
-  defunct: Chain[];
+  /** Chains still to absorb, largest first. Absent once empty: the database drops empty arrays. */
+  defunct?: Chain[];
   /** The chain being settled right now. */
   current?: Chain;
   /** Its price at the moment of the merger, for sales. */
@@ -97,7 +97,8 @@ export type AcquirePublicGameState = {
 };
 
 export type AcquirePrivateGameState = {
-  bag: Tile[];
+  /** Absent once empty: the database drops empty arrays. */
+  bag?: Tile[];
   log?: LogEntry[];
 };
 

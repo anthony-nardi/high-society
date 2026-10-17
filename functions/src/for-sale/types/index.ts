@@ -67,8 +67,9 @@ export type ForSalePublicGameState = {
 };
 
 export type ForSalePrivateGameState = {
-  propertyDeck: number[];
-  chequeDeck: number[];
+  /** Absent once empty: the database drops empty arrays. */
+  propertyDeck?: number[];
+  chequeDeck?: number[];
   /** Face-down choices in the current selling round. */
   choices?: { [email: string]: number };
   log?: LogEntry[];
