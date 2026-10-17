@@ -10,6 +10,7 @@ import dvonn from "../dvonn/module";
 import gipf from "../gipf/module";
 import lyngk from "../lyngk/module";
 import forSale from "../for-sale/module";
+import shangriLa from "../shangri-la/module";
 
 /** Every playable game, keyed by the name stored in lobbies and states. */
 export const GAMES: { [name in GameName]: GameModule<any> } = {
@@ -23,6 +24,7 @@ export const GAMES: { [name in GameName]: GameModule<any> } = {
   gipf,
   lyngk,
   "for-sale": forSale,
+  "shangri-la": shangriLa,
 };
 
 export function getGameModule(name: GameName): GameModule<any> {

@@ -277,7 +277,10 @@ export function soundForEvent(title: string): SoundKind | null {
   if (/removes ring/.test(text)) return "stoneLift";
   if (/moves a ring .* and flips/.test(text)) return "stoneFlip";
   if (/moves a ring/.test(text)) return "stoneSlide";
-  if (/places a \w+ (ring|marble|piece)/.test(text)) return "stonePlace";
+  if (/places a [\w-]+ (ring|marble|piece|master)/.test(text))
+    return "stonePlace";
+  if (/sends the students/.test(text)) return "stoneSlide";
+  if (/recruits/.test(text)) return "chip";
   if (/^sold:|cheques .* are on offer|has chosen/.test(text)) return "card";
   if (/won|has taken|used a thief|steals|banks|wins/.test(text)) return "win";
   if (/drew a \d/.test(text)) return "chip";

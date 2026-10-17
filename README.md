@@ -1,8 +1,8 @@
-# High Society / No Thanks! / Razzia! / Family Inc. / For Sale / ZÈRTZ / YINSH / DVONN / GIPF / LYNGK
+# High Society / No Thanks! / Razzia! / Family Inc. / For Sale / The Bridges of Shangri-La / ZÈRTZ / YINSH / DVONN / GIPF / LYNGK
 
-Ten board and card games played online against friends or bots.
+Eleven board and card games played online against friends or bots.
 
-- `src/` — Vite + React 19 + Mantine 9 client (`/high-society`, `/no-thanks`, `/razzia`, `/family-inc`, `/zertz`, `/yinsh`, `/dvonn`, `/gipf`, `/lyngk`, `/for-sale`)
+- `src/` — Vite + React 19 + Mantine 9 client (`/high-society`, `/no-thanks`, `/razzia`, `/family-inc`, `/zertz`, `/yinsh`, `/dvonn`, `/gipf`, `/lyngk`, `/for-sale`, `/shangri-la`)
 - `functions/` — Firebase Cloud Functions holding all game logic (Node 22 runtime)
 - Realtime Database stores lobbies and game state; Google sign-in via Firebase Auth
 
@@ -80,6 +80,9 @@ card only; the face-down deck is never read.
 - For Sale (`functions/src/for-sale/helpers/botSearch.ts`): Maxn over the
   current auction (pass or raise by one to three thousand) for buying; a
   rank-matching heuristic for the simultaneous selling rounds.
+
+- The Bridges of Shangri-La (`functions/src/shangri-la/helpers/botSearch.ts`):
+  a setup heuristic, then Maxn over whole turns (place, recruit, journey).
 
 Every bid, pass, chip and take is logged server-side and published with the
 final state, so the game over screen shows the whole game.

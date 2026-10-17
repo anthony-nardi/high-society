@@ -85,6 +85,11 @@ describe("game registry", () => {
       "passForSale",
       "sellForSale",
     ]);
+    expect(Object.keys(GAMES["shangri-la"].actions).sort()).toEqual([
+      "journeyShangriLa",
+      "placeShangriLaMaster",
+      "recruitShangriLaStudents",
+    ]);
   });
 
   it("creates a playable state and lets bots finish from it", () => {

@@ -28,6 +28,11 @@ import { moveDvonnStack, placeDvonnPiece } from "./dvonn/client";
 import { pushGipfPiece, removeGipfRow } from "./gipf/client";
 import { claimLyngkColour, moveLyngkStack } from "./lyngk/client";
 import { bidForSale, passForSale, sellForSale } from "./for-sale/client";
+import {
+  journeyShangriLa,
+  placeShangriLaMaster,
+  recruitShangriLaStudents,
+} from "./shangri-la/client";
 
 initializeApp();
 
@@ -85,3 +90,8 @@ exports.moveLyngkStack = moveLyngkStack;
 exports.bidForSale = bidForSale;
 exports.passForSale = passForSale;
 exports.sellForSale = sellForSale;
+
+// The Bridges of Shangri-La
+exports.placeShangriLaMaster = placeShangriLaMaster;
+exports.recruitShangriLaStudents = recruitShangriLaStudents;
+exports.journeyShangriLa = journeyShangriLa;

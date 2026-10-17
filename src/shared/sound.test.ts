@@ -73,6 +73,15 @@ describe("soundForEvent", () => {
     expect(soundForEvent("a passes and takes #4 for $2,000.")).toBe("pass");
     expect(soundForEvent("a wins #25 for $5,000.")).toBe("win");
     expect(soundForEvent("Sold: a #30 for $15,000; b #2 for $0.")).toBe("card");
+    expect(soundForEvent("a places a yeti-whisperer master in Tashi.")).toBe(
+      "stonePlace",
+    );
+    expect(soundForEvent("a recruits a healer student in Tashi.")).toBe("chip");
+    expect(
+      soundForEvent(
+        "a sends the students of Tashi to Nyima: 2 travel, 1 become masters. The bridge breaks.",
+      ),
+    ).toBe("stoneSlide");
     expect(soundForEvent("a wins!")).toBe("fanfare");
     expect(soundForEvent("The game is a draw.")).toBe("fanfare");
     expect(soundForEvent("Something else entirely")).toBeNull();
