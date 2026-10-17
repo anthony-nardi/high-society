@@ -42,6 +42,16 @@ describe("soundForEvent", () => {
     expect(soundForEvent("a removes a ring and has 1 of 3.")).toBe(
       "stoneScore",
     );
+    expect(soundForEvent("a places a DVONN piece on 5,2.")).toBe("stonePlace");
+    expect(soundForEvent("a moves a stack of 2 from 3,2 to 5,2.")).toBe(
+      "stoneSlide",
+    );
+    expect(
+      soundForEvent(
+        "a moves a stack of 1 from 3,2 to 4,2. 2 stacks lost contact with the DVONN pieces and are removed.",
+      ),
+    ).toBe("stoneClatter");
+    expect(soundForEvent("b cannot move and passes.")).toBe("pass");
     expect(soundForEvent("a wins!")).toBe("fanfare");
     expect(soundForEvent("The game is a draw.")).toBe("fanfare");
     expect(soundForEvent("Something else entirely")).toBeNull();

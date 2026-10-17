@@ -68,6 +68,10 @@ describe("game registry", () => {
       "removeYinshRing",
       "removeYinshRow",
     ]);
+    expect(Object.keys(GAMES.dvonn.actions).sort()).toEqual([
+      "moveDvonnStack",
+      "placeDvonnPiece",
+    ]);
   });
 
   it("creates a playable state and lets bots finish from it", () => {

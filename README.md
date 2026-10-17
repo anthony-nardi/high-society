@@ -1,8 +1,8 @@
-# High Society / No Thanks! / Razzia! / Family Inc. / ZÈRTZ / YINSH
+# High Society / No Thanks! / Razzia! / Family Inc. / ZÈRTZ / YINSH / DVONN
 
-Six board and card games played online against friends or bots.
+Seven board and card games played online against friends or bots.
 
-- `src/` — Vite + React 19 + Mantine 9 client (`/high-society`, `/no-thanks`, `/razzia`, `/family-inc`, `/zertz`, `/yinsh`)
+- `src/` — Vite + React 19 + Mantine 9 client (`/high-society`, `/no-thanks`, `/razzia`, `/family-inc`, `/zertz`, `/yinsh`, `/dvonn`)
 - `functions/` — Firebase Cloud Functions holding all game logic (Node 22 runtime)
 - Realtime Database stores lobbies and game state; Google sign-in via Firebase Auth
 
@@ -64,6 +64,10 @@ card only; the face-down deck is never read.
 - YINSH (`functions/src/yinsh/helpers/botSearch.ts`): negamax with
   alpha-beta over ring moves; row and ring removals inside the search use a
   fixed policy so the tree stays one node per move.
+
+- DVONN (`functions/src/dvonn/helpers/botSearch.ts`): a placement
+  heuristic (DVONN pieces central and apart, own pieces hugging them), then
+  negamax with alpha-beta over stack moves.
 
 Every bid, pass, chip and take is logged server-side and published with the
 final state, so the game over screen shows the whole game.

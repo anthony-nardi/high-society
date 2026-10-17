@@ -24,6 +24,7 @@ import {
   removeYinshRing,
   removeYinshRow,
 } from "./yinsh/client";
+import { moveDvonnStack, placeDvonnPiece } from "./dvonn/client";
 
 initializeApp();
 
@@ -64,3 +65,7 @@ exports.placeYinshRing = placeYinshRing;
 exports.moveYinshRing = moveYinshRing;
 exports.removeYinshRow = removeYinshRow;
 exports.removeYinshRing = removeYinshRing;
+
+// DVONN
+exports.placeDvonnPiece = placeDvonnPiece;
+exports.moveDvonnStack = moveDvonnStack;
