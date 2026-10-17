@@ -1,10 +1,13 @@
 import { CSSProperties } from "react";
 import { Coord, ZertzGameState } from "../types";
-import { ALL_RINGS, position, RING_RADIUS, viewBox } from "../board";
+import { ALL_RINGS, position, RING_RADIUS, SPACING, viewBox } from "../board";
 import { MarbleDefs, MarbleShape } from "./Marble";
 
 export type Highlight =
   "selected" | "target" | "removable" | "capturer" | "last";
+
+/** Invisible tap target covering each ring's share of the board. */
+const HIT_R = SPACING * 0.48;
 
 /** CSS variables telling an animation where a piece came from. */
 function offsetFrom(from: Coord, to: Coord): CSSProperties {
@@ -88,7 +91,14 @@ export default function Board({
     <svg
       viewBox={`${box.minX} ${box.minY} ${box.width} ${box.height}`}
       width="100%"
-      style={{ display: "block", maxWidth: 560, margin: "0 auto" }}
+      style={{
+        display: "block",
+        maxWidth: 560,
+        margin: "0 auto",
+        touchAction: "manipulation",
+        userSelect: "none",
+        WebkitTapHighlightColor: "transparent",
+      }}
       role="group"
       aria-label="ZÈRTZ board"
     >
@@ -132,6 +142,8 @@ export default function Board({
                 onClick(coord);
             }}
           >
+            {/* Hit area first, so a tap anywhere near the ring lands. */}
+            <circle cx={x} cy={y} r={HIT_R} fill="transparent" />
             {/* Ring: a hoop with a hole, so the table shows through. */}
             <circle
               cx={x + 2}

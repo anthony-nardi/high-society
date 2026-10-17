@@ -1,6 +1,6 @@
 import { CSSProperties } from "react";
 import { Coord, Side, YinshGameState } from "../types";
-import { ALL_POINTS, LINES, position, viewBox } from "../board";
+import { ALL_POINTS, LINES, position, SPACING, viewBox } from "../board";
 
 export type Highlight =
   "selected" | "target" | "row" | "rowStart" | "removable" | "last";
@@ -9,6 +9,8 @@ const SIDE_FILL = { WHITE: "#f1f1f1", BLACK: "#1a1a1a" };
 const SIDE_STROKE = { WHITE: "#8a8a8a", BLACK: "#000" };
 const MARKER_R = 12;
 const RING_R = 18;
+/** Invisible tap target covering each point's share of the board. */
+const HIT_R = SPACING * 0.48;
 
 const other = (side: Side): Side => (side === "WHITE" ? "BLACK" : "WHITE");
 
@@ -138,7 +140,14 @@ export default function Board({
     <svg
       viewBox={`${box.minX} ${box.minY} ${box.width} ${box.height}`}
       width="100%"
-      style={{ display: "block", maxWidth: 640, margin: "0 auto" }}
+      style={{
+        display: "block",
+        maxWidth: 640,
+        margin: "0 auto",
+        touchAction: "manipulation",
+        userSelect: "none",
+        WebkitTapHighlightColor: "transparent",
+      }}
       role="group"
       aria-label="YINSH board"
     >
@@ -194,11 +203,13 @@ export default function Board({
                 onClick(coord);
             }}
           >
+            {/* Hit area first, so a tap anywhere near the point lands. */}
+            <circle cx={x} cy={y} r={HIT_R} fill="transparent" />
             {/* Intersection dot, or a target disc. */}
             <circle
               cx={x}
               cy={y}
-              r={h === "target" ? 10 : 3}
+              r={h === "target" ? 13 : 3}
               fill={h === "target" ? "rgba(255, 216, 107, 0.55)" : "#8f94a1"}
               stroke={h === "target" ? "#ffd86b" : "none"}
               strokeWidth="2"
