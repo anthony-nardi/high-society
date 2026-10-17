@@ -47,8 +47,8 @@ export type LyngkPublicGameState = {
   turn: number;
   winner?: string;
   draw?: boolean;
-  /** Final scores by email, written at game over. */
-  scores?: { [email: string]: LyngkScore };
+  /** Final scores, written at game over. A list, since database keys may not hold an email. */
+  scores?: { email: string; score: LyngkScore }[];
   notification?: Notification;
   nextLobbyUID?: string;
   log?: LogEntry[];

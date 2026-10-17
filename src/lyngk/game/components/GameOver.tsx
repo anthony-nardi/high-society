@@ -79,8 +79,8 @@ export default function GameOver({
             <Table.Tbody>
               {gameState.players.map((player) => {
                 const score =
-                  gameState.scores?.[player.email] ??
-                  scoreOf(gameState, player.email);
+                  gameState.scores?.find((s) => s.email === player.email)
+                    ?.score ?? scoreOf(gameState, player.email);
                 return (
                   <Table.Tr
                     key={player.email}

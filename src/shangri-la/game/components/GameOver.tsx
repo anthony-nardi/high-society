@@ -32,7 +32,9 @@ export default function GameOver({
   const ranked = [...gameState.players]
     .map((p) => ({
       p,
-      s: gameState.scores?.[p.email] ?? scoreOf(gameState, p.email),
+      s:
+        gameState.scores?.find((s) => s.email === p.email) ??
+        scoreOf(gameState, p.email),
     }))
     .sort((a, b) => b.s.masters - a.s.masters || b.s.villages - a.s.villages);
 

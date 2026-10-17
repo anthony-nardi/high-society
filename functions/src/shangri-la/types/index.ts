@@ -77,7 +77,8 @@ export type ShangriLaPublicGameState = {
   };
   winner?: string;
   draw?: boolean;
-  scores?: { [email: string]: { masters: number; villages: number } };
+  /** Final scores. A list, since database keys may not hold an email. */
+  scores?: { email: string; masters: number; villages: number }[];
   notification?: Notification;
   nextLobbyUID?: string;
   log?: LogEntry[];

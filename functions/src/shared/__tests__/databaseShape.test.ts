@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildAcquireGameState,
+  declareEnd,
   dispose,
   placeTile,
 } from "../../acquire/helpers/rules";
@@ -9,7 +10,11 @@ import {
   pass,
   sell,
 } from "../../for-sale/helpers/rules";
-import { buildShangriLaGameState } from "../../shangri-la/helpers/rules";
+import {
+  buildShangriLaGameState,
+  journey,
+} from "../../shangri-la/helpers/rules";
+import { buildLyngkGameState, moveStack } from "../../lyngk/helpers/rules";
 import { Chain } from "../../acquire/types";
 
 /*
@@ -138,5 +143,92 @@ describe("after a database round trip", () => {
         (c) => saved.public.chains[c].stockLeft === 25,
       ),
     ).toBe(true);
+  });
+});
+
+/** Keys the database refuses: empty, or holding . # $ / [ ]. */
+function badKeys(value: unknown, path = ""): string[] {
+  if (!value || typeof value !== "object") return [];
+  if (Array.isArray(value))
+    return value.flatMap((v, i) => badKeys(v, `${path}[${i}]`));
+  return Object.entries(value as Record<string, unknown>).flatMap(([k, v]) => {
+    const here = `${path}.${k}`;
+    const bad = !k || /[.#$/[\]]/.test(k) ? [here] : [];
+    return [...bad, ...badKeys(v, here)];
+  });
+}
+
+describe("with real email addresses", () => {
+  const human = "anthony.gt@example.com";
+
+  it("Acquire ends without an email as a key", () => {
+    const state = buildAcquireGameState(
+      "l",
+      lobby("acquire", human, "Bot #1"),
+      () => 0,
+    );
+    state.public.board = {};
+    for (let c = 1; c <= 11; c++) state.public.board[`${c}A`] = "TOWER";
+    state.public.chains.TOWER.size = 11;
+    state.public.players[0].stocks = { TOWER: 2 };
+    state.public.players[0].tiles = ["5E"];
+    expect(badKeys(state)).toEqual([]);
+    expect(declareEnd(state).ok).toBe(true);
+    expect(state.public.status).toBe("GAME_OVER");
+    expect(badKeys(state)).toEqual([]);
+    expect(state.public.scores?.[0]).toEqual({
+      email: human,
+      money: state.public.players[0].money,
+    });
+  });
+
+  it("For Sale sells a round and ends without an email as a key", () => {
+    const state = buildForSaleGameState(
+      "l",
+      lobby("for-sale", human, "Bot #1", "Bot #2"),
+      () => 0,
+    );
+    state.public.phase = "SELLING";
+    state.private.chequeDeck = [];
+    state.public.cheques = [0, 8, 15];
+    state.public.players[0].properties = [30];
+    state.public.players[1].properties = [20];
+    state.public.players[2].properties = [9];
+    for (const p of state.public.players)
+      expect(sell(state, p.email, (p.properties as number[])[0]).ok).toBe(true);
+    expect(state.public.status).toBe("GAME_OVER");
+    expect(state.public.players[0].cheques).toEqual([15]);
+    expect(badKeys(state)).toEqual([]);
+  });
+
+  it("Shangri-La and LYNGK end without an email as a key", () => {
+    const shangri = buildShangriLaGameState(
+      "l",
+      lobby("shangri-la", human, "Bot #1", "Bot #2"),
+      () => 0,
+    );
+    shangri.public.phase = "PLAY";
+    shangri.public.villages[0].spaces = {
+      HEALER: { owner: human, student: true },
+    };
+    shangri.public.villages[1].spaces = { PRIEST: { owner: "Bot #1" } };
+    shangri.public.bridges = [[0, 1]];
+    shangri.public.activePlayer = human;
+    expect(journey(shangri, 0, 1).ok).toBe(true);
+    expect(shangri.public.status).toBe("GAME_OVER");
+    expect(badKeys(shangri)).toEqual([]);
+
+    const lyngk = buildLyngkGameState(
+      "l",
+      lobby("lyngk" as never, human, "Bot #1"),
+      () => 0,
+    );
+    lyngk.public.stacks = { "0,4": ["RED"], "1,4": ["BLUE"] };
+    lyngk.public.players[0].colours = ["RED"];
+    lyngk.public.players[1].colours = ["BLUE"];
+    lyngk.public.activePlayer = human;
+    expect(moveStack(lyngk, ["0,4", "1,4"]).ok).toBe(true);
+    expect(lyngk.public.status).toBe("GAME_OVER");
+    expect(badKeys(lyngk)).toEqual([]);
   });
 });

@@ -278,9 +278,10 @@ function finish(gameState: AcquireGameState, why: string) {
       }
     }
   }
-  const scores: { [email: string]: number } = {};
-  for (const p of gameState.public.players) scores[p.email] = p.money;
-  gameState.public.scores = scores;
+  gameState.public.scores = gameState.public.players.map((p) => ({
+    email: p.email,
+    money: p.money,
+  }));
   gameState.public.status = "GAME_OVER";
   delete gameState.public.merger;
   const ranked = [...gameState.public.players].sort(

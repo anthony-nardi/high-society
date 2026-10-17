@@ -246,21 +246,26 @@ export function scoreOf(gameState: ShangriLaGameState, email: string) {
 const fail = (reason: string): ActionResult => ({ ok: false, reason });
 
 function finish(gameState: ShangriLaGameState, why: string) {
-  const scores: { [email: string]: { masters: number; villages: number } } = {};
-  for (const p of gameState.public.players)
-    scores[p.email] = scoreOf(gameState, p.email);
-  gameState.public.scores = scores;
+  const scores = new Map(
+    gameState.public.players.map((p) => [p.email, scoreOf(gameState, p.email)]),
+  );
+  const at = (email: string) =>
+    scores.get(email) as { masters: number; villages: number };
+  gameState.public.scores = gameState.public.players.map((p) => ({
+    email: p.email,
+    ...at(p.email),
+  }));
   gameState.public.status = "GAME_OVER";
   const ranked = [...gameState.public.players].sort(
     (a, b) =>
-      scores[b.email].masters - scores[a.email].masters ||
-      scores[b.email].villages - scores[a.email].villages,
+      at(b.email).masters - at(a.email).masters ||
+      at(b.email).villages - at(a.email).villages,
   );
   const best = ranked[0];
   const ties = ranked.filter(
     (p) =>
-      scores[p.email].masters === scores[best.email].masters &&
-      scores[p.email].villages === scores[best.email].villages,
+      at(p.email).masters === at(best.email).masters &&
+      at(p.email).villages === at(best.email).villages,
   );
   if (ties.length === 1) gameState.public.winner = best.email;
   else gameState.public.draw = true;
@@ -269,7 +274,7 @@ function finish(gameState: ShangriLaGameState, why: string) {
     ties.length === 1
       ? `${best.email} wins!`
       : `${ties.map((p) => p.email).join(" and ")} share the win.`,
-    `${why} ${best.email} has ${scores[best.email].masters} masters in ${scores[best.email].villages} villages.`,
+    `${why} ${best.email} has ${at(best.email).masters} masters in ${at(best.email).villages} villages.`,
   );
   publishLog(gameState);
 }

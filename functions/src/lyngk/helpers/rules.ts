@@ -256,20 +256,21 @@ const fail = (reason: string): ActionResult => ({ ok: false, reason });
 
 function finish(gameState: LyngkGameState) {
   const [a, b] = gameState.public.players;
-  const scores = {
-    [a.email]: scoreOf(gameState, a.email),
-    [b.email]: scoreOf(gameState, b.email),
-  };
-  gameState.public.scores = scores;
+  const scoreA = scoreOf(gameState, a.email);
+  const scoreB = scoreOf(gameState, b.email);
+  gameState.public.scores = [
+    { email: a.email, score: scoreA },
+    { email: b.email, score: scoreB },
+  ];
   gameState.public.status = "GAME_OVER";
-  const cmp = compareScores(scores[a.email], scores[b.email]);
+  const cmp = compareScores(scoreA, scoreB);
   const winner = cmp === 0 ? null : cmp > 0 ? a : b;
   if (winner) gameState.public.winner = winner.email;
   else gameState.public.draw = true;
   announce(
     gameState,
     winner ? `${winner.email} wins!` : "The game is a draw.",
-    `${a.email} ${scores[a.email][0]} stacks of five, ${b.email} ${scores[b.email][0]}.`,
+    `${a.email} ${scoreA[0]} stacks of five, ${b.email} ${scoreB[0]}.`,
   );
   publishLog(gameState);
 }

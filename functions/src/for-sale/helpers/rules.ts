@@ -336,10 +336,10 @@ export function sell(
   if (!(player.properties || []).includes(property))
     return fail("That is not one of your properties.");
 
-  gameState.private.choices = {
-    ...(gameState.private.choices || {}),
-    [email]: property,
-  };
+  gameState.private.choices = [
+    ...(gameState.private.choices || []),
+    { email, property },
+  ];
   gameState.public.chosen = [...(gameState.public.chosen || []), email];
   player.lastActionAt = Date.now();
   appendLog(gameState, {
@@ -361,10 +361,10 @@ export function sell(
 }
 
 function resolveSales(gameState: ForSaleGameState) {
-  const choices = gameState.private.choices || {};
+  const choices = gameState.private.choices || [];
   const cheques = [...(gameState.public.cheques || [])].sort((a, b) => b - a);
-  const order = Object.entries(choices).sort(([, a], [, b]) => b - a);
-  const sales: Sale[] = order.map(([email, property], i) => ({
+  const order = [...choices].sort((a, b) => b.property - a.property);
+  const sales: Sale[] = order.map(({ email, property }, i) => ({
     email,
     property,
     cheque: cheques[i],

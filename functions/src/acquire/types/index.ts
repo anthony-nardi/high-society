@@ -90,7 +90,8 @@ export type AcquirePublicGameState = {
   };
   declaredBy?: string;
   winner?: string;
-  scores?: { [email: string]: number };
+  /** Final cash per player. A list, since database keys may not hold an email. */
+  scores?: { email: string; money: number }[];
   notification?: Notification;
   nextLobbyUID?: string;
   log?: LogEntry[];
