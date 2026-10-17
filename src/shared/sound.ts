@@ -157,7 +157,9 @@ export function soundForEvent(title: string): SoundKind | null {
     /police raid|receives -5|receives 1\/2|receives -\b|misfortune/.test(text)
   )
     return "alarm";
-  if (/won|has taken|used a thief/.test(text)) return "win";
+  if (/busted/.test(text)) return "alarm";
+  if (/won|has taken|used a thief|steals|banks|wins/.test(text)) return "win";
+  if (/drew a \d/.test(text)) return "chip";
   if (/placed a chip/.test(text)) return "chip";
   if (/bid|called an auction/.test(text)) return "bid";
   if (/passed|passes/.test(text)) return "pass";

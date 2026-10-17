@@ -11,7 +11,7 @@ import {
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import ConnectedPlayersCount from "./components/ConnectedPlayersCount";
-import { getMaxPlayers, MIN_PLAYERS } from "./playerLimits";
+import { getMaxPlayers, getMinPlayers } from "./playerLimits";
 import readyUp from "../../high-society/client/readyUp";
 import addBot from "../../high-society/client/addBot";
 import removeBot from "../../high-society/client/removeBot";
@@ -41,7 +41,7 @@ export default function Lobby({ gameName }: { gameName: GameName }) {
   }, [user, players]);
 
   const status = useMemo(() => {
-    const missing = MIN_PLAYERS - players.length;
+    const missing = getMinPlayers(gameName) - players.length;
     if (missing > 0) {
       return `Waiting for ${missing} more player${missing === 1 ? "" : "s"}. Share the invite link or add a bot.`;
     }
@@ -53,7 +53,7 @@ export default function Lobby({ gameName }: { gameName: GameName }) {
       return "Press Ready when you are set. The game starts as soon as everyone is ready.";
     }
     return `Waiting for ${notReady.map((p) => displayName(p.email)).join(", ")} to ready up.`;
-  }, [players, isCurrentUserReady]);
+  }, [players, isCurrentUserReady, gameName]);
 
   const handleCreateLobby = useCallback(async () => {
     setIsCreatingLobby(true);

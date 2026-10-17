@@ -53,6 +53,10 @@ describe("game registry", () => {
       "revealCard",
       "useThief",
     ]);
+    expect(Object.keys(GAMES["family-inc"].actions).sort()).toEqual([
+      "drawChip",
+      "stopTurn",
+    ]);
   });
 
   it("creates a playable state and lets bots finish from it", () => {

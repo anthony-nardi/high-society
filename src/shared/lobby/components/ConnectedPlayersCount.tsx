@@ -1,7 +1,7 @@
 import { Text } from "@mantine/core";
 import { LobbyPlayer } from "../types";
 import { GameName } from "../../../high-society/client/createLobby";
-import { getMaxPlayers, MIN_PLAYERS } from "../playerLimits";
+import { getMaxPlayers, getMinPlayers } from "../playerLimits";
 
 interface ConnectedPlayersCountProps {
   players: LobbyPlayer[];
@@ -13,7 +13,7 @@ export default function ConnectedPlayersCount({
   gameName,
 }: ConnectedPlayersCountProps) {
   const maxPlayers = getMaxPlayers(gameName);
-  const missing = Math.max(0, MIN_PLAYERS - players.length);
+  const missing = Math.max(0, getMinPlayers(gameName) - players.length);
 
   return (
     <div>

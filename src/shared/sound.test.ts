@@ -16,6 +16,9 @@ describe("soundForEvent", () => {
     expect(soundForEvent("p1 called an auction.")).toBe("bid");
     expect(soundForEvent("Round 1 is over. Round 2 begins.")).toBe("fanfare");
     expect(soundForEvent("Round 3 is over. Game over.")).toBe("fanfare");
+    expect(soundForEvent("a drew a 7.")).toBe("chip");
+    expect(soundForEvent("a busted on a 7 after 2 draws and receives a diamond.")).toBe("alarm");
+    expect(soundForEvent("a stops with 12 points of chips and steals 2×4 from b.")).toBe("win");
     expect(soundForEvent("Something else entirely")).toBeNull();
   });
 });

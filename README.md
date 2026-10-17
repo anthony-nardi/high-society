@@ -1,8 +1,8 @@
-# High Society / No Thanks! / Razzia!
+# High Society / No Thanks! / Razzia! / Family Inc.
 
-Three Reiner Knizia-style card games played online against friends or bots.
+Four Reiner Knizia-style card and chip games played online against friends or bots.
 
-- `src/` — Vite + React 19 + Mantine 9 client (`/high-society`, `/no-thanks`, `/razzia`)
+- `src/` — Vite + React 19 + Mantine 9 client (`/high-society`, `/no-thanks`, `/razzia`, `/family-inc`)
 - `functions/` — Firebase Cloud Functions holding all game logic (Node 22 runtime)
 - Realtime Database stores lobbies and game state; Google sign-in via Firebase Auth
 
@@ -51,6 +51,11 @@ card only; the face-down deck is never read.
   searched with Maxn driven by the pure rules in `helpers/rules.ts`; the
   action phase (reveal, call, thief) uses a heuristic on the same
   evaluation because every reveal hides a shuffled deck.
+
+- Family Inc. (`functions/src/family-inc/helpers/botSearch.ts`): a
+  push-your-luck turn against a face-down pile is a chance problem, so the
+  bot runs expectimax over the pile's public composition: stop versus one
+  more draw, with steals and the risk of being stolen from in the leaf.
 
 Every bid, pass, chip and take is logged server-side and published with the
 final state, so the game over screen shows the whole game.

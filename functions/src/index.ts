@@ -16,6 +16,7 @@ import {
   revealCard,
   useThief,
 } from "./razzia/client";
+import { drawChip, stopTurn } from "./family-inc/client";
 
 initializeApp();
 
@@ -41,3 +42,7 @@ exports.initiateAuction = initiateAuction;
 exports.useThief = useThief;
 exports.passOnLoot = passOnLoot;
 exports.bidOnLoot = bidOnLoot;
+
+// Family Inc.
+exports.drawChip = drawChip;
+exports.stopTurn = stopTurn;
