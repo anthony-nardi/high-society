@@ -26,6 +26,7 @@ import {
 } from "./yinsh/client";
 import { moveDvonnStack, placeDvonnPiece } from "./dvonn/client";
 import { pushGipfPiece, removeGipfRow } from "./gipf/client";
+import { claimLyngkColour, moveLyngkStack } from "./lyngk/client";
 
 initializeApp();
 
@@ -74,3 +75,7 @@ exports.moveDvonnStack = moveDvonnStack;
 // GIPF
 exports.pushGipfPiece = pushGipfPiece;
 exports.removeGipfRow = removeGipfRow;
+
+// LYNGK
+exports.claimLyngkColour = claimLyngkColour;
+exports.moveLyngkStack = moveLyngkStack;

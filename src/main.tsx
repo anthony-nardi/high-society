@@ -7,6 +7,7 @@ import Zertz from "./zertz/App";
 import Yinsh from "./yinsh/App";
 import Dvonn from "./dvonn/App";
 import Gipf from "./gipf/App";
+import Lyngk from "./lyngk/App";
 import Razzia from "./razzia/App";
 import reportWebVitals from "./reportWebVitals";
 import "@mantine/core/styles.css";
@@ -57,6 +58,10 @@ const router = createBrowserRouter([
   {
     path: "/gipf",
     element: <Gipf />,
+  },
+  {
+    path: "/lyngk",
+    element: <Lyngk />,
   },
 ]);
 

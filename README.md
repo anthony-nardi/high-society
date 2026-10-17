@@ -1,8 +1,8 @@
-# High Society / No Thanks! / Razzia! / Family Inc. / ZÈRTZ / YINSH / DVONN / GIPF
+# High Society / No Thanks! / Razzia! / Family Inc. / ZÈRTZ / YINSH / DVONN / GIPF / LYNGK
 
-Eight board and card games played online against friends or bots.
+Nine board and card games played online against friends or bots.
 
-- `src/` — Vite + React 19 + Mantine 9 client (`/high-society`, `/no-thanks`, `/razzia`, `/family-inc`, `/zertz`, `/yinsh`, `/dvonn`, `/gipf`)
+- `src/` — Vite + React 19 + Mantine 9 client (`/high-society`, `/no-thanks`, `/razzia`, `/family-inc`, `/zertz`, `/yinsh`, `/dvonn`, `/gipf`, `/lyngk`)
 - `functions/` — Firebase Cloud Functions holding all game logic (Node 22 runtime)
 - Realtime Database stores lobbies and game state; Google sign-in via Firebase Auth
 
@@ -72,6 +72,10 @@ card only; the face-down deck is never read.
 - GIPF (`functions/src/gipf/helpers/botSearch.ts`): the basic game;
   negamax with alpha-beta over the 42 ways to push a piece in, with a fixed
   policy for choosing between crossing rows.
+
+- LYNGK (`functions/src/lyngk/helpers/botSearch.ts`): negamax with
+  alpha-beta where a node is a whole turn (an optional colour claim plus a
+  move, LYNGK links included).
 
 Every bid, pass, chip and take is logged server-side and published with the
 final state, so the game over screen shows the whole game.

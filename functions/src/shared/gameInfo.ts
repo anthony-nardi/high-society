@@ -70,6 +70,13 @@ export const GAME_INFO: { [name in GameName]: GameInfo } = {
     maxPlayers: 2,
     route: "/gipf",
   },
+  lyngk: {
+    name: "lyngk",
+    title: "LYNGK",
+    minPlayers: 2,
+    maxPlayers: 2,
+    route: "/lyngk",
+  },
 };
 
 export const GAME_NAMES = Object.keys(GAME_INFO) as GameName[];

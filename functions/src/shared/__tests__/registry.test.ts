@@ -76,6 +76,10 @@ describe("game registry", () => {
       "pushGipfPiece",
       "removeGipfRow",
     ]);
+    expect(Object.keys(GAMES.lyngk.actions).sort()).toEqual([
+      "claimLyngkColour",
+      "moveLyngkStack",
+    ]);
   });
 
   it("creates a playable state and lets bots finish from it", () => {

@@ -60,6 +60,15 @@ describe("soundForEvent", () => {
     expect(
       soundForEvent("a takes a row of 6: 4 back to reserve, 2 captured."),
     ).toBe("stoneClatter");
+    expect(soundForEvent("a claims red.")).toBe("bid");
+    expect(
+      soundForEvent("a moves a stack of 2 from 0,4 to 3,4 via 1 LYNGK link."),
+    ).toBe("stoneSlide");
+    expect(
+      soundForEvent(
+        "a moves a stack of 1 from 0,4 to 1,4. A stack of five is complete: a scores it (1).",
+      ),
+    ).toBe("stoneScore");
     expect(soundForEvent("a wins!")).toBe("fanfare");
     expect(soundForEvent("The game is a draw.")).toBe("fanfare");
     expect(soundForEvent("Something else entirely")).toBeNull();

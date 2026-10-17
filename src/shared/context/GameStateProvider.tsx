@@ -9,6 +9,7 @@ import type { ZertzGameState } from "../../zertz/game/types";
 import type { YinshGameState } from "../../yinsh/game/types";
 import type { DvonnGameState } from "../../dvonn/game/types";
 import type { GipfGameState } from "../../gipf/game/types";
+import type { LyngkGameState } from "../../lyngk/game/types";
 
 /** The public state each game's screens read. */
 export type GameStateFor<T extends GameName> = T extends "high-society"
@@ -27,7 +28,9 @@ export type GameStateFor<T extends GameName> = T extends "high-society"
               ? DvonnGameState
               : T extends "gipf"
                 ? GipfGameState
-                : never;
+                : T extends "lyngk"
+                  ? LyngkGameState
+                  : never;
 
 type ContextValue = {
   isGameStatusLoading: boolean | null;

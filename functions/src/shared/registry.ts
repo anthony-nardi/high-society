@@ -8,6 +8,7 @@ import zertz from "../zertz/module";
 import yinsh from "../yinsh/module";
 import dvonn from "../dvonn/module";
 import gipf from "../gipf/module";
+import lyngk from "../lyngk/module";
 
 /** Every playable game, keyed by the name stored in lobbies and states. */
 export const GAMES: { [name in GameName]: GameModule<any> } = {
@@ -19,6 +20,7 @@ export const GAMES: { [name in GameName]: GameModule<any> } = {
   yinsh,
   dvonn,
   gipf,
+  lyngk,
 };
 
 export function getGameModule(name: GameName): GameModule<any> {

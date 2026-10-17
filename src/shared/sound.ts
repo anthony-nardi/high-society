@@ -270,8 +270,10 @@ export function soundForEvent(title: string): SoundKind | null {
   if (/jumps .* and captures/.test(text)) return "stoneJump";
   if (/isolates|removes a row|lost contact|takes a row/.test(text))
     return "stoneClatter";
+  if (/removes a ring|stack of five is complete: /.test(text))
+    return "stoneScore";
   if (/moves a stack|pushes a \w+ piece/.test(text)) return "stoneSlide";
-  if (/removes a ring/.test(text)) return "stoneScore";
+  if (/claims \w+\.$/.test(text)) return "bid";
   if (/removes ring/.test(text)) return "stoneLift";
   if (/moves a ring .* and flips/.test(text)) return "stoneFlip";
   if (/moves a ring/.test(text)) return "stoneSlide";
