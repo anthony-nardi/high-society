@@ -1,7 +1,7 @@
 import { Badge, Group, Paper, Stack, Text } from "@mantine/core";
 import { FamilyIncGameState } from "../types";
 import Chip from "./Chip";
-import { bustChance, pileSize, totalChips } from "../odds";
+import { pileSize, totalChips } from "../odds";
 import displayName from "../../../shared/utils/displayName";
 
 const OUTCOME_LABEL = {
@@ -18,16 +18,15 @@ export default function SharedBoard({
   gameState: FamilyIncGameState;
 }) {
   const active = gameState.players.find(
-    (p) => p.email === gameState.activePlayer
+    (p) => p.email === gameState.activePlayer,
   );
   const drawn = gameState.drawnThisTurn || [];
-  const chance = active ? bustChance(gameState.pile, active.held) : 0;
   const outcome = gameState.lastOutcome
     ? OUTCOME_LABEL[gameState.lastOutcome]
     : null;
   const inFront = gameState.players.reduce(
     (sum, p) => sum + totalChips(p.held),
-    0
+    0,
   );
 
   return (
@@ -100,15 +99,6 @@ export default function SharedBoard({
             />
           )}
         </Group>
-        {active && drawn.length > 0 && (
-          <Text
-            size="sm"
-            fw={600}
-            c={chance >= 0.4 ? "red.4" : chance >= 0.2 ? "yellow.4" : "green.4"}
-          >
-            Next draw busts {Math.round(chance * 100)}% of the time
-          </Text>
-        )}
       </Stack>
     </Stack>
   );

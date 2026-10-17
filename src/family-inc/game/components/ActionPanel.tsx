@@ -5,7 +5,7 @@ import drawChip from "../../client/drawChip";
 import stopTurn from "../../client/stopTurn";
 import { useLobbyContext } from "../../../shared/context/useLobbyContext";
 import displayName from "../../../shared/utils/displayName";
-import { bustChance, chipPoints, stealsOnStop } from "../odds";
+import { chipPoints, stealsOnStop } from "../odds";
 import classes from "./ActionPanel.module.css";
 
 /** Draw or stop, with the odds and what each choice is worth. */
@@ -32,7 +32,6 @@ export default function ActionPanel({
   }, []);
 
   const drawn = (gameState.drawnThisTurn || []).length;
-  const chance = bustChance(gameState.pile, player.held);
   const kept = chipPoints(player.held);
   const { steals, points: stealPoints } = stealsOnStop(gameState, player.email);
   const diamondOnBust = drawn + 1 <= 3;
@@ -71,8 +70,8 @@ export default function ActionPanel({
   } else {
     hint = `Stop: keep ${kept} point${kept === 1 ? "" : "s"} of chips${stealText}, banked at your next turn${
       stopWins ? ", which wins the game" : ""
-    }. Draw: ${Math.round(chance * 100)}% chance to bust${
-      diamondOnBust ? " (for a diamond)" : " and lose it all"
+    }. Draw: a repeat value busts${
+      diamondOnBust ? ", for a diamond" : " and loses it all"
     }.`;
   }
 
