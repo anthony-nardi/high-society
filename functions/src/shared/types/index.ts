@@ -10,7 +10,8 @@ export type GameName =
   | "lyngk"
   | "for-sale"
   | "shangri-la"
-  | "acquire";
+  | "acquire"
+  | "condottiere";
 
 export type GameStatus = "IN_PROGRESS" | "GAME_OVER";
 

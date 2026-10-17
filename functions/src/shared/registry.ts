@@ -12,6 +12,7 @@ import lyngk from "../lyngk/module";
 import forSale from "../for-sale/module";
 import shangriLa from "../shangri-la/module";
 import acquire from "../acquire/module";
+import condottiere from "../condottiere/module";
 
 /** Every playable game, keyed by the name stored in lobbies and states. */
 export const GAMES: { [name in GameName]: GameModule<any> } = {
@@ -27,6 +28,7 @@ export const GAMES: { [name in GameName]: GameModule<any> } = {
   "for-sale": forSale,
   "shangri-la": shangriLa,
   acquire,
+  condottiere,
 };
 
 export function getGameModule(name: GameName): GameModule<any> {

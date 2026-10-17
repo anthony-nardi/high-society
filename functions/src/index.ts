@@ -41,6 +41,11 @@ import {
   foundAcquireChain,
   placeAcquireTile,
 } from "./acquire/client";
+import {
+  chooseCondottiereBattlefield,
+  passCondottiere,
+  playCondottiereCard,
+} from "./condottiere/client";
 
 initializeApp();
 
@@ -111,3 +116,8 @@ exports.chooseAcquireSurvivor = chooseAcquireSurvivor;
 exports.disposeAcquireStock = disposeAcquireStock;
 exports.buyAcquireStock = buyAcquireStock;
 exports.declareAcquireEnd = declareAcquireEnd;
+
+// Condottiere
+exports.chooseCondottiereBattlefield = chooseCondottiereBattlefield;
+exports.playCondottiereCard = playCondottiereCard;
+exports.passCondottiere = passCondottiere;

@@ -1,8 +1,8 @@
-# High Society / No Thanks! / Razzia! / Family Inc. / For Sale / The Bridges of Shangri-La / Acquire / ZÈRTZ / YINSH / DVONN / GIPF / LYNGK
+# High Society / No Thanks! / Razzia! / Family Inc. / For Sale / The Bridges of Shangri-La / Acquire / Condottiere / ZÈRTZ / YINSH / DVONN / GIPF / LYNGK
 
-Twelve board and card games played online against friends or bots.
+Thirteen board and card games played online against friends or bots.
 
-- `src/` — Vite + React 19 + Mantine 9 client (`/high-society`, `/no-thanks`, `/razzia`, `/family-inc`, `/zertz`, `/yinsh`, `/dvonn`, `/gipf`, `/lyngk`, `/for-sale`, `/shangri-la`, `/acquire`)
+- `src/` — Vite + React 19 + Mantine 9 client (`/high-society`, `/no-thanks`, `/razzia`, `/family-inc`, `/zertz`, `/yinsh`, `/dvonn`, `/gipf`, `/lyngk`, `/for-sale`, `/shangri-la`, `/acquire`, `/condottiere`)
 - `functions/` — Firebase Cloud Functions holding all game logic (Node 22 runtime)
 - Realtime Database stores lobbies and game state; Google sign-in via Firebase Auth
 
@@ -88,6 +88,10 @@ card only; the face-down deck is never read.
   that plays each candidate tile on a copy, follows its own policies for
   founding, survivors and disposals, and keeps the best standing; buying,
   disposal and the end call are policies.
+
+- Condottiere (`functions/src/condottiere/helpers/botSearch.ts`): judgement
+  rather than search, since hands are hidden: a region's worth, the state
+  of the battle, and the cheapest card that changes it.
 
 Every bid, pass, chip and take is logged server-side and published with the
 final state, so the game over screen shows the whole game.

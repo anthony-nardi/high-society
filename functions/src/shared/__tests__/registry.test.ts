@@ -98,6 +98,11 @@ describe("game registry", () => {
       "foundAcquireChain",
       "placeAcquireTile",
     ]);
+    expect(Object.keys(GAMES.condottiere.actions).sort()).toEqual([
+      "chooseCondottiereBattlefield",
+      "passCondottiere",
+      "playCondottiereCard",
+    ]);
   });
 
   it("creates a playable state and lets bots finish from it", () => {

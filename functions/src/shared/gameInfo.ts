@@ -98,6 +98,13 @@ export const GAME_INFO: { [name in GameName]: GameInfo } = {
     maxPlayers: 6,
     route: "/acquire",
   },
+  condottiere: {
+    name: "condottiere",
+    title: "Condottiere",
+    minPlayers: 2,
+    maxPlayers: 6,
+    route: "/condottiere",
+  },
 };
 
 export const GAME_NAMES = Object.keys(GAME_INFO) as GameName[];

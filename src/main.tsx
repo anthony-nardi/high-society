@@ -11,6 +11,7 @@ import Lyngk from "./lyngk/App";
 import ForSale from "./for-sale/App";
 import ShangriLa from "./shangri-la/App";
 import Acquire from "./acquire/App";
+import Condottiere from "./condottiere/App";
 import Razzia from "./razzia/App";
 import reportWebVitals from "./reportWebVitals";
 import "@mantine/core/styles.css";
@@ -77,6 +78,10 @@ const router = createBrowserRouter([
   {
     path: "/acquire",
     element: <Acquire />,
+  },
+  {
+    path: "/condottiere",
+    element: <Condottiere />,
   },
 ]);
 
