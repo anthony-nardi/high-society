@@ -72,6 +72,10 @@ describe("game registry", () => {
       "moveDvonnStack",
       "placeDvonnPiece",
     ]);
+    expect(Object.keys(GAMES.gipf.actions).sort()).toEqual([
+      "pushGipfPiece",
+      "removeGipfRow",
+    ]);
   });
 
   it("creates a playable state and lets bots finish from it", () => {

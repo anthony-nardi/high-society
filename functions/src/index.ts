@@ -25,6 +25,7 @@ import {
   removeYinshRow,
 } from "./yinsh/client";
 import { moveDvonnStack, placeDvonnPiece } from "./dvonn/client";
+import { pushGipfPiece, removeGipfRow } from "./gipf/client";
 
 initializeApp();
 
@@ -69,3 +70,7 @@ exports.removeYinshRing = removeYinshRing;
 // DVONN
 exports.placeDvonnPiece = placeDvonnPiece;
 exports.moveDvonnStack = moveDvonnStack;
+
+// GIPF
+exports.pushGipfPiece = pushGipfPiece;
+exports.removeGipfRow = removeGipfRow;

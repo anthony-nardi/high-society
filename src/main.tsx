@@ -6,6 +6,7 @@ import FamilyInc from "./family-inc/App";
 import Zertz from "./zertz/App";
 import Yinsh from "./yinsh/App";
 import Dvonn from "./dvonn/App";
+import Gipf from "./gipf/App";
 import Razzia from "./razzia/App";
 import reportWebVitals from "./reportWebVitals";
 import "@mantine/core/styles.css";
@@ -52,6 +53,10 @@ const router = createBrowserRouter([
   {
     path: "/dvonn",
     element: <Dvonn />,
+  },
+  {
+    path: "/gipf",
+    element: <Gipf />,
   },
 ]);
 

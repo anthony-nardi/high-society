@@ -5,7 +5,8 @@ export type GameName =
   | "family-inc"
   | "zertz"
   | "yinsh"
-  | "dvonn";
+  | "dvonn"
+  | "gipf";
 
 export type GameStatus = "IN_PROGRESS" | "GAME_OVER";
 

@@ -268,8 +268,9 @@ export function soundForEvent(title: string): SoundKind | null {
   if (/busted/.test(text)) return "alarm";
   // ZÈRTZ and YINSH: stones on wood.
   if (/jumps .* and captures/.test(text)) return "stoneJump";
-  if (/isolates|removes a row|lost contact/.test(text)) return "stoneClatter";
-  if (/moves a stack/.test(text)) return "stoneSlide";
+  if (/isolates|removes a row|lost contact|takes a row/.test(text))
+    return "stoneClatter";
+  if (/moves a stack|pushes a \w+ piece/.test(text)) return "stoneSlide";
   if (/removes a ring/.test(text)) return "stoneScore";
   if (/removes ring/.test(text)) return "stoneLift";
   if (/moves a ring .* and flips/.test(text)) return "stoneFlip";
