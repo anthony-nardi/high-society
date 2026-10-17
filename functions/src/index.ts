@@ -46,6 +46,12 @@ import {
   passCondottiere,
   playCondottiereCard,
 } from "./condottiere/client";
+import {
+  buildRideTheRailsTrack,
+  endRideTheRailsBuild,
+  rideTheRailsPassenger,
+  takeRideTheRailsShare,
+} from "./ride-the-rails/client";
 
 initializeApp();
 
@@ -121,3 +127,9 @@ exports.declareAcquireEnd = declareAcquireEnd;
 exports.chooseCondottiereBattlefield = chooseCondottiereBattlefield;
 exports.playCondottiereCard = playCondottiereCard;
 exports.passCondottiere = passCondottiere;
+
+// Ride the Rails
+exports.takeRideTheRailsShare = takeRideTheRailsShare;
+exports.buildRideTheRailsTrack = buildRideTheRailsTrack;
+exports.endRideTheRailsBuild = endRideTheRailsBuild;
+exports.rideTheRails = rideTheRailsPassenger;

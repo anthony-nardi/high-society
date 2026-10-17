@@ -1,8 +1,8 @@
-# High Society / No Thanks! / Razzia! / Family Inc. / For Sale / The Bridges of Shangri-La / Acquire / Condottiere / ZÈRTZ / YINSH / DVONN / GIPF / LYNGK
+# High Society / No Thanks! / Razzia! / Family Inc. / For Sale / The Bridges of Shangri-La / Acquire / Condottiere / Ride the Rails / ZÈRTZ / YINSH / DVONN / GIPF / LYNGK
 
 Thirteen board and card games played online against friends or bots.
 
-- `src/` — Vite + React 19 + Mantine 9 client (`/high-society`, `/no-thanks`, `/razzia`, `/family-inc`, `/zertz`, `/yinsh`, `/dvonn`, `/gipf`, `/lyngk`, `/for-sale`, `/shangri-la`, `/acquire`, `/condottiere`)
+- `src/` — Vite + React 19 + Mantine 9 client (`/high-society`, `/no-thanks`, `/razzia`, `/family-inc`, `/zertz`, `/yinsh`, `/dvonn`, `/gipf`, `/lyngk`, `/for-sale`, `/shangri-la`, `/acquire`, `/condottiere`, `/ride-the-rails`)
 - `functions/` — Firebase Cloud Functions holding all game logic (Node 22 runtime)
 - Realtime Database stores lobbies and game state; Google sign-in via Firebase Auth
 
@@ -92,6 +92,11 @@ card only; the face-down deck is never read.
 - Condottiere (`functions/src/condottiere/helpers/botSearch.ts`): judgement
   rather than search, since hands are hidden: a region's worth, the state
   of the battle, and the cheapest card that changes it.
+
+- Ride the Rails (`functions/src/ride-the-rails/helpers/botSearch.ts`):
+  a share by what the railroad will pay, each locomotive by the links and
+  bonuses it earns on a copy of the map, and a journey by what it pays the
+  rider less what it hands the other shareholders.
 
 Every bid, pass, chip and take is logged server-side and published with the
 final state, so the game over screen shows the whole game.

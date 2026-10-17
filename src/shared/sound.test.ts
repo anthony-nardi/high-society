@@ -96,6 +96,12 @@ describe("soundForEvent", () => {
     expect(soundForEvent("a wins Roma with 12. a holds the Condottiere.")).toBe(
       "win",
     );
+    expect(soundForEvent("a takes a Red share.")).toBe("card");
+    expect(soundForEvent("a lays Blue track in Boston.")).toBe("stonePlace");
+    expect(
+      soundForEvent("a carries a passenger from Boston to Albany for $3."),
+    ).toBe("win");
+    expect(soundForEvent("Round 2 begins.")).toBe("turn");
     expect(soundForEvent("a wins!")).toBe("fanfare");
     expect(soundForEvent("The game is a draw.")).toBe("fanfare");
     expect(soundForEvent("Something else entirely")).toBeNull();

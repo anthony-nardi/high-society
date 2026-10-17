@@ -103,6 +103,12 @@ describe("game registry", () => {
       "passCondottiere",
       "playCondottiereCard",
     ]);
+    expect(Object.keys(GAMES["ride-the-rails"].actions).sort()).toEqual([
+      "buildRideTheRailsTrack",
+      "endRideTheRailsBuild",
+      "rideTheRails",
+      "takeRideTheRailsShare",
+    ]);
   });
 
   it("creates a playable state and lets bots finish from it", () => {

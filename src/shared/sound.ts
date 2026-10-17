@@ -286,6 +286,12 @@ export function soundForEvent(title: string): SoundKind | null {
   if (/^\S+ plays (mercenary|a scarecrow|drummer|heroine|courtesan)/.test(text))
     return "card";
   if (/ wins \w+ with \d/.test(text)) return "win";
+  if (/carries a passenger/.test(text)) return "win";
+  if (/lays \w+ track/.test(text)) return "stonePlace";
+  if (/takes a \w+ share/.test(text)) return "card";
+  if (/has nowhere to build|has no passenger to carry/.test(text))
+    return "pass";
+  if (/^round \d begins/.test(text)) return "turn";
   if (/^\S+ plays \d+[a-i]/.test(text)) return "chip";
   if (/founds \w+ with|bonuses:/.test(text)) return "win";
   if (/ buys \d/.test(text)) return "card";

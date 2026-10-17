@@ -10,6 +10,7 @@ import * as dvonn from "../../dvonn/helpers/botSearch";
 import * as gipf from "../../gipf/helpers/botSearch";
 import * as lyngk from "../../lyngk/helpers/botSearch";
 import * as shangriLa from "../../shangri-la/helpers/botSearch";
+import * as rideTheRails from "../../ride-the-rails/helpers/botSearch";
 
 /*
  * Simulation: every game is played to the end many times with random legal
@@ -232,6 +233,7 @@ const MOVERS: Partial<Record<GameName, Mover>> = {
   gipf: inPlace(gipf.turnMoves, gipf.applyMove),
   lyngk: inPlace(lyngk.turnMoves, lyngk.applyMove),
   "shangri-la": inPlace(shangriLa.turnMoves, shangriLa.applyMove),
+  "ride-the-rails": inPlace(rideTheRails.turnMoves, rideTheRails.applyMove),
 };
 
 type Finding = { game: GameName; seed: number; step: number; message: string };
@@ -313,6 +315,17 @@ function conserved(game: GameName, state: State): number[] {
         );
         return onBoard + sum(Object.values(p.supply as Loose) as number[]);
       });
+    case "ride-the-rails":
+      // Locomotives: in the box, on the map, or held as shares.
+      return [
+        sum(Object.values(pub.supply as Loose) as number[]) +
+          sum(Object.values((pub.track || {}) as Loose).map((t) => len(t))) +
+          sum(
+            players.map((p) =>
+              sum(Object.values((p.shares || {}) as Loose) as number[]),
+            ),
+          ),
+      ];
     case "no-thanks":
       return [
         sum(players.map((p) => (p.chips as number) || 0)) +
