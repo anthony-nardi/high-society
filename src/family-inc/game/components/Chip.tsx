@@ -81,7 +81,13 @@ export function ChipStack({
   );
 }
 
-export function Diamonds({ count, size = 28 }: { count: number; size?: number }) {
+export function Diamonds({
+  count,
+  size = 28,
+}: {
+  count: number;
+  size?: number;
+}) {
   if (count <= 0) return null;
   return (
     <span

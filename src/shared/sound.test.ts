@@ -42,6 +42,8 @@ describe("soundForEvent", () => {
     expect(soundForEvent("a removes a ring and has 1 of 3.")).toBe(
       "stoneScore",
     );
+    expect(soundForEvent("a wins!")).toBe("fanfare");
+    expect(soundForEvent("The game is a draw.")).toBe("fanfare");
     expect(soundForEvent("Something else entirely")).toBeNull();
   });
 });

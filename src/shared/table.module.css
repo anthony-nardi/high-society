@@ -1,0 +1,61 @@
+/*
+ * Layout for the two-player board games. Phones in portrait put the two
+ * player cards in one compact row above the board; wide screens and phones
+ * in landscape put the board beside the cards.
+ */
+.table {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.board {
+  order: 2;
+  min-width: 0;
+  transition: opacity 150ms ease;
+}
+
+.boardPending {
+  opacity: 0.75;
+}
+
+.players {
+  order: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* Phone in landscape: board left, cards right, board kept above the panel. */
+@media (orientation: landscape) and (max-width: 61.99em) {
+  .table {
+    grid-template-columns: 3fr 2fr;
+  }
+  .board {
+    order: 1;
+  }
+  .players {
+    order: 2;
+    grid-template-columns: 1fr;
+  }
+  .board svg {
+    max-height: calc(100vh - 150px);
+  }
+}
+
+@media (min-width: 62em) {
+  .table {
+    grid-template-columns: 7fr 5fr;
+    gap: 16px;
+  }
+  .board {
+    order: 1;
+  }
+  .players {
+    order: 2;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}

@@ -8,5 +8,5 @@ export type removeYinshRowRequest = {
 };
 
 export default async function removeYinshRow(request: removeYinshRowRequest) {
-  await callGameAction("removeYinshRow", request);
+  return callGameAction("removeYinshRow", request);
 }

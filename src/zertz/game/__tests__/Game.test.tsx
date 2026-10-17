@@ -118,4 +118,21 @@ describe("ZÈRTZ table interaction", () => {
     fireEvent.click(screen.getByLabelText("4,0 empty ring (removable)"));
     expect(removeRing).toHaveBeenCalledWith({ lobbyUID: "123", coord: "4,0" });
   });
+  it("previews a capture at once and puts a selection back when tapping elsewhere", () => {
+    captureMarble.mockReturnValue(new Promise(() => undefined));
+    current = base({ marbles: { "3,3": "WHITE", "4,3": "GRAY" } });
+    renderGame();
+    fireEvent.click(screen.getByLabelText("3,3 white marble (capturer)"));
+    expect(screen.getByLabelText("5,3 empty ring (target)")).toBeTruthy();
+    // Anywhere else clears the selection.
+    fireEvent.click(screen.getByLabelText("4,0 empty ring"));
+    expect(screen.queryByLabelText("5,3 empty ring (target)")).toBeNull();
+
+    fireEvent.click(screen.getByLabelText("3,3 white marble (capturer)"));
+    fireEvent.click(screen.getByLabelText("5,3 empty ring (target)"));
+    // The jump shows before the server answers; the taken marble is gone.
+    expect(screen.getByLabelText("5,3 white marble (last)")).toBeTruthy();
+    expect(screen.getByLabelText("4,3 empty ring")).toBeTruthy();
+    expect(screen.getByText(/Sending your move/)).toBeTruthy();
+  });
 });

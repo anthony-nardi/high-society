@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import useGameState from "../../shared/hooks/useGameState";
 import { useUserContext } from "../../shared/context/useUserContext";
 import useTurnAlert from "../../shared/hooks/useTurnAlert";
+import TurnBanner from "../../shared/components/TurnBanner";
 import useGameSounds from "../../shared/hooks/useGameSounds";
 import useBotNudge from "../../shared/hooks/useBotNudge";
 import { FamilyIncGameState } from "./types";
@@ -59,6 +60,7 @@ export default function Game() {
 
   return (
     <>
+      <TurnBanner active={isActive} />
       <Container fluid px="md" pt={44} pb="md">
         <Grid>
           <Grid.Col span={{ base: 12, md: 5 }}>

@@ -7,17 +7,18 @@ const MOVE_TIMEOUT_MS = 300_000;
 /**
  * Calls a game's move function and surfaces a failure to the player
  * instead of swallowing it: the server rejects illegal moves with a
- * reason worth reading.
+ * reason worth reading. Resolves to whether the move was accepted.
  */
 export default async function callGameAction<Request extends object>(
   name: string,
   request: Request,
-) {
+): Promise<boolean> {
   const api = httpsCallable<Request, void>(getFunctions(), name, {
     timeout: MOVE_TIMEOUT_MS,
   });
   try {
     await api(request);
+    return true;
   } catch (e) {
     const message = e instanceof Error ? e.message : String(e);
     console.error(e);
@@ -27,5 +28,6 @@ export default async function callGameAction<Request extends object>(
       color: "red",
       autoClose: 6000,
     });
+    return false;
   }
 }

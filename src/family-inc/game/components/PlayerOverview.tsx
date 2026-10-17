@@ -80,7 +80,11 @@ export default function PlayerOverview({
           </Group>
         </div>
 
-        <Group gap={8} wrap="wrap" aria-label={`${displayName(player.email)}'s chips`}>
+        <Group
+          gap={8}
+          wrap="wrap"
+          aria-label={`${displayName(player.email)}'s chips`}
+        >
           {values.length === 0 ? (
             <Text size="sm" c="dimmed">
               No chips in front

@@ -11,7 +11,13 @@ export function MarbleDefs() {
   return (
     <defs>
       {(Object.keys(SHADES) as Colour[]).map((colour) => (
-        <radialGradient key={colour} id={`marble-${colour}`} cx="35%" cy="30%" r="70%">
+        <radialGradient
+          key={colour}
+          id={`marble-${colour}`}
+          cx="35%"
+          cy="30%"
+          r="70%"
+        >
           <stop offset="0%" stopColor={SHADES[colour][0]} />
           <stop offset="100%" stopColor={SHADES[colour][1]} />
         </radialGradient>
@@ -36,7 +42,13 @@ export function MarbleShape({
 }) {
   return (
     <g>
-      <circle cx={x + r * 0.12} cy={y + r * 0.18} r={r} fill="#000" opacity="0.4" />
+      <circle
+        cx={x + r * 0.12}
+        cy={y + r * 0.18}
+        r={r}
+        fill="#000"
+        opacity="0.4"
+      />
       <circle
         cx={x}
         cy={y}

@@ -2,19 +2,19 @@ import {
   Badge,
   Center,
   Container,
-  Grid,
   Group,
   Loader,
   Stack,
   Text,
 } from "@mantine/core";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import useGameState from "../../shared/hooks/useGameState";
 import { useUserContext } from "../../shared/context/useUserContext";
 import useTurnAlert from "../../shared/hooks/useTurnAlert";
 import useGameSounds from "../../shared/hooks/useGameSounds";
 import useBotNudge from "../../shared/hooks/useBotNudge";
 import { useLobbyContext } from "../../shared/context/useLobbyContext";
+import TurnBanner from "../../shared/components/TurnBanner";
 import { Colour, COLOURS, Coord, ZertzGameState } from "./types";
 import Board, { Highlight } from "./components/Board";
 import PlayerOverview from "./components/PlayerOverview";
@@ -25,6 +25,9 @@ import placeMarble from "../client/placeMarble";
 import removeRingCall from "../client/removeRing";
 import captureMarble from "../client/captureMarble";
 import {
+  applyCapture,
+  applyPlace,
+  applyRemoveRing,
   capturers,
   count,
   isRemovable,
@@ -33,6 +36,27 @@ import {
   placeableColours,
 } from "./board";
 import panelClasses from "./components/ActionPanel.module.css";
+import tableClasses from "../../shared/table.module.css";
+
+/** A preview of a move, valid only against the server state it was made from. */
+type Optimistic = { version: string; state: ZertzGameState };
+
+/** Anything the server changes after a move changes this. */
+const versionOf = (s: ZertzGameState | null | undefined) =>
+  s
+    ? [
+        s.turn,
+        s.phase,
+        s.activePlayer,
+        s.capturingAt,
+        s.notification?.timestamp,
+        s.rings.length,
+        Object.keys(s.marbles || {}).length,
+      ].join(":")
+    : "";
+
+/** How long a preview may outlive its call before the server state wins. */
+const OPTIMISTIC_TTL_MS = 8000;
 
 export default function Game() {
   const { user, isSignedIn } = useUserContext();
@@ -49,9 +73,27 @@ export default function Game() {
     marble: null,
   });
   const [loading, setLoading] = useState(false);
+  const [optimistic, setOptimistic] = useState<Optimistic | null>(null);
 
   useGameSounds(gameState?.notification);
   useBotNudge(lobbyId, gameState);
+
+  const serverVersion = versionOf(gameState);
+  const shown =
+    optimistic && optimistic.version === serverVersion && gameState
+      ? optimistic.state
+      : gameState;
+  const pending = loading || (!!shown && shown !== gameState);
+
+  // A preview that the server never answered is dropped after a while.
+  useEffect(() => {
+    if (!optimistic) return;
+    const timer = window.setTimeout(
+      () => setOptimistic((o) => (o === optimistic ? null : o)),
+      OPTIMISTIC_TTL_MS,
+    );
+    return () => window.clearTimeout(timer);
+  }, [optimistic]);
 
   const loggedInPlayer = useMemo(() => {
     if (!gameState || !user) return null;
@@ -62,8 +104,9 @@ export default function Game() {
     !!gameState &&
     !!loggedInPlayer &&
     loggedInPlayer.email === gameState.activePlayer;
+  const inProgress = gameState?.status === "IN_PROGRESS";
 
-  useTurnAlert(isActive && gameState?.status === "IN_PROGRESS", "ZÈRTZ");
+  useTurnAlert(isActive && inProgress, "ZÈRTZ");
 
   const phaseKey = `${gameState?.turn}:${gameState?.phase}`;
   const selectedMarble = selection.key === phaseKey ? selection.marble : null;
@@ -80,76 +123,92 @@ export default function Game() {
 
   const highlights = useMemo(() => {
     const h: { [coord: Coord]: Highlight } = {};
-    if (!gameState) return h;
-    if (gameState.lastMove?.to) h[gameState.lastMove.to] = "last";
-    if (!isActive) return h;
-    const jumpers = capturers(gameState);
-    if (gameState.phase === "CONTINUE_CAPTURE" && gameState.capturingAt) {
-      h[gameState.capturingAt] = "selected";
-      for (const to of jumpsFrom(gameState, gameState.capturingAt))
-        h[to] = "target";
-    } else if (gameState.phase === "MOVE" && jumpers.length) {
+    if (!shown || !gameState) return h;
+    if (shown.lastMove?.to) h[shown.lastMove.to] = "last";
+    if (!isActive || pending) return h;
+    const jumpers = capturers(shown);
+    if (shown.phase === "CONTINUE_CAPTURE" && shown.capturingAt) {
+      h[shown.capturingAt] = "selected";
+      for (const to of jumpsFrom(shown, shown.capturingAt)) h[to] = "target";
+    } else if (shown.phase === "MOVE" && jumpers.length) {
       for (const from of jumpers) h[from] = "capturer";
       if (selectedMarble && jumpers.includes(selectedMarble)) {
         h[selectedMarble] = "selected";
-        for (const to of jumpsFrom(gameState, selectedMarble)) h[to] = "target";
+        for (const to of jumpsFrom(shown, selectedMarble)) h[to] = "target";
       }
-    } else if (gameState.phase === "REMOVE_RING") {
-      for (const c of gameState.rings)
-        if (isRemovable(gameState, c)) h[c] = "removable";
+    } else if (shown.phase === "REMOVE_RING") {
+      for (const c of shown.rings)
+        if (isRemovable(shown, c)) h[c] = "removable";
     }
     return h;
-  }, [gameState, isActive, selectedMarble]);
+  }, [shown, gameState, isActive, pending, selectedMarble]);
 
   const lobbyUID = `${lobbyId}`;
-  const call = useCallback(async (fn: () => Promise<void>) => {
-    setLoading(true);
-    try {
-      await fn();
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const call = useCallback(
+    async (fn: () => Promise<boolean>, preview: ZertzGameState) => {
+      const version = serverVersion;
+      setOptimistic({ version, state: preview });
+      setLoading(true);
+      let accepted = false;
+      try {
+        accepted = await fn();
+      } finally {
+        setLoading(false);
+        if (!accepted) setOptimistic(null);
+      }
+    },
+    [serverVersion],
+  );
 
   const handleClick = useCallback(
     (coord: Coord) => {
-      if (!gameState || !isActive || loading) return;
+      if (!gameState || !isActive || pending) return;
       const h = highlights[coord];
       if (gameState.phase === "CONTINUE_CAPTURE") {
         if (h === "target" && gameState.capturingAt) {
-          void call(() =>
-            captureMarble({
-              lobbyUID,
-              from: gameState.capturingAt as Coord,
-              to: coord,
-            }),
+          const from = gameState.capturingAt;
+          void call(
+            () => captureMarble({ lobbyUID, from, to: coord }),
+            applyCapture(gameState, from, coord),
           );
         }
         return;
       }
       if (gameState.phase === "REMOVE_RING") {
-        if (h === "removable")
-          void call(() => removeRingCall({ lobbyUID, coord }));
-        return;
-      }
-      const jumpers = capturers(gameState);
-      if (jumpers.length) {
-        if (h === "capturer" || h === "selected") setSelectedMarble(coord);
-        else if (h === "target" && selectedMarble) {
-          void call(() =>
-            captureMarble({ lobbyUID, from: selectedMarble, to: coord }),
+        if (h === "removable") {
+          void call(
+            () => removeRingCall({ lobbyUID, coord }),
+            applyRemoveRing(gameState, coord),
           );
         }
         return;
       }
+      const jumpers = capturers(gameState);
+      if (jumpers.length) {
+        if (h === "capturer") setSelectedMarble(coord);
+        else if (h === "selected") setSelectedMarble(null);
+        else if (h === "target" && selectedMarble) {
+          void call(
+            () => captureMarble({ lobbyUID, from: selectedMarble, to: coord }),
+            applyCapture(gameState, selectedMarble, coord),
+          );
+        } else {
+          // Tapping anywhere else puts the marble back.
+          setSelectedMarble(null);
+        }
+        return;
+      }
       if (colour && isVacant(gameState, coord)) {
-        void call(() => placeMarble({ lobbyUID, colour, to: coord }));
+        void call(
+          () => placeMarble({ lobbyUID, colour, to: coord }),
+          applyPlace(gameState, colour, coord),
+        );
       }
     },
     [
       gameState,
       isActive,
-      loading,
+      pending,
       highlights,
       selectedMarble,
       colour,
@@ -163,7 +222,7 @@ export default function Game() {
     isSignedIn && gameState && gameState.status && lobbyId && user;
   const isGameOver = isGameActive && gameState?.status === "GAME_OVER";
 
-  if (gameState === null) return null;
+  if (gameState === null || !shown) return null;
   if (isLoading) {
     return (
       <Center>
@@ -179,22 +238,35 @@ export default function Game() {
 
   return (
     <>
+      <TurnBanner active={isActive && inProgress} />
       <Container fluid px="md" pt={44} pb="md">
-        <Grid>
-          <Grid.Col span={{ base: 12, md: 7 }}>
+        <div className={tableClasses.table}>
+          <div className={tableClasses.players}>
+            {shown.players.map((player) => (
+              <PlayerOverview
+                key={player.email}
+                player={player}
+                gameState={shown}
+              />
+            ))}
+          </div>
+          <div
+            className={`${tableClasses.board} ${pending ? tableClasses.boardPending : ""}`}
+            aria-busy={pending}
+          >
             <Stack gap="xs" align="center">
               <Group gap="sm" justify="center">
                 <Badge variant="light" radius="sm" size="lg">
-                  Turn {gameState.turn}
+                  Turn {shown.turn}
                 </Badge>
                 <Badge variant="light" color="gray" radius="sm" size="lg">
-                  {gameState.rings.length} rings left
+                  {shown.rings.length} rings left
                 </Badge>
               </Group>
               <Board
-                gameState={gameState}
+                gameState={shown}
                 highlights={highlights}
-                onClick={handleClick}
+                onClick={isActive && !pending ? handleClick : undefined}
               />
               <Group gap="md" justify="center" aria-label="Marble pool">
                 <Text size="sm" c="dimmed">
@@ -204,25 +276,14 @@ export default function Game() {
                   <Group key={c} gap={4} wrap="nowrap">
                     <Marble colour={c} size={20} />
                     <Text size="sm" fw={600}>
-                      {count(gameState.pool, c)}
+                      {count(shown.pool, c)}
                     </Text>
                   </Group>
                 ))}
               </Group>
             </Stack>
-          </Grid.Col>
-          <Grid.Col span={{ base: 12, md: 5 }}>
-            <Stack gap="sm">
-              {gameState.players.map((player) => (
-                <PlayerOverview
-                  key={player.email}
-                  player={player}
-                  gameState={gameState}
-                />
-              ))}
-            </Stack>
-          </Grid.Col>
-        </Grid>
+          </div>
+        </div>
       </Container>
       {loggedInPlayer && (
         <div
@@ -233,11 +294,11 @@ export default function Game() {
       )}
       {loggedInPlayer && (
         <ActionPanel
-          gameState={gameState}
+          gameState={shown}
           isActive={isActive}
           selectedColour={colour}
           selectedMarble={selectedMarble}
-          loading={loading}
+          loading={pending}
           onSelectColour={setSelectedColour}
           onCancel={() => setSelectedMarble(null)}
         />

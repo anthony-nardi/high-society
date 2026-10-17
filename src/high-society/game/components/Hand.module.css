@@ -43,8 +43,8 @@
 
 .card:hover:not(:disabled),
 .card:focus-visible {
-  transform: translateX(calc(-50% + var(--x)))
-    translateY(calc(var(--y) - 28px)) rotate(var(--r)) scale(1.06);
+  transform: translateX(calc(-50% + var(--x))) translateY(calc(var(--y) - 28px))
+    rotate(var(--r)) scale(1.06);
   z-index: 100 !important;
   outline: none;
 }
@@ -54,7 +54,8 @@
 .selected:focus-visible {
   transform: translateX(calc(-50% + var(--slot) * var(--tray-step)))
     translateY(calc(-1 * var(--tray-lift))) rotate(0deg);
-  filter: drop-shadow(0 0 12px #ffd86b) drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));
+  filter: drop-shadow(0 0 12px #ffd86b)
+    drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));
   z-index: calc(50 + var(--slot-index, 0)) !important;
 }
 

@@ -163,3 +163,91 @@ export function viewBox() {
     height: Math.max(...ys) + PAD - minY,
   };
 }
+
+// ------------------------------------------------------------- optimistic
+// Client-side previews of a move, shown until the server's state arrives.
+// They mirror the server rules closely enough for the board to look right;
+// turn order and row resolution are left to the server.
+
+const flip = (side: Side): Side => (side === "WHITE" ? "BLACK" : "WHITE");
+
+export function applyPlaceRing(
+  state: YinshGameState,
+  coord: Coord,
+  side: Side,
+): YinshGameState {
+  return {
+    ...state,
+    rings: { ...(state.rings || {}), [coord]: side },
+    lastMove: { to: coord },
+  };
+}
+
+export function applyMoveRing(
+  state: YinshGameState,
+  from: Coord,
+  to: Coord,
+): YinshGameState {
+  const side = ringAt(state, from);
+  if (!side) return state;
+  const direction = DIRECTIONS.find((d) => {
+    let c = step(from, d);
+    while (isPoint(c)) {
+      if (c === to) return true;
+      c = step(c, d);
+    }
+    return false;
+  });
+  if (!direction) return state;
+  const rings = { ...(state.rings || {}) };
+  const markers = { ...(state.markers || {}) };
+  delete rings[from];
+  rings[to] = side;
+  markers[from] = side;
+  const flipped: Coord[] = [];
+  let c = step(from, direction);
+  while (c !== to) {
+    if (markers[c]) {
+      markers[c] = flip(markers[c]);
+      flipped.push(c);
+    }
+    c = step(c, direction);
+  }
+  return {
+    ...state,
+    rings,
+    markers,
+    pool: state.pool - 1,
+    lastMove: { from, to, flipped },
+  };
+}
+
+export function applyRemoveRow(
+  state: YinshGameState,
+  from: Coord,
+  to: Coord,
+  side: Side,
+): YinshGameState {
+  const cells = windowCells(from, to);
+  const markers = { ...(state.markers || {}) };
+  for (const cell of cells) delete markers[cell];
+  return {
+    ...state,
+    markers,
+    pool: state.pool + cells.length,
+    lastMove: { ...state.lastMove, removed: cells, removedBy: side },
+  };
+}
+
+export function applyRemoveRing(
+  state: YinshGameState,
+  coord: Coord,
+): YinshGameState {
+  const rings = { ...(state.rings || {}) };
+  delete rings[coord];
+  return {
+    ...state,
+    rings,
+    lastMove: { ...state.lastMove, removedRing: coord },
+  };
+}

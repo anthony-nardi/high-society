@@ -20,8 +20,8 @@ export default function GameTitle() {
       </Center>
       <Center>
         <Text c="dimmed" ta="center" px="md">
-          The board shrinks, the marbles jump. 2 players, from the GIPF
-          project by Kris Burm.
+          The board shrinks, the marbles jump. 2 players, from the GIPF project
+          by Kris Burm.
         </Text>
       </Center>
     </Stack>

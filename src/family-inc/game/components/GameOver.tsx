@@ -101,7 +101,11 @@ export default function GameOver({
                   <Table.Td>{player.score}</Table.Td>
                   <Table.Td>{chipPoints(player.held) || "—"}</Table.Td>
                   <Table.Td>
-                    {player.diamonds ? <Diamonds count={player.diamonds} size={20} /> : "—"}
+                    {player.diamonds ? (
+                      <Diamonds count={player.diamonds} size={20} />
+                    ) : (
+                      "—"
+                    )}
                   </Table.Td>
                 </Table.Tr>
               ))}

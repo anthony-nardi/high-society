@@ -259,7 +259,8 @@ export function playSound(kind: SoundKind) {
 /** Maps a server notification title to a sound, or null for silence. */
 export function soundForEvent(title: string): SoundKind | null {
   const text = title.toLowerCase();
-  if (/game over|round \d is over|final/.test(text)) return "fanfare";
+  if (/game over|round \d is over|final| wins!$|game is a draw/.test(text))
+    return "fanfare";
   if (
     /police raid|receives -5|receives 1\/2|receives -\b|misfortune/.test(text)
   )

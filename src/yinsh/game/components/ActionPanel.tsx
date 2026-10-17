@@ -1,6 +1,7 @@
-import { Badge, Button, Group, Stack, Text } from "@mantine/core";
+import { Badge, Button, Group, Loader, Stack, Text } from "@mantine/core";
 import { Coord, YinshGameState } from "../types";
-import displayName from "../../../shared/utils/displayName";
+import displayName, { isBotName } from "../../../shared/utils/displayName";
+import ThinkingDots from "../../../shared/components/ThinkingDots";
 import classes from "./ActionPanel.module.css";
 
 /** Fixed strip explaining the phase; the board takes the taps. */
@@ -37,27 +38,39 @@ export default function ActionPanel({
         data-testid="action-panel"
       >
         <Text size="sm" c="dimmed" ta="center">
-          Waiting for {who}, who {doing}. {gameState.pool} markers left in the
-          pool.
+          {loading ? (
+            <>
+              Sending your move
+              <ThinkingDots />
+            </>
+          ) : (
+            <>
+              Waiting for {who}, who {doing}.
+              {isBotName(gameState.activePlayer) && <ThinkingDots />}{" "}
+              {gameState.pool} markers left in the pool.
+            </>
+          )}
         </Text>
       </div>
     );
   }
 
   let hint: string;
-  if (phase === "PLACE_RINGS") {
+  if (loading) {
+    hint = "Sending your move…";
+  } else if (phase === "PLACE_RINGS") {
     const placed = Object.keys(gameState.rings || {}).length;
     hint = `Place a ring on any vacant point (${placed} of 10 placed). Near the middle more lines run through it.`;
   } else if (phase === "REMOVE_ROW") {
     hint = rowStart
       ? "Now tap the marker at the other end of the five you want to take."
-      : "You made a row! Tap a highlighted marker to choose the five to remove; then you take a ring off.";
+      : "You made a row! Tap a glowing marker to choose the five to remove; then you take a ring off.";
   } else if (phase === "REMOVE_RING") {
     hint =
       "Choose one of your rings to remove from the board. Three removed rings wins.";
   } else if (selected) {
     hint =
-      "Tap a highlighted point to move there. The ring leaves a marker behind and flips every marker it jumps.";
+      "Tap a highlighted point to move there, or anywhere else to put the ring back.";
   } else {
     hint = `Tap one of your rings to move it. ${gameState.pool} markers left in the pool.`;
   }
@@ -72,8 +85,11 @@ export default function ActionPanel({
           <Badge color="yellow" variant="filled" radius="sm" size="lg">
             Your turn
           </Badge>
-          {(selected || rowStart) && (
-            <Button variant="default" disabled={loading} onClick={onCancel}>
+          {loading && (
+            <Loader size="xs" color="yellow" aria-label="Sending your move" />
+          )}
+          {(selected || rowStart) && !loading && (
+            <Button variant="default" onClick={onCancel}>
               Cancel
             </Button>
           )}

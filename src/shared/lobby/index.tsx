@@ -20,6 +20,7 @@ import { useGameStateContext } from "../context/GameStateProvider";
 import { useUserContext } from "../context/useUserContext";
 import { useLobbyContext } from "../context/useLobbyContext";
 import displayName from "../utils/displayName";
+import { GAME_INFO } from "@games/shared/gameInfo";
 
 export default function Lobby({ gameName }: { gameName: GameName }) {
   const { user } = useUserContext();
@@ -29,6 +30,7 @@ export default function Lobby({ gameName }: { gameName: GameName }) {
   const [isReadying, setIsReadying] = useState<null | boolean>(null);
   const [isCreatingLobby, setIsCreatingLobby] = useState<null | boolean>(null);
   const [isAddingBot, setIsAddingBot] = useState<null | boolean>(null);
+  const [isStartingWithBots, setIsStartingWithBots] = useState(false);
   const [removingBot, setRemovingBot] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -121,6 +123,25 @@ export default function Lobby({ gameName }: { gameName: GameName }) {
     setIsReadying(false);
   }, [user, lobbyId]);
 
+  /** Ready up and fill the empty seats with bots in one go; the last bot starts the game. */
+  const handleStartWithBots = useCallback(async () => {
+    if (!user || !user.email || !lobbyId) {
+      throw new Error("There is no current user or lobby.");
+    }
+    setIsStartingWithBots(true);
+    try {
+      if (!isCurrentUserReady) {
+        await readyUp({ email: user.email, lobbyUID: lobbyId });
+      }
+      const missing = Math.max(0, getMinPlayers(gameName) - players.length);
+      for (let i = 0; i < missing; i++) {
+        await addBot({ lobbyUID: lobbyId });
+      }
+    } finally {
+      setIsStartingWithBots(false);
+    }
+  }, [user, lobbyId, isCurrentUserReady, gameName, players.length]);
+
   if (!user) {
     return null;
   }
@@ -152,6 +173,10 @@ export default function Lobby({ gameName }: { gameName: GameName }) {
   }
 
   const isFull = players.length >= getMaxPlayers(gameName);
+  const minPlayers = getMinPlayers(gameName);
+  const maxPlayers = getMaxPlayers(gameName);
+  const missingForBots = Math.max(0, minPlayers - players.length);
+  const info = GAME_INFO[gameName];
 
   return (
     <Container size="xs" px="md">
@@ -174,6 +199,14 @@ export default function Lobby({ gameName }: { gameName: GameName }) {
           </Group>
         </Group>
 
+        <Text size="xs" c="dimmed" ta="center">
+          {info?.title ?? gameName} seats{" "}
+          {minPlayers === maxPlayers
+            ? minPlayers
+            : `${minPlayers} to ${maxPlayers}`}{" "}
+          players. Bots can take any empty seat.
+        </Text>
+
         <PlayersList
           players={players}
           onRemoveBot={handleRemoveBot}
@@ -189,9 +222,20 @@ export default function Lobby({ gameName }: { gameName: GameName }) {
             size="lg"
             onClick={handleReadyUp}
             loading={!!isReadying}
-            disabled={!!isReadying}
+            disabled={!!isReadying || isStartingWithBots}
           >
             I'm ready
+          </Button>
+        )}
+        {missingForBots > 0 && (
+          <Button
+            size="lg"
+            variant="light"
+            onClick={handleStartWithBots}
+            loading={isStartingWithBots}
+            disabled={isStartingWithBots || !!isReadying}
+          >
+            Start now with {missingForBots} bot{missingForBots === 1 ? "" : "s"}
           </Button>
         )}
       </Stack>

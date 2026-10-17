@@ -49,17 +49,22 @@ describe("board queries", () => {
   });
 
   it("places from captures when the pool is empty", () => {
-    const s = state({ pool: {}, players: [
-      { email: "a", lastActionAt: 0, isBot: false, captured: { BLACK: 2 } },
-      { email: "b", lastActionAt: 0, isBot: true },
-    ] });
+    const s = state({
+      pool: {},
+      players: [
+        { email: "a", lastActionAt: 0, isBot: false, captured: { BLACK: 2 } },
+        { email: "b", lastActionAt: 0, isBot: true },
+      ],
+    });
     expect(placeableColours(s)).toEqual(["BLACK"]);
   });
 
   it("describes the nearest win", () => {
     expect(winProgress({ WHITE: 3 })).toBe(0.75);
     expect(winHint({ WHITE: 3 }).label).toBe("1 more white");
-    expect(winHint({ WHITE: 2, GRAY: 3, BLACK: 3 }).label).toBe("1 more for three of each");
+    expect(winHint({ WHITE: 2, GRAY: 3, BLACK: 3 }).label).toBe(
+      "1 more for three of each",
+    );
   });
 });
 

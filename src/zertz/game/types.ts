@@ -1,8 +1,4 @@
-export type {
-  GameStatus,
-  LogEntry,
-  Notification,
-} from "@games/shared/types";
+export type { GameStatus, LogEntry, Notification } from "@games/shared/types";
 export type {
   Colour,
   Coord,

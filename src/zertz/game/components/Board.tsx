@@ -2,12 +2,15 @@ import { CSSProperties } from "react";
 import { Coord, ZertzGameState } from "../types";
 import { ALL_RINGS, position, RING_RADIUS, SPACING, viewBox } from "../board";
 import { MarbleDefs, MarbleShape } from "./Marble";
+import BoardSurface from "../../../shared/components/BoardSurface";
 
 export type Highlight =
   "selected" | "target" | "removable" | "capturer" | "last";
 
 /** Invisible tap target covering each ring's share of the board. */
 const HIT_R = SPACING * 0.48;
+/** Pale wooden hoops read well on the darker board. */
+const HOOP = "#d9bd91";
 
 /** CSS variables telling an animation where a piece came from. */
 function offsetFrom(from: Coord, to: Coord): CSSProperties {
@@ -26,7 +29,7 @@ function between(from: Coord, to: Coord): Coord {
   return `${(fx + tx) / 2},${(fy + ty) / 2}`;
 }
 
-/** The hexagonal board: rings as wooden hoops, marbles on top, highlights for the move. */
+/** The hexagonal board on wood: rings as hoops, marbles on top, highlights for the move. */
 export default function Board({
   gameState,
   highlights,
@@ -40,7 +43,7 @@ export default function Board({
   const rings = new Set(gameState.rings);
   const last = gameState.lastMove;
   // Remounting the animated pieces on each new move restarts their animation.
-  const moveKey = `${gameState.turn}:${last?.type}:${last?.from}:${last?.to}`;
+  const moveKey = `${last?.type}:${last?.from}:${last?.to}:${last?.colour}`;
 
   const ringStroke = (h?: Highlight) => {
     switch (h) {
@@ -49,7 +52,7 @@ export default function Board({
       case "target":
         return "#ffd86b";
       default:
-        return "#8d6e63";
+        return HOOP;
     }
   };
 
@@ -67,7 +70,7 @@ export default function Board({
           cy={y}
           r={RING_RADIUS}
           fill="none"
-          stroke="#8d6e63"
+          stroke={HOOP}
           strokeWidth="7"
         />
       </g>,
@@ -102,6 +105,7 @@ export default function Board({
       role="group"
       aria-label="ZÈRTZ board"
     >
+      <BoardSurface id="zertz" box={box} radius={box.width / 2} />
       <MarbleDefs />
       {ALL_RINGS.filter((c) => rings.has(c)).map((coord) => {
         const { x, y } = position(coord);
@@ -132,7 +136,8 @@ export default function Board({
         return (
           <g
             key={coord}
-            onClick={clickable ? () => onClick(coord) : undefined}
+            className="point"
+            onClick={onClick ? () => onClick(coord) : undefined}
             style={{ cursor: clickable ? "pointer" : "default" }}
             role={clickable ? "button" : undefined}
             aria-label={`${coord}${marble ? ` ${marble.toLowerCase()} marble` : " empty ring"}${h ? ` (${h})` : ""}`}
@@ -155,15 +160,16 @@ export default function Board({
               opacity="0.35"
             />
             <circle
+              className={h === "target" ? "target-disc" : undefined}
               cx={x}
               cy={y}
               r={RING_RADIUS}
               fill={
                 h === "target"
-                  ? "rgba(255, 216, 107, 0.18)"
+                  ? "rgba(255, 216, 107, 0.22)"
                   : h === "removable"
                     ? "rgba(255, 107, 107, 0.16)"
-                    : "rgba(0, 0, 0, 0.25)"
+                    : "rgba(0, 0, 0, 0.28)"
               }
               stroke={ringStroke(h)}
               strokeWidth={h === "target" || h === "removable" ? 6 : 7}

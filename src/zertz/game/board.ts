@@ -6,13 +6,43 @@ import { Colour, COLOURS, Coord, MarbleCounts, ZertzGameState } from "./types";
  */
 
 export const ALL_RINGS: Coord[] = [
-  "4,0", "5,0", "6,0", "7,0",
-  "3,1", "4,1", "5,1", "6,1", "7,1",
-  "2,2", "3,2", "4,2", "5,2", "6,2", "7,2",
-  "1,3", "2,3", "3,3", "4,3", "5,3", "6,3", "7,3",
-  "1,4", "2,4", "3,4", "4,4", "5,4", "6,4",
-  "1,5", "2,5", "3,5", "4,5", "5,5",
-  "1,6", "2,6", "3,6", "4,6",
+  "4,0",
+  "5,0",
+  "6,0",
+  "7,0",
+  "3,1",
+  "4,1",
+  "5,1",
+  "6,1",
+  "7,1",
+  "2,2",
+  "3,2",
+  "4,2",
+  "5,2",
+  "6,2",
+  "7,2",
+  "1,3",
+  "2,3",
+  "3,3",
+  "4,3",
+  "5,3",
+  "6,3",
+  "7,3",
+  "1,4",
+  "2,4",
+  "3,4",
+  "4,4",
+  "5,4",
+  "6,4",
+  "1,5",
+  "2,5",
+  "3,5",
+  "4,5",
+  "5,5",
+  "1,6",
+  "2,6",
+  "3,6",
+  "4,6",
 ];
 
 type Direction = [number, number];
@@ -74,7 +104,7 @@ export function jumpsFrom(state: ZertzGameState, from: Coord): Coord[] {
 /** Marbles that can capture right now. */
 export function capturers(state: ZertzGameState): Coord[] {
   return Object.keys(state.marbles || {}).filter(
-    (from) => jumpsFrom(state, from).length > 0
+    (from) => jumpsFrom(state, from).length > 0,
   );
 }
 
@@ -109,8 +139,12 @@ export function placeableColours(state: ZertzGameState): Colour[] {
 
 /** How close a set of captures is to any winning condition, 0 to 1. */
 export function winProgress(captured: MarbleCounts | undefined) {
-  const each = Math.min(...COLOURS.map((c) => count(captured, c) / WIN_OF_EACH));
-  const single = Math.max(...COLOURS.map((c) => count(captured, c) / WIN_OF_ONE[c]));
+  const each = Math.min(
+    ...COLOURS.map((c) => count(captured, c) / WIN_OF_EACH),
+  );
+  const single = Math.max(
+    ...COLOURS.map((c) => count(captured, c) / WIN_OF_ONE[c]),
+  );
   return Math.min(1, Math.max(each, single));
 }
 
@@ -119,9 +153,15 @@ export function winHint(captured: MarbleCounts | undefined) {
   const options: { label: string; needed: number }[] = [];
   const eachNeeded = COLOURS.reduce(
     (sum, c) => sum + Math.max(0, WIN_OF_EACH - count(captured, c)),
-    0
+    0,
   );
-  options.push({ label: eachNeeded === 1 ? "1 more for three of each" : `${eachNeeded} more for three of each`, needed: eachNeeded });
+  options.push({
+    label:
+      eachNeeded === 1
+        ? "1 more for three of each"
+        : `${eachNeeded} more for three of each`,
+    needed: eachNeeded,
+  });
   for (const c of COLOURS) {
     const needed = Math.max(0, WIN_OF_ONE[c] - count(captured, c));
     options.push({ label: `${needed} more ${c.toLowerCase()}`, needed });
@@ -152,4 +192,57 @@ export function viewBox() {
   const maxX = Math.max(...xs) + PAD;
   const maxY = Math.max(...ys) + PAD;
   return { minX, minY, width: maxX - minX, height: maxY - minY };
+}
+
+// ------------------------------------------------------------- optimistic
+// Client-side previews of a move, shown until the server's state arrives.
+// They move the pieces the way the server will; turn order, isolation and
+// the win check are left to the server.
+
+export function applyPlace(
+  state: ZertzGameState,
+  colour: Colour,
+  to: Coord,
+): ZertzGameState {
+  const pool = {
+    ...state.pool,
+    [colour]: Math.max(0, count(state.pool, colour) - 1),
+  };
+  return {
+    ...state,
+    marbles: { ...(state.marbles || {}), [to]: colour },
+    pool,
+    lastMove: { type: "place", to, colour },
+  };
+}
+
+export function applyRemoveRing(
+  state: ZertzGameState,
+  coord: Coord,
+): ZertzGameState {
+  return {
+    ...state,
+    rings: state.rings.filter((c) => c !== coord),
+    lastMove: { type: "remove", from: coord },
+  };
+}
+
+export function applyCapture(
+  state: ZertzGameState,
+  from: Coord,
+  to: Coord,
+): ZertzGameState {
+  const over = jumpedOver(from, to);
+  const jumper = marbleAt(state, from);
+  const taken = over ? marbleAt(state, over) : undefined;
+  if (!over || !jumper || !taken) return state;
+  const marbles = { ...(state.marbles || {}) };
+  delete marbles[from];
+  delete marbles[over];
+  marbles[to] = jumper;
+  return {
+    ...state,
+    marbles,
+    lastMove: { type: "capture", from, to, colour: taken },
+  };
 }

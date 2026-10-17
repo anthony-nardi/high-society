@@ -1,6 +1,7 @@
 import { CSSProperties } from "react";
 import { Coord, Side, YinshGameState } from "../types";
 import { ALL_POINTS, LINES, position, SPACING, viewBox } from "../board";
+import BoardSurface from "../../../shared/components/BoardSurface";
 
 export type Highlight =
   "selected" | "target" | "row" | "rowStart" | "removable" | "last";
@@ -11,6 +12,8 @@ const MARKER_R = 12;
 const RING_R = 18;
 /** Invisible tap target covering each point's share of the board. */
 const HIT_R = SPACING * 0.48;
+const LINE = "rgba(28, 16, 6, 0.75)";
+const DOT = "rgba(28, 16, 6, 0.9)";
 
 const other = (side: Side): Side => (side === "WHITE" ? "BLACK" : "WHITE");
 
@@ -38,14 +41,23 @@ function Marker({
   strokeWidth?: number;
 }) {
   return (
-    <circle
-      cx={x}
-      cy={y}
-      r={MARKER_R}
-      fill={SIDE_FILL[side]}
-      stroke={stroke ?? SIDE_STROKE[side]}
-      strokeWidth={strokeWidth ?? 1.5}
-    />
+    <>
+      <circle
+        cx={x + 1.5}
+        cy={y + 2.5}
+        r={MARKER_R}
+        fill="#000"
+        opacity="0.4"
+      />
+      <circle
+        cx={x}
+        cy={y}
+        r={MARKER_R}
+        fill={SIDE_FILL[side]}
+        stroke={stroke ?? SIDE_STROKE[side]}
+        strokeWidth={strokeWidth ?? 1.5}
+      />
+    </>
   );
 }
 
@@ -66,6 +78,15 @@ function Ring({
 }) {
   return (
     <>
+      <circle
+        cx={x + 2}
+        cy={y + 3}
+        r={RING_R}
+        fill="none"
+        stroke="#000"
+        strokeWidth="7"
+        opacity="0.4"
+      />
       <circle
         cx={x}
         cy={y}
@@ -88,7 +109,7 @@ function Ring({
   );
 }
 
-/** The 85-point board drawn as lines, with rings as hoops and markers as discs. */
+/** The 85-point board drawn as lines on wood, with rings as hoops and markers as discs. */
 export default function Board({
   gameState,
   highlights,
@@ -101,7 +122,7 @@ export default function Board({
   const box = viewBox();
   const last = gameState.lastMove;
   // Remounting the animated pieces on each new move restarts their animation.
-  const moveKey = `${gameState.turn}:${last?.from}:${last?.to}`;
+  const moveKey = `${last?.from}:${last?.to}`;
   const rowKey = `${moveKey}:${last?.removed?.join("|")}`;
   const ringKey = `${moveKey}:${last?.removedRing}`;
   const flipIndex = new Map((last?.flipped || []).map((c, i) => [c, i]));
@@ -136,6 +157,27 @@ export default function Board({
     );
   }
 
+  let trail: React.ReactNode = null;
+  if (last?.from && last?.to) {
+    const a = position(last.from);
+    const b = position(last.to);
+    trail = (
+      <line
+        key={`trail-${moveKey}`}
+        className="trail"
+        x1={a.x}
+        y1={a.y}
+        x2={b.x}
+        y2={b.y}
+        stroke="#4f8fdc"
+        strokeWidth="3"
+        strokeDasharray="7 6"
+        strokeLinecap="round"
+        aria-hidden="true"
+      />
+    );
+  }
+
   return (
     <svg
       viewBox={`${box.minX} ${box.minY} ${box.width} ${box.height}`}
@@ -151,6 +193,8 @@ export default function Board({
       role="group"
       aria-label="YINSH board"
     >
+      <BoardSurface id="yinsh" box={box} />
+
       {/* Board lines */}
       {LINES.map((line, i) => {
         const a = position(line[0]);
@@ -162,11 +206,13 @@ export default function Board({
             y1={a.y}
             x2={b.x}
             y2={b.y}
-            stroke="#5b5f6a"
+            stroke={LINE}
             strokeWidth="1.5"
           />
         );
       })}
+
+      {trail}
 
       {ALL_POINTS.map((coord) => {
         const { x, y } = position(coord);
@@ -189,11 +235,8 @@ export default function Board({
         return (
           <g
             key={coord}
-            onClick={
-              clickable || (!!onClick && !ring && !marker)
-                ? () => onClick(coord)
-                : undefined
-            }
+            className="point"
+            onClick={onClick ? () => onClick(coord) : undefined}
             style={{ cursor: clickable ? "pointer" : "default" }}
             role={clickable ? "button" : undefined}
             aria-label={label}
@@ -207,10 +250,11 @@ export default function Board({
             <circle cx={x} cy={y} r={HIT_R} fill="transparent" />
             {/* Intersection dot, or a target disc. */}
             <circle
+              className={h === "target" ? "target-disc" : undefined}
               cx={x}
               cy={y}
               r={h === "target" ? 13 : 3}
-              fill={h === "target" ? "rgba(255, 216, 107, 0.55)" : "#8f94a1"}
+              fill={h === "target" ? "rgba(255, 216, 107, 0.6)" : DOT}
               stroke={h === "target" ? "#ffd86b" : "none"}
               strokeWidth="2"
             />
@@ -223,6 +267,18 @@ export default function Board({
                 stroke="#4f8fdc"
                 strokeWidth="2"
                 opacity="0.8"
+              />
+            )}
+            {marker && inRow && (
+              <circle
+                className="row-glow"
+                cx={x}
+                cy={y}
+                r={MARKER_R + 6}
+                fill="rgba(255, 107, 107, 0.35)"
+                stroke="#ff6b6b"
+                strokeWidth="2"
+                aria-hidden="true"
               />
             )}
             {marker && flip !== undefined && (

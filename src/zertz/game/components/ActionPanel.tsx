@@ -1,6 +1,7 @@
-import { Badge, Button, Group, Stack, Text } from "@mantine/core";
+import { Badge, Button, Group, Loader, Stack, Text } from "@mantine/core";
 import { Colour, COLOURS, Coord, ZertzGameState } from "../types";
-import displayName from "../../../shared/utils/displayName";
+import displayName, { isBotName } from "../../../shared/utils/displayName";
+import ThinkingDots from "../../../shared/components/ThinkingDots";
 import Marble from "./Marble";
 import { capturers, count, placeableColours } from "../board";
 import classes from "./ActionPanel.module.css";
@@ -43,20 +44,35 @@ export default function ActionPanel({
             ? "must capture"
             : "is placing a marble";
     return (
-      <div className={`${classes.panel} ${classes.compact} safe-bottom`} data-testid="action-panel">
+      <div
+        className={`${classes.panel} ${classes.compact} safe-bottom`}
+        data-testid="action-panel"
+      >
         <Text size="sm" c="dimmed" ta="center">
-          Waiting for {who}, who {doing}.
+          {loading ? (
+            <>
+              Sending your move
+              <ThinkingDots />
+            </>
+          ) : (
+            <>
+              Waiting for {who}, who {doing}.
+              {isBotName(gameState.activePlayer) && <ThinkingDots />}
+            </>
+          )}
         </Text>
       </div>
     );
   }
 
   let hint: string;
-  if (phase === "CONTINUE_CAPTURE") {
+  if (loading) {
+    hint = "Sending your move…";
+  } else if (phase === "CONTINUE_CAPTURE") {
     hint = `Your marble on ${gameState.capturingAt} can jump again, and must. Tap a highlighted ring.`;
   } else if (mustCapture) {
     hint = selectedMarble
-      ? `Tap a highlighted ring to jump to. Captures are compulsory.`
+      ? `Tap a highlighted ring to jump to, or anywhere else to put it back.`
       : `A capture is available, so you must take it. Tap one of the glowing marbles.`;
   } else if (phase === "REMOVE_RING") {
     hint = "Now remove a ring: tap one of the dashed red rings on the edge.";
@@ -67,12 +83,18 @@ export default function ActionPanel({
   }
 
   return (
-    <div className={`${classes.panel} ${classes.active} safe-bottom`} data-testid="action-panel">
+    <div
+      className={`${classes.panel} ${classes.active} safe-bottom`}
+      data-testid="action-panel"
+    >
       <Stack gap={6} align="center">
         <Group gap="sm" justify="center" wrap="wrap">
           <Badge color="yellow" variant="filled" radius="sm" size="lg">
             Your turn
           </Badge>
+          {loading && (
+            <Loader size="xs" color="yellow" aria-label="Sending your move" />
+          )}
           {placing &&
             colours.map((colour) => (
               <Button

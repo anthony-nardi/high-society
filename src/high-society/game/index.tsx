@@ -10,6 +10,7 @@ import { useLobbyContext } from "../../shared/context/useLobbyContext";
 import BidPanel from "./components/BidPanel";
 import useBidding from "./hooks/useBidding";
 import useTurnAlert from "../../shared/hooks/useTurnAlert";
+import TurnBanner from "../../shared/components/TurnBanner";
 import useGameSounds from "../../shared/hooks/useGameSounds";
 import useBotNudge from "../../shared/hooks/useBotNudge";
 import { greenCardsRevealed } from "./cardInfo";
@@ -157,6 +158,7 @@ function ActiveGame({
 
   return (
     <>
+      <TurnBanner active={isActive} />
       <Container fluid px="md" pt={44} pb="md">
         <Grid>
           <Grid.Col span={{ base: 12, md: 5 }}>
