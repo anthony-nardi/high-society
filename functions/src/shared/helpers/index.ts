@@ -9,9 +9,17 @@ import { logger } from "firebase-functions/v2";
 import { HttpsError } from "firebase-functions/v2/https";
 import { getGameModule } from "../registry";
 import { playBots } from "../game";
+import { GAME_INFO } from "../gameInfo";
 
 export function getGameName(playersInLobby: PlayerInLobby[]) {
   return playersInLobby[0].gameName;
+}
+
+/** Enough players for the game, and every one of them ready. */
+export function isLobbyReady(players: PlayerInLobby[]) {
+  if (!players?.length) return false;
+  const minPlayers = GAME_INFO[getGameName(players)]?.minPlayers ?? 3;
+  return players.length >= minPlayers && players.every((p) => p.ready);
 }
 
 async function createSpecificGameState(lobbyUID: string, gameName: GameName) {

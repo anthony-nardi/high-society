@@ -9,7 +9,7 @@ import {
   getGameState,
   verifyRequestAuthentication,
 } from "../../high-society/helpers";
-import { createGame, getGameName } from "../helpers";
+import { createGame, getGameName, isLobbyReady } from "../helpers";
 import { GameName } from "../types";
 import { GAME_INFO } from "../gameInfo";
 import { GenericGameState } from "../types";
@@ -146,6 +146,7 @@ export const joinlobby = onCall(
 );
 
 export const addbot = onCall(
+  { timeoutSeconds: 300 },
   async (
     request: CallableRequest<{
       lobbyUID: string;
@@ -177,7 +178,11 @@ export const addbot = onCall(
     });
 
     await updatePlayers(lobbyUID, playersSnapshotValue);
-    logger.info("Lobby joined.");
+    logger.info("Bot added to lobby.");
+    // The humans may already have readied up; a bot is always ready.
+    if (isLobbyReady(playersSnapshotValue)) {
+      await createGame(lobbyUID, gameName);
+    }
     return { lobbyUID };
   },
 );
@@ -245,23 +250,14 @@ export const readyup = onCall(
     const { lobbyUID, email } = request.data;
     const playersSnapshotValue = await getPlayers(lobbyUID);
 
-    let areAllPlayersReady = true;
-
     playersSnapshotValue.forEach((player: any) => {
       if (player.email === email) {
         player.ready = true;
       }
-
-      if (!player.ready) {
-        areAllPlayersReady = false;
-      }
     });
 
     const gameName = getGameName(playersSnapshotValue);
-    if (
-      playersSnapshotValue.length >= (GAME_INFO[gameName]?.minPlayers ?? 3) &&
-      areAllPlayersReady
-    ) {
+    if (isLobbyReady(playersSnapshotValue)) {
       try {
         await createGame(lobbyUID, gameName);
       } catch (e) {
