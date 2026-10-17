@@ -8,6 +8,7 @@ import useGameState from "../../shared/hooks/useGameState";
 import { useUserContext } from "../../shared/context/useUserContext";
 import useTurnAlert from "../../shared/hooks/useTurnAlert";
 import useGameSounds from "../../shared/hooks/useGameSounds";
+import useBotNudge from "../../shared/hooks/useBotNudge";
 import { NoThanksGameState } from "./types";
 import { useLobbyContext } from "../../shared/context/useLobbyContext";
 import panelClasses from "./components/ActionPanel.module.css";
@@ -18,6 +19,7 @@ export default function Game() {
   const { gameState, isLoading } = useGameState<NoThanksGameState>();
 
   useGameSounds(gameState?.notification);
+  useBotNudge(lobbyId, gameState);
 
   const loggedInPlayer = useMemo(() => {
     if (!gameState || !user) {

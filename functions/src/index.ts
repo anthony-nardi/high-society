@@ -4,6 +4,7 @@ import {
   addbot,
   createlobby,
   joinlobby,
+  playbots,
   readyup,
   removebot,
 } from "./shared/client";
@@ -24,6 +25,7 @@ exports.joinlobby = joinlobby;
 exports.addbot = addbot;
 exports.removebot = removebot;
 exports.readyup = readyup;
+exports.playbots = playbots;
 
 // High Society
 exports.bid = bid;

@@ -12,6 +12,9 @@ import {
 import { createGame, getGameName } from "../helpers";
 import { GameName } from "../types";
 import { GAME_INFO } from "../gameInfo";
+import { GenericGameState } from "../types";
+import { loadGameState, playBots } from "../game";
+import { getGameModule } from "../registry";
 
 const checkAuthentication = (request: CallableRequest<any>) => {
   if (!request.auth) {
@@ -210,7 +213,27 @@ export const removebot = onCall(
   },
 );
 
+/**
+ * Lets the bots play on if it is a bot's turn. Clients call this after a
+ * bot has been quiet too long: a cut-short chain or a game that opened on
+ * a bot's turn would otherwise wait forever.
+ */
+export const playbots = onCall(
+  { timeoutSeconds: 300 },
+  async (request: CallableRequest<{ lobbyUID: string }>) => {
+    checkAuthentication(request);
+    const state = await loadGameState<GenericGameState>(
+      String(request.data.lobbyUID),
+    );
+    if (!state || state.public.status === "GAME_OVER") return {};
+    const module = getGameModule(state.public.game as GameName);
+    await playBots(module, state);
+    return {};
+  },
+);
+
 export const readyup = onCall(
+  { timeoutSeconds: 300 },
   async (
     request: CallableRequest<{
       email: string;

@@ -8,6 +8,7 @@ import { getDatabase } from "firebase-admin/database";
 import { logger } from "firebase-functions/v2";
 import { HttpsError } from "firebase-functions/v2/https";
 import { getGameModule } from "../registry";
+import { playBots } from "../game";
 
 export function getGameName(playersInLobby: PlayerInLobby[]) {
   return playersInLobby[0].gameName;
@@ -19,6 +20,8 @@ async function createSpecificGameState(lobbyUID: string, gameName: GameName) {
   const players = snapshot.val() as PlayerInLobby[];
   const state = module.createState(lobbyUID, players);
   await getDatabase().ref(`/games/${lobbyUID}`).set(state);
+  // The first player may be a bot; let the bots play until a human is up.
+  await playBots(module, state);
   logger.info(`New ${gameName} game created.`);
 }
 

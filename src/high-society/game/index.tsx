@@ -11,6 +11,7 @@ import BidPanel from "./components/BidPanel";
 import useBidding from "./hooks/useBidding";
 import useTurnAlert from "../../shared/hooks/useTurnAlert";
 import useGameSounds from "../../shared/hooks/useGameSounds";
+import useBotNudge from "../../shared/hooks/useBotNudge";
 import { greenCardsRevealed } from "./cardInfo";
 import panelClasses from "./components/BidPanel.module.css";
 
@@ -20,6 +21,7 @@ export default function Game() {
   const { gameState, isLoading } = useGameState<HighSocietyGameState>();
 
   useGameSounds(gameState?.notification);
+  useBotNudge(lobbyId, gameState);
 
   const deckInfo = useMemo(() => {
     if (!gameState) {
