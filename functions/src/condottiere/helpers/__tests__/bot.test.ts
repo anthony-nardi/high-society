@@ -39,16 +39,16 @@ describe("judgement", () => {
       () => 0,
     );
     state.public.players[0].regions = [0];
-    state.public.players[1].regions = [12, 13];
+    state.public.players[1].regions = [14, 15]; // Spoleto and Roma
     expect(regionValue(state, "Bot #1", 1)).toBeGreaterThan(
-      regionValue(state, "Bot #1", 16),
+      regionValue(state, "Bot #1", 2),
     );
-    // Napoli would give b three adjacent: worth denying.
-    expect(regionValue(state, "Bot #1", 14)).toBeGreaterThan(
-      regionValue(state, "Bot #1", 16),
+    // Napoli would give b three adjacent with Roma and Spoleto: worth denying.
+    expect(regionValue(state, "Bot #1", 16)).toBeGreaterThan(
+      regionValue(state, "Bot #1", 2),
     );
-    // Any region that would complete b's three: Siena, Ancona, Perugia or Napoli.
-    expect([9, 10, 11, 14]).toContain(chooseRegion(state, "Bot #1"));
+    // Any region that would complete b's three: Firenze, Urbino, Siena, Ancona or Napoli.
+    expect([10, 11, 12, 13, 16]).toContain(chooseRegion(state, "Bot #1"));
   });
 
   it("plays the cheapest card that takes the lead, and passes when already safe", () => {

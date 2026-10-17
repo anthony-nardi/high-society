@@ -70,7 +70,7 @@ const base = (over: Partial<CondottiereGameState>): CondottiereGameState => ({
       hand: [],
       passed: true,
       isBot: true,
-      regions: [12],
+      regions: [15],
     },
   ],
   activePlayer: "a@example.com",
@@ -162,7 +162,7 @@ describe("Condottiere table", () => {
     fireEvent.click(screen.getByLabelText("Siena (selectable)"));
     expect(chooseCondottiereBattlefield).toHaveBeenCalledWith({
       lobbyUID: "123",
-      region: 9,
+      region: 12,
     });
   });
 });

@@ -34,7 +34,8 @@ export default function CondottiereRules() {
             With two or three players: six in all, or four adjacent.
           </List.Item>
           <List.Item>
-            The map here is this app's own layout of seventeen Italian regions.
+            The seventeen regions follow the Fantasy Flight board, from Torino
+            to Napoli, redrawn for this app.
           </List.Item>
         </List>
 
