@@ -45,7 +45,16 @@ export type YinshPublicGameState = {
   /** Who moved last, so rows are resolved for them first and play resumes after them. */
   mover?: string;
   /** The ring picked up this turn, while choosing where it lands. */
-  lastMove?: { from?: Coord; to?: Coord; flipped?: Coord[] };
+  lastMove?: {
+    from?: Coord;
+    to?: Coord;
+    flipped?: Coord[];
+    /** Markers taken off in the latest row removal, and whose they were. */
+    removed?: Coord[];
+    removedBy?: Side;
+    /** The ring scored after that row. */
+    removedRing?: Coord;
+  };
   turn: number;
   winner?: string;
   /** Set when the markers ran out with equal scores. */

@@ -5,7 +5,21 @@
  */
 
 export type SoundKind =
-  "turn" | "card" | "chip" | "bid" | "pass" | "win" | "alarm" | "fanfare";
+  | "turn"
+  | "card"
+  | "chip"
+  | "bid"
+  | "pass"
+  | "win"
+  | "alarm"
+  | "fanfare"
+  | "stonePlace"
+  | "stoneLift"
+  | "stoneSlide"
+  | "stoneJump"
+  | "stoneFlip"
+  | "stoneClatter"
+  | "stoneScore";
 
 const MUTE_KEY = "sound:muted";
 const MUTE_EVENT = "sound:mute-changed";
@@ -56,7 +70,57 @@ type Note = {
   length: number;
   type?: OscillatorType;
   volume?: number;
+  /** For tones: slide the pitch to this many Hz over the note (a knock). */
+  glideTo?: number;
+  /** For noise: centre of the band-pass filter (default 1800) and its Q. */
+  noiseFrequency?: number;
+  noiseQ?: number;
 };
+
+// ----------------------------------------------------------------- stones
+// A stone on a wooden board: a short, dull knock (a low tone that drops in
+// pitch almost at once) with a bright, very brief grain of noise on top.
+const knock = (at: number, pitch = 190, volume = 1): Note[] => [
+  {
+    frequency: pitch * 2.2,
+    at,
+    length: 0.09,
+    type: "sine",
+    volume: 1.3 * volume,
+    glideTo: pitch,
+  },
+  {
+    frequency: 0,
+    at,
+    length: 0.025,
+    volume: 0.6 * volume,
+    noiseFrequency: 3200,
+    noiseQ: 1.2,
+  },
+];
+// Picking a stone up: a faint, higher-pitched grain as it leaves the wood.
+const lift = (at: number, volume = 1): Note[] => [
+  {
+    frequency: 0,
+    at,
+    length: 0.07,
+    volume: 0.45 * volume,
+    noiseFrequency: 4200,
+    noiseQ: 2,
+  },
+  {
+    frequency: 900,
+    at,
+    length: 0.04,
+    type: "triangle",
+    volume: 0.25 * volume,
+    glideTo: 1400,
+  },
+];
+// A stone dragged across the board.
+const slide = (at: number, length: number): Note[] => [
+  { frequency: 0, at, length, volume: 0.35, noiseFrequency: 1100, noiseQ: 0.7 },
+];
 
 const SOUNDS: { [kind in SoundKind]: Note[] } = {
   // Two rising notes: it is your turn.
@@ -92,6 +156,42 @@ const SOUNDS: { [kind in SoundKind]: Note[] } = {
     { frequency: 659.25, at: 0.28, length: 0.14 },
     { frequency: 783.99, at: 0.42, length: 0.4 },
   ],
+  // A stone set down.
+  stonePlace: knock(0),
+  // A stone picked up.
+  stoneLift: lift(0),
+  // Lifted, dragged along the board, set down.
+  stoneSlide: [...lift(0, 0.7), ...slide(0.05, 0.22), ...knock(0.3, 180)],
+  // Lifted, a hop, and a clack as it lands on the far side.
+  stoneJump: [...lift(0), ...knock(0.26, 230, 1.1), ...knock(0.31, 170, 0.6)],
+  // A slide that turns markers over as it goes: little clicks along the way.
+  stoneFlip: [
+    ...lift(0, 0.7),
+    ...slide(0.05, 0.28),
+    { frequency: 1800, at: 0.12, length: 0.03, type: "square", volume: 0.2 },
+    { frequency: 1600, at: 0.2, length: 0.03, type: "square", volume: 0.2 },
+    { frequency: 1900, at: 0.28, length: 0.03, type: "square", volume: 0.2 },
+    ...knock(0.36, 180),
+  ],
+  // Several stones gathered up one after another.
+  stoneClatter: [
+    ...lift(0),
+    ...knock(0.04, 260, 0.5),
+    ...lift(0.11, 0.8),
+    ...knock(0.15, 240, 0.5),
+    ...lift(0.21, 0.9),
+    ...knock(0.26, 220, 0.5),
+    ...lift(0.32, 0.7),
+    ...knock(0.36, 250, 0.5),
+    ...lift(0.42, 0.8),
+  ],
+  // A ring lifted off for keeps, with a small chord behind it.
+  stoneScore: [
+    ...lift(0, 1.2),
+    { frequency: 523.25, at: 0.08, length: 0.1 },
+    { frequency: 659.25, at: 0.16, length: 0.1 },
+    { frequency: 783.99, at: 0.24, length: 0.22 },
+  ],
 };
 
 const MASTER_VOLUME = 0.07;
@@ -117,7 +217,7 @@ export function playSound(kind: SoundKind) {
       gain.connect(ctx.destination);
 
       if (note.frequency === 0) {
-        // Noise burst for the card flick.
+        // A decaying noise burst, band-passed to give it a material.
         const buffer = ctx.createBuffer(
           1,
           Math.ceil(ctx.sampleRate * note.length),
@@ -130,7 +230,8 @@ export function playSound(kind: SoundKind) {
         source.buffer = buffer;
         const filter = ctx.createBiquadFilter();
         filter.type = "bandpass";
-        filter.frequency.value = 1800;
+        filter.frequency.value = note.noiseFrequency ?? 1800;
+        if (note.noiseQ !== undefined) filter.Q.value = note.noiseQ;
         source.connect(filter);
         filter.connect(gain);
         source.start(now + note.at);
@@ -138,7 +239,13 @@ export function playSound(kind: SoundKind) {
       } else {
         const oscillator = ctx.createOscillator();
         oscillator.type = note.type ?? "sine";
-        oscillator.frequency.value = note.frequency;
+        oscillator.frequency.setValueAtTime(note.frequency, now + note.at);
+        if (note.glideTo !== undefined) {
+          oscillator.frequency.exponentialRampToValueAtTime(
+            note.glideTo,
+            now + note.at + note.length,
+          );
+        }
         oscillator.connect(gain);
         oscillator.start(now + note.at);
         oscillator.stop(now + note.at + note.length + 0.02);
@@ -158,10 +265,14 @@ export function soundForEvent(title: string): SoundKind | null {
   )
     return "alarm";
   if (/busted/.test(text)) return "alarm";
-  if (/captures|isolates|removes a ring|removes a row/.test(text)) return "win";
-  if (/moves a ring|places a \w+ ring/.test(text)) return "chip";
-  if (/places a \w+ marble/.test(text)) return "chip";
-  if (/removes ring/.test(text)) return "card";
+  // ZÈRTZ and YINSH: stones on wood.
+  if (/jumps .* and captures/.test(text)) return "stoneJump";
+  if (/isolates|removes a row/.test(text)) return "stoneClatter";
+  if (/removes a ring/.test(text)) return "stoneScore";
+  if (/removes ring/.test(text)) return "stoneLift";
+  if (/moves a ring .* and flips/.test(text)) return "stoneFlip";
+  if (/moves a ring/.test(text)) return "stoneSlide";
+  if (/places a \w+ (ring|marble)/.test(text)) return "stonePlace";
   if (/won|has taken|used a thief|steals|banks|wins/.test(text)) return "win";
   if (/drew a \d/.test(text)) return "chip";
   if (/placed a chip/.test(text)) return "chip";

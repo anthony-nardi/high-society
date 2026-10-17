@@ -1,4 +1,5 @@
-import { Coord, YinshGameState } from "../types";
+import { CSSProperties } from "react";
+import { Coord, Side, YinshGameState } from "../types";
 import { ALL_POINTS, LINES, position, viewBox } from "../board";
 
 export type Highlight =
@@ -6,6 +7,84 @@ export type Highlight =
 
 const SIDE_FILL = { WHITE: "#f1f1f1", BLACK: "#1a1a1a" };
 const SIDE_STROKE = { WHITE: "#8a8a8a", BLACK: "#000" };
+const MARKER_R = 12;
+const RING_R = 18;
+
+const other = (side: Side): Side => (side === "WHITE" ? "BLACK" : "WHITE");
+
+/** CSS variables telling an animation where a piece came from. */
+function offsetFrom(from: Coord, to: Coord): CSSProperties {
+  const a = position(from);
+  const b = position(to);
+  return {
+    "--dx": `${a.x - b.x}px`,
+    "--dy": `${a.y - b.y}px`,
+  } as CSSProperties;
+}
+
+function Marker({
+  x,
+  y,
+  side,
+  stroke,
+  strokeWidth,
+}: {
+  x: number;
+  y: number;
+  side: Side;
+  stroke?: string;
+  strokeWidth?: number;
+}) {
+  return (
+    <circle
+      cx={x}
+      cy={y}
+      r={MARKER_R}
+      fill={SIDE_FILL[side]}
+      stroke={stroke ?? SIDE_STROKE[side]}
+      strokeWidth={strokeWidth ?? 1.5}
+    />
+  );
+}
+
+function Ring({
+  x,
+  y,
+  side,
+  stroke,
+  strokeWidth,
+  dashed,
+}: {
+  x: number;
+  y: number;
+  side: Side;
+  stroke?: string;
+  strokeWidth?: number;
+  dashed?: boolean;
+}) {
+  return (
+    <>
+      <circle
+        cx={x}
+        cy={y}
+        r={RING_R}
+        fill="none"
+        stroke={stroke ?? SIDE_FILL[side]}
+        strokeWidth={strokeWidth ?? 7}
+        strokeDasharray={dashed ? "6 4" : undefined}
+      />
+      <circle
+        cx={x}
+        cy={y}
+        r={RING_R}
+        fill="none"
+        stroke={SIDE_STROKE[side]}
+        strokeWidth="1"
+        opacity="0.6"
+      />
+    </>
+  );
+}
 
 /** The 85-point board drawn as lines, with rings as hoops and markers as discs. */
 export default function Board({
@@ -18,6 +97,42 @@ export default function Board({
   onClick?: (coord: Coord) => void;
 }) {
   const box = viewBox();
+  const last = gameState.lastMove;
+  // Remounting the animated pieces on each new move restarts their animation.
+  const moveKey = `${gameState.turn}:${last?.from}:${last?.to}`;
+  const rowKey = `${moveKey}:${last?.removed?.join("|")}`;
+  const ringKey = `${moveKey}:${last?.removedRing}`;
+  const flipIndex = new Map((last?.flipped || []).map((c, i) => [c, i]));
+
+  // Ghosts of pieces just taken off the board, lifting away.
+  const ghosts: React.ReactNode[] = [];
+  const removedBy = last?.removedBy ?? "WHITE";
+  for (const [i, coord] of (last?.removed || []).entries()) {
+    if (gameState.markers?.[coord]) continue;
+    const { x, y } = position(coord);
+    ghosts.push(
+      <g
+        key={`taken-${i}-${rowKey}`}
+        className="piece piece-lift"
+        style={{ animationDelay: `${i * 60}ms` }}
+        aria-hidden="true"
+      >
+        <Marker x={x} y={y} side={removedBy} />
+      </g>,
+    );
+  }
+  if (last?.removedRing && !gameState.rings?.[last.removedRing]) {
+    const { x, y } = position(last.removedRing);
+    ghosts.push(
+      <g
+        key={`ring-${ringKey}`}
+        className="piece piece-lift"
+        aria-hidden="true"
+      >
+        <Ring x={x} y={y} side={removedBy} />
+      </g>,
+    );
+  }
 
   return (
     <svg
@@ -51,6 +166,17 @@ export default function Board({
         const marker = gameState.markers?.[coord];
         const clickable = !!onClick && !!h && h !== "last";
         const label = `${coord}${ring ? ` ${ring.toLowerCase()} ring` : marker ? ` ${marker.toLowerCase()} marker` : " empty"}${h ? ` (${h})` : ""}`;
+        const inRow = h === "row" || h === "rowStart";
+        const markerStroke = inRow ? "#ff6b6b" : undefined;
+        const markerWidth = h === "rowStart" ? 5 : h === "row" ? 3 : undefined;
+        const flip = marker ? flipIndex.get(coord) : undefined;
+        const ringMoved = !!ring && last?.to === coord && !!last.from;
+        const ringPlaced =
+          !!ring &&
+          gameState.phase === "PLACE_RINGS" &&
+          last?.to === coord &&
+          !last.from;
+        const markerLeft = !!marker && last?.from === coord;
         return (
           <g
             key={coord}
@@ -88,47 +214,87 @@ export default function Board({
                 opacity="0.8"
               />
             )}
+            {marker && flip !== undefined && (
+              // The colour it was before the ring went over it, turning away.
+              <g
+                key={`flip-out-${moveKey}`}
+                className="piece piece-flip-out"
+                style={{ animationDelay: `${flip * 70}ms` }}
+                aria-hidden="true"
+              >
+                <Marker x={x} y={y} side={other(marker)} />
+              </g>
+            )}
             {marker && (
-              <circle
-                cx={x}
-                cy={y}
-                r="12"
-                fill={SIDE_FILL[marker]}
-                stroke={
-                  h === "row" || h === "rowStart"
-                    ? "#ff6b6b"
-                    : SIDE_STROKE[marker]
+              <g
+                key={
+                  flip !== undefined
+                    ? `flip-in-${moveKey}`
+                    : markerLeft
+                      ? `left-${moveKey}`
+                      : "still"
                 }
-                strokeWidth={h === "rowStart" ? 5 : h === "row" ? 3 : 1.5}
-              />
+                className={
+                  flip !== undefined
+                    ? "piece piece-flip-in"
+                    : markerLeft
+                      ? "piece piece-drop"
+                      : undefined
+                }
+                style={
+                  flip !== undefined
+                    ? { animationDelay: `${flip * 70}ms` }
+                    : undefined
+                }
+              >
+                <Marker
+                  x={x}
+                  y={y}
+                  side={marker}
+                  stroke={markerStroke}
+                  strokeWidth={markerWidth}
+                />
+              </g>
             )}
             {ring && (
-              <circle
-                cx={x}
-                cy={y}
-                r="18"
-                fill="none"
-                stroke={
-                  h === "selected"
-                    ? "#ffd86b"
-                    : h === "removable"
-                      ? "#ff6b6b"
-                      : SIDE_FILL[ring]
+              <g
+                key={
+                  ringMoved
+                    ? `slide-${moveKey}`
+                    : ringPlaced
+                      ? `place-${moveKey}`
+                      : "still"
                 }
-                strokeWidth={h === "selected" || h === "removable" ? 8 : 7}
-                strokeDasharray={h === "removable" ? "6 4" : undefined}
-              />
-            )}
-            {ring && (
-              <circle
-                cx={x}
-                cy={y}
-                r="18"
-                fill="none"
-                stroke={SIDE_STROKE[ring]}
-                strokeWidth="1"
-                opacity="0.6"
-              />
+                className={
+                  ringMoved
+                    ? "piece piece-slide"
+                    : ringPlaced
+                      ? "piece piece-drop"
+                      : undefined
+                }
+                style={
+                  ringMoved && last?.from
+                    ? offsetFrom(last.from, coord)
+                    : undefined
+                }
+              >
+                <Ring
+                  x={x}
+                  y={y}
+                  side={ring}
+                  stroke={
+                    h === "selected"
+                      ? "#ffd86b"
+                      : h === "removable"
+                        ? "#ff6b6b"
+                        : undefined
+                  }
+                  strokeWidth={
+                    h === "selected" || h === "removable" ? 8 : undefined
+                  }
+                  dashed={h === "removable"}
+                />
+              </g>
             )}
             {h === "last" && ring && (
               <circle
@@ -144,6 +310,7 @@ export default function Board({
           </g>
         );
       })}
+      {ghosts}
     </svg>
   );
 }

@@ -392,6 +392,11 @@ export function removeRow(
   for (const cell of cells) delete markers[cell];
   gameState.public.markers = markers;
   gameState.public.pool += ROW_LENGTH;
+  gameState.public.lastMove = {
+    ...gameState.public.lastMove,
+    removed: cells,
+    removedBy: player.side,
+  };
   announce(
     gameState,
     `${player.email} removes a row of five ${player.side.toLowerCase()} markers.`,
@@ -416,6 +421,10 @@ export function removeRing(
   const rings = { ...(gameState.public.rings || {}) };
   delete rings[coord];
   gameState.public.rings = rings;
+  gameState.public.lastMove = {
+    ...gameState.public.lastMove,
+    removedRing: coord,
+  };
   player.scored += 1;
   announce(
     gameState,

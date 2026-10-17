@@ -17,11 +17,31 @@ describe("soundForEvent", () => {
     expect(soundForEvent("Round 1 is over. Round 2 begins.")).toBe("fanfare");
     expect(soundForEvent("Round 3 is over. Game over.")).toBe("fanfare");
     expect(soundForEvent("a drew a 7.")).toBe("chip");
-    expect(soundForEvent("a busted on a 7 after 2 draws and receives a diamond.")).toBe("alarm");
-    expect(soundForEvent("a stops with 12 points of chips and steals 2×4 from b.")).toBe("win");
-    expect(soundForEvent("a jumps 1,3 to 3,3 and captures a white marble.")).toBe("win");
-    expect(soundForEvent("a places a gray marble on 4,3.")).toBe("chip");
-    expect(soundForEvent("a removes ring 4,0.")).toBe("card");
+    expect(
+      soundForEvent("a busted on a 7 after 2 draws and receives a diamond."),
+    ).toBe("alarm");
+    expect(
+      soundForEvent("a stops with 12 points of chips and steals 2×4 from b."),
+    ).toBe("win");
+    expect(
+      soundForEvent("a jumps 1,3 to 3,3 and captures a white marble."),
+    ).toBe("stoneJump");
+    expect(soundForEvent("a places a gray marble on 4,3.")).toBe("stonePlace");
+    expect(soundForEvent("a removes ring 4,0.")).toBe("stoneLift");
+    expect(soundForEvent("a isolates 2 marbles and takes white, gray.")).toBe(
+      "stoneClatter",
+    );
+    expect(soundForEvent("a places a white ring on 5,5.")).toBe("stonePlace");
+    expect(soundForEvent("a moves a ring 5,5 to 5,2.")).toBe("stoneSlide");
+    expect(
+      soundForEvent("a moves a ring 5,5 to 5,2 and flips 2 markers."),
+    ).toBe("stoneFlip");
+    expect(soundForEvent("a removes a row of five white markers.")).toBe(
+      "stoneClatter",
+    );
+    expect(soundForEvent("a removes a ring and has 1 of 3.")).toBe(
+      "stoneScore",
+    );
     expect(soundForEvent("Something else entirely")).toBeNull();
   });
 });

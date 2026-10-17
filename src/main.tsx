@@ -10,6 +10,7 @@ import reportWebVitals from "./reportWebVitals";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import "./shared/mobile.css";
+import "./shared/animations.css";
 import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import { createBrowserRouter, RouterProvider } from "react-router";
