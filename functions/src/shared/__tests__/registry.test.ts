@@ -90,6 +90,14 @@ describe("game registry", () => {
       "placeShangriLaMaster",
       "recruitShangriLaStudents",
     ]);
+    expect(Object.keys(GAMES.acquire.actions).sort()).toEqual([
+      "buyAcquireStock",
+      "chooseAcquireSurvivor",
+      "declareAcquireEnd",
+      "disposeAcquireStock",
+      "foundAcquireChain",
+      "placeAcquireTile",
+    ]);
   });
 
   it("creates a playable state and lets bots finish from it", () => {

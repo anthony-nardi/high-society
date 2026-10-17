@@ -33,6 +33,14 @@ import {
   placeShangriLaMaster,
   recruitShangriLaStudents,
 } from "./shangri-la/client";
+import {
+  buyAcquireStock,
+  chooseAcquireSurvivor,
+  declareAcquireEnd,
+  disposeAcquireStock,
+  foundAcquireChain,
+  placeAcquireTile,
+} from "./acquire/client";
 
 initializeApp();
 
@@ -95,3 +103,11 @@ exports.sellForSale = sellForSale;
 exports.placeShangriLaMaster = placeShangriLaMaster;
 exports.recruitShangriLaStudents = recruitShangriLaStudents;
 exports.journeyShangriLa = journeyShangriLa;
+
+// Acquire
+exports.placeAcquireTile = placeAcquireTile;
+exports.foundAcquireChain = foundAcquireChain;
+exports.chooseAcquireSurvivor = chooseAcquireSurvivor;
+exports.disposeAcquireStock = disposeAcquireStock;
+exports.buyAcquireStock = buyAcquireStock;
+exports.declareAcquireEnd = declareAcquireEnd;

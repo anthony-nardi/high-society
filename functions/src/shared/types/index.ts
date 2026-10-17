@@ -9,7 +9,8 @@ export type GameName =
   | "gipf"
   | "lyngk"
   | "for-sale"
-  | "shangri-la";
+  | "shangri-la"
+  | "acquire";
 
 export type GameStatus = "IN_PROGRESS" | "GAME_OVER";
 

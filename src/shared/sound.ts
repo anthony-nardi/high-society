@@ -280,6 +280,10 @@ export function soundForEvent(title: string): SoundKind | null {
   if (/places a [\w-]+ (ring|marble|piece|master)/.test(text))
     return "stonePlace";
   if (/sends the students/.test(text)) return "stoneSlide";
+  if (/takes over|calls the end/.test(text)) return "fanfare";
+  if (/^\S+ plays \d+[a-i]/.test(text)) return "chip";
+  if (/founds \w+ with|bonuses:/.test(text)) return "win";
+  if (/ buys \d/.test(text)) return "card";
   if (/recruits/.test(text)) return "chip";
   if (/^sold:|cheques .* are on offer|has chosen/.test(text)) return "card";
   if (/won|has taken|used a thief|steals|banks|wins/.test(text)) return "win";

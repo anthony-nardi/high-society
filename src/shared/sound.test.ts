@@ -82,6 +82,12 @@ describe("soundForEvent", () => {
         "a sends the students of Tashi to Nyima: 2 travel, 1 become masters. The bridge breaks.",
       ),
     ).toBe("stoneSlide");
+    expect(soundForEvent("a plays 5E.")).toBe("chip");
+    expect(
+      soundForEvent("a founds Tower with 2 tiles and takes a founder's share."),
+    ).toBe("win");
+    expect(soundForEvent("Luxor takes over Imperial.")).toBe("fanfare");
+    expect(soundForEvent("a buys 2 Tower, 1 Luxor for $600.")).toBe("card");
     expect(soundForEvent("a wins!")).toBe("fanfare");
     expect(soundForEvent("The game is a draw.")).toBe("fanfare");
     expect(soundForEvent("Something else entirely")).toBeNull();

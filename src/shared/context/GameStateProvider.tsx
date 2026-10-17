@@ -12,6 +12,7 @@ import type { GipfGameState } from "../../gipf/game/types";
 import type { LyngkGameState } from "../../lyngk/game/types";
 import type { ForSaleGameState } from "../../for-sale/game/types";
 import type { ShangriLaGameState } from "../../shangri-la/game/types";
+import type { AcquireGameState } from "../../acquire/game/types";
 
 /** The public state each game's screens read. */
 export type GameStateFor<T extends GameName> = T extends "high-society"
@@ -36,7 +37,9 @@ export type GameStateFor<T extends GameName> = T extends "high-society"
                     ? ForSaleGameState
                     : T extends "shangri-la"
                       ? ShangriLaGameState
-                      : never;
+                      : T extends "acquire"
+                        ? AcquireGameState
+                        : never;
 
 type ContextValue = {
   isGameStatusLoading: boolean | null;

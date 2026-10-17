@@ -10,6 +10,7 @@ import Gipf from "./gipf/App";
 import Lyngk from "./lyngk/App";
 import ForSale from "./for-sale/App";
 import ShangriLa from "./shangri-la/App";
+import Acquire from "./acquire/App";
 import Razzia from "./razzia/App";
 import reportWebVitals from "./reportWebVitals";
 import "@mantine/core/styles.css";
@@ -72,6 +73,10 @@ const router = createBrowserRouter([
   {
     path: "/shangri-la",
     element: <ShangriLa />,
+  },
+  {
+    path: "/acquire",
+    element: <Acquire />,
   },
 ]);
 
