@@ -50,8 +50,9 @@ describe("map and deck", () => {
   it("has seventeen regions, a connected map and the 110-card deck", () => {
     expect(REGIONS).toHaveLength(17);
     expect(BORDERS.length).toBeGreaterThan(20);
+    // Calabria, in the toe, borders a single region; everywhere else has two or more.
     for (let r = 0; r < 17; r++)
-      expect(neighbours(r).length).toBeGreaterThanOrEqual(2);
+      expect(neighbours(r).length).toBeGreaterThanOrEqual(r === 16 ? 1 : 2);
     expect(largestConnected(REGIONS.map((_, i) => i))).toBe(17);
     expect(largestConnected([0, 1, 3])).toBe(3);
     expect(largestConnected([0, 16])).toBe(1);
