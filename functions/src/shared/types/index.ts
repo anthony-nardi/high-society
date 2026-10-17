@@ -7,7 +7,8 @@ export type GameName =
   | "yinsh"
   | "dvonn"
   | "gipf"
-  | "lyngk";
+  | "lyngk"
+  | "for-sale";
 
 export type GameStatus = "IN_PROGRESS" | "GAME_OVER";
 

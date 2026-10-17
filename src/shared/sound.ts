@@ -278,6 +278,7 @@ export function soundForEvent(title: string): SoundKind | null {
   if (/moves a ring .* and flips/.test(text)) return "stoneFlip";
   if (/moves a ring/.test(text)) return "stoneSlide";
   if (/places a \w+ (ring|marble|piece)/.test(text)) return "stonePlace";
+  if (/^sold:|cheques .* are on offer|has chosen/.test(text)) return "card";
   if (/won|has taken|used a thief|steals|banks|wins/.test(text)) return "win";
   if (/drew a \d/.test(text)) return "chip";
   if (/placed a chip/.test(text)) return "chip";

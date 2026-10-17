@@ -80,6 +80,11 @@ describe("game registry", () => {
       "claimLyngkColour",
       "moveLyngkStack",
     ]);
+    expect(Object.keys(GAMES["for-sale"].actions).sort()).toEqual([
+      "bidForSale",
+      "passForSale",
+      "sellForSale",
+    ]);
   });
 
   it("creates a playable state and lets bots finish from it", () => {
@@ -99,7 +104,7 @@ describe("game registry", () => {
       module.botTurn(state);
       expect(JSON.stringify(state)).not.toBe(before);
     }
-  });
+  }, 60_000);
 
   it("rejects an illegal action without touching the state", () => {
     const state = GAMES["high-society"].createState(

@@ -30,6 +30,11 @@ export interface GameModule<State extends GenericGameState = GenericGameState> {
   isGameOver(state: State): boolean;
   /** Plays the active bot's move in place. Must always make progress. */
   botTurn(state: State): void;
+  /**
+   * Who may call an action right now. Defaults to the active player; games
+   * with simultaneous choices allow everyone who still has to choose.
+   */
+  mayAct?(state: State, email: string, callableName: string): boolean;
   /** Minimum time a bot visibly "thinks" between moves. */
   botPauseMs?: number;
 }
@@ -107,14 +112,18 @@ export function defineGameFunctions<State extends GenericGameState>(
         if (state.public.status === "GAME_OVER") {
           throw new HttpsError("failed-precondition", "The game is over.");
         }
-        if (state.public.activePlayer !== email) {
+        const allowed = module.mayAct
+          ? module.mayAct(state, email, callableName)
+          : state.public.activePlayer === email;
+        if (!allowed) {
           // Out-of-turn calls are ignored rather than failed: a stale screen
           // may send one just as the turn moves on.
           logger.info(`${email} tried ${callableName} out of turn.`);
           return {};
         }
 
-        const result = action(state, request.data);
+        // Actions that need to know who called get the verified email.
+        const result = action(state, { ...request.data, callerEmail: email });
         if (!result.ok) {
           throw new HttpsError("failed-precondition", result.reason);
         }

@@ -9,6 +9,7 @@ import yinsh from "../yinsh/module";
 import dvonn from "../dvonn/module";
 import gipf from "../gipf/module";
 import lyngk from "../lyngk/module";
+import forSale from "../for-sale/module";
 
 /** Every playable game, keyed by the name stored in lobbies and states. */
 export const GAMES: { [name in GameName]: GameModule<any> } = {
@@ -21,6 +22,7 @@ export const GAMES: { [name in GameName]: GameModule<any> } = {
   dvonn,
   gipf,
   lyngk,
+  "for-sale": forSale,
 };
 
 export function getGameModule(name: GameName): GameModule<any> {

@@ -8,6 +8,7 @@ import Yinsh from "./yinsh/App";
 import Dvonn from "./dvonn/App";
 import Gipf from "./gipf/App";
 import Lyngk from "./lyngk/App";
+import ForSale from "./for-sale/App";
 import Razzia from "./razzia/App";
 import reportWebVitals from "./reportWebVitals";
 import "@mantine/core/styles.css";
@@ -62,6 +63,10 @@ const router = createBrowserRouter([
   {
     path: "/lyngk",
     element: <Lyngk />,
+  },
+  {
+    path: "/for-sale",
+    element: <ForSale />,
   },
 ]);
 

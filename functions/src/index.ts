@@ -27,6 +27,7 @@ import {
 import { moveDvonnStack, placeDvonnPiece } from "./dvonn/client";
 import { pushGipfPiece, removeGipfRow } from "./gipf/client";
 import { claimLyngkColour, moveLyngkStack } from "./lyngk/client";
+import { bidForSale, passForSale, sellForSale } from "./for-sale/client";
 
 initializeApp();
 
@@ -79,3 +80,8 @@ exports.removeGipfRow = removeGipfRow;
 // LYNGK
 exports.claimLyngkColour = claimLyngkColour;
 exports.moveLyngkStack = moveLyngkStack;
+
+// For Sale
+exports.bidForSale = bidForSale;
+exports.passForSale = passForSale;
+exports.sellForSale = sellForSale;
