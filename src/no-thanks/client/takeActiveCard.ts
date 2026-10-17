@@ -1,22 +1,9 @@
-import { getFunctions, httpsCallable } from "firebase/functions";
+import callGameAction from "../../shared/callGameAction";
 
 export type TakeActiveCardRequest = {
   lobbyUID: number;
 };
 
-export default async function takeActiveCard(
-  takeActiveCardRequest: TakeActiveCardRequest,
-) {
-  const functions = getFunctions();
-  const takeActiveCardApi = httpsCallable<TakeActiveCardRequest, void>(
-    functions,
-    "takeActiveCard",
-    { timeout: 300_000 },
-  );
-
-  try {
-    await takeActiveCardApi(takeActiveCardRequest);
-  } catch (e) {
-    console.error(e);
-  }
+export default async function takeActiveCard(request: TakeActiveCardRequest) {
+  await callGameAction("takeActiveCard", request);
 }

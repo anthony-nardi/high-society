@@ -22,6 +22,19 @@ npm --prefix functions run lint
 npm --prefix functions run build
 ```
 
+## Adding a game
+
+Every game is a `GameModule` (`functions/src/shared/game.ts`): a name, a
+pure `createState`, a map of callable names to pure rule functions that
+return `{ ok } | { ok: false, reason }`, `isGameOver`, and a pure `botTurn`.
+Register it in `functions/src/shared/registry.ts` and describe it in
+`functions/src/shared/gameInfo.ts`; the shared pipeline then supplies auth,
+the active-player check, persistence, the bot loop with its pacing, the
+lobby limits and rematches. The client imports the server's types directly
+through the `@games/*` alias (see `tsconfig.app.json` and `vite.config.ts`),
+so the two sides cannot drift, and calls moves through
+`src/shared/callGameAction.ts`. Razzia! is the reference implementation.
+
 ## Bots
 
 Bots in both games pick their move with a Maxn search (multiplayer minimax

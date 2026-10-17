@@ -11,6 +11,7 @@ import {
 } from "../../high-society/helpers";
 import { createGame, getGameName } from "../helpers";
 import { GameName } from "../types";
+import { GAME_INFO } from "../gameInfo";
 
 const checkAuthentication = (request: CallableRequest<any>) => {
   if (!request.auth) {
@@ -30,18 +31,8 @@ const updatePlayers = async (lobbyUID: string, players: any) => {
   await getDatabase().ref(`lobbies/${lobbyUID}/players`).set(players);
 };
 
-const getMaxPlayers = (gameName: GameName): number => {
-  switch (gameName) {
-    case "high-society":
-      return 5;
-    case "no-thanks":
-      return 7;
-    case "razzia":
-      return 5;
-    default:
-      return 0 as never;
-  }
-};
+const getMaxPlayers = (gameName: GameName): number =>
+  GAME_INFO[gameName]?.maxPlayers ?? 0;
 
 export const createlobby = onCall(
   async (
@@ -243,9 +234,11 @@ export const readyup = onCall(
       }
     });
 
-    if (playersSnapshotValue.length >= 3 && areAllPlayersReady) {
-      const gameName = getGameName(playersSnapshotValue);
-
+    const gameName = getGameName(playersSnapshotValue);
+    if (
+      playersSnapshotValue.length >= (GAME_INFO[gameName]?.minPlayers ?? 3) &&
+      areAllPlayersReady
+    ) {
       try {
         await createGame(lobbyUID, gameName);
       } catch (e) {

@@ -62,7 +62,7 @@ export default function Game() {
   }
 
   const deckInfo = {
-    activeCard: gameState.activeCard,
+    activeCard: gameState.activeCard ?? 0,
     remainingCards: gameState.remainingCards,
     chipsPlaced: gameState.chipsPlaced,
   };
@@ -94,7 +94,7 @@ export default function Game() {
         <ActionPanel
           isActive={isActive}
           activePlayer={gameState.activePlayer}
-          activeCard={gameState.activeCard}
+          activeCard={gameState.activeCard ?? 0}
           chipsPlaced={gameState.chipsPlaced || 0}
           cards={loggedInPlayer.cards || []}
           chips={loggedInPlayer.chips || 0}

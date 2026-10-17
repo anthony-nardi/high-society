@@ -145,6 +145,7 @@ function ActiveGame({
       lastActionAt: 0,
       moneyCards: [],
       hasPassed: false,
+      isBot: false,
     },
     isActive,
     highestBidTotal,

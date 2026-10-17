@@ -1,34 +1,6 @@
-import { LogEntry } from "../../../shared/components/GameLog";
+export type { GameStatus, LogEntry, Notification } from "@games/shared/types";
+export type { HighSocietyPlayerState } from "@games/high-society/types";
+import type { PublicGameState } from "@games/high-society/types";
 
-export type GameStatus = "IN_PROGRESS" | "GAME_OVER";
-
-export type Notification = {
-  title: string;
-  message?: string;
-  timestamp: number;
-};
-
-export type HighSocietyPlayerState = {
-  email: string;
-  lastActionAt: number;
-  moneyCards: string[];
-  statusCards?: string[];
-  currentBid?: string[];
-  hasPassed: boolean;
-};
-
-export type HighSocietyGameState = {
-  id: string;
-  game: string;
-  players: HighSocietyPlayerState[];
-  activePlayer: string;
-  startAt: string;
-  status: GameStatus;
-  currentStatusCard: string;
-  remainingCards: number;
-  notification?: Notification;
-  /** Set when a player starts a rematch after this game ends. */
-  nextLobbyUID?: string;
-  /** Full event log, published by the server once the game is over. */
-  log?: LogEntry[];
-};
+/** The client only ever sees the public half of the state. */
+export type HighSocietyGameState = PublicGameState;

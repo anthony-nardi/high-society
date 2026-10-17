@@ -38,14 +38,13 @@ export function applyBotMove(
   }
 }
 
-export async function maybeTakeBotTurn(
+/** Chooses and applies the active bot's move in place, with legal fallbacks. Pure. */
+export function takeBotTurn(
   gameState: RazziaGameState,
-  { minimumTurnMs = BOT_TURN_MIN_MS, search }: BotTurnOptions = {},
+  search?: SearchOptions,
 ) {
   const activePlayer = getActivePlayer(gameState);
   if (!activePlayer?.isBot) return;
-
-  const startedAt = Date.now();
 
   let move: BotMove = { type: "reveal" };
   try {
@@ -56,18 +55,26 @@ export async function maybeTakeBotTurn(
 
   const result = applyBotMove(gameState, move);
   if (!result.ok) {
-    // Fall back to whatever is legal for the phase.
     console.log(`Bot move ${move.type} rejected: ${result.reason}`);
     for (const fallback of [pass, revealCard, initiateAuction]) {
       if (fallback(gameState).ok) break;
     }
   }
+}
 
+export async function maybeTakeBotTurn(
+  gameState: RazziaGameState,
+  { minimumTurnMs = BOT_TURN_MIN_MS, search }: BotTurnOptions = {},
+) {
+  const activePlayer = getActivePlayer(gameState);
+  if (!activePlayer?.isBot) return;
+
+  const startedAt = Date.now();
+  takeBotTurn(gameState, search);
   const timeElapsed = Date.now() - startedAt;
   if (timeElapsed < minimumTurnMs) {
     await wait(minimumTurnMs - timeElapsed);
   }
-
   await saveGameState(gameState);
 }
 

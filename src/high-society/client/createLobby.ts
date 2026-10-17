@@ -1,7 +1,8 @@
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { CreateLobbyResponse } from "../../shared/lobby/types";
 
-export type GameName = "high-society" | "no-thanks" | "razzia";
+import type { GameName } from "@games/shared/types";
+export type { GameName };
 
 export default async function createLobby(
   gameName: GameName,

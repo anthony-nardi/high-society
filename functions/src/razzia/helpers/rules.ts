@@ -10,7 +10,7 @@ import {
   ScoreBreakdown,
 } from "../types";
 import { Notification } from "../../shared/types";
-import { LogEntry } from "../../high-society/types";
+import { LogEntry } from "../../shared/types";
 
 /*
  * Pure rules for Razzia!: everything here mutates the game state object it
@@ -328,7 +328,8 @@ export function endRound(gameState: RazziaGameState) {
 // Actions
 // ---------------------------------------------------------------------------
 
-export type ActionResult = { ok: true } | { ok: false; reason: string };
+export type { ActionResult } from "../../shared/game";
+import type { ActionResult } from "../../shared/game";
 
 const fail = (reason: string): ActionResult => ({ ok: false, reason });
 

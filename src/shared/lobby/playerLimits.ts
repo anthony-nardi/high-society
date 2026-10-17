@@ -1,16 +1,10 @@
-import { GameName } from "../../high-society/client/createLobby";
+import { GAME_INFO } from "@games/shared/gameInfo";
+import type { GameName } from "@games/shared/types";
 
 export const MIN_PLAYERS = 3;
 
-export const getMaxPlayers = (gameName: GameName): number => {
-  switch (gameName) {
-    case "high-society":
-      return 5;
-    case "no-thanks":
-      return 7;
-    case "razzia":
-      return 5;
-    default:
-      return 0; // Default case, should never happen
-  }
-};
+export const getMinPlayers = (gameName: GameName) =>
+  GAME_INFO[gameName]?.minPlayers ?? MIN_PLAYERS;
+
+export const getMaxPlayers = (gameName: GameName): number =>
+  GAME_INFO[gameName]?.maxPlayers ?? 0;

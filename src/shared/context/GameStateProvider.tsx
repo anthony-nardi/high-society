@@ -1,11 +1,12 @@
 import { createContext, useContext } from "react";
 import useGameState from "../hooks/useGameState";
-import { GameName } from "../../high-society/client/createLobby";
-import { HighSocietyGameState as HighSocietyGameState } from "../../high-society/game/types";
-import { NoThanksGameState } from "../../no-thanks/game/types";
-import { RazziaGameState } from "../../razzia/game/types";
+import type { GameName } from "@games/shared/types";
+import type { HighSocietyGameState } from "../../high-society/game/types";
+import type { NoThanksGameState } from "../../no-thanks/game/types";
+import type { RazziaGameState } from "../../razzia/game/types";
 
-type GameState<T extends string> = T extends "high-society"
+/** The public state each game's screens read. */
+export type GameStateFor<T extends GameName> = T extends "high-society"
   ? HighSocietyGameState
   : T extends "no-thanks"
     ? NoThanksGameState
@@ -13,137 +14,39 @@ type GameState<T extends string> = T extends "high-society"
       ? RazziaGameState
       : never;
 
-const HighSocietyContext = createContext<{
+type ContextValue = {
   isGameStatusLoading: boolean | null;
-  gameState: HighSocietyGameState | null;
-}>({
-  isGameStatusLoading: null,
-  gameState: null,
-});
+  gameState: unknown;
+};
 
-const NoThanksContext = createContext<{
-  isGameStatusLoading: boolean | null;
-  gameState: NoThanksGameState | null;
-}>({
-  isGameStatusLoading: null,
-  gameState: null,
-});
-
-const RazziaContext = createContext<{
-  isGameStatusLoading: boolean | null;
-  gameState: RazziaGameState | null;
-}>({
+const GameStateContext = createContext<ContextValue>({
   isGameStatusLoading: null,
   gameState: null,
 });
 
 // eslint-disable-next-line react-refresh/only-export-components
-export function useHighSocietyGameState(): {
-  isGameStatusLoading: boolean | null;
-  gameState: HighSocietyGameState | null;
-} {
-  const context = useContext(HighSocietyContext);
-  if (!context)
-    throw new Error(
-      "HighSocietyGameState must be used within a HighSocietyProvider",
-    );
-  return context;
-}
-// eslint-disable-next-line react-refresh/only-export-components
-export function useNoThanksGameState(): {
-  isGameStatusLoading: boolean | null;
-  gameState: NoThanksGameState | null;
-} {
-  const context = useContext(NoThanksContext);
-  if (!context)
-    throw new Error("NoThanksGameState must be used within a NoThanksProvider");
-  return context;
-}
-
-// eslint-disable-next-line react-refresh/only-export-components
-export function useRazziaGameState(): {
-  isGameStatusLoading: boolean | null;
-  gameState: RazziaGameState | null;
-} {
-  const context = useContext(RazziaContext);
-  if (!context)
-    throw new Error("RazziaGameState must be used within a RazziaProvider");
-  return context;
-}
-
-// eslint-disable-next-line
-export function useGameStateContext<T extends string>(
+export function useGameStateContext<T extends GameName>(
+  // The name is only here to pick the state type; one provider serves all games.
   gameType: T,
-): {
-  gameState: GameState<T>;
-  isGameStatusLoading: boolean | null;
-} {
-  let returnVal;
-  if (gameType === "high-society") {
-    // eslint-disable-next-line
-    returnVal = useHighSocietyGameState();
-  } else if (gameType === "no-thanks") {
-    // eslint-disable-next-line
-    returnVal = useNoThanksGameState();
-  } else if (gameType === "razzia") {
-    // eslint-disable-next-line
-    returnVal = useRazziaGameState();
-  } else {
-    throw new Error("Invalid game type");
-  }
-  // @ts-expect-error fix
-  return returnVal;
+): { gameState: GameStateFor<T> | null; isGameStatusLoading: boolean | null } {
+  void gameType;
+  const context = useContext(GameStateContext);
+  return context as {
+    gameState: GameStateFor<T> | null;
+    isGameStatusLoading: boolean | null;
+  };
 }
+
 export const GameStateProvider = ({
-  gameName,
   children,
 }: {
   gameName: GameName;
   children: React.ReactNode;
 }) => {
-  const { isLoading: isGameStatusLoading, gameState } =
-    useGameState<GameState<typeof gameName>>();
-
-  if (gameName === "high-society") {
-    return (
-      <HighSocietyContext.Provider
-        value={
-          { gameState, isGameStatusLoading } as {
-            isGameStatusLoading: boolean | null;
-            gameState: HighSocietyGameState | null;
-          }
-        }
-      >
-        {children}
-      </HighSocietyContext.Provider>
-    );
-  } else if (gameName === "no-thanks") {
-    return (
-      <NoThanksContext.Provider
-        value={
-          { gameState, isGameStatusLoading } as {
-            isGameStatusLoading: boolean | null;
-            gameState: NoThanksGameState | null;
-          }
-        }
-      >
-        {children}
-      </NoThanksContext.Provider>
-    );
-  } else if (gameName === "razzia") {
-    return (
-      <RazziaContext.Provider
-        value={
-          { gameState, isGameStatusLoading } as {
-            isGameStatusLoading: boolean | null;
-            gameState: RazziaGameState | null;
-          }
-        }
-      >
-        {children}
-      </RazziaContext.Provider>
-    );
-  } else {
-    throw new Error("Invalid game type");
-  }
+  const { isLoading: isGameStatusLoading, gameState } = useGameState<unknown>();
+  return (
+    <GameStateContext.Provider value={{ gameState, isGameStatusLoading }}>
+      {children}
+    </GameStateContext.Provider>
+  );
 };

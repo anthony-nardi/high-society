@@ -23,7 +23,7 @@ export default function DeckOverview({
   return (
     <Stack gap="sm" align="center" maw={420}>
       <Group gap="md" wrap="nowrap" align="center">
-        <CardFront card={deckInfo.activeCard} size="lg" />
+        <CardFront card={deckInfo.activeCard ?? 0} size="lg" />
         <Stack gap={4} align="center">
           <PokerChip number={chips} size={88} />
           <Text size="sm" fw={600}>

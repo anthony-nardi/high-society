@@ -1,33 +1,14 @@
-import { LogEntry } from "../../shared/components/GameLog";
-
-export type GameStatus = "IN_PROGRESS" | "GAME_OVER";
-
-export type Notification = {
-  title: string;
-  message?: string;
-  timestamp: number;
-};
-
-export const SCARAB = "SCARAB";
-export const CROSS = "CROSS";
-export const BRACELET = "BRACELET";
-export const TIARA = "TIARA";
-export const RING = "RING";
-export const BODYGUARDS = "BODYGUARDS";
-export const COINS = "COINS";
-export const POLICE_RAIDS = "POLICE_RAIDS";
-export const CARS = "CARS";
-export const DRIVERS = "DRIVERS";
-export const CASINO = "CASINO";
-export const TRANSPORTATION = "TRANSPORTATION";
-export const MOVIE_THEATER = "MOVIE_THEATER";
-export const RACING = "RACING";
-export const REAL_ESTATE = "REAL_ESTATE";
-export const NIGHTCLUB = "NIGHTCLUB";
-export const RESTAURANT = "RESTAURANT";
-export const THIEF = "THIEF";
-
-export const LOOT_CARDS = {
+export type { GameStatus, LogEntry, Notification } from "@games/shared/types";
+export type {
+  CardCategory,
+  LootCards,
+  PlayerCards,
+  RazziaPlayerState,
+  RoundState,
+  ScoreBreakdown,
+} from "@games/razzia/types";
+export {
+  LOOT_CARDS,
   SCARAB,
   CROSS,
   BRACELET,
@@ -46,66 +27,8 @@ export const LOOT_CARDS = {
   NIGHTCLUB,
   RESTAURANT,
   THIEF,
-} as const;
+} from "@games/razzia/types";
+import type { RazziaPublicGameState } from "@games/razzia/types";
 
-export type LootCards = (typeof LOOT_CARDS)[keyof typeof LOOT_CARDS];
-
-export type PlayerCards = {
-  jewels?: LootCards[];
-  bodyguards?: LootCards[];
-  coins?: LootCards[];
-  theives?: LootCards[];
-  cars?: LootCards[];
-  drivers?: LootCards[];
-  businesses?: LootCards[];
-};
-
-export type CardCategory = keyof PlayerCards;
-
-export type RazziaPlayerState = {
-  email: string;
-  lastActionAt: number;
-  cards: PlayerCards;
-  money?: string[];
-  availableMoney?: string[];
-  bid: string;
-  score: number;
-  isBot: boolean;
-};
-
-export type RoundState =
-  "NORMAL_AUCTION" | "FORCED_AUCTION" | "SCORING" | "ACTION";
-
-export type ScoreBreakdown = {
-  email: string;
-  round: number;
-  points: { [category: string]: number };
-  total: number;
-};
-
-export type RazziaGameState = {
-  id: string;
-  game: string;
-  players: RazziaPlayerState[];
-  activePlayer: string;
-  startAt: string;
-  status: GameStatus;
-  roundState: RoundState;
-  notification?: Notification;
-  revealedCards?: LootCards[];
-  remainingCards: number;
-  policeRaids: number;
-  raidLimit: number;
-  money: string;
-  round: 1 | 2 | 3;
-  auctionTriggeringPlayer?: string;
-  /** Automatic auction for a full table: unsold loot is discarded. */
-  discardIfUnsold?: boolean;
-  /** Players who passed in the current auction, in order. */
-  auctionPassed?: string[];
-  /** How many of each card have been revealed this game: what a player counting cards would know. */
-  revealedCounts?: { [card: string]: number };
-  scoring?: ScoreBreakdown[];
-  nextLobbyUID?: string;
-  log?: LogEntry[];
-};
+/** The client only ever sees the public half of the state. */
+export type RazziaGameState = RazziaPublicGameState;

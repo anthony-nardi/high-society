@@ -4,31 +4,22 @@ import {
   GenericPlayerState,
   PlayerInLobby,
 } from "../types";
-import { createHighSocietyGameState } from "../../high-society/helpers";
-import { createNoThanksGameState } from "../../no-thanks/helpers";
 import { getDatabase } from "firebase-admin/database";
 import { logger } from "firebase-functions/v2";
 import { HttpsError } from "firebase-functions/v2/https";
-import { createRazziaGameState } from "../../razzia/helpers";
+import { getGameModule } from "../registry";
 
 export function getGameName(playersInLobby: PlayerInLobby[]) {
   return playersInLobby[0].gameName;
 }
 
 async function createSpecificGameState(lobbyUID: string, gameName: GameName) {
-  switch (gameName) {
-    case "high-society":
-      await createHighSocietyGameState(lobbyUID);
-      break;
-    case "no-thanks":
-      await createNoThanksGameState(lobbyUID);
-      break;
-    case "razzia":
-      await createRazziaGameState(lobbyUID);
-      break;
-    default:
-      throw new Error(`Unknown game name: ${gameName}`);
-  }
+  const module = getGameModule(gameName);
+  const snapshot = await getDatabase().ref(`lobbies/${lobbyUID}/players`).get();
+  const players = snapshot.val() as PlayerInLobby[];
+  const state = module.createState(lobbyUID, players);
+  await getDatabase().ref(`/games/${lobbyUID}`).set(state);
+  logger.info(`New ${gameName} game created.`);
 }
 
 export async function createGame(lobbyUID: string, gameName: GameName) {

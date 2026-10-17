@@ -1,19 +1,10 @@
-import { getFunctions, httpsCallable } from "firebase/functions";
+import callGameAction from "../../shared/callGameAction";
 
 export type BidRequest = {
   lobbyUID: number;
   bid: string[];
 };
 
-export default async function bid(bidRequest: BidRequest) {
-  const functions = getFunctions();
-  const bidApi = httpsCallable<BidRequest, void>(functions, "bid", {
-    timeout: 300_000,
-  });
-
-  try {
-    await bidApi(bidRequest);
-  } catch (e) {
-    console.error(e);
-  }
+export default async function bid(request: BidRequest) {
+  await callGameAction("bid", request);
 }

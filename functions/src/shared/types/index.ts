@@ -2,6 +2,12 @@ export type GameName = "high-society" | "no-thanks" | "razzia";
 
 export type GameStatus = "IN_PROGRESS" | "GAME_OVER";
 
+export type LogEntry = {
+  timestamp: number;
+  title: string;
+  message?: string;
+};
+
 export type Notification = {
   title: string;
   message?: string;

@@ -4,7 +4,7 @@ import {
   GenericPlayerState,
   Notification,
 } from "../../shared/types";
-import { LogEntry } from "../../high-society/types";
+import { LogEntry } from "../../shared/types";
 
 export type NoThanksPlayerState = GenericPlayerState & {
   email: string;

@@ -2,6 +2,7 @@ import {
   GameStatus,
   GenericGameState,
   GenericPlayerState,
+  LogEntry,
   Notification,
 } from "../../shared/types";
 
@@ -31,11 +32,7 @@ export type PublicGameState = {
   log?: LogEntry[];
 };
 
-export type LogEntry = {
-  timestamp: number;
-  title: string;
-  message?: string;
-};
+export type { LogEntry } from "../../shared/types";
 
 export type PrivateGameState = {
   deck: string[];

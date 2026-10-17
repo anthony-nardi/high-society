@@ -1,9 +1,6 @@
 import { NoThanksGameState } from "../types";
-import {
-  getActivePlayer,
-  updateGameStateWithPlacingChipAction,
-  updateGameStateWithTakingCardAction,
-} from ".";
+import { applyChip, applyTake, getActivePlayer } from ".";
+import { updateGameState } from "../../shared/helpers";
 import { wait } from "../../high-society/helpers";
 import { BotMove, chooseBotMove, SearchOptions } from "./botSearch";
 
@@ -16,41 +13,44 @@ export type BotTurnOptions = {
   search?: SearchOptions;
 };
 
-export async function maybeTakeBotTurn(
+/** Chooses and applies the active bot's move in place. Pure. */
+export function takeBotTurn(
   gameState: NoThanksGameState,
-  { minimumTurnMs = BOT_TURN_MIN_MS, search }: BotTurnOptions = {},
+  search?: SearchOptions,
 ) {
   const activePlayer = getActivePlayer(gameState);
-
-  if (!activePlayer?.isBot) {
-    return;
-  }
-
-  const startedAt = Date.now();
+  if (!activePlayer?.isBot) return;
 
   let move: BotMove = "take";
-
   try {
     move = chooseBotMove(gameState, search);
   } catch (e) {
     console.log("Bot search failed, taking the card instead.", e);
   }
 
-  if (move === "chip" && (activePlayer.chips || 0) < 1) {
+  if (move === "chip" && !applyChip(gameState, activePlayer).ok) {
     move = "take";
   }
+  if (move === "take") applyTake(gameState, activePlayer);
+}
 
+export async function maybeTakeBotTurn(
+  gameState: NoThanksGameState,
+  { minimumTurnMs = BOT_TURN_MIN_MS, search }: BotTurnOptions = {},
+) {
+  const activePlayer = getActivePlayer(gameState);
+  if (!activePlayer?.isBot) return;
+
+  const startedAt = Date.now();
+  takeBotTurn(gameState, search);
   const timeElapsed = Date.now() - startedAt;
-
   if (timeElapsed < minimumTurnMs) {
     await wait(minimumTurnMs - timeElapsed);
   }
-
-  if (move === "take") {
-    await updateGameStateWithTakingCardAction(gameState, activePlayer);
-  } else {
-    await updateGameStateWithPlacingChipAction(gameState, activePlayer);
-  }
+  await updateGameState(
+    gameState,
+    gameState.public.notification?.title || "bot moved",
+  );
 }
 
 export function isActivePlayerBot(gameState: NoThanksGameState) {

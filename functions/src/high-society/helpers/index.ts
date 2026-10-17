@@ -1,4 +1,5 @@
 import { HttpsError, CallableRequest } from "firebase-functions/v2/https";
+import type { ActionResult } from "../../shared/game";
 import { logger } from "firebase-functions/v2";
 import { getDatabase } from "firebase-admin/database";
 import {
@@ -16,6 +17,7 @@ import {
   GenericGameState,
   GenericPlayerState,
   Notification,
+  PlayerInLobby,
 } from "../../shared/types";
 
 export const STATUS_CARDS_THAT_END_ROUND_ON_FIRST_PASS = ["-5", "1/2", "-"];
@@ -261,72 +263,92 @@ export function awardPlayerWithCurrentStatusCard(
   player.currentBid = [];
 }
 
+export const HIGH_SOCIETY_MONEY = [
+  "1",
+  "2",
+  "3",
+  "4",
+  "6",
+  "8",
+  "10",
+  "12",
+  "15",
+  "20",
+  "25",
+];
+
+export const HIGH_SOCIETY_DECK = [
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "10",
+  "2x",
+  "2x",
+  "2x",
+  "-5",
+  "1/2",
+  "-",
+];
+
+/** Initial state for the lobby's players; the deck is shuffled. */
+export function buildHighSocietyGameState(
+  lobbyUID: string,
+  players: PlayerInLobby[],
+): HighSocietyGameState {
+  const playersMetadata: HighSocietyPlayerState[] = players.map((player) => ({
+    email: player.email,
+    lastActionAt: 0,
+    moneyCards: [...HIGH_SOCIETY_MONEY],
+    statusCards: [],
+    currentBid: [],
+    hasPassed: false,
+    isBot: !!player.isBot,
+  }));
+
+  const deck = [...HIGH_SOCIETY_DECK];
+  shuffle(deck);
+
+  return {
+    public: {
+      id: lobbyUID,
+      game: "high-society",
+      players: playersMetadata,
+      activePlayer: playersMetadata[0].email,
+      startAt: Date.now().toString(),
+      status: "IN_PROGRESS",
+      currentStatusCard: deck[0],
+      remainingCards: deck.length - 1,
+    },
+    private: {
+      deck,
+      log: [
+        {
+          timestamp: Date.now(),
+          title: `Game started. ${deck[0]} revealed.`,
+        },
+      ],
+    },
+  };
+}
+
 export async function createHighSocietyGameState(lobbyUID: string) {
   const players = await getDatabase().ref(`lobbies/${lobbyUID}/players`).get();
-
-  const playersMetadata = players.val().map((player: any) => {
-    return {
-      email: player.email,
-      lastActionAt: 0,
-      moneyCards: ["1", "2", "3", "4", "6", "8", "10", "12", "15", "20", "25"],
-      statusCards: [],
-      currentBid: [],
-      hasPassed: false,
-      isBot: !!player.isBot,
-    };
-  });
-
-  const deck = [
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "10",
-    "2x",
-    "2x",
-    "2x",
-    "-5",
-    "1/2",
-    "-",
-  ];
-
-  shuffle(deck);
+  const gameState = buildHighSocietyGameState(lobbyUID, players.val());
 
   return getDatabase()
     .ref("/games/" + lobbyUID)
-    .set({
-      public: {
-        id: lobbyUID,
-        game: "high-society",
-        players: playersMetadata,
-        activePlayer: playersMetadata[0].email,
-        startAt: Date.now().toString(),
-        status: "IN_PROGRESS",
-        currentStatusCard: deck[0],
-        remainingCards: deck.length - 1,
-      },
-      private: {
-        deck,
-        log: [
-          {
-            timestamp: Date.now(),
-            title: `Game started. ${deck[0]} revealed.`,
-          },
-        ],
-      },
-    })
+    .set(gameState)
     .then(() => {
       logger.info("New game created.");
       return { lobbyUID, message: "New game created." };
     })
     .catch((error: Error) => {
-      // Re-throwing the error as an HttpsError so that the client gets
-      // the error details.
       throw new HttpsError("unknown", error.message, error);
     });
 }
@@ -360,28 +382,51 @@ export async function wait(milliseconds: number) {
   });
 }
 
+/** The active player adds money cards to their bid. Pure; reports legality. */
+export function applyBid(
+  gameState: HighSocietyGameState,
+  bid: string[],
+): ActionResult {
+  const activePlayer = getActivePlayer(gameState);
+  if (!activePlayer) return { ok: false, reason: "Active player not found." };
+  if (!Array.isArray(bid) || bid.length === 0) {
+    return { ok: false, reason: "Choose at least one money card." };
+  }
+  const moneyCards = activePlayer.moneyCards || [];
+  if (new Set(bid).size !== bid.length) {
+    return { ok: false, reason: "Each money card can be bid once." };
+  }
+  for (const card of bid) {
+    if (!moneyCards.includes(card)) {
+      return { ok: false, reason: `${card} is not in your hand.` };
+    }
+  }
+  const total = getBidValue(activePlayer.currentBid || []) + getBidValue(bid);
+  if (total <= getHighestCurrentBid(gameState)) {
+    return { ok: false, reason: "Your bid must beat the highest bid." };
+  }
+
+  updatePlayerLastAction(activePlayer);
+  updatePlayersBid(activePlayer, bid);
+  updateNextActivePlayer(gameState);
+
+  const notification: Notification = {
+    timestamp: Date.now(),
+    title: `${activePlayer.email} has highest bid of ${total}.`,
+  };
+
+  gameState.public.notification = notification;
+  appendLog(gameState, notification);
+  return { ok: true };
+}
+
 export async function updateGameStateWithBid(
   gameState: HighSocietyGameState,
   activePlayer: HighSocietyPlayerState,
   bid: string[],
 ) {
-  updatePlayerLastAction(activePlayer);
-  updatePlayersBid(activePlayer, bid);
-  updateNextActivePlayer(gameState);
-
-  const totalBid = bid.reduce(
-    (sum: number, current) => Number(sum) + Number(current),
-    0,
-  );
-
-  const notification: Notification = {
-    timestamp: Date.now(),
-    title: `${activePlayer.email} has highest bid of ${totalBid}.`,
-  };
-
-  gameState.public.notification = notification;
-  appendLog(gameState, notification);
-
+  const result = applyBid(gameState, bid);
+  if (!result.ok) throw new Error(result.reason);
   await updateGameState(
     gameState,
     `Player ${activePlayer.email} bid ${bid.join(",")}`,
@@ -404,7 +449,8 @@ function logResolution(
   }
 }
 
-export async function updateGameStateWithPass(
+/** The active player passes. Pure. */
+export function applyPass(
   gameState: HighSocietyGameState,
   activePlayer: HighSocietyPlayerState,
 ) {
@@ -451,11 +497,7 @@ export async function updateGameStateWithPass(
 
     gameState.public.notification = notification;
     logResolution(gameState, notification);
-
-    return updateGameState(
-      gameState,
-      `${activePlayer.email} is the first to pass and receives ${cardAwarded}.`,
-    );
+    return;
   }
 
   updatePlayerLastAction(activePlayer);
@@ -510,8 +552,7 @@ export async function updateGameStateWithPass(
 
     gameState.public.notification = notification;
     logResolution(gameState, notification);
-
-    return updateGameState(gameState, `Player ${auctionWinner} won auction.`);
+    return;
   } else {
     // Update the next player
     // Player who passed has their bid returned to their hand
@@ -524,8 +565,18 @@ export async function updateGameStateWithPass(
 
     gameState.public.notification = notification;
     appendLog(gameState, notification);
-
-    await updateGameState(gameState, `${activePlayer.email} has passed.`);
-    return true;
+    return;
   }
+}
+
+export async function updateGameStateWithPass(
+  gameState: HighSocietyGameState,
+  activePlayer: HighSocietyPlayerState,
+) {
+  applyPass(gameState, activePlayer);
+  await updateGameState(
+    gameState,
+    gameState.public.notification?.title || `${activePlayer.email} passed.`,
+  );
+  return true;
 }

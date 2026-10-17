@@ -1,20 +1,9 @@
-import { getFunctions, httpsCallable } from "firebase/functions";
+import callGameAction from "../../shared/callGameAction";
 
 export type PlaceChipRequest = {
   lobbyUID: number;
 };
 
-export default async function placeChip(placeChipRequest: PlaceChipRequest) {
-  const functions = getFunctions();
-  const placeChipOnActiveCardApi = httpsCallable<PlaceChipRequest, void>(
-    functions,
-    "placeChipOnActiveCard",
-    { timeout: 300_000 },
-  );
-
-  try {
-    await placeChipOnActiveCardApi(placeChipRequest);
-  } catch (e) {
-    console.error(e);
-  }
+export default async function placeChip(request: PlaceChipRequest) {
+  await callGameAction("placeChipOnActiveCard", request);
 }

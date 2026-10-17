@@ -1,18 +1,9 @@
-import { getFunctions, httpsCallable } from "firebase/functions";
+import callGameAction from "../../shared/callGameAction";
 
 export type PassTurnRequest = {
   lobbyUID: number;
 };
 
-export default async function passTurn(passTurnRequest: PassTurnRequest) {
-  const functions = getFunctions();
-  const passTurn = httpsCallable<PassTurnRequest, void>(functions, "passturn", {
-    timeout: 300_000,
-  });
-
-  try {
-    await passTurn(passTurnRequest);
-  } catch (e) {
-    console.error(e);
-  }
+export default async function passTurn(request: PassTurnRequest) {
+  await callGameAction("passturn", request);
 }

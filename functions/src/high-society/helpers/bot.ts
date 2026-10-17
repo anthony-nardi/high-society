@@ -1,12 +1,13 @@
 import { HighSocietyGameState } from "../types";
 import {
+  applyBid,
+  applyPass,
   getActivePlayer,
   getBidValue,
   getHighestCurrentBid,
-  updateGameStateWithBid,
-  updateGameStateWithPass,
   wait,
 } from ".";
+import { updateGameState } from "../../shared/helpers";
 import { BotMove, chooseBotMove, SearchOptions } from "./botSearch";
 
 /** Minimum time a bot "thinks" so its moves are readable at the table. */
@@ -46,20 +47,15 @@ export type BotTurnOptions = {
   search?: SearchOptions;
 };
 
-export async function maybeTakeBotTurn(
+/** Chooses and applies the active bot's move in place. Pure. */
+export function takeBotTurn(
   gameState: HighSocietyGameState,
-  { minimumTurnMs = BOT_TURN_MIN_MS, search }: BotTurnOptions = {},
+  search?: SearchOptions,
 ) {
   const activePlayer = getActivePlayer(gameState);
-
-  if (!activePlayer.isBot) {
-    return;
-  }
-
-  const startedAt = Date.now();
+  if (!activePlayer?.isBot) return;
 
   let move: BotMove = "pass";
-
   try {
     move = chooseBotMove(gameState, search);
   } catch (e) {
@@ -69,18 +65,29 @@ export async function maybeTakeBotTurn(
   if (move !== "pass" && !isValidSuggestedBid(gameState, move)) {
     move = "pass";
   }
+  if (move !== "pass" && !applyBid(gameState, move).ok) {
+    move = "pass";
+  }
+  if (move === "pass") applyPass(gameState, activePlayer);
+}
 
+export async function maybeTakeBotTurn(
+  gameState: HighSocietyGameState,
+  { minimumTurnMs = BOT_TURN_MIN_MS, search }: BotTurnOptions = {},
+) {
+  const activePlayer = getActivePlayer(gameState);
+  if (!activePlayer?.isBot) return;
+
+  const startedAt = Date.now();
+  takeBotTurn(gameState, search);
   const timeElapsed = Date.now() - startedAt;
-
   if (timeElapsed < minimumTurnMs) {
     await wait(minimumTurnMs - timeElapsed);
   }
-
-  if (move !== "pass") {
-    await updateGameStateWithBid(gameState, activePlayer, move);
-  } else {
-    await updateGameStateWithPass(gameState, activePlayer);
-  }
+  await updateGameState(
+    gameState,
+    gameState.public.notification?.title || "bot moved",
+  );
 }
 
 export function isActivePlayerBot(gameState: HighSocietyGameState) {

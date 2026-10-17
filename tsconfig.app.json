@@ -21,7 +21,17 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    /* The server owns the game types; the client imports them directly. */
+    "paths": {
+      "@games/*": ["./functions/src/*"]
+    }
   },
-  "include": ["src"]
+  "include": [
+    "src",
+    "functions/src/shared/types/index.ts",
+    "functions/src/shared/gameInfo.ts",
+    "functions/src/*/types/index.ts"
+  ]
 }
