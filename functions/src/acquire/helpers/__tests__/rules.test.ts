@@ -252,6 +252,18 @@ describe("the end", () => {
     expect(state.public.status).toBe("GAME_OVER");
     expect(state.public.players[0].money).toBe(6000 + 9000 + 1800);
     expect(state.public.players[1].money).toBe(6000 + 6200 + 900);
+    expect(state.public.scores?.[0]).toEqual({
+      email: "a",
+      money: 16800,
+      cashBefore: 6000,
+      bonuses: [{ chain: "CONTINENTAL", amount: 9000 }],
+      sales: [{ chain: "CONTINENTAL", shares: 2, price: 900, amount: 1800 }],
+    });
+    expect(state.public.scores?.[2]).toEqual({
+      email: "c",
+      money: 6000,
+      cashBefore: 6000,
+    });
     expect(state.public.winner).toBe("a");
     expect(state.public.log).toEqual(state.private.log);
   });

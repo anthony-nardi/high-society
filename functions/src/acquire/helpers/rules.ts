@@ -4,6 +4,7 @@ import {
   Chain,
   ChainState,
   Mode,
+  Score,
   Tile,
 } from "../types";
 import {
@@ -355,8 +356,18 @@ function payBonuses(gameState: AcquireGameState, chain: Chain) {
 }
 
 function finish(gameState: AcquireGameState, why: string) {
+  const scores: Score[] = gameState.public.players.map((p) => ({
+    email: p.email,
+    money: p.money,
+    cashBefore: p.money,
+  }));
+  const scoreOf = (email: string) =>
+    scores.find((s) => s.email === email) as Score;
   for (const chain of activeChains(gameState)) {
-    payBonuses(gameState, chain);
+    for (const [email, amount] of payBonuses(gameState, chain)) {
+      const score = scoreOf(email);
+      score.bonuses = [...(score.bonuses || []), { chain, amount }];
+    }
     const price = currentPrice(gameState, chain);
     for (const p of gameState.public.players) {
       const n = stockOf(p, chain);
@@ -364,13 +375,19 @@ function finish(gameState: AcquireGameState, why: string) {
         p.money += n * price;
         gameState.public.chains[chain].stockLeft += n;
         p.stocks = { ...(p.stocks || {}), [chain]: 0 };
+        const score = scoreOf(p.email);
+        score.sales = [
+          ...(score.sales || []),
+          { chain, shares: n, price, amount: n * price },
+        ];
       }
     }
   }
-  gameState.public.scores = gameState.public.players.map((p) => ({
-    email: p.email,
-    money: p.money,
-  }));
+  for (const score of scores)
+    score.money = (
+      playerByEmail(gameState, score.email) as AcquirePlayerState
+    ).money;
+  gameState.public.scores = scores;
   gameState.public.status = "GAME_OVER";
   delete gameState.public.merger;
   const ranked = [...gameState.public.players].sort(

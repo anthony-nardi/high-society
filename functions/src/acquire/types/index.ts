@@ -68,6 +68,18 @@ export type Merger = {
   candidates?: Chain[];
 };
 
+export type Score = {
+  email: string;
+  /** Final cash. */
+  money: number;
+  /** Cash in hand when the end was called, before the payout. */
+  cashBefore: number;
+  /** Stockholder bonuses paid at the end, per chain. Absent when none. */
+  bonuses?: { chain: Chain; amount: number }[];
+  /** Shares sold back at the end, per chain. Absent when none. */
+  sales?: { chain: Chain; shares: number; price: number; amount: number }[];
+};
+
 export type AcquirePublicGameState = {
   id: string;
   game: string;
@@ -98,8 +110,8 @@ export type AcquirePublicGameState = {
   /** Who called the end; the game finishes when their turn does. */
   declaredBy?: string;
   winner?: string;
-  /** Final cash per player. A list, since database keys may not hold an email. */
-  scores?: { email: string; money: number }[];
+  /** Final cash per player with how it was reached. A list, since database keys may not hold an email. */
+  scores?: Score[];
   notification?: Notification;
   nextLobbyUID?: string;
   log?: LogEntry[];
