@@ -15,6 +15,7 @@ import Condottiere from "./condottiere/App";
 import RideTheRails from "./ride-the-rails/App";
 import Clans from "./clans/App";
 import Twixt from "./twixt/App";
+import Ecosystem from "./ecosystem/App";
 import Razzia from "./razzia/App";
 import reportWebVitals from "./reportWebVitals";
 import "@mantine/core/styles.css";
@@ -97,6 +98,10 @@ const router = createBrowserRouter([
   {
     path: "/twixt",
     element: <Twixt />,
+  },
+  {
+    path: "/ecosystem",
+    element: <Ecosystem />,
   },
 ]);
 

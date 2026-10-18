@@ -126,6 +126,13 @@ export const GAME_INFO: { [name in GameName]: GameInfo } = {
     maxPlayers: 2,
     route: "/twixt",
   },
+  ecosystem: {
+    name: "ecosystem",
+    title: "Ecosystem",
+    minPlayers: 2,
+    maxPlayers: 6,
+    route: "/ecosystem",
+  },
 };
 
 export const GAME_NAMES = Object.keys(GAME_INFO) as GameName[];

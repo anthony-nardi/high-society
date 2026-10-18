@@ -13,6 +13,7 @@ import * as shangriLa from "../../shangri-la/helpers/botSearch";
 import * as rideTheRails from "../../ride-the-rails/helpers/botSearch";
 import * as clans from "../../clans/helpers/botSearch";
 import * as twixt from "../../twixt/helpers/botSearch";
+import * as ecosystem from "../../ecosystem/helpers/botSearch";
 
 /*
  * Simulation: every game is played to the end many times with random legal
@@ -238,6 +239,7 @@ const MOVERS: Partial<Record<GameName, Mover>> = {
   "ride-the-rails": inPlace(rideTheRails.turnMoves, rideTheRails.applyMove),
   clans: inPlace(clans.turnMoves, clans.applyMove),
   twixt: inPlace(twixt.turnMoves, twixt.applyMove),
+  ecosystem: inPlace(ecosystem.turnMoves, ecosystem.applyMove),
 };
 
 type Finding = { game: GameName; seed: number; step: number; message: string };
@@ -322,6 +324,16 @@ function conserved(game: GameName, state: State): number[] {
     case "clans":
       // Huts on the board plus huts in founded villages never exceed sixty; each village founded is a chip.
       return [len(pub.villages) - sum(players.map((p) => p.chips as number))];
+    case "ecosystem":
+      // Cards in the deck, in hands, in grids and set aside by the neutral hand.
+      return [
+        len(priv.deck) +
+          sum(
+            players.map((p) => len(p.hand) + len(Object.keys(p.grid || {}))),
+          ) +
+          len(pub.neutral?.hand) +
+          len(pub.neutral?.discards),
+      ];
     case "ride-the-rails":
       // Locomotives: in the box, on the map, or held as shares.
       return [

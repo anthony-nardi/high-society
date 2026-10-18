@@ -361,6 +361,8 @@ export function soundForEvent(title: string): SoundKind | null {
     return "pass";
   if (/^round \d begins/.test(text)) return "turn";
   if (/is razed/.test(text)) return "alarm";
+  if (/^pick \d+ placed/.test(text)) return "card";
+  if (/^round 2 begins: ten new cards/.test(text)) return "turn";
   if (/pegs [a-x]\d+ and links/.test(text)) return "stoneSlide";
   if (/pegs [a-x]\d+/.test(text)) return "stonePlace";
   if (/swaps sides/.test(text)) return "alarm";

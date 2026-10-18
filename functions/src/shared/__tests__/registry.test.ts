@@ -115,6 +115,9 @@ describe("game registry", () => {
       "removeTwixtLink",
       "swapTwixtSides",
     ]);
+    expect(Object.keys(GAMES.ecosystem.actions)).toEqual([
+      "placeEcosystemCard",
+    ]);
   });
 
   it("creates a playable state and lets bots finish from it", () => {

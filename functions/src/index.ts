@@ -54,6 +54,7 @@ import {
 } from "./ride-the-rails/client";
 import { moveClansHuts } from "./clans/client";
 import { placeTwixtPeg, removeTwixtLink, swapTwixtSides } from "./twixt/client";
+import { placeEcosystemCard } from "./ecosystem/client";
 
 import { leaderboard } from "./shared/leaderboard";
 
@@ -148,3 +149,6 @@ exports.moveClansHuts = moveClansHuts;
 exports.placeTwixtPeg = placeTwixtPeg;
 exports.swapTwixtSides = swapTwixtSides;
 exports.removeTwixtLink = removeTwixtLink;
+
+// Ecosystem
+exports.placeEcosystemCard = placeEcosystemCard;

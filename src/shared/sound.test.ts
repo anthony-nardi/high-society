@@ -104,6 +104,7 @@ describe("soundForEvent", () => {
     expect(soundForEvent("Round 2 begins.")).toBe("turn");
     expect(soundForEvent("a moves 3 huts into forest.")).toBe("stoneSlide");
     expect(soundForEvent("a pegs K11.")).toBe("stonePlace");
+    expect(soundForEvent("Pick 3 placed. Hands pass left.")).toBe("card");
     expect(soundForEvent("a pegs M12 and links 2.")).toBe("stoneSlide");
     expect(soundForEvent("b swaps sides and takes Red.")).toBe("alarm");
     expect(
