@@ -119,6 +119,19 @@ describe("game registry", () => {
       "placeEcosystemCard",
     ]);
     expect(Object.keys(GAMES["fuji-flush"].actions)).toEqual(["playFujiCard"]);
+    expect(Object.keys(GAMES.tigris.actions).sort()).toEqual([
+      "buildTigrisMonument",
+      "chooseTigrisWar",
+      "commitTigrisTiles",
+      "endTigrisTurn",
+      "placeTigrisTile",
+      "playTigrisCatastrophe",
+      "positionTigrisLeader",
+      "replaceTigrisTiles",
+      "skipTigrisMonument",
+      "takeTigrisTreasure",
+      "withdrawTigrisLeader",
+    ]);
   });
 
   it("creates a playable state and lets bots finish from it", () => {

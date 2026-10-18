@@ -56,6 +56,19 @@ import { moveClansHuts } from "./clans/client";
 import { placeTwixtPeg, removeTwixtLink, swapTwixtSides } from "./twixt/client";
 import { placeEcosystemCard } from "./ecosystem/client";
 import { playFujiCard } from "./fuji-flush/client";
+import {
+  buildTigrisMonument,
+  chooseTigrisWar,
+  commitTigrisTiles,
+  endTigrisTurn,
+  placeTigrisTile,
+  playTigrisCatastrophe,
+  positionTigrisLeader,
+  replaceTigrisTiles,
+  skipTigrisMonument,
+  takeTigrisTreasure,
+  withdrawTigrisLeader,
+} from "./tigris/client";
 
 import { leaderboard } from "./shared/leaderboard";
 
@@ -156,3 +169,16 @@ exports.placeEcosystemCard = placeEcosystemCard;
 
 // Fuji Flush
 exports.playFujiCard = playFujiCard;
+
+// Tigris & Euphrates
+exports.placeTigrisTile = placeTigrisTile;
+exports.positionTigrisLeader = positionTigrisLeader;
+exports.withdrawTigrisLeader = withdrawTigrisLeader;
+exports.playTigrisCatastrophe = playTigrisCatastrophe;
+exports.replaceTigrisTiles = replaceTigrisTiles;
+exports.endTigrisTurn = endTigrisTurn;
+exports.commitTigrisTiles = commitTigrisTiles;
+exports.chooseTigrisWar = chooseTigrisWar;
+exports.buildTigrisMonument = buildTigrisMonument;
+exports.skipTigrisMonument = skipTigrisMonument;
+exports.takeTigrisTreasure = takeTigrisTreasure;

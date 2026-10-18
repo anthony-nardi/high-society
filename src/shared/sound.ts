@@ -422,6 +422,19 @@ export function soundForEvent(title: string): SoundKind | null {
   if (/ and flushes /.test(text)) return "flush";
   if (/^\S+ plays a \d+/.test(text)) return "card";
   if (/pushes a \d+ through/.test(text)) return "win";
+  if (/wins the (war|revolt)/.test(text)) return "win";
+  if (/war breaks out|revolt breaks out|plays a catastrophe/.test(text))
+    return "alarm";
+  if (/builds a \w+ and \w+ monument/.test(text)) return "fanfare";
+  if (/takes the treasure/.test(text)) return "chip";
+  if (/places a (temple|farm|market|settlement)/.test(text))
+    return "stonePlace";
+  if (/(positions|moves) the (king|priest|farmer|trader)/.test(text))
+    return "stoneSlide";
+  if (/withdraws the (king|priest|farmer|trader)/.test(text))
+    return "stoneLift";
+  if (/commits (\d+ |nothing)/.test(text)) return "bid";
+  if (/replaces \d+ tiles?\./.test(text)) return "card";
   if (/takes over/.test(text)) return "merger";
   if (/calls the end|calls the armies/.test(text)) return "fanfare";
   if (/plays surrender|plays winter|plays spring|plays a bishop/.test(text))

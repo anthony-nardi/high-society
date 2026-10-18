@@ -1,0 +1,120 @@
+/* The board fills its column; drag to pan, pinch or ctrl-wheel to zoom. */
+.board {
+  width: 100%;
+  height: auto;
+  display: block;
+  touch-action: none;
+  user-select: none;
+  border-radius: 10px;
+  background: #d9c59a;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+
+.cell {
+  cursor: default;
+}
+
+.tappable {
+  cursor: pointer;
+}
+
+/* A tile that just landed. */
+.landed {
+  animation: tigris-land 380ms cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes tigris-land {
+  from {
+    transform: translateY(-10px) scale(1.25);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* A legal space breathes. */
+.legal {
+  animation: tigris-legal 1600ms ease-in-out infinite;
+}
+
+@keyframes tigris-legal {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+/* A leader in a conflict pulses. */
+.fighting {
+  animation: tigris-fight 900ms ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes tigris-fight {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.18);
+  }
+}
+
+/* Hand tiles and leaders in the panel. */
+.hand {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+
+.piece {
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  transition:
+    transform 120ms,
+    border-color 120ms,
+    opacity 150ms;
+}
+
+.piece:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.piece[aria-pressed="true"] {
+  border-color: var(--mantine-color-yellow-5);
+  transform: translateY(-4px);
+}
+
+.conflictCard {
+  animation: tigris-card-in 320ms ease-out;
+}
+
+@keyframes tigris-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.players {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px;
+}

@@ -111,6 +111,26 @@ describe("soundForEvent", () => {
     expect(soundForEvent("a plays a 7.")).toBe("card");
     expect(soundForEvent("a pushes a 7 through with b.")).toBe("win");
     expect(soundForEvent("Game over: a and b win together.")).toBe("fanfare");
+    expect(soundForEvent("a places a temple at B2 and gains an amulet.")).toBe(
+      "stonePlace",
+    );
+    expect(soundForEvent("a positions the king to C2.")).toBe("stoneSlide");
+    expect(
+      soundForEvent("War breaks out between the kings: a attacks b."),
+    ).toBe("alarm");
+    expect(soundForEvent("a commits 2 settlements.")).toBe("bid");
+    expect(
+      soundForEvent(
+        "a wins the war 3 to 2: b withdraws the king and loses 2 settlements. a gains 3 bricks.",
+      ),
+    ).toBe("win");
+    expect(soundForEvent("a builds a black and green monument at A10.")).toBe(
+      "fanfare",
+    );
+    expect(soundForEvent("a takes the treasure at B2.")).toBe("chip");
+    expect(soundForEvent("Game over: a wins with a lowest sphere of 7.")).toBe(
+      "fanfare",
+    );
     expect(soundForEvent("a pegs M12 and links 2.")).toBe("stoneSlide");
     expect(soundForEvent("b swaps sides and takes Red.")).toBe("alarm");
     expect(

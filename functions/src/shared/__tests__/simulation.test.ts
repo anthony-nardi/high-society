@@ -15,6 +15,7 @@ import * as clans from "../../clans/helpers/botSearch";
 import * as twixt from "../../twixt/helpers/botSearch";
 import * as ecosystem from "../../ecosystem/helpers/botSearch";
 import * as fujiFlush from "../../fuji-flush/helpers/botSearch";
+import * as tigris from "../../tigris/helpers/botSearch";
 
 /*
  * Simulation: every game is played to the end many times with random legal
@@ -242,6 +243,7 @@ const MOVERS: Partial<Record<GameName, Mover>> = {
   twixt: inPlace(twixt.turnMoves, twixt.applyMove),
   ecosystem: inPlace(ecosystem.turnMoves, ecosystem.applyMove),
   "fuji-flush": inPlace(fujiFlush.turnMoves, fujiFlush.applyMove),
+  tigris: inPlace(tigris.turnMoves, tigris.applyMove),
 };
 
 type Finding = { game: GameName; seed: number; step: number; message: string };

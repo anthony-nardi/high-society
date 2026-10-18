@@ -18,6 +18,7 @@ import clans from "../clans/module";
 import twixt from "../twixt/module";
 import ecosystem from "../ecosystem/module";
 import fujiFlush from "../fuji-flush/module";
+import tigris from "../tigris/module";
 
 /** Every playable game, keyed by the name stored in lobbies and states. */
 export const GAMES: { [name in GameName]: GameModule<any> } = {
@@ -39,6 +40,7 @@ export const GAMES: { [name in GameName]: GameModule<any> } = {
   twixt,
   ecosystem,
   "fuji-flush": fujiFlush,
+  tigris,
 };
 
 export function getGameModule(name: GameName): GameModule<any> {
