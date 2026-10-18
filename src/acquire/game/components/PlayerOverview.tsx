@@ -70,6 +70,9 @@ export default function PlayerOverview({
           : "var(--mantine-color-default)",
         transition: "border-color 200ms, box-shadow 200ms",
         minWidth: 0,
+        width: "100%",
+        maxWidth: "100%",
+        overflow: "hidden",
       }}
     >
       {isActivePlayer && (
@@ -102,41 +105,28 @@ export default function PlayerOverview({
           +{money(gain.amount)}
         </span>
       )}
-      <Group
-        justify="space-between"
-        align="center"
-        wrap="nowrap"
-        gap="xs"
-        mt={4}
-      >
-        <Text fw={700} truncate style={{ minWidth: 0, flex: "1 1 auto" }}>
-          {displayName(player.email)}
-          {isCurrentUser && (
-            <Text component="span" c="dimmed" fw={400}>
-              {" "}
-              (you)
-            </Text>
-          )}
-        </Text>
-        {isCurrentUser ? (
-          <Text
-            fw={800}
-            c="yellow.4"
-            aria-label={`${money(player.money)} in cash`}
-            style={{ flex: "0 0 auto", whiteSpace: "nowrap" }}
-          >
-            {money(player.money)}
-          </Text>
-        ) : (
-          <Text
-            size="xs"
-            c="dimmed"
-            style={{ flex: "0 0 auto", whiteSpace: "nowrap" }}
-          >
-            {(player.tiles || []).length} tiles
+      <Text fw={700} truncate mt={4}>
+        {displayName(player.email)}
+        {isCurrentUser && (
+          <Text component="span" c="dimmed" fw={400}>
+            {" "}
+            (you)
           </Text>
         )}
-      </Group>
+      </Text>
+      {isCurrentUser ? (
+        <Text
+          fw={800}
+          c="yellow.4"
+          aria-label={`${money(player.money)} in cash`}
+        >
+          {money(player.money)} cash
+        </Text>
+      ) : (
+        <Text size="xs" c="dimmed">
+          {(player.tiles || []).length} tiles in hand
+        </Text>
+      )}
       <Group
         gap={4}
         mt={6}

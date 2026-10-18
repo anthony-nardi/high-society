@@ -123,9 +123,9 @@ export default function Game() {
           </div>
           <div
             className={tableClasses.players}
-            style={{ order: 2, gridTemplateColumns: "1fr" }}
+            style={{ order: 2, gridTemplateColumns: "1fr", minWidth: 0 }}
           >
-            <Stack gap="sm">
+            <Stack gap="sm" style={{ minWidth: 0, maxWidth: "100%" }}>
               <ChainTable gameState={gameState} me={me} />
               {gameState.players.map((player) => (
                 <PlayerOverview
