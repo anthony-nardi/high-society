@@ -106,7 +106,7 @@ export function defineGameFunctions<State extends GenericGameState>(
 
   for (const [callableName, action] of Object.entries(module.actions)) {
     functions[callableName] = onCall(
-      { timeoutSeconds: MOVE_TIMEOUT_SECONDS },
+      { timeoutSeconds: MOVE_TIMEOUT_SECONDS, memory: "512MiB" },
       async (
         request: CallableRequest<
           { lobbyUID: string } & Record<string, unknown>

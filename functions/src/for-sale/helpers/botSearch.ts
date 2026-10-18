@@ -17,8 +17,8 @@ const NODE_INNER = 1 as NodeType;
 const NODE_LEAF = 2 as NodeType;
 const METHOD_TIME = 2 as SearchMethod;
 
-export const DEFAULT_SEARCH_TIMEOUT_MS = 900;
-export const DEFAULT_SEARCH_DEPTH = 12;
+export const DEFAULT_SEARCH_TIMEOUT_MS = 700;
+export const DEFAULT_SEARCH_DEPTH = 8;
 /** How far above the standing bid a bot considers raising, in thousands. */
 const RAISES = [1, 2, 3];
 

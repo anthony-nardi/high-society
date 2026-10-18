@@ -156,7 +156,7 @@ export const joinlobby = onCall(
 );
 
 export const addbot = onCall(
-  { timeoutSeconds: 300 },
+  { timeoutSeconds: 300, memory: "512MiB" },
   async (
     request: CallableRequest<{
       lobbyUID: string;
@@ -234,7 +234,7 @@ export const removebot = onCall(
  * a bot's turn would otherwise wait forever.
  */
 export const playbots = onCall(
-  { timeoutSeconds: 300 },
+  { timeoutSeconds: 300, memory: "512MiB" },
   async (request: CallableRequest<{ lobbyUID: string }>) => {
     checkAuthentication(request);
     const state = await loadGameState<GenericGameState>(
@@ -248,7 +248,7 @@ export const playbots = onCall(
 );
 
 export const readyup = onCall(
-  { timeoutSeconds: 300 },
+  { timeoutSeconds: 300, memory: "512MiB" },
   async (
     request: CallableRequest<{
       email: string;
