@@ -62,7 +62,7 @@ describe("the merger moment", () => {
     // Tower at $200 in Tycoon: 2,000 primary to me, 1,500 secondary to the bot.
     expect(screen.getByText("+$2,000")).toBeTruthy();
     expect(screen.getByText("+$1,500")).toBeTruthy();
-    expect(screen.getByText(/You hold/)).toBeTruthy();
+    expect(screen.getByText(/You held/)).toBeTruthy();
     cleanup();
     // The bot already sold its Tower: the card still shows the payout as it was.
     const later: AcquireGameState = {
