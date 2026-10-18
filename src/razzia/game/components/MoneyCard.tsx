@@ -19,7 +19,7 @@ export default function MoneyCard({
   selected?: boolean;
   onClick?: () => void;
   disabled?: boolean;
-  width?: number;
+  width?: number | string;
 }) {
   const style: CSSProperties = {
     width,

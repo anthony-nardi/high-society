@@ -118,7 +118,8 @@ describe("Acquire table", () => {
     expect(
       screen.getByLabelText("6E in your hand: founds a chain"),
     ).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "5E" }));
+    fireEvent.click(screen.getByRole("button", { name: "Tile 5E" }));
+    fireEvent.click(screen.getByRole("button", { name: "Play 5E" }));
     expect(placeAcquireTile).toHaveBeenCalledWith({
       lobbyUID: "123",
       tile: "5E",

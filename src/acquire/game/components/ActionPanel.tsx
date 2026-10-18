@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import FanHand from "../../../shared/components/FanHand";
 import {
   Badge,
   Button,
@@ -82,6 +83,35 @@ export default function ActionPanel({
   const set = (patch: Partial<typeof d>) => setDraft({ ...d, ...patch, key });
 
   const hand = me.tiles || [];
+  const [stagedTile, setStagedTile] = useState<{
+    key: string;
+    tile: Tile | null;
+  }>({ key: "", tile: null });
+  const staged = stagedTile.key === key ? stagedTile.tile : null;
+  const tileFan = (enabled: boolean) => (
+    <FanHand
+      ariaLabel="Your tiles"
+      trayLabel="To play"
+      minWidth={44}
+      maxWidth={64}
+      ratio={1.3}
+      disabled={!enabled || loading}
+      selected={staged ? [staged] : []}
+      onToggle={(tile) =>
+        setStagedTile({ key, tile: staged === tile ? null : (tile as Tile) })
+      }
+      items={hand.map((tile) => {
+        const playable = isPlayable(gameState, tile);
+        return {
+          key: tile,
+          label: `Tile ${tile}${playable ? "" : ", unplayable"}`,
+          title: describe(gameState, tile),
+          disabled: !playable,
+          node: <TileFace tile={tile} playable={playable} />,
+        };
+      })}
+    />
+  );
   const declarable =
     acting &&
     (phase === "PLACE" || phase === "BUY") &&
@@ -129,6 +159,7 @@ export default function ActionPanel({
             </>
           )}
         </Text>
+        {hand.length > 0 && tileFan(false)}
       </div>
     );
   }
@@ -139,26 +170,21 @@ export default function ActionPanel({
     body = <Loader size="xs" color="yellow" />;
     hint = "Sending your move…";
   } else if (phase === "PLACE") {
-    hint =
-      "Tap a tile to play it. Dashed outlines on the board show where your tiles would go.";
+    hint = staged
+      ? `${describe(gameState, staged)}. Play it, or tap it to put it back.`
+      : "Tap a tile to lift it, then play it. Dashed outlines on the board show where your tiles would go.";
     body = (
-      <Group gap={6} justify="center" wrap="wrap" aria-label="Your hand">
-        {hand.map((tile) => {
-          const playable = isPlayable(gameState, tile);
-          return (
-            <Button
-              key={tile}
-              size="sm"
-              variant={playable ? "filled" : "default"}
-              disabled={!playable}
-              onClick={() => onTile(tile)}
-              title={describe(gameState, tile)}
-            >
-              {tile}
-            </Button>
-          );
-        })}
-      </Group>
+      <Stack gap={4} align="center">
+        <Button
+          size="sm"
+          color="yellow"
+          disabled={!staged}
+          onClick={() => staged && onTile(staged)}
+        >
+          {staged ? `Play ${staged}` : "Pick a tile below"}
+        </Button>
+        {tileFan(true)}
+      </Stack>
     );
   } else if (phase === "FOUND") {
     hint = "Choose the chain to found. You get its first share free.";
@@ -306,5 +332,34 @@ export default function ActionPanel({
         </Text>
       </Stack>
     </div>
+  );
+}
+
+/** A tile from the bag: its coordinate on a cream card, greyed when it cannot be played. */
+function TileFace({ tile, playable }: { tile: Tile; playable: boolean }) {
+  return (
+    <svg viewBox="0 0 44 56" width="100%" height="100%" aria-hidden="true">
+      <rect
+        x="1.5"
+        y="1.5"
+        width="41"
+        height="53"
+        rx="5"
+        fill={playable ? "#f3e9d2" : "#b9b2a3"}
+        stroke="#2a2a2a"
+        strokeWidth="1.5"
+      />
+      <text
+        x="22"
+        y="35"
+        textAnchor="middle"
+        fontSize="18"
+        fontWeight="800"
+        fill="#1c1f24"
+        fontFamily="Georgia, serif"
+      >
+        {tile}
+      </text>
+    </svg>
   );
 }

@@ -103,7 +103,12 @@ export default function Game() {
       {loggedInPlayer && (
         <div
           className={
-            mustAct ? panelClasses.pageSpacer : panelClasses.pageSpacerCompact
+            mustAct
+              ? panelClasses.pageSpacer
+              : gameState.phase === "SELLING" &&
+                  (loggedInPlayer.properties || []).length > 0
+                ? panelClasses.pageSpacerHand
+                : panelClasses.pageSpacerCompact
           }
         />
       )}

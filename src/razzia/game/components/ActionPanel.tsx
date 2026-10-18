@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import FanHand from "../../../shared/components/FanHand";
 import { Badge, Button, Group, Stack, Text } from "@mantine/core";
 import { LootCards, RazziaGameState, RazziaPlayerState } from "../types";
 import revealCard from "../../client/revealCard";
@@ -137,27 +138,30 @@ export default function ActionPanel({
     >
       <Stack gap={6} align="center">
         {auction && isActive && biddable.length > 0 && !stealing && (
-          <Group
-            gap={6}
-            justify="center"
-            wrap="wrap"
-            aria-label="Your Money tokens"
-          >
-            {available.map((amount) => (
-              <MoneyCard
-                key={amount}
-                amount={amount}
-                available={Number(amount) > floor}
-                selected={chosenMoney === amount}
-                disabled={loading || Number(amount) <= floor}
-                onClick={() =>
-                  setChosenMoney((current) =>
-                    current === amount ? null : amount,
-                  )
-                }
-              />
-            ))}
-          </Group>
+          <FanHand
+            ariaLabel="Your Money tokens"
+            trayLabel="Your bid"
+            disabled={loading}
+            selected={chosenMoney ? [chosenMoney] : []}
+            onToggle={(amount) =>
+              setChosenMoney((current) => (current === amount ? null : amount))
+            }
+            minWidth={56}
+            maxWidth={84}
+            ratio={84 / 120}
+            items={available.map((amount) => ({
+              key: amount,
+              label: `Money token ${formatMoney(amount)}${Number(amount) <= floor ? " (too low)" : ""}`,
+              disabled: Number(amount) <= floor,
+              node: (
+                <MoneyCard
+                  amount={amount}
+                  available={Number(amount) > floor}
+                  width="100%"
+                />
+              ),
+            }))}
+          />
         )}
 
         <Group gap="sm" justify="center" wrap="wrap">

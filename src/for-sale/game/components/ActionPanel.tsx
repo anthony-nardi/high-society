@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import FanHand from "../../../shared/components/FanHand";
 import {
   Badge,
   Button,
@@ -69,12 +70,30 @@ export default function ActionPanel({
       >
         <Stack gap={6} align="center">
           {chosen || hand.length === 0 ? (
-            <Text size="sm" c="dimmed" ta="center">
-              {loading
-                ? "Sending your choice"
-                : "Chosen. Waiting for the others"}
-              <ThinkingDots />
-            </Text>
+            <>
+              <Text size="sm" c="dimmed" ta="center">
+                {loading
+                  ? "Sending your choice"
+                  : "Chosen. Waiting for the others"}
+                <ThinkingDots />
+              </Text>
+              {hand.length > 0 && (
+                <FanHand
+                  ariaLabel="Your properties"
+                  disabled
+                  selected={[]}
+                  onToggle={() => {}}
+                  minWidth={48}
+                  maxWidth={72}
+                  ratio={150 / 110}
+                  items={hand.map((p) => ({
+                    key: String(p),
+                    label: `Property ${p}`,
+                    node: <PropertyCard property={p} width={72} />,
+                  }))}
+                />
+              )}
+            </>
           ) : (
             <>
               <Group gap="sm" justify="center" wrap="wrap">
@@ -91,22 +110,23 @@ export default function ActionPanel({
                     : `Sell #${selected}`}
                 </Button>
               </Group>
-              <Group
-                gap="xs"
-                justify="center"
-                wrap="wrap"
-                aria-label="Your properties"
-              >
-                {hand.map((p) => (
-                  <PropertyCard
-                    key={p}
-                    property={p}
-                    width={64}
-                    selected={selected === p}
-                    onClick={() => pick(selected === p ? null : p)}
-                  />
-                ))}
-              </Group>
+              <FanHand
+                ariaLabel="Your properties"
+                trayLabel="To sell"
+                disabled={loading}
+                selected={selected === null ? [] : [String(selected)]}
+                onToggle={(k) =>
+                  pick(selected === Number(k) ? null : Number(k))
+                }
+                minWidth={54}
+                maxWidth={84}
+                ratio={150 / 110}
+                items={hand.map((p) => ({
+                  key: String(p),
+                  label: `Property ${p}`,
+                  node: <PropertyCard property={p} width={84} />,
+                }))}
+              />
               <Text size="xs" c="dimmed" ta="center">
                 The highest property played takes the biggest cheque on offer.
               </Text>

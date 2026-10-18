@@ -1,7 +1,9 @@
 import { Badge, Button, Group, Loader, Stack, Text } from "@mantine/core";
+import { useState } from "react";
 import { Card, CondottiereGameState, CondottierePlayerState } from "../types";
 import displayName, { isBotName } from "../../../shared/utils/displayName";
 import ThinkingDots from "../../../shared/components/ThinkingDots";
+import FanHand from "../../../shared/components/FanHand";
 import CardFace from "./CardFace";
 import {
   CARD_HELP,
@@ -14,7 +16,11 @@ import classes from "./ActionPanel.module.css";
 
 export type Pending = { index: number; card: Card } | null;
 
-/** Fixed strip: your hand during a battle, the pass button, and the follow-up for a Scarecrow or Bishop. */
+/**
+ * Fixed strip: your hand fanned along the bottom, the pass button, and the
+ * follow-up for a Scarecrow or Bishop. Tapping a card lifts it into the
+ * tray; playing it is a second tap on the button.
+ */
 export default function ActionPanel({
   gameState,
   me,
@@ -27,7 +33,7 @@ export default function ActionPanel({
 }: {
   gameState: CondottiereGameState;
   me: CondottierePlayerState;
-  /** A Scarecrow or Bishop tapped and waiting for its target. */
+  /** A Scarecrow or Bishop played and waiting for its target. */
   pending: Pending;
   loading: boolean;
   onCard: (index: number) => void;
@@ -38,6 +44,46 @@ export default function ActionPanel({
   const acting = gameState.activePlayer === me.email;
   const who = displayName(gameState.activePlayer);
   const hand = me.hand || [];
+  const handKey = `${gameState.turn}:${gameState.activePlayer}:${hand.join(",")}`;
+  const [stagedState, setStaged] = useState<{
+    key: string;
+    index: number | null;
+  }>({ key: "", index: null });
+  // The card in the tray: a Scarecrow or Bishop waiting for its target, or what you lifted.
+  const staged = pending
+    ? pending.index
+    : stagedState.key === handKey
+      ? stagedState.index
+      : null;
+  const stagedCard = staged === null ? null : hand[staged];
+
+  const fan = (enabled: boolean) => (
+    <FanHand
+      ariaLabel="Your hand"
+      trayLabel={pending ? "Playing" : "To play"}
+      disabled={!enabled || loading || !!pending}
+      selected={staged === null ? [] : [`${staged}-${hand[staged]}`]}
+      onToggle={(key) => {
+        const index = Number(key.split("-")[0]);
+        setStaged({ key: handKey, index: staged === index ? null : index });
+      }}
+      minWidth={50}
+      maxWidth={80}
+      ratio={80 / 54}
+      items={hand.map((card, i) => ({
+        key: `${i}-${card}`,
+        label: `${CARD_LABEL[card]}`,
+        title: CARD_HELP[card],
+        node: (
+          <CardFace
+            card={card}
+            width={80}
+            style={{ width: "100%", height: "100%" }}
+          />
+        ),
+      }))}
+    />
+  );
 
   if (!acting || gameState.phase === "CHOOSE") {
     return (
@@ -76,13 +122,7 @@ export default function ActionPanel({
               </>
             )}
           </Text>
-          {!acting && hand.length > 0 && (
-            <Group gap={4} justify="center" wrap="wrap" aria-label="Your hand">
-              {hand.map((card, i) => (
-                <CardFace key={`${i}-${card}`} card={card} width={40} />
-              ))}
-            </Group>
-          )}
+          {hand.length > 0 && fan(false)}
         </Stack>
       </div>
     );
@@ -96,9 +136,11 @@ export default function ActionPanel({
     hint = popeTargets(gameState).length
       ? "Every copy of the strongest mercenary on the table is discarded. Tap a region on the map to send the Pope there, or play without moving him."
       : "Every copy of the strongest mercenary on the table is discarded.";
+  else if (stagedCard)
+    hint = `${CARD_LABEL[stagedCard]}: ${CARD_HELP[stagedCard]} Play it, or tap it to put it back.`;
   else
     hint =
-      "Tap a card to play it, or pass to sit out the rest of this battle. Hover a card for what it does.";
+      "Tap a card to lift it, then play it. Or pass to sit out the rest of this battle.";
 
   return (
     <div
@@ -111,6 +153,17 @@ export default function ActionPanel({
             Your turn
           </Badge>
           {loading && <Loader size="xs" color="yellow" />}
+          {!loading && !pending && (
+            <Button
+              color="yellow"
+              disabled={staged === null}
+              onClick={() => staged !== null && onCard(staged)}
+            >
+              {stagedCard
+                ? `Play ${CARD_LABEL[stagedCard]}`
+                : "Pick a card below"}
+            </Button>
+          )}
           {!loading && !pending && (
             <Button variant="default" onClick={onPass}>
               Pass
@@ -127,34 +180,21 @@ export default function ActionPanel({
             </Button>
           )}
         </Group>
-        {!loading && (
-          <Group gap={6} justify="center" wrap="wrap" aria-label="Your hand">
-            {hand.map((card, i) => (
-              <CardFace
-                key={`${i}-${card}`}
-                card={card}
-                width={48}
-                selected={pending?.index === i}
-                dimmed={!!pending && pending.index !== i}
-                onClick={pending ? undefined : () => onCard(i)}
-              />
-            ))}
-          </Group>
-        )}
         <Text size="sm" c="dimmed" ta="center">
           {hint}
-          {pending && !loading
-            ? ` ${CARD_LABEL[pending.card]}: ${CARD_HELP[pending.card]}`
-            : ""}
         </Text>
-        {!loading && !pending && hand.some((c) => !isMercenary(c)) && (
-          <Text size="xs" c="dimmed" ta="center">
-            {gameState.battlefield !== undefined
-              ? `Fighting for ${REGIONS[gameState.battlefield].name}. `
-              : ""}
-            Scarecrows and Bishops ask where to aim before they are played.
-          </Text>
-        )}
+        {!loading &&
+          !pending &&
+          !stagedCard &&
+          hand.some((c) => !isMercenary(c)) && (
+            <Text size="xs" c="dimmed" ta="center">
+              {gameState.battlefield !== undefined
+                ? `Fighting for ${REGIONS[gameState.battlefield].name}. `
+                : ""}
+              Scarecrows and Bishops ask where to aim before they are played.
+            </Text>
+          )}
+        {fan(true)}
       </Stack>
     </div>
   );

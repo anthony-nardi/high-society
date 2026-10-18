@@ -108,6 +108,8 @@ describe("Condottiere table", () => {
     fireEvent.click(
       hand.querySelector('[aria-label="Mercenary 3"]') as Element,
     );
+    // Lifting a card stages it; the button plays it.
+    fireEvent.click(screen.getByRole("button", { name: "Play Mercenary 3" }));
     expect(playCondottiereCard).toHaveBeenCalledWith({
       lobbyUID: "123",
       index: 0,
@@ -119,6 +121,7 @@ describe("Condottiere table", () => {
     renderGame();
     const hand = screen.getByLabelText("Your hand");
     fireEvent.click(hand.querySelector('[aria-label="Scarecrow"]') as Element);
+    fireEvent.click(screen.getByRole("button", { name: "Play Scarecrow" }));
     expect(
       screen.getByText(/Tap one of the mercenaries in your line/),
     ).toBeTruthy();
@@ -140,6 +143,7 @@ describe("Condottiere table", () => {
         .getByLabelText("Your hand")
         .querySelector('[aria-label="Bishop"]') as Element,
     );
+    fireEvent.click(screen.getByRole("button", { name: "Play Bishop" }));
     fireEvent.click(screen.getByLabelText("Venezia (selectable)"));
     expect(playCondottiereCard).toHaveBeenCalledWith({
       lobbyUID: "123",
