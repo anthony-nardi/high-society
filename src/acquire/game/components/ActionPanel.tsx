@@ -1,14 +1,6 @@
 import { useMemo, useState } from "react";
 import FanHand from "../../../shared/components/FanHand";
-import {
-  Badge,
-  Button,
-  Group,
-  Loader,
-  NumberInput,
-  Stack,
-  Text,
-} from "@mantine/core";
+import { Badge, Button, Group, Loader, Stack, Text } from "@mantine/core";
 import { AcquireGameState, AcquirePlayerState, Chain, Tile } from "../types";
 import displayName, { isBotName } from "../../../shared/utils/displayName";
 import ThinkingDots from "../../../shared/components/ThinkingDots";
@@ -44,6 +36,53 @@ function ChainButton({
     >
       {children}
     </Button>
+  );
+}
+
+/** A count with big minus and plus buttons, laid out so nothing shifts as it changes. */
+function Stepper({
+  label,
+  value,
+  onChange,
+  step,
+  max,
+  note,
+}: {
+  label: string;
+  value: number;
+  onChange: (n: number) => void;
+  step: number;
+  max: number;
+  note?: string;
+}) {
+  return (
+    <div className={classes.row}>
+      <span className={classes.rowName}>{label}</span>
+      <span className={classes.rowPrice}>{note}</span>
+      <Button
+        size="sm"
+        variant="default"
+        className={classes.step}
+        disabled={value <= 0}
+        onClick={() => onChange(value - step)}
+        aria-label={`${label}: fewer`}
+      >
+        −
+      </Button>
+      <span className={classes.count} aria-live="polite">
+        {value}
+      </span>
+      <Button
+        size="sm"
+        variant="default"
+        className={classes.step}
+        disabled={value + step > max}
+        onClick={() => onChange(value + step)}
+        aria-label={`${label}: more`}
+      >
+        +
+      </Button>
+    </div>
   );
 }
 
@@ -222,41 +261,72 @@ export default function ActionPanel({
     const held = stockOf(me, defunct);
     const price = gameState.merger.price ?? currentPrice(gameState, defunct);
     const keep = held - d.sell - d.trade;
+    const survivorLeft = gameState.chains[survivor].stockLeft;
+    const maxTrade = Math.min(held - (held % 2), survivorLeft * 2);
     const valid =
       d.sell >= 0 &&
       d.trade >= 0 &&
       d.trade % 2 === 0 &&
       keep >= 0 &&
-      d.trade / 2 <= gameState.chains[survivor].stockLeft;
-    hint = `${label(defunct)} is absorbed by ${label(survivor)}. You hold ${held}: sell at ${money(price)} each, trade two for one ${label(survivor)} (${gameState.chains[survivor].stockLeft} left), or keep.`;
+      d.trade / 2 <= survivorLeft;
+    hint = `${label(defunct)} is absorbed by ${label(survivor)}. Sell at ${money(price)} a share, trade two for one ${label(survivor)} (${survivorLeft} left), or keep them for the day ${label(defunct)} is founded again.`;
+    const setSell = (n: number) =>
+      set({ sell: Math.max(0, Math.min(held - d.trade, n)) });
+    const setTrade = (n: number) => {
+      const t = Math.max(0, Math.min(maxTrade, n - (n % 2)));
+      set({ trade: t, sell: Math.min(d.sell, held - t) });
+    };
     body = (
-      <Group gap="xs" justify="center" wrap="wrap" align="flex-end">
-        <NumberInput
-          size="xs"
-          w={90}
-          label="Sell"
-          min={0}
-          max={held}
+      <Stack gap={6} align="center" style={{ width: "100%", maxWidth: 420 }}>
+        <Stepper
+          label={`Sell · ${money(price)} each`}
           value={d.sell}
-          onChange={(v) => set({ sell: Number(v) || 0 })}
-          aria-label="Shares to sell"
+          onChange={setSell}
+          step={1}
+          max={held - d.trade}
+          note={d.sell ? `+${money(d.sell * price)}` : ""}
         />
-        <NumberInput
-          size="xs"
-          w={90}
-          label="Trade"
-          min={0}
-          max={held}
-          step={2}
+        <Stepper
+          label={`Trade · two for one ${label(survivor)}`}
           value={d.trade}
-          onChange={(v) => set({ trade: Number(v) || 0 })}
-          aria-label="Shares to trade"
+          onChange={setTrade}
+          step={2}
+          max={maxTrade}
+          note={d.trade ? `+${d.trade / 2} ${label(survivor)}` : ""}
         />
-        <Text size="sm">Keep {Math.max(0, keep)}</Text>
-        <Button disabled={!valid} onClick={() => onDispose(d.sell, d.trade)}>
-          Settle {d.sell ? `+${money(d.sell * price)}` : ""}
+        <Group gap={6} justify="center" wrap="wrap">
+          <Button
+            size="xs"
+            variant="default"
+            onClick={() => set({ sell: held - d.trade })}
+          >
+            Sell the rest
+          </Button>
+          <Button
+            size="xs"
+            variant="default"
+            disabled={maxTrade === 0}
+            onClick={() => setTrade(maxTrade)}
+          >
+            Trade all
+          </Button>
+          <Button
+            size="xs"
+            variant="default"
+            onClick={() => set({ sell: 0, trade: 0 })}
+          >
+            Keep all
+          </Button>
+        </Group>
+        <Button
+          size="md"
+          fullWidth
+          disabled={!valid}
+          onClick={() => onDispose(d.sell, d.trade)}
+        >
+          Settle: sell {d.sell}, trade {d.trade}, keep {Math.max(0, keep)}
         </Button>
-      </Group>
+      </Stack>
     );
   } else {
     const chains = activeChains(gameState);
@@ -265,33 +335,38 @@ export default function ActionPanel({
       ? `Buy up to ${MAX_BUY - gameState.bought} shares, then end your turn. You have ${money(me.money)}.`
       : "No chains on the board yet. End your turn to draw a tile.";
     body = (
-      <Group gap="xs" justify="center" wrap="wrap" align="center">
+      <Stack gap={6} align="center" style={{ width: "100%", maxWidth: 420 }}>
         {chains.map((chain) => {
           const n = d.buy[chain] || 0;
           const price = currentPrice(gameState, chain);
           const left = gameState.chains[chain].stockLeft - n;
           return (
-            <Group key={chain} gap={2} wrap="nowrap">
+            <div key={chain} className={classes.row}>
+              <span className={classes.rowName}>
+                <span
+                  className={classes.swatch}
+                  style={{ background: CHAIN_COLOUR[chain] }}
+                />
+                {label(chain)}
+              </span>
+              <span className={classes.rowPrice}>{money(price)}</span>
               <Button
-                size="xs"
+                size="sm"
                 variant="default"
+                className={classes.step}
                 disabled={n === 0}
                 onClick={() => set({ buy: { ...d.buy, [chain]: n - 1 } })}
                 aria-label={`One less ${label(chain)}`}
               >
                 −
               </Button>
-              <Badge
-                size="lg"
-                radius="sm"
-                variant="filled"
-                style={{ background: CHAIN_COLOUR[chain], color: "#fff" }}
-              >
-                {n} {label(chain)} {money(price)}
-              </Badge>
+              <span className={classes.count} aria-live="polite">
+                {n}
+              </span>
               <Button
-                size="xs"
+                size="sm"
                 variant="default"
+                className={classes.step}
                 disabled={
                   remaining <= 0 || left <= 0 || buyCost + price > me.money
                 }
@@ -300,13 +375,20 @@ export default function ActionPanel({
               >
                 +
               </Button>
-            </Group>
+            </div>
           );
         })}
-        <Button onClick={() => onBuy(d.buy)} disabled={buyCost > me.money}>
-          {buyTotal ? `Buy for ${money(buyCost)} and end turn` : "End turn"}
+        <Button
+          size="md"
+          fullWidth
+          onClick={() => onBuy(d.buy)}
+          disabled={buyCost > me.money}
+        >
+          {buyTotal
+            ? `Buy ${buyTotal} for ${money(buyCost)} and end turn`
+            : "End turn without buying"}
         </Button>
-      </Group>
+      </Stack>
     );
   }
 

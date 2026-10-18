@@ -157,9 +157,9 @@ describe("Acquire table", () => {
     });
     renderGame();
     expect(screen.getByText(/Tower is absorbed by Luxor/)).toBeTruthy();
-    fireEvent.change(screen.getByLabelText("Shares to trade"), {
-      target: { value: "2" },
-    });
+    fireEvent.click(
+      screen.getByRole("button", { name: "Trade · two for one Luxor: more" }),
+    );
     fireEvent.click(screen.getByRole("button", { name: /Settle/ }));
     expect(disposeAcquireStock).toHaveBeenCalledWith({
       lobbyUID: "123",
@@ -173,7 +173,7 @@ describe("Acquire table", () => {
     fireEvent.click(screen.getByRole("button", { name: "One more Tower" }));
     fireEvent.click(screen.getByRole("button", { name: "One more Tower" }));
     fireEvent.click(
-      screen.getByRole("button", { name: /Buy for \$400 and end turn/ }),
+      screen.getByRole("button", { name: /Buy 2 for \$400 and end turn/ }),
     );
     expect(buyAcquireStock).toHaveBeenCalledWith({
       lobbyUID: "123",
