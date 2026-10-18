@@ -1,5 +1,6 @@
+import { useEffect, useRef, useState } from "react";
 import { Badge, Box, Group, Text } from "@mantine/core";
-import { AcquireGameState, AcquirePlayerState } from "../types";
+import { AcquireGameState, AcquirePlayerState, Chain } from "../types";
 import { useUserContext } from "../../../shared/context/useUserContext";
 import displayName, { isBotName } from "../../../shared/utils/displayName";
 import ThinkingDots from "../../../shared/components/ThinkingDots";
@@ -18,6 +19,38 @@ export default function PlayerOverview({
   const isCurrentUser = !!user && player.email === user.email;
   const isBot = isBotName(player.email);
   const held = CHAINS.filter((c) => stockOf(player, c) > 0);
+
+  // Shares that just grew pop, and money that just arrived floats up.
+  const lastStocks = useRef<{ [chain in Chain]?: number }>({});
+  const lastMoney = useRef(player.money);
+  const [grown, setGrown] = useState<{ key: number; chains: Chain[] }>({
+    key: 0,
+    chains: [],
+  });
+  const [gain, setGain] = useState<{ amount: number; key: number } | null>(
+    null,
+  );
+  useEffect(() => {
+    const before = lastStocks.current;
+    const chains = CHAINS.filter((c) => stockOf(player, c) > (before[c] ?? 0));
+    lastStocks.current = Object.fromEntries(
+      CHAINS.map((c) => [c, stockOf(player, c)]),
+    );
+    const delta = player.money - lastMoney.current;
+    lastMoney.current = player.money;
+    const timers: number[] = [];
+    if (chains.length && Object.keys(before).length) {
+      setGrown({ key: Date.now(), chains });
+      timers.push(
+        window.setTimeout(() => setGrown({ key: 0, chains: [] }), 1000),
+      );
+    }
+    if (delta > 0) {
+      setGain({ amount: delta, key: Date.now() });
+      timers.push(window.setTimeout(() => setGain(null), 1700));
+    }
+    return () => timers.forEach((t) => window.clearTimeout(t));
+  }, [player]);
 
   return (
     <Box
@@ -64,6 +97,11 @@ export default function PlayerOverview({
           )}
         </Badge>
       )}
+      {gain && (
+        <span key={gain.key} className="money-float" aria-hidden="true">
+          +{money(gain.amount)}
+        </span>
+      )}
       <Group justify="space-between" align="center" wrap="wrap" gap="xs" mt={4}>
         <Text fw={700} truncate>
           {displayName(player.email)}
@@ -101,10 +139,11 @@ export default function PlayerOverview({
         ) : (
           held.map((c) => (
             <Badge
-              key={c}
+              key={grown.chains.includes(c) ? `${c}-${grown.key}` : c}
               size="sm"
               radius="sm"
               variant="filled"
+              className={grown.chains.includes(c) ? "chip-pop" : undefined}
               style={{ background: CHAIN_COLOUR[c], color: "#fff" }}
             >
               {stockOf(player, c)} {label(c)}

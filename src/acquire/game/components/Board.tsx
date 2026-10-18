@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { AcquireGameState, Tile } from "../types";
 import { CHAIN_COLOUR, COLUMNS, describe, isPlayable, ROWS } from "../board";
 
@@ -21,6 +22,24 @@ export default function Board({
   const width = PAD + COLUMNS * (CELL + GAP) + 6;
   const height = PAD + ROWS.length * (CELL + GAP) + 6;
   const handSet = new Set(hand);
+
+  // Tiles whose chain changed since the last board: a merger or a founding
+  // sweeping them into a new colour. They flash; the played tile pulses.
+  const board = gameState.board;
+  const [seen, setSeen] = useState<{
+    board: typeof board;
+    changed: Set<string>;
+  }>({ board, changed: new Set() });
+  if (seen.board !== board) {
+    const changed = new Set<string>();
+    const before = seen.board || {};
+    for (const [tile, owner] of Object.entries(board || {}))
+      if (before[tile] !== undefined && before[tile] !== owner)
+        changed.add(tile);
+    setSeen({ board, changed });
+  }
+  const changed = seen.board === board ? seen.changed : new Set<string>();
+  const animationKey = `${gameState.turn}:${gameState.phase}:${lastTile}:${Object.keys(board || {}).length}`;
   return (
     <svg
       viewBox={`0 0 ${width} ${height}`}
@@ -103,7 +122,20 @@ export default function Board({
               }}
             >
               <rect
-                className={inHand ? "target-disc" : undefined}
+                key={
+                  lastTile === tile || changed.has(tile)
+                    ? animationKey
+                    : undefined
+                }
+                className={
+                  lastTile === tile && owner
+                    ? "tile-pulse"
+                    : changed.has(tile)
+                      ? "tile-convert"
+                      : inHand
+                        ? "target-disc"
+                        : undefined
+                }
                 x={x}
                 y={y}
                 width={CELL}
