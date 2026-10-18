@@ -1,4 +1,5 @@
 import { Fragment, useCallback, useMemo, useState } from "react";
+import GameOverReveal from "../../../shared/components/GameOverReveal";
 import { NoThanksGameState } from "../types";
 import {
   Badge,
@@ -55,89 +56,91 @@ export default function GameOver({
       : `${winners.map((p) => displayName(p.email)).join(" and ")} share the win`;
 
   return (
-    <Container size="md" px="md" py="xl">
-      <Stack gap="lg">
-        <Center>
-          <Stack gap={4} align="center">
-            <Title order={1}>Game over</Title>
-            <Title order={3} c="yellow.4">
-              {headline}
-            </Title>
-            <Text size="sm" c="dimmed" ta="center">
-              Lowest score wins. Each run counts only its lowest card, and every
-              chip is worth one point off.
+    <GameOverReveal celebrate={winners.some((w) => w.email === user?.email)}>
+      <Container size="md" px="md" py="xl">
+        <Stack gap="lg">
+          <Center>
+            <Stack gap={4} align="center">
+              <Title order={1}>Game over</Title>
+              <Title order={3} c="yellow.4">
+                {headline}
+              </Title>
+              <Text size="sm" c="dimmed" ta="center">
+                Lowest score wins. Each run counts only its lowest card, and
+                every chip is worth one point off.
+              </Text>
+            </Stack>
+          </Center>
+
+          <Table.ScrollContainer minWidth={480}>
+            <Table withTableBorder>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>#</Table.Th>
+                  <Table.Th>Player</Table.Th>
+                  <Table.Th>Cards</Table.Th>
+                  <Table.Th>Chips</Table.Th>
+                  <Table.Th>Score</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>
+                {results.map((player) => (
+                  <Fragment key={player.email}>
+                    <Table.Tr
+                      style={{ fontWeight: player.winner ? 700 : undefined }}
+                    >
+                      <Table.Td>{player.rank}</Table.Td>
+                      <Table.Td>
+                        <Group gap="xs" wrap="nowrap">
+                          {displayName(player.email)}
+                          {player.email === user?.email && (
+                            <Text component="span" size="xs" c="dimmed">
+                              (you)
+                            </Text>
+                          )}
+                          {player.winner && (
+                            <Badge color="yellow" radius="sm">
+                              Winner
+                            </Badge>
+                          )}
+                        </Group>
+                      </Table.Td>
+                      <Table.Td>{player.cardPoints}</Table.Td>
+                      <Table.Td>−{player.chips}</Table.Td>
+                      <Table.Td>{player.score}</Table.Td>
+                    </Table.Tr>
+                    <Table.Tr>
+                      <Table.Td colSpan={COLUMNS}>
+                        <PlayerCards cards={player.cards} size="md" />
+                      </Table.Td>
+                    </Table.Tr>
+                  </Fragment>
+                ))}
+              </Table.Tbody>
+            </Table>
+          </Table.ScrollContainer>
+
+          <Center>
+            {nextLobbyUID ? (
+              <Button onClick={() => goToLobby(nextLobbyUID)}>
+                Join the rematch
+              </Button>
+            ) : (
+              <Button onClick={handlePlayAgain} loading={isCreating}>
+                Play again
+              </Button>
+            )}
+          </Center>
+          {!nextLobbyUID && (
+            <Text size="xs" c="dimmed" ta="center">
+              Play again opens a new lobby and gives everyone here a button to
+              join it.
             </Text>
-          </Stack>
-        </Center>
-
-        <Table.ScrollContainer minWidth={480}>
-          <Table withTableBorder>
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th>#</Table.Th>
-                <Table.Th>Player</Table.Th>
-                <Table.Th>Cards</Table.Th>
-                <Table.Th>Chips</Table.Th>
-                <Table.Th>Score</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {results.map((player) => (
-                <Fragment key={player.email}>
-                  <Table.Tr
-                    style={{ fontWeight: player.winner ? 700 : undefined }}
-                  >
-                    <Table.Td>{player.rank}</Table.Td>
-                    <Table.Td>
-                      <Group gap="xs" wrap="nowrap">
-                        {displayName(player.email)}
-                        {player.email === user?.email && (
-                          <Text component="span" size="xs" c="dimmed">
-                            (you)
-                          </Text>
-                        )}
-                        {player.winner && (
-                          <Badge color="yellow" radius="sm">
-                            Winner
-                          </Badge>
-                        )}
-                      </Group>
-                    </Table.Td>
-                    <Table.Td>{player.cardPoints}</Table.Td>
-                    <Table.Td>−{player.chips}</Table.Td>
-                    <Table.Td>{player.score}</Table.Td>
-                  </Table.Tr>
-                  <Table.Tr>
-                    <Table.Td colSpan={COLUMNS}>
-                      <PlayerCards cards={player.cards} size="md" />
-                    </Table.Td>
-                  </Table.Tr>
-                </Fragment>
-              ))}
-            </Table.Tbody>
-          </Table>
-        </Table.ScrollContainer>
-
-        <Center>
-          {nextLobbyUID ? (
-            <Button onClick={() => goToLobby(nextLobbyUID)}>
-              Join the rematch
-            </Button>
-          ) : (
-            <Button onClick={handlePlayAgain} loading={isCreating}>
-              Play again
-            </Button>
           )}
-        </Center>
-        {!nextLobbyUID && (
-          <Text size="xs" c="dimmed" ta="center">
-            Play again opens a new lobby and gives everyone here a button to
-            join it.
-          </Text>
-        )}
 
-        <GameLog log={gameState.log || []} />
-      </Stack>
-    </Container>
+          <GameLog log={gameState.log || []} />
+        </Stack>
+      </Container>
+    </GameOverReveal>
   );
 }

@@ -50,7 +50,7 @@ export default function GameOver({
   }, [lobbyId, goToLobby]);
 
   return (
-    <GameOverReveal>
+    <GameOverReveal celebrate={!!user && gameState.winner === user.email}>
       <Container size="md" px="md" py="xl">
         <Stack gap="lg">
           <Center>

@@ -1,4 +1,5 @@
 import { Fragment, useCallback, useMemo, useState } from "react";
+import GameOverReveal from "../../../shared/components/GameOverReveal";
 import {
   Badge,
   Button,
@@ -60,158 +61,162 @@ export default function GameOver({
       : `${winners.map((p) => displayName(p.email)).join(" and ")} share the win`;
 
   return (
-    <Container size="md" px="md" py="xl">
-      <Stack gap="lg">
-        <Center>
-          <Stack gap={4} align="center">
-            <Title order={1}>Game over</Title>
-            <Title order={3} c="yellow.4">
-              {headline}
-            </Title>
-            <Text size="sm" c="dimmed" ta="center">
-              Three rounds of loot, then businesses and money at the end.
-            </Text>
-          </Stack>
-        </Center>
+    <GameOverReveal celebrate={winners.some((w) => w.email === user?.email)}>
+      <Container size="md" px="md" py="xl">
+        <Stack gap="lg">
+          <Center>
+            <Stack gap={4} align="center">
+              <Title order={1}>Game over</Title>
+              <Title order={3} c="yellow.4">
+                {headline}
+              </Title>
+              <Text size="sm" c="dimmed" ta="center">
+                Three rounds of loot, then businesses and money at the end.
+              </Text>
+            </Stack>
+          </Center>
 
-        <Table.ScrollContainer minWidth={360}>
-          <Table withTableBorder>
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th>#</Table.Th>
-                <Table.Th>Player</Table.Th>
-                {Array.from({ length: roundCount }, (_, i) => (
-                  <Table.Th key={i}>
-                    {i < 3 ? `Round ${i + 1}` : "Final"}
-                  </Table.Th>
-                ))}
-                <Table.Th>Total</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {results.map((player) => {
-                const state = gameState.players.find(
-                  (p) => p.email === player.email,
-                );
-                return (
-                  <Fragment key={player.email}>
-                    <Table.Tr
-                      style={{ fontWeight: player.winner ? 700 : undefined }}
-                    >
-                      <Table.Td>{player.rank}</Table.Td>
-                      <Table.Td>
-                        <Group gap="xs" wrap="nowrap">
-                          {displayName(player.email)}
-                          {player.email === user?.email && (
-                            <Text component="span" size="xs" c="dimmed">
-                              (you)
-                            </Text>
-                          )}
-                          {player.winner && (
-                            <Badge color="yellow" radius="sm">
-                              Winner
-                            </Badge>
-                          )}
-                        </Group>
-                      </Table.Td>
-                      {Array.from({ length: roundCount }, (_, i) => {
-                        const breakdown = player.breakdowns[i];
-                        return (
-                          <Table.Td key={i}>
-                            {breakdown ? (
-                              <span
-                                title={Object.entries(breakdown.points)
-                                  .map(([k, v]) => `${categoryLabel(k)}: ${v}`)
-                                  .join(", ")}
-                              >
-                                {breakdown.total}
-                              </span>
-                            ) : (
-                              "—"
-                            )}
-                          </Table.Td>
-                        );
-                      })}
-                      <Table.Td>{player.score}</Table.Td>
-                    </Table.Tr>
-                    <Table.Tr>
-                      <Table.Td colSpan={columns}>
-                        <Group gap="md" wrap="wrap" align="flex-start" py={4}>
-                          {player.breakdowns.map((breakdown, i) => (
-                            <Text key={i} size="xs" c="dimmed">
-                              {i < 3 ? `R${breakdown.round}` : "Final"}:{" "}
-                              {Object.entries(breakdown.points)
-                                .filter(([, v]) => v !== 0)
-                                .map(
-                                  ([k, v]) =>
-                                    `${categoryLabel(k)} ${v > 0 ? "+" : ""}${v}`,
-                                )
-                                .join(", ") || "nothing"}
-                            </Text>
-                          ))}
-                        </Group>
-                        <Group gap="md" wrap="wrap" align="flex-start">
-                          {CATEGORY_ORDER.filter(
-                            (c) => (state?.cards?.[c] || []).length > 0,
-                          ).map((category) => (
-                            <div key={category}>
-                              <Text size="xs" c="dimmed" mb={2}>
-                                {CATEGORY_LABELS[category]}
+          <Table.ScrollContainer minWidth={360}>
+            <Table withTableBorder>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>#</Table.Th>
+                  <Table.Th>Player</Table.Th>
+                  {Array.from({ length: roundCount }, (_, i) => (
+                    <Table.Th key={i}>
+                      {i < 3 ? `Round ${i + 1}` : "Final"}
+                    </Table.Th>
+                  ))}
+                  <Table.Th>Total</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>
+                {results.map((player) => {
+                  const state = gameState.players.find(
+                    (p) => p.email === player.email,
+                  );
+                  return (
+                    <Fragment key={player.email}>
+                      <Table.Tr
+                        style={{ fontWeight: player.winner ? 700 : undefined }}
+                      >
+                        <Table.Td>{player.rank}</Table.Td>
+                        <Table.Td>
+                          <Group gap="xs" wrap="nowrap">
+                            {displayName(player.email)}
+                            {player.email === user?.email && (
+                              <Text component="span" size="xs" c="dimmed">
+                                (you)
                               </Text>
-                              <Group gap={2} wrap="wrap">
-                                {(state?.cards?.[category] || []).map(
-                                  (card, index) => (
-                                    <LootCard
-                                      key={`${card}-${index}`}
-                                      card={card}
-                                      width={34}
-                                    />
-                                  ),
-                                )}
-                              </Group>
+                            )}
+                            {player.winner && (
+                              <Badge color="yellow" radius="sm">
+                                Winner
+                              </Badge>
+                            )}
+                          </Group>
+                        </Table.Td>
+                        {Array.from({ length: roundCount }, (_, i) => {
+                          const breakdown = player.breakdowns[i];
+                          return (
+                            <Table.Td key={i}>
+                              {breakdown ? (
+                                <span
+                                  title={Object.entries(breakdown.points)
+                                    .map(
+                                      ([k, v]) => `${categoryLabel(k)}: ${v}`,
+                                    )
+                                    .join(", ")}
+                                >
+                                  {breakdown.total}
+                                </span>
+                              ) : (
+                                "—"
+                              )}
+                            </Table.Td>
+                          );
+                        })}
+                        <Table.Td>{player.score}</Table.Td>
+                      </Table.Tr>
+                      <Table.Tr>
+                        <Table.Td colSpan={columns}>
+                          <Group gap="md" wrap="wrap" align="flex-start" py={4}>
+                            {player.breakdowns.map((breakdown, i) => (
+                              <Text key={i} size="xs" c="dimmed">
+                                {i < 3 ? `R${breakdown.round}` : "Final"}:{" "}
+                                {Object.entries(breakdown.points)
+                                  .filter(([, v]) => v !== 0)
+                                  .map(
+                                    ([k, v]) =>
+                                      `${categoryLabel(k)} ${v > 0 ? "+" : ""}${v}`,
+                                  )
+                                  .join(", ") || "nothing"}
+                              </Text>
+                            ))}
+                          </Group>
+                          <Group gap="md" wrap="wrap" align="flex-start">
+                            {CATEGORY_ORDER.filter(
+                              (c) => (state?.cards?.[c] || []).length > 0,
+                            ).map((category) => (
+                              <div key={category}>
+                                <Text size="xs" c="dimmed" mb={2}>
+                                  {CATEGORY_LABELS[category]}
+                                </Text>
+                                <Group gap={2} wrap="wrap">
+                                  {(state?.cards?.[category] || []).map(
+                                    (card, index) => (
+                                      <LootCard
+                                        key={`${card}-${index}`}
+                                        card={card}
+                                        width={34}
+                                      />
+                                    ),
+                                  )}
+                                </Group>
+                              </div>
+                            ))}
+                            <div>
+                              <Text size="xs" c="dimmed" mb={2}>
+                                Money
+                              </Text>
+                              <Text size="sm">
+                                {[...(state?.money || [])]
+                                  .sort((a, b) => Number(a) - Number(b))
+                                  .map(formatMoney)
+                                  .join(", ") || "—"}
+                              </Text>
                             </div>
-                          ))}
-                          <div>
-                            <Text size="xs" c="dimmed" mb={2}>
-                              Money
-                            </Text>
-                            <Text size="sm">
-                              {[...(state?.money || [])]
-                                .sort((a, b) => Number(a) - Number(b))
-                                .map(formatMoney)
-                                .join(", ") || "—"}
-                            </Text>
-                          </div>
-                        </Group>
-                      </Table.Td>
-                    </Table.Tr>
-                  </Fragment>
-                );
-              })}
-            </Table.Tbody>
-          </Table>
-        </Table.ScrollContainer>
+                          </Group>
+                        </Table.Td>
+                      </Table.Tr>
+                    </Fragment>
+                  );
+                })}
+              </Table.Tbody>
+            </Table>
+          </Table.ScrollContainer>
 
-        <Center>
-          {nextLobbyUID ? (
-            <Button onClick={() => goToLobby(nextLobbyUID)}>
-              Join the rematch
-            </Button>
-          ) : (
-            <Button onClick={handlePlayAgain} loading={isCreating}>
-              Play again
-            </Button>
+          <Center>
+            {nextLobbyUID ? (
+              <Button onClick={() => goToLobby(nextLobbyUID)}>
+                Join the rematch
+              </Button>
+            ) : (
+              <Button onClick={handlePlayAgain} loading={isCreating}>
+                Play again
+              </Button>
+            )}
+          </Center>
+          {!nextLobbyUID && (
+            <Text size="xs" c="dimmed" ta="center">
+              Play again opens a new lobby and gives everyone here a button to
+              join it.
+            </Text>
           )}
-        </Center>
-        {!nextLobbyUID && (
-          <Text size="xs" c="dimmed" ta="center">
-            Play again opens a new lobby and gives everyone here a button to
-            join it.
-          </Text>
-        )}
 
-        <GameLog log={gameState.log || []} />
-      </Stack>
-    </Container>
+          <GameLog log={gameState.log || []} />
+        </Stack>
+      </Container>
+    </GameOverReveal>
   );
 }

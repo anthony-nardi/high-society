@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import GameOverReveal from "../../../shared/components/GameOverReveal";
 import {
   Badge,
   Button,
@@ -48,91 +49,94 @@ export default function GameOver({
   }, [lobbyId, goToLobby]);
 
   return (
-    <Container size="md" px="md" py="xl">
-      <Stack gap="lg">
-        <Center>
-          <Stack gap={4} align="center">
-            <Title order={1}>Game over</Title>
-            <Title order={3} c="yellow.4">
-              {displayName(winner.email)} wins with {winner.score} points!
-            </Title>
-            <Text size="sm" c="dimmed" ta="center">
-              First to 100 points, banked at the start of a turn or from three
-              diamonds.
-            </Text>
-          </Stack>
-        </Center>
+    <GameOverReveal celebrate={!!user && gameState.winner === user.email}>
+      <Container size="md" px="md" py="xl">
+        <Stack gap="lg">
+          <Center>
+            <Stack gap={4} align="center">
+              <Title order={1}>Game over</Title>
+              <Title order={3} c="yellow.4">
+                {displayName(winner.email)} wins with {winner.score} points!
+              </Title>
+              <Text size="sm" c="dimmed" ta="center">
+                First to 100 points, banked at the start of a turn or from three
+                diamonds.
+              </Text>
+            </Stack>
+          </Center>
 
-        <Table.ScrollContainer minWidth={360}>
-          <Table withTableBorder>
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th>#</Table.Th>
-                <Table.Th>Player</Table.Th>
-                <Table.Th>Points</Table.Th>
-                <Table.Th>Unbanked</Table.Th>
-                <Table.Th>Diamonds</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {ranked.map((player, index) => (
-                <Table.Tr
-                  key={player.email}
-                  style={{
-                    fontWeight: player.email === winner.email ? 700 : undefined,
-                  }}
-                >
-                  <Table.Td>{index + 1}</Table.Td>
-                  <Table.Td>
-                    <Group gap="xs" wrap="nowrap">
-                      {displayName(player.email)}
-                      {player.email === user?.email && (
-                        <Text component="span" size="xs" c="dimmed">
-                          (you)
-                        </Text>
-                      )}
-                      {player.email === winner.email && (
-                        <Badge color="yellow" radius="sm">
-                          Winner
-                        </Badge>
-                      )}
-                    </Group>
-                  </Table.Td>
-                  <Table.Td>{player.score}</Table.Td>
-                  <Table.Td>{chipPoints(player.held) || "—"}</Table.Td>
-                  <Table.Td>
-                    {player.diamonds ? (
-                      <Diamonds count={player.diamonds} size={20} />
-                    ) : (
-                      "—"
-                    )}
-                  </Table.Td>
+          <Table.ScrollContainer minWidth={360}>
+            <Table withTableBorder>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>#</Table.Th>
+                  <Table.Th>Player</Table.Th>
+                  <Table.Th>Points</Table.Th>
+                  <Table.Th>Unbanked</Table.Th>
+                  <Table.Th>Diamonds</Table.Th>
                 </Table.Tr>
-              ))}
-            </Table.Tbody>
-          </Table>
-        </Table.ScrollContainer>
+              </Table.Thead>
+              <Table.Tbody>
+                {ranked.map((player, index) => (
+                  <Table.Tr
+                    key={player.email}
+                    style={{
+                      fontWeight:
+                        player.email === winner.email ? 700 : undefined,
+                    }}
+                  >
+                    <Table.Td>{index + 1}</Table.Td>
+                    <Table.Td>
+                      <Group gap="xs" wrap="nowrap">
+                        {displayName(player.email)}
+                        {player.email === user?.email && (
+                          <Text component="span" size="xs" c="dimmed">
+                            (you)
+                          </Text>
+                        )}
+                        {player.email === winner.email && (
+                          <Badge color="yellow" radius="sm">
+                            Winner
+                          </Badge>
+                        )}
+                      </Group>
+                    </Table.Td>
+                    <Table.Td>{player.score}</Table.Td>
+                    <Table.Td>{chipPoints(player.held) || "—"}</Table.Td>
+                    <Table.Td>
+                      {player.diamonds ? (
+                        <Diamonds count={player.diamonds} size={20} />
+                      ) : (
+                        "—"
+                      )}
+                    </Table.Td>
+                  </Table.Tr>
+                ))}
+              </Table.Tbody>
+            </Table>
+          </Table.ScrollContainer>
 
-        <Center>
-          {nextLobbyUID ? (
-            <Button onClick={() => goToLobby(nextLobbyUID)}>
-              Join the rematch
-            </Button>
-          ) : (
-            <Button onClick={handlePlayAgain} loading={isCreating}>
-              Play again
-            </Button>
+          <Center>
+            {nextLobbyUID ? (
+              <Button onClick={() => goToLobby(nextLobbyUID)}>
+                Join the rematch
+              </Button>
+            ) : (
+              <Button onClick={handlePlayAgain} loading={isCreating}>
+                Play again
+              </Button>
+            )}
+          </Center>
+          {!nextLobbyUID && (
+            <Text size="xs" c="dimmed" ta="center">
+              Play again opens a new lobby with the same bots and gives everyone
+              here a button to join it.
+            </Text>
           )}
-        </Center>
-        {!nextLobbyUID && (
-          <Text size="xs" c="dimmed" ta="center">
-            Play again opens a new lobby with the same bots and gives everyone
-            here a button to join it.
-          </Text>
-        )}
 
-        <GameLog log={gameState.log || []} />
-      </Stack>
-    </Container>
+          <GameLog log={gameState.log || []} />
+        </Stack>
+      </Container>
+    </GameOverReveal>
   );
 }

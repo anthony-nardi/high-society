@@ -1,4 +1,5 @@
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+import GameOverReveal from "../../../shared/components/GameOverReveal";
 import { HighSocietyGameState } from "../types";
 import { getDatabase, onValue, ref } from "firebase/database";
 import {
@@ -123,109 +124,111 @@ export default function GameOver({ lobbyId }: { lobbyId: string }) {
         : "Nobody wins";
 
   return (
-    <Container size="md" px="md" py="xl">
-      <Stack gap="lg">
-        <Center>
-          <Stack gap={4} align="center">
-            <Title order={1}>Game over</Title>
-            <Title order={3} c="yellow.4">
-              {headline}
-            </Title>
-            {eliminated.length > 0 && (
-              <Text size="sm" c="dimmed" ta="center">
-                {eliminated.map((p) => displayName(p.email)).join(", ")}{" "}
-                {eliminated.length === 1 ? "had" : "shared"} the least money
-                left and {eliminated.length === 1 ? "is" : "are"} out of the
-                running.
-              </Text>
-            )}
-          </Stack>
-        </Center>
+    <GameOverReveal celebrate={winners.some((w) => w.email === user?.email)}>
+      <Container size="md" px="md" py="xl">
+        <Stack gap="lg">
+          <Center>
+            <Stack gap={4} align="center">
+              <Title order={1}>Game over</Title>
+              <Title order={3} c="yellow.4">
+                {headline}
+              </Title>
+              {eliminated.length > 0 && (
+                <Text size="sm" c="dimmed" ta="center">
+                  {eliminated.map((p) => displayName(p.email)).join(", ")}{" "}
+                  {eliminated.length === 1 ? "had" : "shared"} the least money
+                  left and {eliminated.length === 1 ? "is" : "are"} out of the
+                  running.
+                </Text>
+              )}
+            </Stack>
+          </Center>
 
-        <Table.ScrollContainer minWidth={560}>
-          <Table withTableBorder>
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th>#</Table.Th>
-                <Table.Th>Player</Table.Th>
-                <Table.Th>Luxury</Table.Th>
-                <Table.Th>Scandal</Table.Th>
-                <Table.Th>Multiplier</Table.Th>
-                <Table.Th>Score</Table.Th>
-                <Table.Th>Money left</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {results.map((player) => (
-                <Fragment key={player.email}>
-                  <Table.Tr
-                    style={{
-                      opacity: player.eliminated ? 0.6 : 1,
-                      fontWeight: player.winner ? 700 : undefined,
-                    }}
-                  >
-                    <Table.Td>{player.rank}</Table.Td>
-                    <Table.Td>
-                      <Group gap="xs" wrap="nowrap">
-                        {displayName(player.email)}
-                        {player.email === user?.email && (
-                          <Text component="span" size="xs" c="dimmed">
-                            (you)
-                          </Text>
-                        )}
-                        {player.winner && (
-                          <Badge color="yellow" radius="sm">
-                            Winner
-                          </Badge>
-                        )}
-                        {player.eliminated && (
-                          <Badge color="red" variant="light" radius="sm">
-                            Least money
-                          </Badge>
-                        )}
-                      </Group>
-                    </Table.Td>
-                    <Table.Td>{player.luxury}</Table.Td>
-                    <Table.Td>
-                      {player.penalty ? `−${player.penalty}` : "—"}
-                    </Table.Td>
-                    <Table.Td>{formatMultiplier(player.multiplier)}</Table.Td>
-                    <Table.Td>{player.finalScore}</Table.Td>
-                    <Table.Td>{player.moneyLeft}</Table.Td>
-                  </Table.Tr>
-                  <Table.Tr style={{ opacity: player.eliminated ? 0.6 : 1 }}>
-                    <Table.Td colSpan={COLUMNS}>
-                      <PlayerCards player={player} />
-                    </Table.Td>
-                  </Table.Tr>
-                </Fragment>
-              ))}
-            </Table.Tbody>
-          </Table>
-        </Table.ScrollContainer>
+          <Table.ScrollContainer minWidth={560}>
+            <Table withTableBorder>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>#</Table.Th>
+                  <Table.Th>Player</Table.Th>
+                  <Table.Th>Luxury</Table.Th>
+                  <Table.Th>Scandal</Table.Th>
+                  <Table.Th>Multiplier</Table.Th>
+                  <Table.Th>Score</Table.Th>
+                  <Table.Th>Money left</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>
+                {results.map((player) => (
+                  <Fragment key={player.email}>
+                    <Table.Tr
+                      style={{
+                        opacity: player.eliminated ? 0.6 : 1,
+                        fontWeight: player.winner ? 700 : undefined,
+                      }}
+                    >
+                      <Table.Td>{player.rank}</Table.Td>
+                      <Table.Td>
+                        <Group gap="xs" wrap="nowrap">
+                          {displayName(player.email)}
+                          {player.email === user?.email && (
+                            <Text component="span" size="xs" c="dimmed">
+                              (you)
+                            </Text>
+                          )}
+                          {player.winner && (
+                            <Badge color="yellow" radius="sm">
+                              Winner
+                            </Badge>
+                          )}
+                          {player.eliminated && (
+                            <Badge color="red" variant="light" radius="sm">
+                              Least money
+                            </Badge>
+                          )}
+                        </Group>
+                      </Table.Td>
+                      <Table.Td>{player.luxury}</Table.Td>
+                      <Table.Td>
+                        {player.penalty ? `−${player.penalty}` : "—"}
+                      </Table.Td>
+                      <Table.Td>{formatMultiplier(player.multiplier)}</Table.Td>
+                      <Table.Td>{player.finalScore}</Table.Td>
+                      <Table.Td>{player.moneyLeft}</Table.Td>
+                    </Table.Tr>
+                    <Table.Tr style={{ opacity: player.eliminated ? 0.6 : 1 }}>
+                      <Table.Td colSpan={COLUMNS}>
+                        <PlayerCards player={player} />
+                      </Table.Td>
+                    </Table.Tr>
+                  </Fragment>
+                ))}
+              </Table.Tbody>
+            </Table>
+          </Table.ScrollContainer>
 
-        <Center>
-          <Group>
-            {nextLobbyUID ? (
-              <Button onClick={() => goToLobby(nextLobbyUID)}>
-                Join the rematch
-              </Button>
-            ) : (
-              <Button onClick={handlePlayAgain} loading={isCreating}>
-                Play again
-              </Button>
-            )}
-          </Group>
-        </Center>
-        {!nextLobbyUID && (
-          <Text size="xs" c="dimmed" ta="center">
-            Play again opens a new lobby and gives everyone here a button to
-            join it.
-          </Text>
-        )}
+          <Center>
+            <Group>
+              {nextLobbyUID ? (
+                <Button onClick={() => goToLobby(nextLobbyUID)}>
+                  Join the rematch
+                </Button>
+              ) : (
+                <Button onClick={handlePlayAgain} loading={isCreating}>
+                  Play again
+                </Button>
+              )}
+            </Group>
+          </Center>
+          {!nextLobbyUID && (
+            <Text size="xs" c="dimmed" ta="center">
+              Play again opens a new lobby and gives everyone here a button to
+              join it.
+            </Text>
+          )}
 
-        <GameLog log={gameData.log || []} />
-      </Stack>
-    </Container>
+          <GameLog log={gameData.log || []} />
+        </Stack>
+      </Container>
+    </GameOverReveal>
   );
 }
