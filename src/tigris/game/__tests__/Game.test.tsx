@@ -44,7 +44,7 @@ vi.mock("../../../shared/hooks/useBotNudge", () => ({
 }));
 
 import Game from "..";
-import { highlightsFor } from "../highlights";
+import { highlightsFor, marksFor } from "../highlights";
 
 const base = (over: Partial<TigrisGameState>): TigrisGameState => ({
   id: "l",
@@ -167,5 +167,22 @@ describe("Tigris & Euphrates", () => {
       lobbyUID: "123",
       count: 1,
     });
+  });
+  it("marks what each lit space would do", () => {
+    const state = base({});
+    const tile = { kind: "tile", colour: "GREEN", index: 1 } as const;
+    const lit = highlightsFor(state, "a@example.com", tile);
+    const marks = marksFor(state, "a@example.com", tile, lit);
+    expect(marks["1_3"]).toMatchObject({ text: "+1", tone: "good" });
+    const rival = base({
+      leaders: {
+        "1_2": { email: "a@example.com", colour: "BLACK" },
+        "0_1": { email: "Bot #1", colour: "RED" },
+      },
+    });
+    const priest = { kind: "leader", colour: "RED" } as const;
+    const litL = highlightsFor(rival, "a@example.com", priest);
+    const marksL = marksFor(rival, "a@example.com", priest, litL);
+    expect(marksL["2_1"]).toMatchObject({ text: "⚔", tone: "war" });
   });
 });

@@ -8,7 +8,6 @@ import {
   components,
   finalSpheres,
   isEmptyCell,
-  isKingdom,
   kingdomsAround,
   leaderAt,
   neighbours,
@@ -445,9 +444,3 @@ export function chooseMove(gameState: TigrisGameState): BotMove | null {
   }
   return best.move;
 }
-
-export const isKingdomAt = (board: BoardView, cell: string) => {
-  const found = components(board);
-  const id = found.at[cell];
-  return id !== undefined && isKingdom(found.comps[id]);
-};

@@ -117,7 +117,11 @@ describe("soundForEvent", () => {
     expect(soundForEvent("a positions the king to C2.")).toBe("stoneSlide");
     expect(
       soundForEvent("War breaks out between the kings: a attacks b."),
-    ).toBe("alarm");
+    ).toBe("clash");
+    expect(
+      soundForEvent("A revolt breaks out: a's priest challenges b's."),
+    ).toBe("clash");
+    expect(soundForEvent("a plays a catastrophe at B2.")).toBe("alarm");
     expect(soundForEvent("a commits 2 settlements.")).toBe("bid");
     expect(
       soundForEvent(

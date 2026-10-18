@@ -342,6 +342,7 @@ export function placeTile(
     if (taker) {
       gain(gameState, taker.email, colour, 1);
       action.points = 1;
+      action.pointsTo = taker.email;
       title +=
         taker.email === player.email
           ? ` and gains a ${POINT_NAME[colour]}`
@@ -755,6 +756,7 @@ function resolveConflict(gameState: TigrisGameState) {
   const loserCell = attackerWins ? c.defenderCell : c.attackerCell;
 
   let removed = 0;
+  const removedCells: string[] = [];
   if (c.kind === "WAR") {
     const doomed = supporters(board, loserCell, c.colour, board.unification);
     removeLeader(gameState, loserCell);
@@ -773,6 +775,7 @@ function resolveConflict(gameState: TigrisGameState) {
       }
       removeTile(gameState, cell);
       removed += 1;
+      removedCells.push(cell);
     }
   } else {
     removeLeader(gameState, loserCell);
@@ -783,9 +786,12 @@ function resolveConflict(gameState: TigrisGameState) {
     ...c,
     winner,
     loser,
+    winnerCell: attackerWins ? c.attackerCell : c.defenderCell,
+    loserCell,
     removed,
     gained,
     turn: board.turn,
+    ...(removedCells.length ? { removedCells } : {}),
   };
   delete board.conflict;
   announce(

@@ -11,13 +11,16 @@ import {
   isRiver,
   key,
   label,
+  neighbours,
   parse,
   ROWS,
   SHEDU,
-  squareCells,
+  tileAt,
 } from "../board";
+import type { Mark } from "../highlights";
 import { TileSymbol } from "./TileIcon";
 import classes from "../tigris.module.css";
+import fx from "../effects.module.css";
 
 export type Highlight = "legal" | "offer" | "square";
 
@@ -44,20 +47,30 @@ const px = (cell: string) => {
   return { x: PAD + c * CELL, y: PAD + r * CELL };
 };
 
+const MARK_FILL = {
+  good: "#2e7d32",
+  bad: "#8e2b2b",
+  war: "#c0392b",
+  unite: "#4a4a4a",
+};
+
 /**
  * The map: river and land, tiles with their symbols, leaders with their
  * dynasty, monuments over their squares, treasures, and the outline of
- * every kingdom. Drag to pan, pinch or ctrl-wheel to zoom, double-tap to
- * fit.
+ * every kingdom. While a war is fought the two sides are tinted and the
+ * tiles that count glow; afterwards the fallen crumble away. Drag to pan,
+ * pinch or ctrl-wheel to zoom, double-tap to fit.
  */
 export default function Board({
   gameState,
   highlights,
+  marks = {},
   onCell,
   me,
 }: {
   gameState: TigrisGameState;
   highlights: { [cell: string]: Highlight };
+  marks?: { [cell: string]: Mark };
   onCell?: (cell: string) => void;
   me?: string | null;
 }) {
@@ -174,17 +187,63 @@ export default function Board({
   const tiles = gameState.tiles || {};
   const leaders = gameState.leaders || {};
   const blocked = new Set(gameState.blocked || []);
-  const squareOf = new globalThis.Map<string, string>();
-  for (const m of gameState.monuments || [])
-    for (const c of squareCells(m.cell)) squareOf.set(c, m.cell);
+  const dynastyOf = (email: string) =>
+    DYNASTY_SYMBOL[
+      gameState.players.find((p) => p.email === email)?.dynasty ?? "ARCHER"
+    ];
+
+  // The conflict under way: who fights, which side is which, what counts.
+  const live = gameState.conflict;
   const conflictCells = new Set(
-    gameState.conflict
-      ? [gameState.conflict.attackerCell, gameState.conflict.defenderCell]
-      : [],
+    live ? [live.attackerCell, live.defenderCell] : [],
   );
+  const sides = useMemo(
+    () =>
+      live?.kind === "WAR" && gameState.unification
+        ? components(gameState, gameState.unification)
+        : null,
+    [live, gameState],
+  );
+  const sideOf = (cell: string): "attacker" | "defender" | null => {
+    if (!live || !sides) return null;
+    const id = sides.at[cell];
+    if (id === undefined) return null;
+    if (id === sides.at[live.attackerCell]) return "attacker";
+    if (id === sides.at[live.defenderCell]) return "defender";
+    return null;
+  };
+  const counts = (cell: string) => {
+    if (!live) return false;
+    const t = tileAt(gameState, cell);
+    if (!t || t.down) return false;
+    if (live.kind === "WAR")
+      return t.colour === live.colour && sideOf(cell) !== null;
+    return (
+      t.colour === "RED" &&
+      (neighbours(live.attackerCell).includes(cell) ||
+        neighbours(live.defenderCell).includes(cell))
+    );
+  };
+
+  // The conflict just fought: the fallen crumble, the winner stands tall.
+  const fallen =
+    !live && gameState.lastConflict?.turn === gameState.turn
+      ? gameState.lastConflict
+      : null;
+  const fallenKey = fallen
+    ? `${fallen.turn}:${fallen.colour}:${fallen.loser}:${fallen.loserCell}`
+    : "";
+
+  // The last action: what landed, what was struck, what floated away.
   const last = gameState.lastAction;
+  const recent = last && last.turn === gameState.turn ? last : null;
   const landed =
-    last && last.turn === gameState.turn && last.cell ? last.cell : null;
+    recent?.cell && (recent.type === "TILE" || recent.type === "LEADER")
+      ? recent.cell
+      : null;
+  const actionKey = recent
+    ? `${recent.turn}:${recent.type}:${recent.cell}:${gameState.actionsLeft}:${gameState.phase}`
+    : "";
 
   // Kingdom outlines: every edge of a kingdom cell not shared with the same kingdom.
   const outlines: { x1: number; y1: number; x2: number; y2: number }[] = [];
@@ -237,7 +296,6 @@ export default function Board({
           />
         </pattern>
       </defs>
-      {/* Column letters and row numbers. */}
       {Array.from({ length: COLS }, (_, c) => (
         <text
           key={`c${c}`}
@@ -269,7 +327,11 @@ export default function Board({
         const tile = tiles[cell];
         const leader = leaders[cell];
         const hl = highlights[cell];
+        const mark = marks[cell];
         const tappable = !!onCell && !!hl;
+        const side = sideOf(cell);
+        const glowing = counts(cell);
+        const struck = recent?.type === "CATASTROPHE" && recent.cell === cell;
         return (
           <g
             key={cell}
@@ -277,7 +339,7 @@ export default function Board({
             className={tappable ? classes.tappable : classes.cell}
             onClick={() => tap(cell)}
             role={tappable ? "button" : undefined}
-            aria-label={`${label(cell)}${tile ? ` ${tile.colour.toLowerCase()} tile` : ""}${leader ? ` ${leader.colour.toLowerCase()} leader` : ""}`}
+            aria-label={`${label(cell)}${tile ? ` ${tile.colour.toLowerCase()} tile` : ""}${leader ? ` ${leader.colour.toLowerCase()} leader` : ""}${mark ? `: ${mark.title}` : ""}`}
           >
             <rect
               x={x}
@@ -320,8 +382,22 @@ export default function Board({
                 strokeDasharray="4 3"
               />
             )}
+            {side && (
+              <rect
+                x={x}
+                y={y}
+                width={CELL}
+                height={CELL}
+                className={
+                  side === "attacker" ? fx.sideAttacker : fx.sideDefender
+                }
+              />
+            )}
             {blocked.has(cell) && (
-              <g>
+              <g
+                key={struck ? actionKey : "blocked"}
+                className={struck ? fx.strike : undefined}
+              >
                 <rect
                   x={x + 2}
                   y={y + 2}
@@ -358,6 +434,18 @@ export default function Board({
                     <TileSymbol colour={tile.colour} />
                   </g>
                 )}
+                {glowing && (
+                  <rect
+                    className={fx.counts}
+                    x={x + 3}
+                    y={y + 3}
+                    width={CELL - 6}
+                    height={CELL - 6}
+                    rx="5"
+                    fill="#fff"
+                    pointerEvents="none"
+                  />
+                )}
                 {tile.treasure && (
                   <g>
                     <circle
@@ -380,8 +468,8 @@ export default function Board({
             )}
             {leader && (
               <g
-                key={`${cell}-leader`}
-                className={`${landed === cell ? classes.landed : ""} ${conflictCells.has(cell) ? classes.fighting : ""}`}
+                key={`${cell}-leader-${fallen?.winnerCell === cell ? fallenKey : ""}`}
+                className={`${landed === cell ? classes.landed : ""} ${conflictCells.has(cell) ? classes.fighting : ""} ${fallen?.winnerCell === cell ? fx.stand : ""}`}
               >
                 <circle
                   cx={x + CELL / 2}
@@ -407,12 +495,7 @@ export default function Board({
                   textAnchor="middle"
                   fontSize="16"
                 >
-                  {
-                    DYNASTY_SYMBOL[
-                      gameState.players.find((p) => p.email === leader.email)
-                        ?.dynasty ?? "ARCHER"
-                    ]
-                  }
+                  {dynastyOf(leader.email)}
                 </text>
               </g>
             )}
@@ -460,6 +543,29 @@ export default function Board({
                 strokeWidth="3"
               />
             )}
+            {mark && (
+              <g className={fx.mark}>
+                <rect
+                  x={x + CELL / 2 - 11}
+                  y={y + CELL / 2 - 8}
+                  width="22"
+                  height="16"
+                  rx="5"
+                  fill={MARK_FILL[mark.tone]}
+                  stroke="rgba(255,255,255,0.8)"
+                  strokeWidth="1"
+                />
+                <text
+                  x={x + CELL / 2}
+                  y={y + CELL / 2 + 4}
+                  textAnchor="middle"
+                  fontSize="11"
+                  fill="#fff"
+                >
+                  {mark.text}
+                </text>
+              </g>
+            )}
           </g>
         );
       })}
@@ -469,8 +575,13 @@ export default function Board({
         const { x, y } = px(m.cell);
         const cx = x + CELL;
         const cy = y + CELL;
+        const fresh = recent?.type === "MONUMENT" && recent.cell === m.cell;
         return (
-          <g key={m.cell} pointerEvents="none">
+          <g
+            key={`${m.cell}${fresh ? actionKey : ""}`}
+            pointerEvents="none"
+            className={fresh ? fx.rise : undefined}
+          >
             <rect
               x={cx - 26}
               y={cy - 2}
@@ -519,6 +630,94 @@ export default function Board({
           opacity="0.9"
         />
       ))}
+
+      {/* After a conflict: removed supporters crumble, the fallen leader topples. */}
+      {fallen && (
+        <g key={fallenKey} pointerEvents="none">
+          {(fallen.removedCells || []).map((cell, i) => {
+            const { x, y } = px(cell);
+            return (
+              <g
+                key={cell}
+                className={fx.ghostOut}
+                style={{ animationDelay: `${i * 90}ms` }}
+              >
+                <rect
+                  x={x + 3}
+                  y={y + 3}
+                  width={CELL - 6}
+                  height={CELL - 6}
+                  rx="5"
+                  fill={COLOUR_HEX[fallen.colour]}
+                  stroke="rgba(0,0,0,0.5)"
+                  strokeWidth="1.5"
+                />
+                <g transform={`translate(${x} ${y})`}>
+                  <TileSymbol colour={fallen.colour} />
+                </g>
+              </g>
+            );
+          })}
+          {!leaders[fallen.loserCell] && (
+            <g className={fx.fall}>
+              <circle
+                cx={px(fallen.loserCell).x + CELL / 2}
+                cy={px(fallen.loserCell).y + CELL / 2}
+                r="15"
+                fill="#fbf3e2"
+                stroke={COLOUR_HEX[fallen.colour]}
+                strokeWidth="5"
+              />
+              <text
+                x={px(fallen.loserCell).x + CELL / 2}
+                y={px(fallen.loserCell).y + CELL / 2 + 6}
+                textAnchor="middle"
+                fontSize="16"
+              >
+                {dynastyOf(fallen.loser)}
+              </text>
+            </g>
+          )}
+        </g>
+      )}
+
+      {/* The last action's reward: a point, a treasure. */}
+      {recent?.type === "TILE" && recent.points && recent.cell && (
+        <g key={`pt-${actionKey}`} className={fx.pointUp} pointerEvents="none">
+          <rect
+            x={px(recent.cell).x + CELL / 2 - 14}
+            y={px(recent.cell).y - 4}
+            width="28"
+            height="16"
+            rx="6"
+            fill={recent.pointsTo === me ? "#2e7d32" : "#5a5a5a"}
+            stroke="#fff"
+            strokeWidth="1"
+          />
+          <text
+            x={px(recent.cell).x + CELL / 2}
+            y={px(recent.cell).y + 8}
+            textAnchor="middle"
+            fontSize="11"
+            fontWeight="900"
+            fill="#fff"
+          >
+            +{recent.points}
+          </text>
+        </g>
+      )}
+      {recent?.type === "TREASURE" && recent.cell && (
+        <g key={`tr-${actionKey}`} className={fx.coinUp} pointerEvents="none">
+          <circle
+            cx={px(recent.cell).x + CELL - 9}
+            cy={px(recent.cell).y + 9}
+            r="7"
+            fill="#f3c33c"
+            stroke="#7a5a10"
+            strokeWidth="1.5"
+          />
+        </g>
+      )}
     </svg>
   );
 }

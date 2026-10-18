@@ -22,7 +22,8 @@ export type SoundKind =
   | "stoneScore"
   | "train"
   | "merger"
-  | "flush";
+  | "flush"
+  | "clash";
 
 const MUTE_KEY = "sound:muted";
 const MUTE_EVENT = "sound:mute-changed";
@@ -258,6 +259,41 @@ const SOUNDS: { [kind in SoundKind]: Note[] } = {
       glideTo: 60,
     },
   ],
+  // Swords meet: two metallic bursts and a ringing edge.
+  clash: [
+    {
+      frequency: 0,
+      at: 0,
+      length: 0.07,
+      volume: 0.55,
+      noiseFrequency: 3400,
+      noiseQ: 2.5,
+    },
+    {
+      frequency: 1760,
+      at: 0.02,
+      length: 0.28,
+      type: "triangle",
+      volume: 0.22,
+      glideTo: 1320,
+    },
+    {
+      frequency: 0,
+      at: 0.17,
+      length: 0.09,
+      volume: 0.45,
+      noiseFrequency: 2600,
+      noiseQ: 2.5,
+    },
+    {
+      frequency: 220,
+      at: 0.17,
+      length: 0.3,
+      type: "sawtooth",
+      volume: 0.2,
+      glideTo: 110,
+    },
+  ],
   train: [
     {
       frequency: 0,
@@ -423,8 +459,8 @@ export function soundForEvent(title: string): SoundKind | null {
   if (/^\S+ plays a \d+/.test(text)) return "card";
   if (/pushes a \d+ through/.test(text)) return "win";
   if (/wins the (war|revolt)/.test(text)) return "win";
-  if (/war breaks out|revolt breaks out|plays a catastrophe/.test(text))
-    return "alarm";
+  if (/war breaks out|revolt breaks out/.test(text)) return "clash";
+  if (/plays a catastrophe/.test(text)) return "alarm";
   if (/builds a \w+ and \w+ monument/.test(text)) return "fanfare";
   if (/takes the treasure/.test(text)) return "chip";
   if (/places a (temple|farm|market|settlement)/.test(text))

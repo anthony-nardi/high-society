@@ -56,6 +56,10 @@ export type Conflict = {
 export type ConflictResult = Conflict & {
   winner: string;
   loser: string;
+  winnerCell: string;
+  loserCell: string;
+  /** Where the removed supporters stood (war only). */
+  removedCells?: string[];
   /** Supporters removed from the board (war only). */
   removed: number;
   /** Victory points the winner took. */
@@ -78,8 +82,9 @@ export type LastAction = {
     | "END";
   cell?: string;
   colour?: Colour;
-  /** Points the action earned its player, if any. */
+  /** Points the action earned, if any, and who took them. */
   points?: number;
+  pointsTo?: string;
   turn: number;
 };
 

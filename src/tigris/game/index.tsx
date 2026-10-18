@@ -1,4 +1,4 @@
-import { Center, Container, Loader, Stack } from "@mantine/core";
+import { Center, Container, Loader, Stack, Text } from "@mantine/core";
 import { useCallback, useMemo, useState } from "react";
 import useGameState from "../../shared/hooks/useGameState";
 import { useUserContext } from "../../shared/context/useUserContext";
@@ -7,12 +7,13 @@ import useGameSounds from "../../shared/hooks/useGameSounds";
 import useBotNudge from "../../shared/hooks/useBotNudge";
 import { useLobbyContext } from "../../shared/context/useLobbyContext";
 import TurnBanner from "../../shared/components/TurnBanner";
+import displayName from "../../shared/utils/displayName";
 import { Colour, TigrisGameState } from "./types";
 import Board from "./components/Board";
 import ActionPanel, { Selection } from "./components/ActionPanel";
-import { highlightsFor } from "./highlights";
+import { highlightsFor, marksFor } from "./highlights";
 import PlayerOverview from "./components/PlayerOverview";
-import ConflictCard from "./components/ConflictCard";
+import ConflictMoment from "./components/ConflictMoment";
 import GameOver from "./components/GameOver";
 import placeTigrisTile from "../client/placeTigrisTile";
 import positionTigrisLeader from "../client/positionTigrisLeader";
@@ -28,6 +29,10 @@ import takeTigrisTreasure from "../client/takeTigrisTreasure";
 import panelClasses from "./components/ActionPanel.module.css";
 import tableClasses from "../../shared/table.module.css";
 import classes from "./tigris.module.css";
+
+/** Server wording with emails and bot ids replaced by table names. */
+const prettify = (text: string) =>
+  text.replace(/\S+@\S+\.\S+|Bot #\d+/g, (name) => displayName(name));
 
 export default function Game() {
   const { user, isSignedIn } = useUserContext();
@@ -93,6 +98,7 @@ export default function Game() {
   }
 
   const highlights = me ? highlightsFor(gameState, me.email, selection) : {};
+  const marks = me ? marksFor(gameState, me.email, selection, highlights) : {};
 
   const onCell = (cell: string) => {
     if (!me || loading || !highlights[cell]) return;
@@ -116,6 +122,8 @@ export default function Game() {
     }
   };
 
+  const latest = gameState.notification?.title;
+
   return (
     <>
       <TurnBanner active={acting && inProgress} />
@@ -125,16 +133,30 @@ export default function Game() {
             <Board
               gameState={gameState}
               highlights={highlights}
+              marks={marks}
               onCell={acting && !loading ? onCell : undefined}
               me={user?.email}
             />
+            {latest && (
+              <Text
+                size="xs"
+                c="dimmed"
+                ta="center"
+                mt={6}
+                data-testid="latest"
+                key={gameState.notification?.timestamp}
+                className={classes.conflictCard}
+              >
+                {prettify(latest)}
+              </Text>
+            )}
           </div>
           <div
             className={tableClasses.players}
             style={{ order: 2, gridTemplateColumns: "1fr" }}
           >
             <Stack gap="sm">
-              <ConflictCard gameState={gameState} me={user?.email} />
+              <ConflictMoment gameState={gameState} me={user?.email} />
               <div className={classes.players}>
                 {gameState.players.map((player) => (
                   <PlayerOverview

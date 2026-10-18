@@ -80,11 +80,15 @@ const tigris: GameModule<TigrisGameState> = {
   isGameOver,
   botTurn: (state) => takeBotTurn(state),
   /** Conflicts deserve a moment; ordinary actions move along. */
-  botPauseMs: (state) =>
-    state.public.phase === "CONFLICT" ||
-    state.public.lastConflict?.turn === state.public.turn
-      ? 1900
-      : 1200,
+  botPauseMs: (state) => {
+    const board = state.public;
+    if (board.phase === "CONFLICT") return 2600;
+    if (board.lastConflict && board.lastConflict.turn === board.turn)
+      return 3200;
+    if (board.lastAction?.type === "MONUMENT" || board.lastAction?.type === "TREASURE")
+      return 1800;
+    return 1300;
+  },
 };
 
 export default tigris;
