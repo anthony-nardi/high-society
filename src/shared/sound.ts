@@ -21,7 +21,8 @@ export type SoundKind =
   | "stoneClatter"
   | "stoneScore"
   | "train"
-  | "merger";
+  | "merger"
+  | "flush";
 
 const MUTE_KEY = "sound:muted";
 const MUTE_EVENT = "sound:mute-changed";
@@ -230,6 +231,33 @@ const SOUNDS: { [kind in SoundKind]: Note[] } = {
     { frequency: 987.77, at: 0.88, length: 0.45, type: "sine", volume: 0.4 },
   ],
   // A passenger carried: a few chugs, then a steam whistle chord that bends up.
+  // Water down the drain: a falling gurgle.
+  flush: [
+    {
+      frequency: 520,
+      at: 0,
+      length: 0.32,
+      type: "sine",
+      volume: 0.4,
+      glideTo: 90,
+    },
+    {
+      frequency: 0,
+      at: 0.05,
+      length: 0.22,
+      volume: 0.3,
+      noiseFrequency: 900,
+      noiseQ: 0.6,
+    },
+    {
+      frequency: 300,
+      at: 0.2,
+      length: 0.18,
+      type: "sine",
+      volume: 0.3,
+      glideTo: 60,
+    },
+  ],
   train: [
     {
       frequency: 0,
@@ -391,6 +419,9 @@ export function soundForEvent(title: string): SoundKind | null {
   if (/places a [\w-]+ (ring|marble|piece|master)/.test(text))
     return "stonePlace";
   if (/sends the students/.test(text)) return "stoneSlide";
+  if (/ and flushes /.test(text)) return "flush";
+  if (/^\S+ plays a \d+/.test(text)) return "card";
+  if (/pushes a \d+ through/.test(text)) return "win";
   if (/takes over/.test(text)) return "merger";
   if (/calls the end|calls the armies/.test(text)) return "fanfare";
   if (/plays surrender|plays winter|plays spring|plays a bishop/.test(text))

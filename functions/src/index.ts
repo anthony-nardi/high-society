@@ -55,6 +55,7 @@ import {
 import { moveClansHuts } from "./clans/client";
 import { placeTwixtPeg, removeTwixtLink, swapTwixtSides } from "./twixt/client";
 import { placeEcosystemCard } from "./ecosystem/client";
+import { playFujiCard } from "./fuji-flush/client";
 
 import { leaderboard } from "./shared/leaderboard";
 
@@ -152,3 +153,6 @@ exports.removeTwixtLink = removeTwixtLink;
 
 // Ecosystem
 exports.placeEcosystemCard = placeEcosystemCard;
+
+// Fuji Flush
+exports.playFujiCard = playFujiCard;

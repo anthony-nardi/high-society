@@ -14,6 +14,7 @@ import * as rideTheRails from "../../ride-the-rails/helpers/botSearch";
 import * as clans from "../../clans/helpers/botSearch";
 import * as twixt from "../../twixt/helpers/botSearch";
 import * as ecosystem from "../../ecosystem/helpers/botSearch";
+import * as fujiFlush from "../../fuji-flush/helpers/botSearch";
 
 /*
  * Simulation: every game is played to the end many times with random legal
@@ -240,6 +241,7 @@ const MOVERS: Partial<Record<GameName, Mover>> = {
   clans: inPlace(clans.turnMoves, clans.applyMove),
   twixt: inPlace(twixt.turnMoves, twixt.applyMove),
   ecosystem: inPlace(ecosystem.turnMoves, ecosystem.applyMove),
+  "fuji-flush": inPlace(fujiFlush.turnMoves, fujiFlush.applyMove),
 };
 
 type Finding = { game: GameName; seed: number; step: number; message: string };
@@ -333,6 +335,15 @@ function conserved(game: GameName, state: State): number[] {
           ) +
           len(pub.neutral?.hand) +
           len(pub.neutral?.discards),
+      ];
+    case "fuji-flush":
+      // Ninety cards: in the stack, in the drain, in hands or on the table.
+      return [
+        len(priv.deck) +
+          len(priv.discard) +
+          sum(
+            players.map((p) => len(p.hand) + (p.played === undefined ? 0 : 1)),
+          ),
       ];
     case "ride-the-rails":
       // Locomotives: in the box, on the map, or held as shares.

@@ -1,8 +1,8 @@
-# High Society / No Thanks! / Razzia! / Family Inc. / For Sale / The Bridges of Shangri-La / Acquire / Condottiere / Ride the Rails / Clans / TwixT / Ecosystem / ZÈRTZ / YINSH / DVONN / GIPF / LYNGK
+# High Society / No Thanks! / Razzia! / Family Inc. / For Sale / The Bridges of Shangri-La / Acquire / Condottiere / Ride the Rails / Clans / TwixT / Ecosystem / Fuji Flush / ZÈRTZ / YINSH / DVONN / GIPF / LYNGK
 
-Thirteen board and card games played online against friends or bots.
+Nineteen board and card games played online against friends or bots.
 
-- `src/` — Vite + React 19 + Mantine 9 client (`/high-society`, `/no-thanks`, `/razzia`, `/family-inc`, `/zertz`, `/yinsh`, `/dvonn`, `/gipf`, `/lyngk`, `/for-sale`, `/shangri-la`, `/acquire`, `/condottiere`, `/ride-the-rails`, `/clans`, `/twixt`, `/ecosystem`)
+- `src/` — Vite + React 19 + Mantine 9 client (`/high-society`, `/no-thanks`, `/razzia`, `/family-inc`, `/zertz`, `/yinsh`, `/dvonn`, `/gipf`, `/lyngk`, `/for-sale`, `/shangri-la`, `/acquire`, `/condottiere`, `/ride-the-rails`, `/clans`, `/twixt`, `/ecosystem`, `/fuji-flush`)
 - `functions/` — Firebase Cloud Functions holding all game logic (Node 22 runtime)
 - Realtime Database stores lobbies and game state; Google sign-in via Firebase Auth
 
@@ -113,6 +113,12 @@ card only; the face-down deck is never read.
   hand in every open cell (and every swap for a Rabbit), scored by the
   grid's points, a diversity estimate, a guess at the stream and wolf
   placings and the room left to grow.
+
+- Fuji Flush (`functions/src/fuji-flush/helpers/botSearch.ts`): a card is
+  worth the chance it survives until it is pushed through, estimated from
+  the unseen cards each opponent who plays first might hold, plus the
+  tempo taken from everyone it flushes, less the help it lends the team
+  it joins and a little for spending a high number.
 
 - Ride the Rails (`functions/src/ride-the-rails/helpers/botSearch.ts`):
   a share by what the railroad will pay, each locomotive by the links and

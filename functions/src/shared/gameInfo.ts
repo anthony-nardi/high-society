@@ -133,6 +133,13 @@ export const GAME_INFO: { [name in GameName]: GameInfo } = {
     maxPlayers: 6,
     route: "/ecosystem",
   },
+  "fuji-flush": {
+    name: "fuji-flush",
+    title: "Fuji Flush",
+    minPlayers: 3,
+    maxPlayers: 8,
+    route: "/fuji-flush",
+  },
 };
 
 export const GAME_NAMES = Object.keys(GAME_INFO) as GameName[];

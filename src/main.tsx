@@ -16,6 +16,7 @@ import RideTheRails from "./ride-the-rails/App";
 import Clans from "./clans/App";
 import Twixt from "./twixt/App";
 import Ecosystem from "./ecosystem/App";
+import FujiFlush from "./fuji-flush/App";
 import Razzia from "./razzia/App";
 import reportWebVitals from "./reportWebVitals";
 import "@mantine/core/styles.css";
@@ -102,6 +103,10 @@ const router = createBrowserRouter([
   {
     path: "/ecosystem",
     element: <Ecosystem />,
+  },
+  {
+    path: "/fuji-flush",
+    element: <FujiFlush />,
   },
 ]);
 

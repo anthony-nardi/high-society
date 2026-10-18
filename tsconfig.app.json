@@ -35,6 +35,7 @@
     "functions/src/*/types/index.ts",
     "functions/src/high-society/helpers/scoring.ts",
     "functions/src/no-thanks/helpers/scoring.ts",
-    "functions/src/clans/helpers/map.ts"
+    "functions/src/clans/helpers/map.ts",
+    "functions/src/fuji-flush/helpers/board.ts"
   ]
 }

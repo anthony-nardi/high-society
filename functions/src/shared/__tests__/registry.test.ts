@@ -118,6 +118,7 @@ describe("game registry", () => {
     expect(Object.keys(GAMES.ecosystem.actions)).toEqual([
       "placeEcosystemCard",
     ]);
+    expect(Object.keys(GAMES["fuji-flush"].actions)).toEqual(["playFujiCard"]);
   });
 
   it("creates a playable state and lets bots finish from it", () => {

@@ -105,6 +105,12 @@ describe("soundForEvent", () => {
     expect(soundForEvent("a moves 3 huts into forest.")).toBe("stoneSlide");
     expect(soundForEvent("a pegs K11.")).toBe("stonePlace");
     expect(soundForEvent("Pick 3 placed. Hands pass left.")).toBe("card");
+    expect(soundForEvent("a plays a 7 with b for 14 and flushes c's 8.")).toBe(
+      "flush",
+    );
+    expect(soundForEvent("a plays a 7.")).toBe("card");
+    expect(soundForEvent("a pushes a 7 through with b.")).toBe("win");
+    expect(soundForEvent("Game over: a and b win together.")).toBe("fanfare");
     expect(soundForEvent("a pegs M12 and links 2.")).toBe("stoneSlide");
     expect(soundForEvent("b swaps sides and takes Red.")).toBe("alarm");
     expect(

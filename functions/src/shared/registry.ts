@@ -17,6 +17,7 @@ import rideTheRails from "../ride-the-rails/module";
 import clans from "../clans/module";
 import twixt from "../twixt/module";
 import ecosystem from "../ecosystem/module";
+import fujiFlush from "../fuji-flush/module";
 
 /** Every playable game, keyed by the name stored in lobbies and states. */
 export const GAMES: { [name in GameName]: GameModule<any> } = {
@@ -37,6 +38,7 @@ export const GAMES: { [name in GameName]: GameModule<any> } = {
   clans,
   twixt,
   ecosystem,
+  "fuji-flush": fujiFlush,
 };
 
 export function getGameModule(name: GameName): GameModule<any> {
