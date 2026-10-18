@@ -25,6 +25,8 @@ const rideTheRails: GameModule<RideTheRailsGameState> = {
     rideTheRails: (state, payload: { journey?: Journey }) =>
       ride(state, payload?.journey as Journey),
   },
+  standings: (state) =>
+    state.public.players.map((p) => ({ email: p.email, score: p.money })),
   isGameOver,
   botTurn: (state) => takeBotTurn(state),
   botPauseMs: 900,

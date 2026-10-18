@@ -42,6 +42,11 @@ const shangriLa: GameModule<ShangriLaGameState> = {
     journeyShangriLa: (state, payload: { from?: number; to?: number }) =>
       journey(state, Number(payload?.from), Number(payload?.to)),
   },
+  standings: (state) =>
+    (state.public.scores || []).map((s) => ({
+      email: s.email,
+      score: s.masters * 1000 + s.villages,
+    })),
   isGameOver,
   botTurn: (state) => takeBotTurn(state),
   botPauseMs: 1200,

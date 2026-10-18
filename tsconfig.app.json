@@ -32,6 +32,8 @@
     "src",
     "functions/src/shared/types/index.ts",
     "functions/src/shared/gameInfo.ts",
-    "functions/src/*/types/index.ts"
+    "functions/src/*/types/index.ts",
+    "functions/src/high-society/helpers/scoring.ts",
+    "functions/src/no-thanks/helpers/scoring.ts"
   ]
 }

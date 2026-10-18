@@ -9,6 +9,9 @@
           ".read": "auth.uid !== null"
         }
       }
+    },
+    "stats": {
+      ".read": "auth.uid !== null"
     }
   }
 }

@@ -1,3 +1,4 @@
+import { totalOf } from "./helpers/rules";
 import { GameModule } from "../shared/game";
 import { ForSaleGameState } from "./types";
 import {
@@ -32,6 +33,11 @@ const forSale: GameModule<ForSaleGameState> = {
       ? !(state.public.chosen || []).includes(email) &&
         state.public.players.some((p) => p.email === email)
       : state.public.activePlayer === email,
+  standings: (state) =>
+    state.public.players.map((p) => ({
+      email: p.email,
+      score: totalOf(p) * 1000 + p.money,
+    })),
   isGameOver,
   botTurn: (state) => takeBotTurn(state),
   botPauseMs: 1200,

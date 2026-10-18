@@ -1,3 +1,4 @@
+import scoreGame from "./helpers/scoring";
 import { GameModule } from "../shared/game";
 import { HighSocietyGameState } from "./types";
 import {
@@ -23,6 +24,11 @@ const highSociety: GameModule<HighSocietyGameState> = {
       return { ok: true };
     },
   },
+  standings: (state) =>
+    scoreGame(state.public.players).map((p) => ({
+      email: p.email,
+      score: -p.rank,
+    })),
   isGameOver: (state) =>
     state.public.status === "GAME_OVER" || isGameOver(state),
   botTurn: (state) => takeBotTurn(state),

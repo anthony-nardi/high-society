@@ -29,6 +29,8 @@ const razzia: GameModule<RazziaGameState> = {
     bidOnLoot: (state, payload: { amount?: string | number }) =>
       bid(state, String(payload?.amount ?? "")),
   },
+  standings: (state) =>
+    state.public.players.map((p) => ({ email: p.email, score: p.score || 0 })),
   isGameOver: (state) => state.public.status === "GAME_OVER",
   botTurn: (state) => takeBotTurn(state),
 };

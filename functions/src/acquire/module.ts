@@ -46,6 +46,8 @@ const acquire: GameModule<AcquireGameState> = {
       buyStock(state, asPurchases(payload?.purchases)),
     declareAcquireEnd: (state) => declareEnd(state),
   },
+  standings: (state) =>
+    state.public.players.map((p) => ({ email: p.email, score: p.money })),
   isGameOver,
   botTurn: (state) => takeBotTurn(state),
   botPauseMs: 1100,

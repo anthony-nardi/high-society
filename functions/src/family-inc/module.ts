@@ -16,6 +16,8 @@ const familyInc: GameModule<FamilyIncGameState> = {
     drawChip: (state) => draw(state),
     stopTurn: (state) => stop(state),
   },
+  standings: (state) =>
+    state.public.players.map((p) => ({ email: p.email, score: p.score })),
   isGameOver,
   botTurn: (state) => takeBotTurn(state),
   /** Each draw is one step, so keep the pacing brisk. */

@@ -8,6 +8,7 @@ import { GameStateProvider } from "../shared/context/GameStateProvider";
 import { LobbyProvider } from "../shared/context/LobbyProvider";
 import { UserProvider } from "../shared/context/UserProvider";
 import SoundToggle from "../shared/components/SoundToggle";
+import StatsDrawer from "../shared/components/StatsDrawer";
 import Game from "./game";
 
 initializeFirebase();
@@ -19,6 +20,7 @@ function App() {
         <LobbyProvider>
           <GameStateProvider gameName={"for-sale"}>
             <SoundToggle />
+            <StatsDrawer gameName={"for-sale"} />
             <ForSaleRules />
             <GameTitle />
             <Login />

@@ -12,6 +12,7 @@ import {
   PlayerInLobby,
 } from "./types";
 import { updateGameState } from "./helpers";
+import { recordGameStats } from "./stats";
 
 /*
  * The one shape every game implements. A game is pure rules over a state
@@ -46,6 +47,11 @@ export interface GameModule<State extends GenericGameState = GenericGameState> {
   mayAct?(state: State, email: string, callableName: string): boolean;
   /** Minimum time a bot visibly "thinks" between moves. */
   botPauseMs?: number;
+  /**
+   * Final scores for the statistics, higher is better. Without it the
+   * winner is placed first and everyone else second.
+   */
+  standings?(state: State): { email: string; score: number }[];
 }
 
 /** A human move may be followed by a chain of bot moves, each paused so it can be read. */
@@ -84,6 +90,7 @@ export async function playBots<State extends GenericGameState>(
     module.botTurn(state);
     const elapsed = Date.now() - startedAt;
     if (elapsed < pause) await wait(pause - elapsed);
+    await recordGameStats(module, state);
     await updateGameState(
       state,
       state.public.notification?.title || `${module.name}: bot moved`,
@@ -137,6 +144,7 @@ export function defineGameFunctions<State extends GenericGameState>(
           throw new HttpsError("failed-precondition", result.reason);
         }
 
+        await recordGameStats(module, state);
         await updateGameState(
           state,
           state.public.notification?.title || `${module.name}: ${callableName}`,

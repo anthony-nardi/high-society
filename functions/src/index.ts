@@ -53,7 +53,12 @@ import {
   takeRideTheRailsShare,
 } from "./ride-the-rails/client";
 
+import { leaderboard } from "./shared/leaderboard";
+
 initializeApp();
+
+// Public read-only statistics for the landing page.
+exports.leaderboard = leaderboard;
 
 // Generic
 exports.createlobby = createlobby;

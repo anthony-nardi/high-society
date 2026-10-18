@@ -29,6 +29,12 @@ const condottiere: GameModule<CondottiereGameState> = {
       ),
     passCondottiere: (state) => pass(state),
   },
+  standings: (state) =>
+    state.public.players.map((p) => ({
+      email: p.email,
+      score:
+        (state.public.winner === p.email ? 100 : 0) + (p.regions || []).length,
+    })),
   isGameOver,
   botTurn: (state) => takeBotTurn(state),
   botPauseMs: 1100,
