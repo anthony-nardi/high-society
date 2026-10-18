@@ -88,8 +88,11 @@ card only; the face-down deck is never read.
 
 - Acquire (`functions/src/acquire/helpers/botSearch.ts`): a one-ply planner
   that plays each candidate tile on a copy, follows its own policies for
-  founding, survivors and disposals, and keeps the best standing; buying,
-  disposal and the end call are policies.
+  founding, survivors and disposals, weighs the worst merger a rival could
+  spring next, and keeps the best standing. Shares are valued by the bonus
+  ladder of the mode in play (so Tycoon's third place is chased), which
+  drives buying, trading and the end call. `ARENA=1 npx vitest run arena`
+  plays it against the previous bot.
 
 - Condottiere (`functions/src/condottiere/helpers/botSearch.ts`): judgement
   rather than search, since hands are hidden: a region's worth, the state
