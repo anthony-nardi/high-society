@@ -72,7 +72,6 @@ export default function PlayerOverview({
         minWidth: 0,
         width: "100%",
         maxWidth: "100%",
-        overflow: "hidden",
       }}
     >
       {isActivePlayer && (
