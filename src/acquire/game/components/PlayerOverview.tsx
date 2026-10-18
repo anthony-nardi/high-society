@@ -102,8 +102,14 @@ export default function PlayerOverview({
           +{money(gain.amount)}
         </span>
       )}
-      <Group justify="space-between" align="center" wrap="wrap" gap="xs" mt={4}>
-        <Text fw={700} truncate>
+      <Group
+        justify="space-between"
+        align="center"
+        wrap="nowrap"
+        gap="xs"
+        mt={4}
+      >
+        <Text fw={700} truncate style={{ minWidth: 0, flex: "1 1 auto" }}>
           {displayName(player.email)}
           {isCurrentUser && (
             <Text component="span" c="dimmed" fw={400}>
@@ -114,14 +120,19 @@ export default function PlayerOverview({
         </Text>
         {isCurrentUser ? (
           <Text
-            size="sm"
-            fw={600}
+            fw={800}
+            c="yellow.4"
             aria-label={`${money(player.money)} in cash`}
+            style={{ flex: "0 0 auto", whiteSpace: "nowrap" }}
           >
             {money(player.money)}
           </Text>
         ) : (
-          <Text size="xs" c="dimmed">
+          <Text
+            size="xs"
+            c="dimmed"
+            style={{ flex: "0 0 auto", whiteSpace: "nowrap" }}
+          >
             {(player.tiles || []).length} tiles
           </Text>
         )}

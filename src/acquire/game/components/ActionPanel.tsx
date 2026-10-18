@@ -400,7 +400,8 @@ export default function ActionPanel({
       <Stack gap={6} align="center">
         <Group gap="sm" justify="center" wrap="wrap">
           <Badge color="yellow" variant="filled" radius="sm" size="lg">
-            {gameState.turnPlayer === me.email ? "Your turn" : "Your decision"}
+            {gameState.turnPlayer === me.email ? "Your turn" : "Your decision"}{" "}
+            · {money(me.money)}
           </Badge>
           {gameState.declaredBy ? (
             <Badge color="red" variant="light" radius="sm" size="lg">
