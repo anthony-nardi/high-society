@@ -63,6 +63,33 @@ describe("the merger moment", () => {
     expect(screen.getByText("+$2,000")).toBeTruthy();
     expect(screen.getByText("+$1,500")).toBeTruthy();
     expect(screen.getByText(/You hold/)).toBeTruthy();
+    cleanup();
+    // The bot already sold its Tower: the card still shows the payout as it was.
+    const later: AcquireGameState = {
+      ...state,
+      players: [
+        state.players[0],
+        { ...state.players[1], stocks: { LUXOR: 2 } },
+      ],
+      merger: {
+        ...(state.merger as NonNullable<AcquireGameState["merger"]>),
+        paid: [
+          { email: "me@example.com", amount: 2000 },
+          { email: "Bot #1", amount: 1500 },
+        ],
+        holders: [
+          { email: "me@example.com", shares: 3 },
+          { email: "Bot #1", shares: 1 },
+        ],
+      },
+    };
+    render(
+      <MantineProvider>
+        <MergerMoment gameState={later} me={later.players[0]} />
+      </MantineProvider>,
+    );
+    expect(screen.getByText("+$1,500")).toBeTruthy();
+    expect(screen.queryByText(/sole holder/)).toBeNull();
     expect(bonusRank(2000, 200, "TYCOON")).toBe("primary");
     expect(bonusRank(3000, 200, "TYCOON")).toBe("sole holder");
     expect(bonusRank(1500, 200, "TYCOON")).toBe("secondary");

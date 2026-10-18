@@ -614,7 +614,16 @@ function nextDefunct(gameState: AcquireGameState) {
   }
   merger.current = chain;
   merger.price = currentPrice(gameState, chain);
+  // Keep the moment: holders settle one by one, so the table changes under the card.
+  const holders = gameState.public.players
+    .map((p) => ({ email: p.email, shares: stockOf(p, chain) }))
+    .filter((h) => h.shares > 0);
+  if (holders.length) merger.holders = holders;
+  else delete merger.holders;
   const paid = payBonuses(gameState, chain);
+  if (paid.length)
+    merger.paid = paid.map(([email, amount]) => ({ email, amount }));
+  else delete merger.paid;
   if (paid.length) {
     appendLog(gameState, {
       timestamp: Date.now(),

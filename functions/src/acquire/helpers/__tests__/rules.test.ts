@@ -184,6 +184,17 @@ describe("playing tiles", () => {
     expect(placeTile(state, "5A").ok).toBe(true);
     expect(state.public.phase).toBe("DISPOSE");
     expect(state.public.activePlayer).toBe("a");
+    // The payout and the holders are kept as they were, for the table to show later.
+    expect(state.public.merger?.paid).toEqual([
+      { email: "a", amount: 4000 },
+      { email: "b", amount: 3000 },
+      { email: "c", amount: 2000 },
+    ]);
+    expect(state.public.merger?.holders).toEqual([
+      { email: "a", shares: 3 },
+      { email: "b", shares: 2 },
+      { email: "c", shares: 1 },
+    ]);
     expect(state.public.players[0].money).toBe(10000);
     expect(state.public.players[1].money).toBe(9000);
     expect(state.public.players[2].money).toBe(8000);

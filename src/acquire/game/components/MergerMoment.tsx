@@ -91,12 +91,21 @@ export default function MergerMoment({
   const survivor = merger.survivor;
   const price = merger.price ?? currentPrice(gameState, defunct);
   const survivorPrice = currentPrice(gameState, survivor);
-  const paid = bonuses(gameState, defunct);
-  const holders = gameState.players
-    .map((p) => ({ email: p.email, shares: stockOf(p, defunct) }))
-    .filter((h) => h.shares > 0)
-    .sort((a, b) => b.shares - a.shares);
-  const mine = me ? stockOf(me, defunct) : 0;
+  // As recorded when the bonuses were paid: holders settle one by one, so
+  // the shares on the table now are not what the payout was based on.
+  const paid: [string, number][] = merger.paid
+    ? merger.paid.map((p) => [p.email, p.amount])
+    : bonuses(gameState, defunct);
+  const holders = (
+    merger.holders ||
+    gameState.players
+      .map((p) => ({ email: p.email, shares: stockOf(p, defunct) }))
+      .filter((h) => h.shares > 0)
+  ).sort((a, b) => b.shares - a.shares);
+  const held = me ? stockOf(me, defunct) : 0;
+  const mine = me
+    ? (holders.find((h) => h.email === me.email)?.shares ?? held)
+    : 0;
   const myBonus = me ? (paid.find(([e]) => e === me.email)?.[1] ?? 0) : 0;
   const defunctSize = gameState.chains[defunct].size;
   const survivorSize = gameState.chains[survivor].size;
@@ -207,7 +216,7 @@ export default function MergerMoment({
           {me ? (
             mine > 0 ? (
               <>
-                You hold <b>{mine}</b> {label(defunct)}
+                You held <b>{mine}</b> {label(defunct)}
                 {myBonus ? (
                   <>
                     {" "}
@@ -216,8 +225,9 @@ export default function MergerMoment({
                 ) : (
                   " and took no bonus"
                 )}
-                . Each share sells for <b>{money(price)}</b>, or two trade for
-                one {label(survivor)} worth <b>{money(survivorPrice)}</b>.
+                .{held !== mine ? ` You still hold ${held}.` : ""} Each share
+                sells for <b>{money(price)}</b>, or two trade for one{" "}
+                {label(survivor)} worth <b>{money(survivorPrice)}</b>.
               </>
             ) : (
               <>

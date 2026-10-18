@@ -66,6 +66,10 @@ export type Merger = {
   queue?: string[];
   /** Chains tied for largest, while a survivor is chosen. */
   candidates?: Chain[];
+  /** The bonuses paid for the chain being settled, as they were paid. Absent when none. */
+  paid?: { email: string; amount: number }[];
+  /** Who held the chain being settled when it was swallowed. Absent when none. */
+  holders?: { email: string; shares: number }[];
 };
 
 export type Score = {
