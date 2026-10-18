@@ -261,6 +261,36 @@ export default function MergerMoment({
             ))}
           </Group>
         )}
+        {(merger.settled || []).length > 0 && (
+          <Stack
+            gap={2}
+            align="center"
+            style={{ width: "100%" }}
+            aria-label="Settled so far"
+          >
+            {(merger.settled || []).map((st, i) => (
+              <Text
+                key={`${st.email}-${i}`}
+                size="xs"
+                className="merger-row"
+                style={{ animationDelay: "0ms" }}
+                fw={st.email === me?.email ? 800 : 500}
+              >
+                {st.email === me?.email ? "You" : displayName(st.email)}{" "}
+                {[
+                  st.sell ? `sold ${st.sell} for ${money(st.cash)}` : "",
+                  st.trade
+                    ? `traded ${st.trade} for ${st.trade / 2} ${label(survivor)}`
+                    : "",
+                  st.keep ? `kept ${st.keep}` : "",
+                ]
+                  .filter(Boolean)
+                  .join(", ")}
+                .
+              </Text>
+            ))}
+          </Stack>
+        )}
         <Group
           gap={8}
           justify="center"

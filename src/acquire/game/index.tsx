@@ -15,6 +15,7 @@ import PlayerOverview from "./components/PlayerOverview";
 import ActionPanel from "./components/ActionPanel";
 import GameOver from "./components/GameOver";
 import MergerMoment from "./components/MergerMoment";
+import MergerRecap from "./components/MergerRecap";
 import placeAcquireTile from "../client/placeAcquireTile";
 import foundAcquireChain from "../client/foundAcquireChain";
 import chooseAcquireSurvivor from "../client/chooseAcquireSurvivor";
@@ -110,6 +111,7 @@ export default function Game() {
                 )}
               </Group>
               <MergerMoment gameState={gameState} me={me} />
+              <MergerRecap gameState={gameState} me={me} />
               <Board
                 gameState={gameState}
                 hand={me?.tiles || []}

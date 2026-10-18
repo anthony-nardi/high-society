@@ -70,6 +70,39 @@ export type Merger = {
   paid?: { email: string; amount: number }[];
   /** Who held the chain being settled when it was swallowed. Absent when none. */
   holders?: { email: string; shares: number }[];
+  /** Settlements made so far for the chain being settled. Absent when none. */
+  settled?: Settlement[];
+  /** Every chain of this merger so far, for the recap. Absent until the first. */
+  chains?: ChainRecord[];
+};
+
+export type Settlement = {
+  email: string;
+  sell: number;
+  trade: number;
+  keep: number;
+  /** Cash from the sale. */
+  cash: number;
+};
+
+/** One swallowed chain of a merger, as it was settled. */
+export type ChainRecord = {
+  chain: Chain;
+  size: number;
+  price: number;
+  paid?: { email: string; amount: number }[];
+  holders?: { email: string; shares: number }[];
+  settled?: Settlement[];
+};
+
+/** The last merger in full, kept until the next tile is played. */
+export type MergerRecord = {
+  tile: string;
+  by: string;
+  survivor: Chain;
+  /** The survivor's size once the merger completed. */
+  size: number;
+  chains: ChainRecord[];
 };
 
 export type Score = {
@@ -100,6 +133,7 @@ export type AcquirePublicGameState = {
   board?: { [tile: Tile]: Chain | "NONE" };
   chains: { [chain in Chain]: ChainState };
   merger?: Merger;
+  lastMerger?: MergerRecord;
   /** Shares bought so far this turn. */
   bought: number;
   bagCount: number;

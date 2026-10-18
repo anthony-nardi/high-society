@@ -45,8 +45,8 @@ export interface GameModule<State extends GenericGameState = GenericGameState> {
    * with simultaneous choices allow everyone who still has to choose.
    */
   mayAct?(state: State, email: string, callableName: string): boolean;
-  /** Minimum time a bot visibly "thinks" between moves. */
-  botPauseMs?: number;
+  /** Minimum time a bot visibly "thinks" between moves; a function may slow down weighty moments. */
+  botPauseMs?: number | ((state: State) => number);
   /**
    * Final scores for the statistics, higher is better. Without it the
    * winner is placed first and everyone else second.
@@ -78,7 +78,10 @@ export async function playBots<State extends GenericGameState>(
   module: GameModule<State>,
   state: State,
 ) {
-  const pause = module.botPauseMs ?? DEFAULT_BOT_PAUSE_MS;
+  const pauseFor = (s: State) =>
+    typeof module.botPauseMs === "function"
+      ? module.botPauseMs(s)
+      : (module.botPauseMs ?? DEFAULT_BOT_PAUSE_MS);
   let moves = 0;
   while (
     moves < MAX_BOT_MOVES_PER_REQUEST &&
@@ -86,6 +89,7 @@ export async function playBots<State extends GenericGameState>(
     activePlayerOf(state)?.isBot
   ) {
     moves++;
+    const pause = pauseFor(state);
     const startedAt = Date.now();
     module.botTurn(state);
     const elapsed = Date.now() - startedAt;

@@ -50,7 +50,13 @@ const acquire: GameModule<AcquireGameState> = {
     state.public.players.map((p) => ({ email: p.email, score: p.money })),
   isGameOver,
   botTurn: (state) => takeBotTurn(state),
-  botPauseMs: 1100,
+  // Settling a merger is the moment to read: bots take their time over it.
+  botPauseMs: (state) =>
+    state.public.phase === "DISPOSE"
+      ? 2800
+      : state.public.phase === "SURVIVOR" || state.public.phase === "FOUND"
+        ? 1600
+        : 1100,
 };
 
 export default acquire;

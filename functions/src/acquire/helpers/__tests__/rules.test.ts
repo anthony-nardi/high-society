@@ -195,6 +195,7 @@ describe("playing tiles", () => {
       { email: "b", shares: 2 },
       { email: "c", shares: 1 },
     ]);
+    expect(state.public.merger?.chains?.[0].chain).toBe("IMPERIAL");
     expect(state.public.players[0].money).toBe(10000);
     expect(state.public.players[1].money).toBe(9000);
     expect(state.public.players[2].money).toBe(8000);
@@ -208,6 +209,16 @@ describe("playing tiles", () => {
     expect(dispose(state, "b", 0, 0).ok).toBe(true); // keeps both
     expect(state.public.activePlayer).toBe("c");
     expect(dispose(state, "c", 1, 0).ok).toBe(true);
+    // The merger is over: its story stays on the table until the next tile.
+    expect(state.public.lastMerger?.survivor).toBe("LUXOR");
+    expect(
+      state.public.lastMerger?.chains[0].settled?.map((s) => s.email),
+    ).toEqual(["a", "b", "c"]);
+    expect(state.public.lastMerger?.chains[0].settled?.[0]).toMatchObject({
+      sell: 1,
+      trade: 2,
+      cash: 400,
+    });
     // Merger complete: Luxor has 4 + 1 + 2 = 7 tiles, Imperial is free again.
     expect(state.public.phase).toBe("BUY");
     expect(state.public.chains.LUXOR.size).toBe(7);

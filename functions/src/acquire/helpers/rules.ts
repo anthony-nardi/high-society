@@ -2,6 +2,7 @@ import {
   AcquireGameState,
   AcquirePlayerState,
   Chain,
+  ChainRecord,
   ChainState,
   Mode,
   Score,
@@ -531,6 +532,7 @@ export function placeTile(
   removeFromHand(player, tile);
   player.lastActionAt = Date.now();
   gameState.public.lastMove = { type: "tile", email: player.email, tile };
+  delete gameState.public.lastMerger;
 
   if (placement.kind === "lone") {
     setTile(gameState, tile, "NONE");
@@ -624,6 +626,15 @@ function nextDefunct(gameState: AcquireGameState) {
   if (paid.length)
     merger.paid = paid.map(([email, amount]) => ({ email, amount }));
   else delete merger.paid;
+  delete merger.settled;
+  const record: ChainRecord = {
+    chain,
+    size: gameState.public.chains[chain].size,
+    price: merger.price,
+  };
+  if (merger.paid) record.paid = merger.paid;
+  if (merger.holders) record.holders = merger.holders;
+  merger.chains = [...(merger.chains || []), record];
   if (paid.length) {
     appendLog(gameState, {
       timestamp: Date.now(),
@@ -682,6 +693,13 @@ function completeMerger(gameState: AcquireGameState) {
   gameState.public.chains[survivor].size = size;
   size += absorbLoose(gameState, merger.tile, survivor);
   gameState.public.chains[survivor].size = size;
+  gameState.public.lastMerger = {
+    tile: merger.tile,
+    by: gameState.public.turnPlayer,
+    survivor,
+    size,
+    chains: merger.chains || [],
+  };
   delete gameState.public.merger;
   announce(gameState, `${label(survivor)} now has ${size} tiles.`);
   toBuying(gameState);
@@ -809,9 +827,13 @@ export function dispose(
   player.lastActionAt = Date.now();
   gameState.public.lastMove = { type: "dispose", email, chain: merger.current };
   const kept = held - sell - trade;
+  const settlement = { email, sell, trade, keep: kept, cash: sell * price };
+  merger.settled = [...(merger.settled || []), settlement];
+  const record = merger.chains?.[merger.chains.length - 1];
+  if (record) record.settled = [...(record.settled || []), settlement];
   announce(
     gameState,
-    `${email} ${[sell ? `sells ${sell}` : "", trade ? `trades ${trade} for ${trade / 2} ${label(merger.survivor)}` : "", kept ? `keeps ${kept}` : ""].filter(Boolean).join(", ")} ${label(merger.current)}.`,
+    `${email} ${[sell ? `sells ${sell} for ${money(sell * price)}` : "", trade ? `trades ${trade} for ${trade / 2} ${label(merger.survivor)}` : "", kept ? `keeps ${kept}` : ""].filter(Boolean).join(", ")} ${label(merger.current)}.`,
   );
 
   merger.queue = (merger.queue || []).slice(1);
