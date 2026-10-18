@@ -15,6 +15,12 @@ export type Chain =
   | "CONTINENTAL"
   | "IMPERIAL";
 
+/**
+ * Which stockholders a swallowed chain pays: Classic pays the top two,
+ * Tycoon the top three. Two-player games are always Classic.
+ */
+export type Mode = "CLASSIC" | "TYCOON";
+
 /** A board square such as "7E": column 1 to 12, row A to I. */
 export type Tile = string;
 
@@ -73,6 +79,7 @@ export type AcquirePublicGameState = {
   startAt: string;
   status: GameStatus;
   phase: Phase;
+  mode: Mode;
   /** Occupied squares: the chain they belong to, or "NONE" for a lone tile. */
   board?: { [tile: Tile]: Chain | "NONE" };
   chains: { [chain in Chain]: ChainState };
@@ -88,6 +95,7 @@ export type AcquirePublicGameState = {
     chain?: Chain;
     tiles?: Tile[];
   };
+  /** Who called the end; the game finishes when their turn does. */
   declaredBy?: string;
   winner?: string;
   /** Final cash per player. A list, since database keys may not hold an email. */

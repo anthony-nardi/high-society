@@ -6,15 +6,20 @@ export type { GameName };
 
 export default async function createLobby(
   gameName: GameName,
-  options: { rematchOf?: string } = {},
+  options: { rematchOf?: string; mode?: string } = {},
 ) {
   const functions = getFunctions();
 
   const createLobby = httpsCallable<
-    { gameName: GameName; rematchOf?: string },
+    { gameName: GameName; rematchOf?: string; options?: { mode?: string } },
     CreateLobbyResponse
   >(functions, "createlobby");
-  const lobby = await createLobby({ gameName, ...options });
+  const { mode, ...rest } = options;
+  const lobby = await createLobby({
+    gameName,
+    ...rest,
+    ...(mode ? { options: { mode } } : {}),
+  });
 
   return lobby;
 }

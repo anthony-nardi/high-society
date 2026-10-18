@@ -1,6 +1,7 @@
 import { Badge, Table, Text } from "@mantine/core";
 import { AcquireGameState, AcquirePlayerState } from "../types";
 import {
+  bonusLevels,
   CHAIN_COLOUR,
   CHAINS,
   currentPrice,
@@ -33,6 +34,12 @@ export default function ChainTable({
           <Table.Th>Chain</Table.Th>
           <Table.Th ta="right">Size</Table.Th>
           <Table.Th ta="right">Price</Table.Th>
+          <Table.Th ta="right">
+            Bonuses
+            <Text component="span" size="xs" c="dimmed" display="block">
+              1st · 2nd{gameState.mode === "TYCOON" ? " · 3rd" : ""}
+            </Text>
+          </Table.Th>
           <Table.Th ta="right">Left</Table.Th>
           {me && <Table.Th ta="right">Yours</Table.Th>}
         </Table.Tr>
@@ -72,6 +79,23 @@ export default function ChainTable({
               </Table.Td>
               <Table.Td ta="right">
                 {active ? money(currentPrice(gameState, chain)) : "–"}
+              </Table.Td>
+              <Table.Td ta="right" fz="xs" style={{ whiteSpace: "nowrap" }}>
+                {active
+                  ? (() => {
+                      const b = bonusLevels(
+                        currentPrice(gameState, chain),
+                        gameState.mode,
+                      );
+                      return [b.primary, b.secondary, b.tertiary]
+                        .filter((n): n is number => n !== undefined)
+                        .map(
+                          (n) =>
+                            (n / 1000).toFixed(1).replace(/\.0$/, "") + "k",
+                        )
+                        .join(" · ");
+                    })()
+                  : "–"}
               </Table.Td>
               <Table.Td ta="right">
                 {gameState.chains[chain].stockLeft}

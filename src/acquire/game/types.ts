@@ -4,6 +4,7 @@ export type {
   Chain,
   ChainState,
   Merger,
+  Mode,
   Phase,
   Tile,
 } from "@games/acquire/types";

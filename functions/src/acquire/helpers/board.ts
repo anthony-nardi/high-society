@@ -1,4 +1,4 @@
-import { Chain, Tile } from "../types";
+import { Chain, Mode, Tile } from "../types";
 
 /*
  * The Acquire board: twelve columns by nine rows, and the seven hotel
@@ -71,6 +71,42 @@ export function priceOf(chain: Chain, size: number) {
               ? 900
               : 1000;
   return base + TIER[chain] * 100;
+}
+
+/**
+ * Tycoon Mode's secondary bonus is a printed column rather than a multiple
+ * of the price (Renegade rulebook, page 10).
+ */
+const TYCOON_SECONDARY: { [price: number]: number } = {
+  200: 1500,
+  300: 2200,
+  400: 3000,
+  500: 3700,
+  600: 4200,
+  700: 5000,
+  800: 5700,
+  900: 6200,
+  1000: 7000,
+  1100: 7700,
+  1200: 8200,
+};
+
+export type BonusLevels = {
+  primary: number;
+  secondary: number;
+  /** Only in Tycoon Mode. */
+  tertiary?: number;
+};
+
+/** The stockholder bonuses for a chain at a share price, per the info card. */
+export function bonusLevels(price: number, mode: Mode): BonusLevels {
+  if (mode === "TYCOON")
+    return {
+      primary: price * 10,
+      secondary: TYCOON_SECONDARY[price] ?? Math.round((price * 7) / 100) * 100,
+      tertiary: price * 5,
+    };
+  return { primary: price * 10, secondary: price * 5 };
 }
 
 /** Sorting order for drawing and tie-breaks: left to right, top to bottom. */

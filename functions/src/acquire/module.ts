@@ -23,7 +23,8 @@ const asPurchases = (raw: unknown): { [chain in Chain]?: number } => {
 
 const acquire: GameModule<AcquireGameState> = {
   name: "acquire",
-  createState: (lobbyUID, players) => buildAcquireGameState(lobbyUID, players),
+  createState: (lobbyUID, players, options) =>
+    buildAcquireGameState(lobbyUID, players, Math.random, options),
   actions: {
     placeAcquireTile: (state, payload: { tile?: string }) =>
       placeTile(state, String(payload?.tile ?? "")),

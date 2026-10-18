@@ -6,6 +6,7 @@ import {
   Container,
   Group,
   Loader,
+  SegmentedControl,
   Stack,
   Text,
 } from "@mantine/core";
@@ -33,6 +34,9 @@ export default function Lobby({ gameName }: { gameName: GameName }) {
   const [isStartingWithBots, setIsStartingWithBots] = useState(false);
   const [removingBot, setRemovingBot] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  // Acquire's stockholder mode, chosen before the lobby exists.
+  const [mode, setMode] = useState<"TYCOON" | "CLASSIC">("TYCOON");
+  const hasModes = gameName === "acquire";
 
   const players = useMemo(() => lobbyData?.players || [], [lobbyData]);
 
@@ -60,11 +64,11 @@ export default function Lobby({ gameName }: { gameName: GameName }) {
   const handleCreateLobby = useCallback(async () => {
     setIsCreatingLobby(true);
 
-    const lobby = await createLobby(gameName);
+    const lobby = await createLobby(gameName, hasModes ? { mode } : {});
     window.location.hash = `#${lobby.data.lobbyUID}`;
 
     setIsCreatingLobby(false);
-  }, [gameName]);
+  }, [gameName, hasModes, mode]);
 
   const handleCopyInvite = useCallback(async () => {
     try {
@@ -149,9 +153,30 @@ export default function Lobby({ gameName }: { gameName: GameName }) {
   if (!lobbyId) {
     return (
       <Center>
-        <Button loading={!!isCreatingLobby} onClick={handleCreateLobby}>
-          Create lobby
-        </Button>
+        <Stack gap="sm" align="center">
+          {hasModes && (
+            <Stack gap={4} align="center">
+              <SegmentedControl
+                value={mode}
+                onChange={(v) => setMode(v as "TYCOON" | "CLASSIC")}
+                data={[
+                  { value: "TYCOON", label: "Tycoon Mode" },
+                  { value: "CLASSIC", label: "Classic Mode" },
+                ]}
+                aria-label="Stockholder bonus mode"
+              />
+              <Text size="xs" c="dimmed" ta="center" maw={360}>
+                {mode === "TYCOON"
+                  ? "Bonuses go to the top three stockholders. The rulebook's pick for a first game."
+                  : "Bonuses go to the top two stockholders, as in the original game."}{" "}
+                Two-player games always use Classic.
+              </Text>
+            </Stack>
+          )}
+          <Button loading={!!isCreatingLobby} onClick={handleCreateLobby}>
+            Create lobby
+          </Button>
+        </Stack>
       </Center>
     );
   }
@@ -205,6 +230,10 @@ export default function Lobby({ gameName }: { gameName: GameName }) {
             ? minPlayers
             : `${minPlayers} to ${maxPlayers}`}{" "}
           players. Bots can take any empty seat.
+          {hasModes &&
+            (lobbyData.options?.mode === "CLASSIC"
+              ? " Classic Mode: bonuses to the top two stockholders."
+              : " Tycoon Mode: bonuses to the top three stockholders (Classic with two players).")}
         </Text>
 
         <PlayersList

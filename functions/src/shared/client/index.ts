@@ -10,7 +10,7 @@ import {
   verifyRequestAuthentication,
 } from "../../high-society/helpers";
 import { createGame, getGameName, isLobbyReady } from "../helpers";
-import { GameName } from "../types";
+import { GameName, LobbyOptions } from "../types";
 import { GAME_INFO } from "../gameInfo";
 import { GenericGameState } from "../types";
 import { loadGameState, playBots } from "../game";
@@ -43,12 +43,15 @@ export const createlobby = onCall(
       gameName: GameName;
       /** A finished game this lobby is a rematch of; its players get a link. */
       rematchOf?: string;
+      /** Variant choices, such as Acquire's bonus mode. */
+      options?: LobbyOptions;
     }>,
   ) => {
     verifyRequestAuthentication(request);
 
     const lobbyUID = Date.now().toString();
     const { gameName, rematchOf } = request.data;
+    const options: LobbyOptions = { ...(request.data.options || {}) };
 
     try {
       const players: any[] = [
@@ -68,6 +71,8 @@ export const createlobby = onCall(
           .ref(`games/${rematchOf}/public`)
           .get();
         finished = snapshot.val();
+        // A rematch keeps the variant unless the caller chose another.
+        if (finished?.mode && !options.mode) options.mode = finished.mode;
         if (finished?.status === "GAME_OVER") {
           for (const player of finished.players || []) {
             if (player.isBot) {
@@ -85,7 +90,12 @@ export const createlobby = onCall(
 
       await getDatabase()
         .ref("/lobbies/" + lobbyUID)
-        .set({ id: lobbyUID, game: gameName, players });
+        .set({
+          id: lobbyUID,
+          game: gameName,
+          players,
+          ...(Object.keys(options).length ? { options } : {}),
+        });
 
       if (finished?.status === "GAME_OVER") {
         await getDatabase()

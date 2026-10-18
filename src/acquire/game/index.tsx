@@ -1,4 +1,5 @@
 import { Badge, Center, Container, Group, Loader, Stack } from "@mantine/core";
+import { modeLabel } from "./board";
 import { useCallback, useMemo, useState } from "react";
 import useGameState from "../../shared/hooks/useGameState";
 import { useUserContext } from "../../shared/context/useUserContext";
@@ -88,6 +89,24 @@ export default function Game() {
                 <Badge variant="light" color="gray" radius="sm" size="lg">
                   {gameState.bagCount} tiles in the bag
                 </Badge>
+                <Badge
+                  variant="light"
+                  color={gameState.mode === "TYCOON" ? "orange" : "blue"}
+                  radius="sm"
+                  size="lg"
+                  title={
+                    gameState.mode === "TYCOON"
+                      ? "Bonuses go to the top three stockholders"
+                      : "Bonuses go to the top two stockholders"
+                  }
+                >
+                  {modeLabel(gameState.mode)} Mode
+                </Badge>
+                {gameState.declaredBy && (
+                  <Badge variant="filled" color="red" radius="sm" size="lg">
+                    Final turn
+                  </Badge>
+                )}
               </Group>
               <Board
                 gameState={gameState}

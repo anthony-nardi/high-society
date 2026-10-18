@@ -3,16 +3,24 @@ import {
   AcquirePlayerState,
   Chain,
   ChainState,
+  Mode,
   Tile,
 } from "../types";
-import { LogEntry, Notification, PlayerInLobby } from "../../shared/types";
+import {
+  LobbyOptions,
+  LogEntry,
+  Notification,
+  PlayerInLobby,
+} from "../../shared/types";
 import type { ActionResult } from "../../shared/game";
 import {
   ALL_TILES,
+  bonusLevels,
   CHAINS,
   compareTiles,
   isTile,
   neighbours,
+  parseTile,
   priceOf,
 } from "./board";
 
@@ -27,6 +35,18 @@ export const END_SIZE = 41;
 export const HAND_SIZE = 6;
 export const STARTING_MONEY = 6000;
 export const MAX_BUY = 3;
+
+/**
+ * In a two-player game the stock market is a third shareholder holding a
+ * random number of shares at every payout. Its bonuses stay in the bank.
+ */
+export const MARKET = "the stock market";
+
+let marketRandom: () => number = Math.random;
+/** Tests pin the stock market's draw. */
+export function setMarketRandom(random: () => number) {
+  marketRandom = random;
+}
 
 export const money = (n: number) => `$${n.toLocaleString("en-US")}`;
 export const label = (chain: Chain) =>
@@ -79,13 +99,25 @@ function shuffled<T>(items: T[], random: () => number): T[] {
   return out;
 }
 
+export function modeFor(playerCount: number, options: LobbyOptions = {}): Mode {
+  // The rulebook plays two-player games with the Classic card.
+  if (playerCount <= 2) return "CLASSIC";
+  return options.mode === "CLASSIC" ? "CLASSIC" : "TYCOON";
+}
+
 export function buildAcquireGameState(
   lobbyUID: string,
   players: PlayerInLobby[],
   random: () => number = Math.random,
+  options: LobbyOptions = {},
 ): AcquireGameState {
   const seats = players.slice(0, 6);
   const bag = shuffled(ALL_TILES, random);
+  // Each player draws a tile onto the board; the one nearest 1A plays first.
+  const starts = seats.map((player) => ({
+    email: player.email,
+    tile: bag.shift() as Tile,
+  }));
   const playersMetadata: AcquirePlayerState[] = seats.map((player) => ({
     email: player.email,
     lastActionAt: 0,
@@ -93,10 +125,17 @@ export function buildAcquireGameState(
     tiles: bag.splice(0, HAND_SIZE).sort(compareTiles),
     isBot: !!player.isBot,
   }));
-  const starter = playersMetadata[Math.floor(random() * seats.length)];
+  const first = [...starts].sort((a, b) => compareTiles(a.tile, b.tile))[0];
+  const starter = playersMetadata.find(
+    (p) => p.email === first.email,
+  ) as AcquirePlayerState;
+  const board = Object.fromEntries(
+    starts.map((s) => [s.tile, "NONE" as const]),
+  ) as { [tile: Tile]: Chain | "NONE" };
   const chains = Object.fromEntries(
     CHAINS.map((c) => [c, { size: 0, stockLeft: STOCK_PER_CHAIN }]),
   ) as { [chain in Chain]: ChainState };
+  const mode = modeFor(seats.length, options);
 
   const state: AcquireGameState = {
     public: {
@@ -108,6 +147,8 @@ export function buildAcquireGameState(
       startAt: Date.now().toString(),
       status: "IN_PROGRESS",
       phase: "PLACE",
+      mode,
+      board,
       chains,
       bought: 0,
       bagCount: bag.length,
@@ -118,7 +159,7 @@ export function buildAcquireGameState(
       log: [
         {
           timestamp: Date.now(),
-          title: `Game started with ${money(STARTING_MONEY)} each. ${starter.email} plays first.`,
+          title: `Game started in ${mode === "TYCOON" ? "Tycoon" : "Classic"} Mode with ${money(STARTING_MONEY)} each. Starting tiles: ${starts.map((s) => `${s.email} ${s.tile}`).join(", ")}. ${starter.email} is nearest 1A and plays first.`,
         },
       ],
     },
@@ -208,33 +249,81 @@ export function canDeclare(gameState: AcquireGameState) {
   );
 }
 
-/** Bonuses for a chain at its current price: [email, amount][]. */
+const roundUp = (n: number) => Math.ceil(n / 100) * 100;
+
+/** In a two-player game, how many shares the stock market holds: a tile's number. */
+function marketShares(gameState: AcquireGameState) {
+  const bag = gameState.private.bag || [];
+  const pool = bag.length ? bag : ALL_TILES;
+  const tile = pool[Math.floor(marketRandom() * pool.length)];
+  return { tile, shares: parseTile(tile)[0] };
+}
+
+/**
+ * Bonuses for a chain at its current price: [email, amount][], following
+ * the stockholder info card for the game's mode. With two players the
+ * stock market competes under the name MARKET; its share is not paid.
+ */
 export function bonuses(
   gameState: AcquireGameState,
   chain: Chain,
 ): [string, number][] {
   const price = currentPrice(gameState, chain);
+  const levels = bonusLevels(price, gameState.public.mode);
   const holders = gameState.public.players
     .map((p) => [p.email, stockOf(p, chain)] as [string, number])
-    .filter(([, n]) => n > 0)
-    .sort((a, b) => b[1] - a[1]);
+    .filter(([, n]) => n > 0);
   if (!holders.length) return [];
-  const majority = price * 10;
-  const minority = price * 5;
-  const roundUp = (n: number) => Math.ceil(n / 100) * 100;
-  const top = holders.filter(([, n]) => n === holders[0][1]);
-  if (top.length > 1) {
-    const share = roundUp((majority + minority) / top.length);
-    return top.map(([email]) => [email, share]);
+  if (gameState.public.players.length === 2)
+    holders.push([MARKET, marketShares(gameState).shares]);
+  holders.sort((a, b) => b[1] - a[1]);
+
+  // Rank the holders: everyone with the top count, then the next count, and so on.
+  const ranks: string[][] = [];
+  for (const [email, n] of holders) {
+    const last = ranks[ranks.length - 1];
+    if (last && stockOf2(holders, last[0]) === n) last.push(email);
+    else ranks.push([email]);
   }
-  const rest = holders.slice(1);
-  if (!rest.length) return [[holders[0][0], majority + minority]];
-  const second = rest.filter(([, n]) => n === rest[0][1]);
-  const minorityShare = roundUp(minority / second.length);
-  return [
-    [holders[0][0], majority],
-    ...second.map(([email]) => [email, minorityShare] as [string, number]),
-  ];
+  const { primary, secondary, tertiary } = levels;
+  const out: [string, number][] = [];
+  const pay = (emails: string[], total: number) => {
+    const each = roundUp(total / emails.length);
+    for (const email of emails) out.push([email, each]);
+  };
+
+  if (holders.length === 1) {
+    // A sole holder takes the primary plus the secondary (Classic) or tertiary (Tycoon).
+    out.push([holders[0][0], primary + (tertiary ?? secondary)]);
+    return out.filter(([email]) => email !== MARKET);
+  }
+  if (tertiary === undefined) {
+    // Classic: a tie for first shares primary plus secondary and ends it there.
+    if (ranks[0].length > 1) pay(ranks[0], primary + secondary);
+    else {
+      out.push([ranks[0][0], primary]);
+      pay(ranks[1], secondary);
+    }
+    return out.filter(([email]) => email !== MARKET);
+  }
+  // Tycoon: a tertiary too, unless only two players hold the chain.
+  const third = holders.length >= 3 ? tertiary : 0;
+  if (ranks[0].length > 1) {
+    pay(ranks[0], primary + secondary);
+    if (ranks[1] && third && ranks[0].length === 2) pay(ranks[1], third);
+  } else {
+    out.push([ranks[0][0], primary]);
+    if (ranks[1].length > 1) pay(ranks[1], secondary + third);
+    else {
+      out.push([ranks[1][0], secondary]);
+      if (ranks[2] && third) pay(ranks[2], third);
+    }
+  }
+  return out.filter(([email]) => email !== MARKET);
+}
+
+function stockOf2(holders: [string, number][], email: string) {
+  return holders.find(([e]) => e === email)?.[1] ?? 0;
 }
 
 export function netWorth(
@@ -339,6 +428,12 @@ function endTurn(gameState: AcquireGameState) {
   drawTiles(gameState, player);
   gameState.public.bought = 0;
   delete gameState.public.merger;
+
+  // The end was called this turn: it finishes now that the turn is over.
+  if (gameState.public.declaredBy) {
+    finish(gameState, `${gameState.public.declaredBy} called the end.`);
+    return;
+  }
 
   // Nothing left to play anywhere: the game cannot go on.
   if (
@@ -590,12 +685,18 @@ export function foundChain(
   setTile(gameState, tile, chain);
   const size = 1 + absorbLoose(gameState, tile, chain);
   gameState.public.chains[chain].size = size;
+  let founderNote = "takes a founder's share";
   if (gameState.public.chains[chain].stockLeft > 0) {
     gameState.public.chains[chain].stockLeft -= 1;
     player.stocks = {
       ...(player.stocks || {}),
       [chain]: stockOf(player, chain) + 1,
     };
+  } else {
+    // No stock left: the founder's bonus is paid in cash at today's price.
+    const cash = priceOf(chain, size);
+    player.money += cash;
+    founderNote = `is paid ${money(cash)} as the stock is all taken`;
   }
   player.lastActionAt = Date.now();
   gameState.public.lastMove = {
@@ -607,7 +708,7 @@ export function foundChain(
   delete gameState.public.merger;
   announce(
     gameState,
-    `${player.email} founds ${label(chain)} with ${size} tiles and takes a founder's share.`,
+    `${player.email} founds ${label(chain)} with ${size} tiles and ${founderNote}.`,
   );
   toBuying(gameState);
   return { ok: true };
@@ -768,9 +869,14 @@ export function declareEnd(gameState: AcquireGameState): ActionResult {
     return fail(
       "The end can be called once a chain has 41 tiles or every chain is safe.",
     );
+  if (gameState.public.declaredBy)
+    return fail("The end has already been called.");
   gameState.public.declaredBy = player.email;
   gameState.public.lastMove = { type: "declare", email: player.email };
-  announce(gameState, `${player.email} calls the end of the game.`);
-  finish(gameState, "Every chain pays out.");
+  announce(
+    gameState,
+    `${player.email} calls the end of the game.`,
+    "The game ends when this turn does.",
+  );
   return { ok: true };
 }

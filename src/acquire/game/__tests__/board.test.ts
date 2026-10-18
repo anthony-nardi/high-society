@@ -37,6 +37,7 @@ const state = (over: Partial<AcquireGameState> = {}): AcquireGameState => ({
   chains: Object.fromEntries(
     CHAINS.map((c) => [c, { size: 0, stockLeft: 25 }]),
   ) as AcquireGameState["chains"],
+  mode: "CLASSIC",
   bought: 0,
   bagCount: 90,
   turn: 1,
@@ -57,6 +58,13 @@ describe("acquire board helpers", () => {
       ["a", 2000],
       ["b", 500],
       ["c", 500],
+    ]);
+    // Tycoon: b and c split the secondary and tertiary, 1,500 + 1,000.
+    s.mode = "TYCOON";
+    expect(bonuses(s, "LUXOR")).toEqual([
+      ["a", 2000],
+      ["b", 1300],
+      ["c", 1300],
     ]);
     expect(canDeclare(s)).toBe(false);
     s.chains.LUXOR.size = 11;

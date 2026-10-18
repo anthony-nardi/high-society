@@ -320,10 +320,17 @@ export default function ActionPanel({
           <Badge color="yellow" variant="filled" radius="sm" size="lg">
             {gameState.turnPlayer === me.email ? "Your turn" : "Your decision"}
           </Badge>
-          {declarable && !loading && (
-            <Button size="xs" color="red" variant="light" onClick={onDeclare}>
-              Call the end of the game
-            </Button>
+          {gameState.declaredBy ? (
+            <Badge color="red" variant="light" radius="sm" size="lg">
+              Last turn: the end was called
+            </Badge>
+          ) : (
+            declarable &&
+            !loading && (
+              <Button size="xs" color="red" variant="light" onClick={onDeclare}>
+                Call the end of the game
+              </Button>
+            )
           )}
         </Group>
         {body}

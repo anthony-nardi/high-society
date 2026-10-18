@@ -1,4 +1,10 @@
-import { AcquireGameState, AcquirePlayerState, Chain, Tile } from "./types";
+import {
+  AcquireGameState,
+  AcquirePlayerState,
+  Chain,
+  Mode,
+  Tile,
+} from "./types";
 
 /*
  * Client-side copy of the board, the price table and the rule queries the
@@ -139,32 +145,93 @@ export function canDeclare(state: AcquireGameState) {
   );
 }
 
+/** Tycoon Mode's secondary bonus is a printed column, not a multiple of the price. */
+const TYCOON_SECONDARY: { [price: number]: number } = {
+  200: 1500,
+  300: 2200,
+  400: 3000,
+  500: 3700,
+  600: 4200,
+  700: 5000,
+  800: 5700,
+  900: 6200,
+  1000: 7000,
+  1100: 7700,
+  1200: 8200,
+};
+
+export type BonusLevels = {
+  primary: number;
+  secondary: number;
+  tertiary?: number;
+};
+
+export function bonusLevels(price: number, mode: Mode): BonusLevels {
+  if (mode === "TYCOON")
+    return {
+      primary: price * 10,
+      secondary: TYCOON_SECONDARY[price] ?? Math.round((price * 7) / 100) * 100,
+      tertiary: price * 5,
+    };
+  return { primary: price * 10, secondary: price * 5 };
+}
+
+export const modeLabel = (mode: Mode | undefined) =>
+  mode === "CLASSIC" ? "Classic" : "Tycoon";
+
+const roundUp = (n: number) => Math.ceil(n / 100) * 100;
+
+/**
+ * Bonuses for a chain at its current price, as the server pays them. In a
+ * two-player game the server also draws a random stake for the stock
+ * market, which this preview cannot know.
+ */
 export function bonuses(
   state: AcquireGameState,
   chain: Chain,
 ): [string, number][] {
   const price = currentPrice(state, chain);
+  const { primary, secondary, tertiary } = bonusLevels(price, state.mode);
   const holders = state.players
     .map((p) => [p.email, stockOf(p, chain)] as [string, number])
     .filter(([, n]) => n > 0)
     .sort((a, b) => b[1] - a[1]);
   if (!holders.length) return [];
-  const majority = price * 10;
-  const minority = price * 5;
-  const roundUp = (n: number) => Math.ceil(n / 100) * 100;
-  const top = holders.filter(([, n]) => n === holders[0][1]);
-  if (top.length > 1) {
-    const share = roundUp((majority + minority) / top.length);
-    return top.map(([email]) => [email, share]);
+  const ranks: string[][] = [];
+  let lastCount = -1;
+  for (const [email, n] of holders) {
+    if (n === lastCount) ranks[ranks.length - 1].push(email);
+    else ranks.push([email]);
+    lastCount = n;
   }
-  const rest = holders.slice(1);
-  if (!rest.length) return [[holders[0][0], majority + minority]];
-  const second = rest.filter(([, n]) => n === rest[0][1]);
-  const minorityShare = roundUp(minority / second.length);
-  return [
-    [holders[0][0], majority],
-    ...second.map(([email]) => [email, minorityShare] as [string, number]),
-  ];
+  const out: [string, number][] = [];
+  const pay = (emails: string[], total: number) => {
+    const each = roundUp(total / emails.length);
+    for (const email of emails) out.push([email, each]);
+  };
+  if (holders.length === 1)
+    return [[holders[0][0], primary + (tertiary ?? secondary)]];
+  if (tertiary === undefined) {
+    if (ranks[0].length > 1) pay(ranks[0], primary + secondary);
+    else {
+      out.push([ranks[0][0], primary]);
+      pay(ranks[1], secondary);
+    }
+    return out;
+  }
+  const third = holders.length >= 3 ? tertiary : 0;
+  if (ranks[0].length > 1) {
+    pay(ranks[0], primary + secondary);
+    if (ranks[1] && third && ranks[0].length === 2) pay(ranks[1], third);
+  } else {
+    out.push([ranks[0][0], primary]);
+    if (ranks[1].length > 1) pay(ranks[1], secondary + third);
+    else {
+      out.push([ranks[1][0], secondary]);
+      if (ranks[2] && third) pay(ranks[2], third);
+    }
+  }
+  return out;
 }
 
 export function netWorth(state: AcquireGameState, player: AcquirePlayerState) {

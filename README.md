@@ -84,6 +84,8 @@ card only; the face-down deck is never read.
 - The Bridges of Shangri-La (`functions/src/shangri-la/helpers/botSearch.ts`):
   a setup heuristic, then Maxn over whole turns (place, recruit, journey).
 
+- Acquire follows the 2023 Renegade rulebook: Classic or Tycoon Mode is chosen in the lobby (two players are always Classic, with the stock market as a phantom shareholder), a starting tile per player, the end called on a turn finishes that turn, and a founder is paid cash when a chain's stock is gone.
+
 - Acquire (`functions/src/acquire/helpers/botSearch.ts`): a one-ply planner
   that plays each candidate tile on a copy, follows its own policies for
   founding, survivors and disposals, and keeps the best standing; buying,

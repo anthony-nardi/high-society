@@ -5,7 +5,12 @@ import {
 } from "firebase-functions/v2/https";
 import { logger } from "firebase-functions/v2";
 import { getDatabase } from "firebase-admin/database";
-import { GameName, GenericGameState, PlayerInLobby } from "./types";
+import {
+  GameName,
+  GenericGameState,
+  LobbyOptions,
+  PlayerInLobby,
+} from "./types";
 import { updateGameState } from "./helpers";
 
 /*
@@ -24,7 +29,11 @@ export type GameAction<State> = (state: State, payload: any) => ActionResult;
 export interface GameModule<State extends GenericGameState = GenericGameState> {
   name: GameName;
   /** Builds the initial state for the lobby's players. Pure apart from shuffling. */
-  createState(lobbyUID: string, players: PlayerInLobby[]): State;
+  createState(
+    lobbyUID: string,
+    players: PlayerInLobby[],
+    options?: LobbyOptions,
+  ): State;
   /** Callable name to rule. Each mutates the state and reports legality. */
   actions: { [callableName: string]: GameAction<State> };
   isGameOver(state: State): boolean;

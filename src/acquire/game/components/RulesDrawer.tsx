@@ -1,6 +1,28 @@
-import { Group, List, Stack, Table, Text, Title } from "@mantine/core";
+import {
+  Group,
+  List,
+  SegmentedControl,
+  Stack,
+  Table,
+  Text,
+  Title,
+} from "@mantine/core";
+import { useState } from "react";
 import RulesDrawer from "../../../shared/components/RulesDrawer";
-import { CHAIN_COLOUR, CHAINS, label, money, priceOf, TIER } from "../board";
+import { useGameStateContext } from "../../../shared/context/GameStateProvider";
+import {
+  bonusLevels,
+  CHAIN_COLOUR,
+  CHAINS,
+  label,
+  modeLabel,
+  money,
+  priceOf,
+  TIER,
+} from "../board";
+import { Mode } from "../types";
+
+const PRICES = [200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200];
 
 const SIZES: [string, number][] = [
   ["2", 2],
@@ -85,6 +107,9 @@ function Swatch({ chain }: { chain: keyof typeof CHAIN_COLOUR }) {
 }
 
 export default function AcquireRules() {
+  const { gameState } = useGameStateContext("acquire");
+  const [picked, setPicked] = useState<Mode>("TYCOON");
+  const mode: Mode = gameState?.mode ?? picked;
   const T = CHAIN_COLOUR.TOWER;
   const L = CHAIN_COLOUR.LUXOR;
   return (
@@ -189,6 +214,95 @@ export default function AcquireRules() {
           </Table.Tbody>
         </Table>
 
+        <Title order={4}>Who gets paid: {modeLabel(mode)} Mode</Title>
+        {gameState ? (
+          <Text size="sm">
+            This game is in {modeLabel(mode)} Mode, chosen when the lobby was
+            made.{" "}
+            {mode === "TYCOON"
+              ? "The top three stockholders of a swallowed chain are paid."
+              : "The top two stockholders of a swallowed chain are paid."}
+          </Text>
+        ) : (
+          <SegmentedControl
+            size="xs"
+            value={picked}
+            onChange={(v) => setPicked(v as Mode)}
+            data={[
+              { value: "TYCOON", label: "Tycoon: top three" },
+              { value: "CLASSIC", label: "Classic: top two" },
+            ]}
+            aria-label="Stockholder bonus mode"
+          />
+        )}
+        <Table withTableBorder fz="xs" verticalSpacing={2}>
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>Share price</Table.Th>
+              <Table.Th ta="right">Primary</Table.Th>
+              <Table.Th ta="right">Secondary</Table.Th>
+              {mode === "TYCOON" && <Table.Th ta="right">Tertiary</Table.Th>}
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
+            {PRICES.map((price) => {
+              const b = bonusLevels(price, mode);
+              return (
+                <Table.Tr key={price}>
+                  <Table.Td>{money(price)}</Table.Td>
+                  <Table.Td ta="right">{money(b.primary)}</Table.Td>
+                  <Table.Td ta="right">{money(b.secondary)}</Table.Td>
+                  {mode === "TYCOON" && (
+                    <Table.Td ta="right">{money(b.tertiary ?? 0)}</Table.Td>
+                  )}
+                </Table.Tr>
+              );
+            })}
+          </Table.Tbody>
+        </Table>
+        <List size="sm">
+          {mode === "TYCOON" ? (
+            <>
+              <List.Item>
+                A sole stockholder takes the primary and the tertiary.
+              </List.Item>
+              <List.Item>
+                Tied for primary: the tied players split primary plus secondary,
+                and the next holder takes the tertiary.
+              </List.Item>
+              <List.Item>
+                Tied for secondary: the tied players split secondary plus
+                tertiary, and nobody gets the tertiary.
+              </List.Item>
+              <List.Item>
+                Tied for tertiary: the tied players split the tertiary.
+              </List.Item>
+              <List.Item>
+                Only two stockholders: the tertiary is not paid.
+              </List.Item>
+            </>
+          ) : (
+            <>
+              <List.Item>
+                A sole stockholder takes the primary and the secondary.
+              </List.Item>
+              <List.Item>
+                Tied for primary: the tied players split primary plus secondary,
+                and nobody else is paid.
+              </List.Item>
+              <List.Item>
+                Tied for secondary: the tied players split the secondary.
+              </List.Item>
+            </>
+          )}
+          <List.Item>Splits round up to the nearest hundred.</List.Item>
+          <List.Item>
+            <b>Two players:</b> the stock market joins every payout as a third
+            holder with a random stake, the number on a tile drawn from the bag.
+            Its bonus stays in the bank. Two-player games are always Classic.
+          </List.Item>
+        </List>
+
         <Title order={4}>Mergers, step by step</Title>
         <List type="ordered">
           <List.Item>
@@ -196,11 +310,9 @@ export default function AcquireRules() {
             the player who played the tile picks the survivor.
           </List.Item>
           <List.Item>
-            <b>The swallowed chain pays bonuses.</b> Whoever holds the most of
-            its shares gets the majority bonus, ten times the share price. The
-            second-most holder gets the minority bonus, five times the price. If
-            one person holds all of it they get both. Tied holders split the
-            bonuses between them.
+            <b>The swallowed chain pays bonuses</b> at the price it had before
+            the merger, to its top two or three stockholders as the table above
+            shows. The merging tile does not count towards its size.
           </List.Item>
           <List.Item>
             <b>Every holder settles their shares</b>, starting with the player
@@ -215,9 +327,10 @@ export default function AcquireRules() {
           </List.Item>
         </List>
         <Text size="sm" c="dimmed">
-          Example: Tower has four tiles, so a share is $400. You hold five
-          Tower, a rival holds two. Tower is swallowed: you get $4,000, your
-          rival $2,000, and you can then sell your five for $400 each.
+          Example from the rulebook: Imperial has five tiles, so a share is
+          $700. Liz holds three, Charlie two. Imperial is swallowed: Liz gets
+          the $7,000 primary, Charlie the $5,000 secondary (Tycoon) or $3,500
+          (Classic), and both can then sell at $700 each.
         </Text>
 
         <Title order={4}>Safe chains and stuck tiles</Title>
@@ -244,16 +357,27 @@ export default function AcquireRules() {
           <List.Item>
             On your turn you may <b>call the end</b> once any chain has 41
             tiles, or every chain on the board is safe. Nobody has to call it.
+            You finish your turn as normal, then the game ends.
           </List.Item>
           <List.Item>
-            Then every chain pays its majority and minority bonuses as if it
-            were swallowed, and all shares are sold at today's prices.
+            Then every chain on the board pays its bonuses as if it were
+            swallowed, and all shares are sold at today's prices. Shares in a
+            chain not on the board are worth nothing.
           </List.Item>
           <List.Item>Most cash wins.</List.Item>
         </List>
 
         <Title order={4}>Good to know</Title>
         <List>
+          <List.Item>
+            <b>Setup:</b> each player draws one tile onto the board. Whoever
+            drew the tile nearest 1A plays first (9A is nearer than 1B). Those
+            tiles stay independent until a later tile joins them.
+          </List.Item>
+          <List.Item>
+            Founding a chain whose 25 shares are all held pays the founder cash
+            equal to a share instead.
+          </List.Item>
           <List.Item>
             Everyone can see who holds which shares. Only your cash and your
             tiles are private.

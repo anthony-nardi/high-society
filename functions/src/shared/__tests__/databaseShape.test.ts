@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildAcquireGameState,
+  buyStock,
   declareEnd,
   dispose,
   placeTile,
@@ -174,6 +175,8 @@ describe("with real email addresses", () => {
     state.public.players[0].tiles = ["5E"];
     expect(badKeys(state)).toEqual([]);
     expect(declareEnd(state).ok).toBe(true);
+    state.public.phase = "BUY";
+    expect(buyStock(state, {}).ok).toBe(true);
     expect(state.public.status).toBe("GAME_OVER");
     expect(badKeys(state)).toEqual([]);
     expect(state.public.scores?.[0]).toEqual({

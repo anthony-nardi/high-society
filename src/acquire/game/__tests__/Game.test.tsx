@@ -94,6 +94,7 @@ const base = (over: Partial<AcquireGameState>): AcquireGameState => ({
   board: { "7E": "NONE", "1B": "TOWER", "1C": "TOWER" },
   chains: chains({ TOWER: { size: 2, stockLeft: 22 } }),
   bought: 0,
+  mode: "TYCOON",
   bagCount: 90,
   turn: 4,
   ...over,

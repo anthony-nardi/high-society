@@ -229,7 +229,7 @@ export function takeBotStep(gameState: AcquireGameState) {
   const email = player.email;
   switch (gameState.public.phase) {
     case "PLACE": {
-      if (shouldDeclare(gameState, email)) {
+      if (!gameState.public.declaredBy && shouldDeclare(gameState, email)) {
         declareEnd(gameState);
         return;
       }
@@ -257,7 +257,7 @@ export function takeBotStep(gameState: AcquireGameState) {
       return;
     }
     case "BUY": {
-      if (shouldDeclare(gameState, email)) {
+      if (!gameState.public.declaredBy && shouldDeclare(gameState, email)) {
         declareEnd(gameState);
         return;
       }

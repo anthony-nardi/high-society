@@ -2,6 +2,7 @@ import {
   GameName,
   GenericGameState,
   GenericPlayerState,
+  LobbyOptions,
   PlayerInLobby,
 } from "../types";
 import { getDatabase } from "firebase-admin/database";
@@ -24,9 +25,16 @@ export function isLobbyReady(players: PlayerInLobby[]) {
 
 async function createSpecificGameState(lobbyUID: string, gameName: GameName) {
   const module = getGameModule(gameName);
-  const snapshot = await getDatabase().ref(`lobbies/${lobbyUID}/players`).get();
-  const players = snapshot.val() as PlayerInLobby[];
-  const state = module.createState(lobbyUID, players);
+  const snapshot = await getDatabase().ref(`lobbies/${lobbyUID}`).get();
+  const lobby = snapshot.val() as {
+    players: PlayerInLobby[];
+    options?: LobbyOptions;
+  };
+  const state = module.createState(
+    lobbyUID,
+    lobby.players,
+    lobby.options || {},
+  );
   await getDatabase().ref(`/games/${lobbyUID}`).set(state);
   // The first player may be a bot; let the bots play until a human is up.
   await playBots(module, state);

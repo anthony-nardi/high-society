@@ -11,4 +11,6 @@ export type LobbyPlayer = {
 export type LobbyData = {
   id: string;
   players: LobbyPlayer[];
+  /** Variant choices made when the lobby was created. */
+  options?: { mode?: string };
 };

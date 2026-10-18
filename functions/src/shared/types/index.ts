@@ -28,6 +28,12 @@ export type Notification = {
   timestamp: number;
 };
 
+/** Choices made when a lobby is created, handed to the game's createState. */
+export type LobbyOptions = {
+  /** A game-specific variant, such as Acquire's "CLASSIC" or "TYCOON". */
+  mode?: string;
+};
+
 export type PlayerInLobby = {
   email: string;
   ready: boolean;
