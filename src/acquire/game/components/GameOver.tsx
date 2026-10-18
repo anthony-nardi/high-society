@@ -119,67 +119,69 @@ export default function GameOver({
             </Stack>
           </Center>
 
-          <Table withTableBorder fz="sm">
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th>Player</Table.Th>
-                {detailed && <Table.Th ta="right">Cash at the end</Table.Th>}
-                {detailed && <Table.Th ta="right">Bonuses</Table.Th>}
-                {detailed && <Table.Th ta="right">Shares sold</Table.Th>}
-                <Table.Th ta="right">Final</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {ranked.map((player) => {
-                const score = scoreOf(player.email);
-                const bonuses = sum(
-                  (score?.bonuses || []).map((b) => b.amount),
-                );
-                const sales = sum((score?.sales || []).map((s) => s.amount));
-                return (
-                  <Table.Tr
-                    key={player.email}
-                    style={{
-                      fontWeight:
-                        player.email === gameState.winner ? 700 : undefined,
-                    }}
-                  >
-                    <Table.Td>
-                      <Group gap="xs" wrap="nowrap">
-                        {displayName(player.email)}
-                        {player.email === user?.email && (
-                          <Text component="span" size="xs" c="dimmed">
-                            (you)
-                          </Text>
-                        )}
-                        {player.email === gameState.winner && (
-                          <Badge color="yellow" radius="sm">
-                            Winner
-                          </Badge>
-                        )}
-                      </Group>
-                    </Table.Td>
-                    {detailed && (
-                      <Table.Td ta="right">
-                        {money(score?.cashBefore ?? 0)}
+          <Table.ScrollContainer minWidth={480}>
+            <Table withTableBorder fz="sm">
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>Player</Table.Th>
+                  {detailed && <Table.Th ta="right">Cash at the end</Table.Th>}
+                  {detailed && <Table.Th ta="right">Bonuses</Table.Th>}
+                  {detailed && <Table.Th ta="right">Shares sold</Table.Th>}
+                  <Table.Th ta="right">Final</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>
+                {ranked.map((player) => {
+                  const score = scoreOf(player.email);
+                  const bonuses = sum(
+                    (score?.bonuses || []).map((b) => b.amount),
+                  );
+                  const sales = sum((score?.sales || []).map((s) => s.amount));
+                  return (
+                    <Table.Tr
+                      key={player.email}
+                      style={{
+                        fontWeight:
+                          player.email === gameState.winner ? 700 : undefined,
+                      }}
+                    >
+                      <Table.Td>
+                        <Group gap="xs" wrap="nowrap">
+                          {displayName(player.email)}
+                          {player.email === user?.email && (
+                            <Text component="span" size="xs" c="dimmed">
+                              (you)
+                            </Text>
+                          )}
+                          {player.email === gameState.winner && (
+                            <Badge color="yellow" radius="sm">
+                              Winner
+                            </Badge>
+                          )}
+                        </Group>
                       </Table.Td>
-                    )}
-                    {detailed && (
-                      <Table.Td ta="right">
-                        {bonuses ? `+${money(bonuses)}` : "–"}
-                      </Table.Td>
-                    )}
-                    {detailed && (
-                      <Table.Td ta="right">
-                        {sales ? `+${money(sales)}` : "–"}
-                      </Table.Td>
-                    )}
-                    <Table.Td ta="right">{money(player.money)}</Table.Td>
-                  </Table.Tr>
-                );
-              })}
-            </Table.Tbody>
-          </Table>
+                      {detailed && (
+                        <Table.Td ta="right">
+                          {money(score?.cashBefore ?? 0)}
+                        </Table.Td>
+                      )}
+                      {detailed && (
+                        <Table.Td ta="right">
+                          {bonuses ? `+${money(bonuses)}` : "–"}
+                        </Table.Td>
+                      )}
+                      {detailed && (
+                        <Table.Td ta="right">
+                          {sales ? `+${money(sales)}` : "–"}
+                        </Table.Td>
+                      )}
+                      <Table.Td ta="right">{money(player.money)}</Table.Td>
+                    </Table.Tr>
+                  );
+                })}
+              </Table.Tbody>
+            </Table>
+          </Table.ScrollContainer>
 
           {detailed && chains.length > 0 && (
             <Stack gap="sm">

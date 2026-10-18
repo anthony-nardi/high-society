@@ -64,61 +64,63 @@ export default function GameOver({
             </Stack>
           </Center>
 
-          <Table withTableBorder>
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th>Player</Table.Th>
-                <Table.Th>Colours</Table.Th>
-                <Table.Th>Fives</Table.Th>
-                <Table.Th>Fours</Table.Th>
-                <Table.Th>Threes</Table.Th>
-                <Table.Th>Twos</Table.Th>
-                <Table.Th>Singles</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {gameState.players.map((player) => {
-                const score =
-                  gameState.scores?.find((s) => s.email === player.email)
-                    ?.score ?? scoreOf(gameState, player.email);
-                return (
-                  <Table.Tr
-                    key={player.email}
-                    style={{
-                      fontWeight:
-                        player.email === gameState.winner ? 700 : undefined,
-                    }}
-                  >
-                    <Table.Td>
-                      <Group gap="xs" wrap="nowrap">
-                        {displayName(player.email)}
-                        {player.email === user?.email && (
-                          <Text component="span" size="xs" c="dimmed">
-                            (you)
-                          </Text>
-                        )}
-                        {player.email === gameState.winner && (
-                          <Badge color="yellow" radius="sm">
-                            Winner
-                          </Badge>
-                        )}
-                      </Group>
-                    </Table.Td>
-                    <Table.Td>
-                      <Group gap={4} wrap="nowrap">
-                        {(player.colours || []).map((c) => (
-                          <PieceIcon key={c} piece={c} />
-                        ))}
-                      </Group>
-                    </Table.Td>
-                    {score.map((n, i) => (
-                      <Table.Td key={i}>{n}</Table.Td>
-                    ))}
-                  </Table.Tr>
-                );
-              })}
-            </Table.Tbody>
-          </Table>
+          <Table.ScrollContainer minWidth={480}>
+            <Table withTableBorder>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>Player</Table.Th>
+                  <Table.Th>Colours</Table.Th>
+                  <Table.Th>Fives</Table.Th>
+                  <Table.Th>Fours</Table.Th>
+                  <Table.Th>Threes</Table.Th>
+                  <Table.Th>Twos</Table.Th>
+                  <Table.Th>Singles</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>
+                {gameState.players.map((player) => {
+                  const score =
+                    gameState.scores?.find((s) => s.email === player.email)
+                      ?.score ?? scoreOf(gameState, player.email);
+                  return (
+                    <Table.Tr
+                      key={player.email}
+                      style={{
+                        fontWeight:
+                          player.email === gameState.winner ? 700 : undefined,
+                      }}
+                    >
+                      <Table.Td>
+                        <Group gap="xs" wrap="nowrap">
+                          {displayName(player.email)}
+                          {player.email === user?.email && (
+                            <Text component="span" size="xs" c="dimmed">
+                              (you)
+                            </Text>
+                          )}
+                          {player.email === gameState.winner && (
+                            <Badge color="yellow" radius="sm">
+                              Winner
+                            </Badge>
+                          )}
+                        </Group>
+                      </Table.Td>
+                      <Table.Td>
+                        <Group gap={4} wrap="nowrap">
+                          {(player.colours || []).map((c) => (
+                            <PieceIcon key={c} piece={c} />
+                          ))}
+                        </Group>
+                      </Table.Td>
+                      {score.map((n, i) => (
+                        <Table.Td key={i}>{n}</Table.Td>
+                      ))}
+                    </Table.Tr>
+                  );
+                })}
+              </Table.Tbody>
+            </Table>
+          </Table.ScrollContainer>
 
           <Center>
             {nextLobbyUID ? (

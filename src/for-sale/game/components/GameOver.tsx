@@ -64,57 +64,59 @@ export default function GameOver({
             </Stack>
           </Center>
 
-          <Table withTableBorder>
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th>Player</Table.Th>
-                <Table.Th>Cheques</Table.Th>
-                <Table.Th>Cash</Table.Th>
-                <Table.Th>Total</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {ranked.map((player) => (
-                <Table.Tr
-                  key={player.email}
-                  style={{
-                    fontWeight:
-                      player.email === gameState.winner ? 700 : undefined,
-                  }}
-                >
-                  <Table.Td>
-                    <Group gap="xs" wrap="nowrap">
-                      {displayName(player.email)}
-                      {player.email === user?.email && (
-                        <Text component="span" size="xs" c="dimmed">
-                          (you)
-                        </Text>
-                      )}
-                      {player.email === gameState.winner && (
-                        <Badge color="yellow" radius="sm">
-                          Winner
-                        </Badge>
-                      )}
-                    </Group>
-                  </Table.Td>
-                  <Table.Td>
-                    <Group gap={3} wrap="wrap" align="center">
-                      {[...(player.cheques || [])]
-                        .sort((a, b) => b - a)
-                        .map((c, i) => (
-                          <ChequeCard key={i} amount={c} width={30} />
-                        ))}
-                      <Text size="sm" ml={4}>
-                        {money(chequeTotal(player))}
-                      </Text>
-                    </Group>
-                  </Table.Td>
-                  <Table.Td>{money(player.money)}</Table.Td>
-                  <Table.Td>{money(totalOf(player))}</Table.Td>
+          <Table.ScrollContainer minWidth={480}>
+            <Table withTableBorder>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>Player</Table.Th>
+                  <Table.Th>Cheques</Table.Th>
+                  <Table.Th>Cash</Table.Th>
+                  <Table.Th>Total</Table.Th>
                 </Table.Tr>
-              ))}
-            </Table.Tbody>
-          </Table>
+              </Table.Thead>
+              <Table.Tbody>
+                {ranked.map((player) => (
+                  <Table.Tr
+                    key={player.email}
+                    style={{
+                      fontWeight:
+                        player.email === gameState.winner ? 700 : undefined,
+                    }}
+                  >
+                    <Table.Td>
+                      <Group gap="xs" wrap="nowrap">
+                        {displayName(player.email)}
+                        {player.email === user?.email && (
+                          <Text component="span" size="xs" c="dimmed">
+                            (you)
+                          </Text>
+                        )}
+                        {player.email === gameState.winner && (
+                          <Badge color="yellow" radius="sm">
+                            Winner
+                          </Badge>
+                        )}
+                      </Group>
+                    </Table.Td>
+                    <Table.Td>
+                      <Group gap={3} wrap="wrap" align="center">
+                        {[...(player.cheques || [])]
+                          .sort((a, b) => b - a)
+                          .map((c, i) => (
+                            <ChequeCard key={i} amount={c} width={30} />
+                          ))}
+                        <Text size="sm" ml={4}>
+                          {money(chequeTotal(player))}
+                        </Text>
+                      </Group>
+                    </Table.Td>
+                    <Table.Td>{money(player.money)}</Table.Td>
+                    <Table.Td>{money(totalOf(player))}</Table.Td>
+                  </Table.Tr>
+                ))}
+              </Table.Tbody>
+            </Table>
+          </Table.ScrollContainer>
 
           <Center>
             {nextLobbyUID ? (

@@ -68,58 +68,60 @@ export default function GameOver({
             </Stack>
           </Center>
 
-          <Table withTableBorder>
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th>Player</Table.Th>
-                <Table.Th>Regions</Table.Th>
-                <Table.Th ta="right">Adjacent</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {ranked.map((player) => (
-                <Table.Tr
-                  key={player.email}
-                  style={{
-                    fontWeight:
-                      player.email === gameState.winner ? 700 : undefined,
-                  }}
-                >
-                  <Table.Td>
-                    <Group gap="xs" wrap="nowrap">
-                      <span
-                        style={{
-                          width: 12,
-                          height: 12,
-                          borderRadius: 3,
-                          background: colourOf(gameState, player.email),
-                        }}
-                      />
-                      {displayName(player.email)}
-                      {player.email === user?.email && (
-                        <Text component="span" size="xs" c="dimmed">
-                          (you)
-                        </Text>
-                      )}
-                      {player.email === gameState.winner && (
-                        <Badge color="yellow" radius="sm">
-                          Winner
-                        </Badge>
-                      )}
-                    </Group>
-                  </Table.Td>
-                  <Table.Td>
-                    {(player.regions || [])
-                      .map((r) => REGIONS[r].name)
-                      .join(", ") || "–"}
-                  </Table.Td>
-                  <Table.Td ta="right">
-                    {largestConnected(player.regions || [])}
-                  </Table.Td>
+          <Table.ScrollContainer minWidth={480}>
+            <Table withTableBorder>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>Player</Table.Th>
+                  <Table.Th>Regions</Table.Th>
+                  <Table.Th ta="right">Adjacent</Table.Th>
                 </Table.Tr>
-              ))}
-            </Table.Tbody>
-          </Table>
+              </Table.Thead>
+              <Table.Tbody>
+                {ranked.map((player) => (
+                  <Table.Tr
+                    key={player.email}
+                    style={{
+                      fontWeight:
+                        player.email === gameState.winner ? 700 : undefined,
+                    }}
+                  >
+                    <Table.Td>
+                      <Group gap="xs" wrap="nowrap">
+                        <span
+                          style={{
+                            width: 12,
+                            height: 12,
+                            borderRadius: 3,
+                            background: colourOf(gameState, player.email),
+                          }}
+                        />
+                        {displayName(player.email)}
+                        {player.email === user?.email && (
+                          <Text component="span" size="xs" c="dimmed">
+                            (you)
+                          </Text>
+                        )}
+                        {player.email === gameState.winner && (
+                          <Badge color="yellow" radius="sm">
+                            Winner
+                          </Badge>
+                        )}
+                      </Group>
+                    </Table.Td>
+                    <Table.Td>
+                      {(player.regions || [])
+                        .map((r) => REGIONS[r].name)
+                        .join(", ") || "–"}
+                    </Table.Td>
+                    <Table.Td ta="right">
+                      {largestConnected(player.regions || [])}
+                    </Table.Td>
+                  </Table.Tr>
+                ))}
+              </Table.Tbody>
+            </Table>
+          </Table.ScrollContainer>
 
           <Center>
             {nextLobbyUID ? (

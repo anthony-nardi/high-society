@@ -66,64 +66,66 @@ export default function GameOver({
             </Stack>
           </Center>
 
-          <Table withTableBorder>
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th>Player</Table.Th>
-                <Table.Th>Shares</Table.Th>
-                <Table.Th ta="right">Money</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {ranked.map((player) => (
-                <Table.Tr
-                  key={player.email}
-                  style={{
-                    fontWeight:
-                      player.email === gameState.winner ? 700 : undefined,
-                  }}
-                >
-                  <Table.Td>
-                    <Group gap="xs" wrap="nowrap">
-                      {displayName(player.email)}
-                      {player.email === user?.email && (
-                        <Text component="span" size="xs" c="dimmed">
-                          (you)
-                        </Text>
-                      )}
-                      {player.email === gameState.winner && (
-                        <Badge color="yellow" radius="sm">
-                          Winner
-                        </Badge>
-                      )}
-                    </Group>
-                  </Table.Td>
-                  <Table.Td>
-                    <Group gap={4} wrap="wrap">
-                      {RAILROADS.filter((r) => sharesOf(player, r) > 0).map(
-                        (r) => (
-                          <span
-                            key={r}
-                            style={{
-                              padding: "1px 6px",
-                              borderRadius: 6,
-                              background: COLOURS[r],
-                              color: r === "YELLOW" ? "#222" : "#fff",
-                              fontSize: 12,
-                              fontWeight: 700,
-                            }}
-                          >
-                            {sharesOf(player, r)}
-                          </span>
-                        ),
-                      )}
-                    </Group>
-                  </Table.Td>
-                  <Table.Td ta="right">${player.money}</Table.Td>
+          <Table.ScrollContainer minWidth={480}>
+            <Table withTableBorder>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>Player</Table.Th>
+                  <Table.Th>Shares</Table.Th>
+                  <Table.Th ta="right">Money</Table.Th>
                 </Table.Tr>
-              ))}
-            </Table.Tbody>
-          </Table>
+              </Table.Thead>
+              <Table.Tbody>
+                {ranked.map((player) => (
+                  <Table.Tr
+                    key={player.email}
+                    style={{
+                      fontWeight:
+                        player.email === gameState.winner ? 700 : undefined,
+                    }}
+                  >
+                    <Table.Td>
+                      <Group gap="xs" wrap="nowrap">
+                        {displayName(player.email)}
+                        {player.email === user?.email && (
+                          <Text component="span" size="xs" c="dimmed">
+                            (you)
+                          </Text>
+                        )}
+                        {player.email === gameState.winner && (
+                          <Badge color="yellow" radius="sm">
+                            Winner
+                          </Badge>
+                        )}
+                      </Group>
+                    </Table.Td>
+                    <Table.Td>
+                      <Group gap={4} wrap="wrap">
+                        {RAILROADS.filter((r) => sharesOf(player, r) > 0).map(
+                          (r) => (
+                            <span
+                              key={r}
+                              style={{
+                                padding: "1px 6px",
+                                borderRadius: 6,
+                                background: COLOURS[r],
+                                color: r === "YELLOW" ? "#222" : "#fff",
+                                fontSize: 12,
+                                fontWeight: 700,
+                              }}
+                            >
+                              {sharesOf(player, r)}
+                            </span>
+                          ),
+                        )}
+                      </Group>
+                    </Table.Td>
+                    <Table.Td ta="right">${player.money}</Table.Td>
+                  </Table.Tr>
+                ))}
+              </Table.Tbody>
+            </Table>
+          </Table.ScrollContainer>
 
           <Center>
             {nextLobbyUID ? (
