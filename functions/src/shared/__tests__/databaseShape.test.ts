@@ -179,9 +179,10 @@ describe("with real email addresses", () => {
     expect(buyStock(state, {}).ok).toBe(true);
     expect(state.public.status).toBe("GAME_OVER");
     expect(badKeys(state)).toEqual([]);
-    expect(state.public.scores?.[0]).toEqual({
+    expect(state.public.scores?.[0]).toMatchObject({
       email: human,
       money: state.public.players[0].money,
+      cashBefore: 6000,
     });
   });
 
