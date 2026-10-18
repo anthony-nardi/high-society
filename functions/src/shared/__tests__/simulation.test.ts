@@ -319,10 +319,7 @@ function conserved(game: GameName, state: State): number[] {
       });
     case "clans":
       // Huts on the board plus huts in founded villages never exceed sixty; each village founded is a chip.
-      return [
-        sum((pub.villages || []).map((v: Loose) => 1)) -
-          sum(players.map((p) => p.chips as number)),
-      ];
+      return [len(pub.villages) - sum(players.map((p) => p.chips as number))];
     case "ride-the-rails":
       // Locomotives: in the box, on the map, or held as shares.
       return [
