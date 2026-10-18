@@ -11,6 +11,7 @@ import * as gipf from "../../gipf/helpers/botSearch";
 import * as lyngk from "../../lyngk/helpers/botSearch";
 import * as shangriLa from "../../shangri-la/helpers/botSearch";
 import * as rideTheRails from "../../ride-the-rails/helpers/botSearch";
+import * as clans from "../../clans/helpers/botSearch";
 
 /*
  * Simulation: every game is played to the end many times with random legal
@@ -234,6 +235,7 @@ const MOVERS: Partial<Record<GameName, Mover>> = {
   lyngk: inPlace(lyngk.turnMoves, lyngk.applyMove),
   "shangri-la": inPlace(shangriLa.turnMoves, shangriLa.applyMove),
   "ride-the-rails": inPlace(rideTheRails.turnMoves, rideTheRails.applyMove),
+  clans: inPlace(clans.turnMoves, clans.applyMove),
 };
 
 type Finding = { game: GameName; seed: number; step: number; message: string };
@@ -315,6 +317,12 @@ function conserved(game: GameName, state: State): number[] {
         );
         return onBoard + sum(Object.values(p.supply as Loose) as number[]);
       });
+    case "clans":
+      // Huts on the board plus huts in founded villages never exceed sixty; each village founded is a chip.
+      return [
+        sum((pub.villages || []).map((v: Loose) => 1)) -
+          sum(players.map((p) => p.chips as number)),
+      ];
     case "ride-the-rails":
       // Locomotives: in the box, on the map, or held as shares.
       return [

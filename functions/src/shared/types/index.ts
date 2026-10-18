@@ -12,7 +12,8 @@ export type GameName =
   | "shangri-la"
   | "acquire"
   | "condottiere"
-  | "ride-the-rails";
+  | "ride-the-rails"
+  | "clans";
 
 export type GameStatus = "IN_PROGRESS" | "GAME_OVER";
 

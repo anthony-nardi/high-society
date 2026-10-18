@@ -102,6 +102,15 @@ describe("soundForEvent", () => {
       soundForEvent("a carries a passenger from Boston to Albany for $3."),
     ).toBe("train");
     expect(soundForEvent("Round 2 begins.")).toBe("turn");
+    expect(soundForEvent("a moves 3 huts into forest.")).toBe("stoneSlide");
+    expect(
+      soundForEvent("a moves 1 hut into steppe and founds a village."),
+    ).toBe("win");
+    expect(
+      soundForEvent(
+        "Village 3 in forest is razed: forest is forbidden in epoch 4.",
+      ),
+    ).toBe("alarm");
     expect(soundForEvent("a wins!")).toBe("fanfare");
     expect(soundForEvent("The game is a draw.")).toBe("fanfare");
     expect(soundForEvent("Something else entirely")).toBeNull();

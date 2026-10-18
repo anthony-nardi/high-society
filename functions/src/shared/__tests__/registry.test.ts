@@ -109,6 +109,7 @@ describe("game registry", () => {
       "rideTheRails",
       "takeRideTheRailsShare",
     ]);
+    expect(Object.keys(GAMES.clans.actions)).toEqual(["moveClansHuts"]);
   });
 
   it("creates a playable state and lets bots finish from it", () => {

@@ -360,6 +360,9 @@ export function soundForEvent(title: string): SoundKind | null {
   if (/has nowhere to build|has no passenger to carry/.test(text))
     return "pass";
   if (/^round \d begins/.test(text)) return "turn";
+  if (/is razed/.test(text)) return "alarm";
+  if (/founds (a village|\d+ villages)/.test(text)) return "win";
+  if (/moves \d+ huts? into/.test(text)) return "stoneSlide";
   if (/^\S+ plays \d+[a-i]/.test(text)) return "chip";
   if (/founds \w+ with|bonuses:/.test(text)) return "win";
   if (/ buys \d/.test(text)) return "card";

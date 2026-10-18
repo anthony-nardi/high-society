@@ -52,6 +52,7 @@ import {
   rideTheRailsPassenger,
   takeRideTheRailsShare,
 } from "./ride-the-rails/client";
+import { moveClansHuts } from "./clans/client";
 
 import { leaderboard } from "./shared/leaderboard";
 
@@ -138,3 +139,6 @@ exports.takeRideTheRailsShare = takeRideTheRailsShare;
 exports.buildRideTheRailsTrack = buildRideTheRailsTrack;
 exports.endRideTheRailsBuild = endRideTheRailsBuild;
 exports.rideTheRails = rideTheRailsPassenger;
+
+// Clans
+exports.moveClansHuts = moveClansHuts;
