@@ -110,6 +110,11 @@ describe("game registry", () => {
       "takeRideTheRailsShare",
     ]);
     expect(Object.keys(GAMES.clans.actions)).toEqual(["moveClansHuts"]);
+    expect(Object.keys(GAMES.twixt.actions).sort()).toEqual([
+      "placeTwixtPeg",
+      "removeTwixtLink",
+      "swapTwixtSides",
+    ]);
   });
 
   it("creates a playable state and lets bots finish from it", () => {

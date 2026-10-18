@@ -16,6 +16,7 @@ import type { AcquireGameState } from "../../acquire/game/types";
 import type { CondottiereGameState } from "../../condottiere/game/types";
 import type { RideTheRailsGameState } from "../../ride-the-rails/game/types";
 import type { ClansGameState } from "../../clans/game/types";
+import type { TwixtGameState } from "../../twixt/game/types";
 
 /** The public state each game's screens read. */
 export type GameStateFor<T extends GameName> = T extends "high-society"
@@ -48,7 +49,9 @@ export type GameStateFor<T extends GameName> = T extends "high-society"
                             ? RideTheRailsGameState
                             : T extends "clans"
                               ? ClansGameState
-                              : never;
+                              : T extends "twixt"
+                                ? TwixtGameState
+                                : never;
 
 type ContextValue = {
   isGameStatusLoading: boolean | null;

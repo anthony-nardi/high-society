@@ -15,6 +15,7 @@ import acquire from "../acquire/module";
 import condottiere from "../condottiere/module";
 import rideTheRails from "../ride-the-rails/module";
 import clans from "../clans/module";
+import twixt from "../twixt/module";
 
 /** Every playable game, keyed by the name stored in lobbies and states. */
 export const GAMES: { [name in GameName]: GameModule<any> } = {
@@ -33,6 +34,7 @@ export const GAMES: { [name in GameName]: GameModule<any> } = {
   condottiere,
   "ride-the-rails": rideTheRails,
   clans,
+  twixt,
 };
 
 export function getGameModule(name: GameName): GameModule<any> {

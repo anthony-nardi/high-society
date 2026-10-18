@@ -53,6 +53,7 @@ import {
   takeRideTheRailsShare,
 } from "./ride-the-rails/client";
 import { moveClansHuts } from "./clans/client";
+import { placeTwixtPeg, removeTwixtLink, swapTwixtSides } from "./twixt/client";
 
 import { leaderboard } from "./shared/leaderboard";
 
@@ -142,3 +143,8 @@ exports.rideTheRails = rideTheRailsPassenger;
 
 // Clans
 exports.moveClansHuts = moveClansHuts;
+
+// TwixT
+exports.placeTwixtPeg = placeTwixtPeg;
+exports.swapTwixtSides = swapTwixtSides;
+exports.removeTwixtLink = removeTwixtLink;

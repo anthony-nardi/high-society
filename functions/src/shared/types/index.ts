@@ -13,7 +13,8 @@ export type GameName =
   | "acquire"
   | "condottiere"
   | "ride-the-rails"
-  | "clans";
+  | "clans"
+  | "twixt";
 
 export type GameStatus = "IN_PROGRESS" | "GAME_OVER";
 

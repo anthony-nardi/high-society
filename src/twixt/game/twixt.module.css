@@ -1,0 +1,41 @@
+/* The board viewport with its zoom buttons. */
+.frame {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.zoomButtons {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 2;
+}
+
+.zoomButtons button {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  background: rgba(255, 255, 255, 0.92);
+  color: #222;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.zoomButtons button:active {
+  background: #ffd86b;
+}
+
+.hint {
+  text-align: center;
+  font-size: 11px;
+  color: var(--mantine-color-dimmed);
+  margin-top: 4px;
+}

@@ -12,6 +12,7 @@ import * as lyngk from "../../lyngk/helpers/botSearch";
 import * as shangriLa from "../../shangri-la/helpers/botSearch";
 import * as rideTheRails from "../../ride-the-rails/helpers/botSearch";
 import * as clans from "../../clans/helpers/botSearch";
+import * as twixt from "../../twixt/helpers/botSearch";
 
 /*
  * Simulation: every game is played to the end many times with random legal
@@ -236,6 +237,7 @@ const MOVERS: Partial<Record<GameName, Mover>> = {
   "shangri-la": inPlace(shangriLa.turnMoves, shangriLa.applyMove),
   "ride-the-rails": inPlace(rideTheRails.turnMoves, rideTheRails.applyMove),
   clans: inPlace(clans.turnMoves, clans.applyMove),
+  twixt: inPlace(twixt.turnMoves, twixt.applyMove),
 };
 
 type Finding = { game: GameName; seed: number; step: number; message: string };

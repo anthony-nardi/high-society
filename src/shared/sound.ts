@@ -361,6 +361,10 @@ export function soundForEvent(title: string): SoundKind | null {
     return "pass";
   if (/^round \d begins/.test(text)) return "turn";
   if (/is razed/.test(text)) return "alarm";
+  if (/pegs [a-x]\d+ and links/.test(text)) return "stoneSlide";
+  if (/pegs [a-x]\d+/.test(text)) return "stonePlace";
+  if (/swaps sides/.test(text)) return "alarm";
+  if (/removes the link/.test(text)) return "stoneLift";
   if (/founds (a village|\d+ villages)/.test(text)) return "win";
   if (/moves \d+ huts? into/.test(text)) return "stoneSlide";
   if (/^\S+ plays \d+[a-i]/.test(text)) return "chip";
