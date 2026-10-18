@@ -14,6 +14,7 @@ import ChainTable from "./components/ChainTable";
 import PlayerOverview from "./components/PlayerOverview";
 import ActionPanel from "./components/ActionPanel";
 import GameOver from "./components/GameOver";
+import MergerMoment from "./components/MergerMoment";
 import placeAcquireTile from "../client/placeAcquireTile";
 import foundAcquireChain from "../client/foundAcquireChain";
 import chooseAcquireSurvivor from "../client/chooseAcquireSurvivor";
@@ -108,10 +109,21 @@ export default function Game() {
                   </Badge>
                 )}
               </Group>
+              <MergerMoment gameState={gameState} me={me} />
               <Board
                 gameState={gameState}
                 hand={me?.tiles || []}
                 lastTile={gameState.lastMove?.tile}
+                doomed={
+                  gameState.phase === "DISPOSE"
+                    ? gameState.merger?.current
+                    : undefined
+                }
+                survivor={
+                  gameState.phase === "DISPOSE"
+                    ? gameState.merger?.survivor
+                    : undefined
+                }
                 onTile={
                   canTapBoard
                     ? (tile) =>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AcquireGameState, Tile } from "../types";
+import { AcquireGameState, Chain, Tile } from "../types";
 import { CHAIN_COLOUR, COLUMNS, describe, isPlayable, ROWS } from "../board";
 
 const CELL = 36;
@@ -12,12 +12,17 @@ export default function Board({
   hand,
   lastTile,
   onTile,
+  doomed,
+  survivor,
 }: {
   gameState: AcquireGameState;
   /** Your tiles, drawn in place as outlines. */
   hand: Tile[];
   lastTile?: Tile;
   onTile?: (tile: Tile) => void;
+  /** The chain being swallowed right now, and the one swallowing it. */
+  doomed?: Chain;
+  survivor?: Chain;
 }) {
   const width = PAD + COLUMNS * (CELL + GAP) + 6;
   const height = PAD + ROWS.length * (CELL + GAP) + 6;
@@ -132,9 +137,13 @@ export default function Board({
                     ? "tile-pulse"
                     : changed.has(tile)
                       ? "tile-convert"
-                      : inHand
-                        ? "target-disc"
-                        : undefined
+                      : owner && owner === doomed
+                        ? "tile-doomed"
+                        : owner && owner === survivor
+                          ? "tile-survivor"
+                          : inHand
+                            ? "target-disc"
+                            : undefined
                 }
                 x={x}
                 y={y}

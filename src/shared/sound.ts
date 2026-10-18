@@ -20,7 +20,8 @@ export type SoundKind =
   | "stoneFlip"
   | "stoneClatter"
   | "stoneScore"
-  | "train";
+  | "train"
+  | "merger";
 
 const MUTE_KEY = "sound:muted";
 const MUTE_EVENT = "sound:mute-changed";
@@ -186,6 +187,48 @@ const SOUNDS: { [kind in SoundKind]: Note[] } = {
     ...knock(0.36, 250, 0.5),
     ...lift(0.42, 0.8),
   ],
+  // A hotel chain swallowed: a low fall, a beat, then a bright rising chord.
+  merger: [
+    {
+      frequency: 330,
+      at: 0,
+      length: 0.35,
+      type: "sawtooth",
+      volume: 0.45,
+      glideTo: 165,
+    },
+    {
+      frequency: 0,
+      at: 0.3,
+      length: 0.08,
+      volume: 0.5,
+      noiseFrequency: 900,
+      noiseQ: 0.8,
+    },
+    { frequency: 392, at: 0.5, length: 0.14, type: "triangle", volume: 0.6 },
+    {
+      frequency: 493.88,
+      at: 0.62,
+      length: 0.14,
+      type: "triangle",
+      volume: 0.6,
+    },
+    {
+      frequency: 587.33,
+      at: 0.74,
+      length: 0.16,
+      type: "triangle",
+      volume: 0.6,
+    },
+    {
+      frequency: 783.99,
+      at: 0.88,
+      length: 0.45,
+      type: "triangle",
+      volume: 0.7,
+    },
+    { frequency: 987.77, at: 0.88, length: 0.45, type: "sine", volume: 0.4 },
+  ],
   // A passenger carried: a few chugs, then a steam whistle chord that bends up.
   train: [
     {
@@ -348,7 +391,8 @@ export function soundForEvent(title: string): SoundKind | null {
   if (/places a [\w-]+ (ring|marble|piece|master)/.test(text))
     return "stonePlace";
   if (/sends the students/.test(text)) return "stoneSlide";
-  if (/takes over|calls the end|calls the armies/.test(text)) return "fanfare";
+  if (/takes over/.test(text)) return "merger";
+  if (/calls the end|calls the armies/.test(text)) return "fanfare";
   if (/plays surrender|plays winter|plays spring|plays a bishop/.test(text))
     return "alarm";
   if (/^\S+ plays (mercenary|a scarecrow|drummer|heroine|courtesan)/.test(text))

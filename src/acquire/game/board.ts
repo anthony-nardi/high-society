@@ -259,3 +259,15 @@ export function describe(state: AcquireGameState, tile: Tile): string {
       return "can never be played: two safe chains";
   }
 }
+
+/** What a bonus amount was, read back from the info card. */
+export function bonusRank(amount: number, price: number, mode: Mode) {
+  const levels = bonusLevels(price, mode);
+  if (amount === levels.primary + (levels.tertiary ?? levels.secondary))
+    return "sole holder";
+  if (amount === levels.primary) return "primary";
+  if (amount === levels.secondary) return "secondary";
+  if (levels.tertiary !== undefined && amount === levels.tertiary)
+    return "tertiary";
+  return "tied, split";
+}
