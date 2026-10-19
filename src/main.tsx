@@ -19,6 +19,7 @@ import Ecosystem from "./ecosystem/App";
 import FujiFlush from "./fuji-flush/App";
 import Tigris from "./tigris/App";
 import CoralReef from "./coral-reef/App";
+import Savanna from "./savanna/App";
 import Razzia from "./razzia/App";
 import reportWebVitals from "./reportWebVitals";
 import "@mantine/core/styles.css";
@@ -117,6 +118,10 @@ const router = createBrowserRouter([
   {
     path: "/coral-reef",
     element: <CoralReef />,
+  },
+  {
+    path: "/savanna",
+    element: <Savanna />,
   },
 ]);
 

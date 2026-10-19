@@ -17,6 +17,7 @@ import * as ecosystem from "../../ecosystem/helpers/botSearch";
 import * as fujiFlush from "../../fuji-flush/helpers/botSearch";
 import * as tigris from "../../tigris/helpers/botSearch";
 import * as coralReef from "../../coral-reef/helpers/botSearch";
+import * as savanna from "../../savanna/helpers/botSearch";
 
 /*
  * Simulation: every game is played to the end many times with random legal
@@ -246,6 +247,7 @@ const MOVERS: Partial<Record<GameName, Mover>> = {
   "fuji-flush": inPlace(fujiFlush.turnMoves, fujiFlush.applyMove),
   tigris: inPlace(tigris.turnMoves, tigris.applyMove),
   "coral-reef": inPlace(coralReef.turnMoves, coralReef.applyMove),
+  savanna: inPlace(savanna.turnMoves, savanna.applyMove),
 };
 
 type Finding = { game: GameName; seed: number; step: number; message: string };

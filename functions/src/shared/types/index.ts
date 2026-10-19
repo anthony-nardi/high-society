@@ -18,7 +18,8 @@ export type GameName =
   | "ecosystem"
   | "fuji-flush"
   | "tigris"
-  | "coral-reef";
+  | "coral-reef"
+  | "savanna";
 
 export type GameStatus = "IN_PROGRESS" | "GAME_OVER";
 

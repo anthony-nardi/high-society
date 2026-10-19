@@ -70,6 +70,7 @@ import {
   withdrawTigrisLeader,
 } from "./tigris/client";
 import { placeCoralReefCard } from "./coral-reef/client";
+import { placeSavannaCard } from "./savanna/client";
 
 import { leaderboard } from "./shared/leaderboard";
 
@@ -186,3 +187,6 @@ exports.takeTigrisTreasure = takeTigrisTreasure;
 
 // Ecosystem: Coral Reef
 exports.placeCoralReefCard = placeCoralReefCard;
+
+// Ecosystem: Savanna
+exports.placeSavannaCard = placeSavannaCard;

@@ -135,6 +135,7 @@ describe("game registry", () => {
     expect(Object.keys(GAMES["coral-reef"].actions)).toEqual([
       "placeCoralReefCard",
     ]);
+    expect(Object.keys(GAMES.savanna.actions)).toEqual(["placeSavannaCard"]);
   });
 
   it("creates a playable state and lets bots finish from it", () => {
@@ -150,6 +151,10 @@ describe("game registry", () => {
       expect(module.isGameOver(state)).toBe(false);
       // The human is first; hand the turn to a bot and let it move.
       state.public.activePlayer = state.public.players[1].email;
+      // Games with a separate turn player keep the two in step.
+      const pub = state.public as { turnPlayer?: string };
+      if (pub.turnPlayer !== undefined)
+        pub.turnPlayer = state.public.players[1].email;
       const before = JSON.stringify(state);
       module.botTurn(state);
       expect(JSON.stringify(state)).not.toBe(before);
