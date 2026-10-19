@@ -22,6 +22,7 @@ import type { FujiFlushGameState } from "../../fuji-flush/game/types";
 import type { TigrisGameState } from "../../tigris/game/types";
 import type { CoralReefGameState } from "../../coral-reef/game/types";
 import type { SavannaGameState } from "../../savanna/game/types";
+import type { MediciGameState } from "../../medici/game/types";
 
 /** The public state each game's screens read. */
 export type GameStateFor<T extends GameName> = T extends "high-society"
@@ -66,7 +67,9 @@ export type GameStateFor<T extends GameName> = T extends "high-society"
                                         ? CoralReefGameState
                                         : T extends "savanna"
                                           ? SavannaGameState
-                                          : never;
+                                          : T extends "medici"
+                                            ? MediciGameState
+                                            : never;
 
 type ContextValue = {
   isGameStatusLoading: boolean | null;

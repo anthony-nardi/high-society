@@ -19,7 +19,8 @@ export type GameName =
   | "fuji-flush"
   | "tigris"
   | "coral-reef"
-  | "savanna";
+  | "savanna"
+  | "medici";
 
 export type GameStatus = "IN_PROGRESS" | "GAME_OVER";
 

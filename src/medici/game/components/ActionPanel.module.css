@@ -1,0 +1,32 @@
+/* Fixed strip along the bottom of the screen holding the player's actions. */
+.panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  padding: 12px 16px;
+  background: rgba(16, 18, 24, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.35);
+  transition: background 300ms;
+}
+
+.active {
+  background: rgba(44, 37, 18, 0.92);
+  border-top-color: rgba(255, 216, 107, 0.5);
+}
+
+.compact {
+  padding: 8px 16px;
+}
+
+.pageSpacer {
+  height: var(--panel-h, 150px);
+}
+
+.pageSpacerCompact {
+  height: var(--panel-h, 72px);
+}

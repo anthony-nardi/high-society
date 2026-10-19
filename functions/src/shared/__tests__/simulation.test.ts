@@ -18,6 +18,7 @@ import * as fujiFlush from "../../fuji-flush/helpers/botSearch";
 import * as tigris from "../../tigris/helpers/botSearch";
 import * as coralReef from "../../coral-reef/helpers/botSearch";
 import * as savanna from "../../savanna/helpers/botSearch";
+import * as medici from "../../medici/helpers/botSearch";
 
 /*
  * Simulation: every game is played to the end many times with random legal
@@ -248,6 +249,7 @@ const MOVERS: Partial<Record<GameName, Mover>> = {
   tigris: inPlace(tigris.turnMoves, tigris.applyMove),
   "coral-reef": inPlace(coralReef.turnMoves, coralReef.applyMove),
   savanna: inPlace(savanna.turnMoves, savanna.applyMove),
+  medici: inPlace(medici.turnMoves, medici.applyMove),
 };
 
 type Finding = { game: GameName; seed: number; step: number; message: string };
@@ -342,6 +344,15 @@ function conserved(game: GameName, state: State): number[] {
           ) +
           len(pub.neutral?.hand) +
           len(pub.neutral?.discards),
+      ];
+    case "medici":
+      // Thirty-six cards: in the deck, set aside, discarded, on offer or aboard.
+      return [
+        len(priv.deck) +
+          len(priv.removed) +
+          len(priv.discard) +
+          len(pub.lot) +
+          sum(players.map((p) => len(p.ship))),
       ];
     case "fuji-flush":
       // Ninety cards: in the stack, in the drain, in hands or on the table.

@@ -129,6 +129,15 @@ describe("soundForEvent", () => {
     expect(soundForEvent("a plays a 7.")).toBe("card");
     expect(soundForEvent("a pushes a 7 through with b.")).toBe("win");
     expect(soundForEvent("Game over: a and b win together.")).toBe("fanfare");
+    expect(soundForEvent("a turns over Cloth 5.")).toBe("card");
+    expect(soundForEvent("a offers the lot: Cloth 5, Fur 2.")).toBe("chip");
+    expect(soundForEvent("a bids 7 florins.")).toBe("bid");
+    expect(soundForEvent("a wins the lot for 7 florins: Cloth 5.")).toBe("win");
+    expect(soundForEvent("Nobody bids: Dye 0 discarded.")).toBe("pass");
+    expect(soundForEvent("Day 1 is scored.")).toBe("fanfare");
+    expect(soundForEvent("Game over: a wins with 123 florins.")).toBe(
+      "fanfare",
+    );
     expect(soundForEvent("a places a temple at B2 and gains an amulet.")).toBe(
       "stonePlace",
     );

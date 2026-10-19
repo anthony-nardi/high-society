@@ -71,6 +71,12 @@ import {
 } from "./tigris/client";
 import { placeCoralReefCard } from "./coral-reef/client";
 import { placeSavannaCard } from "./savanna/client";
+import {
+  bidMedici,
+  drawMediciCard,
+  offerMediciLot,
+  passMedici,
+} from "./medici/client";
 
 import { leaderboard } from "./shared/leaderboard";
 
@@ -190,3 +196,9 @@ exports.placeCoralReefCard = placeCoralReefCard;
 
 // Ecosystem: Savanna
 exports.placeSavannaCard = placeSavannaCard;
+
+// Medici
+exports.drawMediciCard = drawMediciCard;
+exports.offerMediciLot = offerMediciLot;
+exports.bidMedici = bidMedici;
+exports.passMedici = passMedici;

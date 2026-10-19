@@ -664,6 +664,12 @@ export function soundForEvent(title: string): SoundKind | null {
     return "stoneLift";
   if (/commits (\d+ |nothing)/.test(text)) return "bid";
   if (/replaces \d+ tiles?\./.test(text)) return "card";
+  if (/turns over (cloth|spice|grain|dye|fur|gold) \d+/.test(text))
+    return "card";
+  if (/offers the lot/.test(text)) return "chip";
+  if (/^nobody bids/.test(text)) return "pass";
+  if (/fills the hold for nothing/.test(text)) return "card";
+  if (/^day \d is scored/.test(text)) return "fanfare";
   if (/takes over/.test(text)) return "merger";
   if (/calls the end/.test(text)) return "fanfare";
   if (/calls the armies/.test(text)) return "steel";

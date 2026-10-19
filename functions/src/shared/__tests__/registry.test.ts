@@ -136,6 +136,12 @@ describe("game registry", () => {
       "placeCoralReefCard",
     ]);
     expect(Object.keys(GAMES.savanna.actions)).toEqual(["placeSavannaCard"]);
+    expect(Object.keys(GAMES.medici.actions).sort()).toEqual([
+      "bidMedici",
+      "drawMediciCard",
+      "offerMediciLot",
+      "passMedici",
+    ]);
   });
 
   it("creates a playable state and lets bots finish from it", () => {

@@ -1,0 +1,186 @@
+/* The auction block in the middle of the table. */
+.block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 14px;
+  background:
+    radial-gradient(
+      ellipse at 50% 0%,
+      rgba(242, 194, 92, 0.12),
+      transparent 70%
+    ),
+    rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(242, 194, 92, 0.18);
+}
+
+.lot {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  min-height: 130px;
+  position: relative;
+}
+
+.lotGhost {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  pointer-events: none;
+}
+
+/* A sold lot lifts off the block towards the ships. */
+.sold {
+  animation: medici-sold 1400ms ease-out forwards;
+}
+
+@keyframes medici-sold {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: drop-shadow(0 0 0 rgba(120, 255, 160, 0));
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-10px) scale(1.06);
+    filter: drop-shadow(0 0 12px rgba(242, 194, 92, 0.9));
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-60px) scale(0.8);
+  }
+}
+
+/* A discarded lot sinks away. */
+.discarded {
+  animation: medici-discarded 1400ms ease-in forwards;
+}
+
+@keyframes medici-discarded {
+  0% {
+    opacity: 0.8;
+    transform: translateY(0) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(50px) rotate(8deg) scale(0.7);
+  }
+}
+
+/* Cards just loaded into a hold. */
+.loaded {
+  animation: medici-loaded 600ms cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+@keyframes medici-loaded {
+  from {
+    transform: translateY(-20px) scale(1.3);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+.highBid {
+  animation: medici-highbid 900ms ease-out;
+}
+
+@keyframes medici-highbid {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 216, 107, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 0 12px rgba(255, 216, 107, 0);
+  }
+}
+
+.narrative {
+  animation: medici-fade-in 300ms ease-out;
+}
+
+@keyframes medici-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* A player's hold: its slots in a row. */
+.hold {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 8px 0 6px;
+  min-height: 46px;
+}
+
+.seat {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+/* A florins figure that just went down. */
+.spent {
+  color: var(--mantine-color-red-4);
+}
+
+.level {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.tracks {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.counter {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .counterMoved {
+    animation: medici-counter 700ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+  }
+}
+
+@keyframes medici-counter {
+  from {
+    transform: translateY(14px) scale(0.8);
+    opacity: 0.4;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* The players round the table. */
+.players {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 12px;
+  align-items: start;
+}

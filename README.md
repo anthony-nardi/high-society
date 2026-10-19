@@ -1,8 +1,8 @@
-# High Society / No Thanks! / Razzia! / Family Inc. / For Sale / The Bridges of Shangri-La / Acquire / Condottiere / Ride the Rails / Clans / TwixT / Ecosystem / Fuji Flush / Tigris & Euphrates / Ecosystem: Coral Reef / Ecosystem: Savanna / ZÈRTZ / YINSH / DVONN / GIPF / LYNGK
+# High Society / No Thanks! / Razzia! / Family Inc. / For Sale / The Bridges of Shangri-La / Acquire / Condottiere / Ride the Rails / Clans / TwixT / Ecosystem / Fuji Flush / Tigris & Euphrates / Ecosystem: Coral Reef / Ecosystem: Savanna / Medici / ZÈRTZ / YINSH / DVONN / GIPF / LYNGK
 
-Twenty-two board and card games played online against friends or bots.
+Twenty-three board and card games played online against friends or bots.
 
-- `src/` — Vite + React 19 + Mantine 9 client (`/high-society`, `/no-thanks`, `/razzia`, `/family-inc`, `/zertz`, `/yinsh`, `/dvonn`, `/gipf`, `/lyngk`, `/for-sale`, `/shangri-la`, `/acquire`, `/condottiere`, `/ride-the-rails`, `/clans`, `/twixt`, `/ecosystem`, `/fuji-flush`, `/tigris`, `/coral-reef`, `/savanna`)
+- `src/` — Vite + React 19 + Mantine 9 client (`/high-society`, `/no-thanks`, `/razzia`, `/family-inc`, `/zertz`, `/yinsh`, `/dvonn`, `/gipf`, `/lyngk`, `/for-sale`, `/shangri-la`, `/acquire`, `/condottiere`, `/ride-the-rails`, `/clans`, `/twixt`, `/ecosystem`, `/fuji-flush`, `/tigris`, `/coral-reef`, `/savanna`, `/medici`)
 - `functions/` — Firebase Cloud Functions holding all game logic (Node 22 runtime)
 - Realtime Database stores lobbies and game state; Google sign-in via Firebase Auth
 
@@ -135,6 +135,13 @@ card only; the face-down deck is never read.
   Ecosystem judgement with the rulebook's scoring order, cheetahs and
   lions flipping prey for the hyenas and vultures, a guess at the gazelle
   bonus and the room left to grow.
+
+- Medici (`functions/src/medici/helpers/botSearch.ts`): a lot is worth
+  what it changes in the day's payouts: the ship's expected place with the
+  rest of the holds still to fill, the tracks' awards today and carried
+  into the days to come, and the climb towards the bonus levels; a bid
+  stays well under that, since florins are the score, and the auctioneer keeps turning over cards
+  while the lot's worth to them, less the keenest rival's, should grow.
 
 - Ride the Rails (`functions/src/ride-the-rails/helpers/botSearch.ts`):
   a share by what the railroad will pay, each locomotive by the links and
