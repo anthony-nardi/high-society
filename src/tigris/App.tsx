@@ -11,6 +11,7 @@ import SoundToggle from "../shared/components/SoundToggle";
 import PanelInset from "../shared/components/PanelInset";
 import StatsDrawer from "../shared/components/StatsDrawer";
 import Game from "./game";
+import tigrisLobby from "./lobbyTheme";
 
 initializeFirebase();
 
@@ -26,7 +27,7 @@ function App() {
             <TigrisRules />
             <GameTitle />
             <Login />
-            <Lobby gameName={"tigris"} />
+            <Lobby gameName={"tigris"} theme={tigrisLobby} />
             <Game />
           </GameStateProvider>
         </LobbyProvider>

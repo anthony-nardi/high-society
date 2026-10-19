@@ -11,6 +11,7 @@ import SoundToggle from "../shared/components/SoundToggle";
 import PanelInset from "../shared/components/PanelInset";
 import StatsDrawer from "../shared/components/StatsDrawer";
 import Game from "./game";
+import fujiFlushLobby from "./lobbyTheme";
 
 initializeFirebase();
 
@@ -26,7 +27,7 @@ function App() {
             <FujiFlushRules />
             <GameTitle />
             <Login />
-            <Lobby gameName={"fuji-flush"} />
+            <Lobby gameName={"fuji-flush"} theme={fujiFlushLobby} />
             <Game />
           </GameStateProvider>
         </LobbyProvider>

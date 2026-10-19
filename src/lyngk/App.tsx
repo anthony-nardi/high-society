@@ -11,6 +11,7 @@ import SoundToggle from "../shared/components/SoundToggle";
 import PanelInset from "../shared/components/PanelInset";
 import StatsDrawer from "../shared/components/StatsDrawer";
 import Game from "./game";
+import lyngkLobby from "./lobbyTheme";
 
 initializeFirebase();
 
@@ -26,7 +27,7 @@ function App() {
             <LyngkRules />
             <GameTitle />
             <Login />
-            <Lobby gameName={"lyngk"} />
+            <Lobby gameName={"lyngk"} theme={lyngkLobby} />
             <Game />
           </GameStateProvider>
         </LobbyProvider>

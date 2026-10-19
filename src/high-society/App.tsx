@@ -11,6 +11,7 @@ import { UserProvider } from "../shared/context/UserProvider";
 import SoundToggle from "../shared/components/SoundToggle";
 import PanelInset from "../shared/components/PanelInset";
 import StatsDrawer from "../shared/components/StatsDrawer";
+import highSocietyLobby from "./lobbyTheme";
 
 initializeFirebase();
 
@@ -26,7 +27,7 @@ function App() {
             <HighSocietyRules />
             <GameTitle />
             <Login />
-            <Lobby gameName="high-society" />
+            <Lobby gameName={"high-society"} theme={highSocietyLobby} />
             <Game />
           </GameStateProvider>
         </LobbyProvider>

@@ -11,6 +11,7 @@ import SoundToggle from "../shared/components/SoundToggle";
 import PanelInset from "../shared/components/PanelInset";
 import StatsDrawer from "../shared/components/StatsDrawer";
 import Game from "./game";
+import mediciLobby from "./lobbyTheme";
 
 initializeFirebase();
 
@@ -26,7 +27,7 @@ function App() {
             <MediciRules />
             <GameTitle />
             <Login />
-            <Lobby gameName={"medici"} />
+            <Lobby gameName={"medici"} theme={mediciLobby} />
             <Game />
           </GameStateProvider>
         </LobbyProvider>

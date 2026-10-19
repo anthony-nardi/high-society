@@ -11,6 +11,7 @@ import SoundToggle from "../shared/components/SoundToggle";
 import PanelInset from "../shared/components/PanelInset";
 import StatsDrawer from "../shared/components/StatsDrawer";
 import Game from "./game";
+import condottiereLobby from "./lobbyTheme";
 
 initializeFirebase();
 
@@ -26,7 +27,7 @@ function App() {
             <CondottiereRules />
             <GameTitle />
             <Login />
-            <Lobby gameName={"condottiere"} />
+            <Lobby gameName={"condottiere"} theme={condottiereLobby} />
             <Game />
           </GameStateProvider>
         </LobbyProvider>

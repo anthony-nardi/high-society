@@ -11,6 +11,7 @@ import SoundToggle from "../shared/components/SoundToggle";
 import PanelInset from "../shared/components/PanelInset";
 import StatsDrawer from "../shared/components/StatsDrawer";
 import Game from "./game";
+import zertzLobby from "./lobbyTheme";
 
 initializeFirebase();
 
@@ -26,7 +27,7 @@ function App() {
             <ZertzRules />
             <GameTitle />
             <Login />
-            <Lobby gameName={"zertz"} />
+            <Lobby gameName={"zertz"} theme={zertzLobby} />
             <Game />
           </GameStateProvider>
         </LobbyProvider>

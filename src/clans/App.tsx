@@ -11,6 +11,7 @@ import SoundToggle from "../shared/components/SoundToggle";
 import PanelInset from "../shared/components/PanelInset";
 import StatsDrawer from "../shared/components/StatsDrawer";
 import Game from "./game";
+import clansLobby from "./lobbyTheme";
 
 initializeFirebase();
 
@@ -26,7 +27,7 @@ function App() {
             <ClansRules />
             <GameTitle />
             <Login />
-            <Lobby gameName={"clans"} />
+            <Lobby gameName={"clans"} theme={clansLobby} />
             <Game />
           </GameStateProvider>
         </LobbyProvider>

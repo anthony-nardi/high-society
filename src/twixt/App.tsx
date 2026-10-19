@@ -11,6 +11,7 @@ import SoundToggle from "../shared/components/SoundToggle";
 import PanelInset from "../shared/components/PanelInset";
 import StatsDrawer from "../shared/components/StatsDrawer";
 import Game from "./game";
+import twixtLobby from "./lobbyTheme";
 
 initializeFirebase();
 
@@ -26,7 +27,7 @@ function App() {
             <TwixtRules />
             <GameTitle />
             <Login />
-            <Lobby gameName={"twixt"} />
+            <Lobby gameName={"twixt"} theme={twixtLobby} />
             <Game />
           </GameStateProvider>
         </LobbyProvider>

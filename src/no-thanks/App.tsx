@@ -11,6 +11,7 @@ import { UserProvider } from "../shared/context/UserProvider";
 import SoundToggle from "../shared/components/SoundToggle";
 import PanelInset from "../shared/components/PanelInset";
 import StatsDrawer from "../shared/components/StatsDrawer";
+import noThanksLobby from "./lobbyTheme";
 
 initializeFirebase();
 
@@ -26,7 +27,7 @@ function App() {
             <NoThanksRules />
             <GameTitle />
             <Login />
-            <Lobby gameName={"no-thanks"} />
+            <Lobby gameName={"no-thanks"} theme={noThanksLobby} />
             <Game />
           </GameStateProvider>
         </LobbyProvider>

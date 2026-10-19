@@ -11,6 +11,7 @@ import SoundToggle from "../shared/components/SoundToggle";
 import PanelInset from "../shared/components/PanelInset";
 import StatsDrawer from "../shared/components/StatsDrawer";
 import Game from "./game";
+import dvonnLobby from "./lobbyTheme";
 
 initializeFirebase();
 
@@ -26,7 +27,7 @@ function App() {
             <DvonnRules />
             <GameTitle />
             <Login />
-            <Lobby gameName={"dvonn"} />
+            <Lobby gameName={"dvonn"} theme={dvonnLobby} />
             <Game />
           </GameStateProvider>
         </LobbyProvider>

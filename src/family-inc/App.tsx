@@ -11,6 +11,7 @@ import SoundToggle from "../shared/components/SoundToggle";
 import PanelInset from "../shared/components/PanelInset";
 import StatsDrawer from "../shared/components/StatsDrawer";
 import Game from "./game";
+import familyIncLobby from "./lobbyTheme";
 
 initializeFirebase();
 
@@ -26,7 +27,7 @@ function App() {
             <FamilyIncRules />
             <GameTitle />
             <Login />
-            <Lobby gameName={"family-inc"} />
+            <Lobby gameName={"family-inc"} theme={familyIncLobby} />
             <Game />
           </GameStateProvider>
         </LobbyProvider>

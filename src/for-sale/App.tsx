@@ -11,6 +11,7 @@ import SoundToggle from "../shared/components/SoundToggle";
 import PanelInset from "../shared/components/PanelInset";
 import StatsDrawer from "../shared/components/StatsDrawer";
 import Game from "./game";
+import forSaleLobby from "./lobbyTheme";
 
 initializeFirebase();
 
@@ -26,7 +27,7 @@ function App() {
             <ForSaleRules />
             <GameTitle />
             <Login />
-            <Lobby gameName={"for-sale"} />
+            <Lobby gameName={"for-sale"} theme={forSaleLobby} />
             <Game />
           </GameStateProvider>
         </LobbyProvider>

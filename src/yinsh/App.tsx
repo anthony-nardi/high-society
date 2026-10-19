@@ -11,6 +11,7 @@ import SoundToggle from "../shared/components/SoundToggle";
 import PanelInset from "../shared/components/PanelInset";
 import StatsDrawer from "../shared/components/StatsDrawer";
 import Game from "./game";
+import yinshLobby from "./lobbyTheme";
 
 initializeFirebase();
 
@@ -26,7 +27,7 @@ function App() {
             <YinshRules />
             <GameTitle />
             <Login />
-            <Lobby gameName={"yinsh"} />
+            <Lobby gameName={"yinsh"} theme={yinshLobby} />
             <Game />
           </GameStateProvider>
         </LobbyProvider>

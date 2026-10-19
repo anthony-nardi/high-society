@@ -11,6 +11,7 @@ import SoundToggle from "../shared/components/SoundToggle";
 import PanelInset from "../shared/components/PanelInset";
 import StatsDrawer from "../shared/components/StatsDrawer";
 import Game from "./game";
+import gipfLobby from "./lobbyTheme";
 
 initializeFirebase();
 
@@ -26,7 +27,7 @@ function App() {
             <GipfRules />
             <GameTitle />
             <Login />
-            <Lobby gameName={"gipf"} />
+            <Lobby gameName={"gipf"} theme={gipfLobby} />
             <Game />
           </GameStateProvider>
         </LobbyProvider>

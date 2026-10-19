@@ -11,6 +11,7 @@ import SoundToggle from "../shared/components/SoundToggle";
 import PanelInset from "../shared/components/PanelInset";
 import StatsDrawer from "../shared/components/StatsDrawer";
 import Game from "./game";
+import shangriLaLobby from "./lobbyTheme";
 
 initializeFirebase();
 
@@ -26,7 +27,7 @@ function App() {
             <ShangriLaRules />
             <GameTitle />
             <Login />
-            <Lobby gameName={"shangri-la"} />
+            <Lobby gameName={"shangri-la"} theme={shangriLaLobby} />
             <Game />
           </GameStateProvider>
         </LobbyProvider>
