@@ -144,7 +144,7 @@ export default function ActionPanel({
     hint = `${CARD_LABEL[stagedCard]}: ${CARD_HELP[stagedCard]} Play it, or tap it to put it back.`;
   else
     hint =
-      "Tap a card to lift it, then play it. Or pass to sit out the rest of this battle.";
+      "One card a turn: tap a card to lift it, then play it, and the turn moves on. The battle comes back round to you until you pass, which sits you out for the rest of it.";
 
   return (
     <div

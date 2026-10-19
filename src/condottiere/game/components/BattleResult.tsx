@@ -22,6 +22,11 @@ export default function BattleResult({
   const name = (email: string) => (email === me ? "You" : displayName(email));
   const top = Math.max(0, ...last.totals.map((t) => t.strength));
   const lines = last.lines || [];
+  const surrender =
+    gameState.lastMove?.type === "play" &&
+    gameState.lastMove.card === "SURRENDER"
+      ? gameState.lastMove.email
+      : undefined;
   return (
     <div className={classes.arena} aria-label="Last battle">
       <Stack gap={8}>
@@ -30,6 +35,12 @@ export default function BattleResult({
             <Badge color="gray" variant="light" radius="sm">
               Last battle · {REGIONS[last.region].name}
             </Badge>
+            {surrender && (
+              <Badge color="gray" variant="outline" radius="sm">
+                ⚑ Ended by {name(surrender)}
+                {surrender === me ? "r" : "'s"} Surrender
+              </Badge>
+            )}
             {last.winner ? (
               <Badge
                 radius="sm"
