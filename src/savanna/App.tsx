@@ -11,6 +11,7 @@ import SoundToggle from "../shared/components/SoundToggle";
 import PanelInset from "../shared/components/PanelInset";
 import StatsDrawer from "../shared/components/StatsDrawer";
 import Game from "./game";
+import savannaLobby from "./lobbyTheme";
 
 initializeFirebase();
 
@@ -26,7 +27,7 @@ function App() {
             <SavannaRules />
             <GameTitle />
             <Login />
-            <Lobby gameName={"savanna"} />
+            <Lobby gameName={"savanna"} theme={savannaLobby} />
             <Game />
           </GameStateProvider>
         </LobbyProvider>

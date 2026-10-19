@@ -1,21 +1,33 @@
 import { LobbyPlayer } from "../types";
 import { ActionIcon, Badge, Group, Stack, Text } from "@mantine/core";
 import displayName, { isBotName } from "../../utils/displayName";
+import classes from "../lobby.module.css";
 
 export default function PlayersList({
   players,
   onRemoveBot,
   removingBot,
+  seatIcons,
+  botIcon = "🤖",
 }: {
   players: LobbyPlayer[];
   /** When given, bots get a remove control. */
   onRemoveBot?: (email: string) => void;
   removingBot?: string | null;
+  /** A game's icons for the people at the table, handed out in order. */
+  seatIcons?: string[];
+  botIcon?: string;
 }) {
+  let humans = 0;
   return (
     <Stack gap="xs" data-testid="players-list">
       {players.map((player) => {
         const isBot = player.isBot || isBotName(player.email);
+        const icon = isBot
+          ? botIcon
+          : seatIcons?.length
+            ? seatIcons[humans++ % seatIcons.length]
+            : "🙂";
         return (
           <Group
             key={player.email}
@@ -30,8 +42,12 @@ export default function PlayersList({
             }}
           >
             <Group gap="sm" wrap="nowrap">
-              <Text component="span" fz="lg" aria-hidden="true">
-                {isBot ? "🤖" : "🙂"}
+              <Text
+                component="span"
+                className={classes.seatIcon}
+                aria-hidden="true"
+              >
+                {icon}
               </Text>
               <div>
                 <Text fw={600}>{displayName(player.email)}</Text>

@@ -11,6 +11,7 @@ import SoundToggle from "../shared/components/SoundToggle";
 import PanelInset from "../shared/components/PanelInset";
 import StatsDrawer from "../shared/components/StatsDrawer";
 import Game from "./game";
+import coralReefLobby from "./lobbyTheme";
 
 initializeFirebase();
 
@@ -26,7 +27,7 @@ function App() {
             <CoralReefRules />
             <GameTitle />
             <Login />
-            <Lobby gameName={"coral-reef"} />
+            <Lobby gameName={"coral-reef"} theme={coralReefLobby} />
             <Game />
           </GameStateProvider>
         </LobbyProvider>

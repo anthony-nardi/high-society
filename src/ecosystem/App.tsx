@@ -11,6 +11,7 @@ import SoundToggle from "../shared/components/SoundToggle";
 import PanelInset from "../shared/components/PanelInset";
 import StatsDrawer from "../shared/components/StatsDrawer";
 import Game from "./game";
+import ecosystemLobby from "./lobbyTheme";
 
 initializeFirebase();
 
@@ -26,7 +27,7 @@ function App() {
             <EcosystemRules />
             <GameTitle />
             <Login />
-            <Lobby gameName={"ecosystem"} />
+            <Lobby gameName={"ecosystem"} theme={ecosystemLobby} />
             <Game />
           </GameStateProvider>
         </LobbyProvider>

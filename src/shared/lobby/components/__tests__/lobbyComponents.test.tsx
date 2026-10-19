@@ -54,6 +54,22 @@ describe("PlayersList", () => {
     expect(screen.getByText("Waiting")).toBeTruthy();
   });
 
+  it("hands out a theme's seat icons to the people in order", () => {
+    renderWithMantine(
+      <PlayersList
+        players={[
+          { email: "alice@example.com", ready: true },
+          { email: "Bot #1", ready: true, isBot: true },
+          { email: "bob@example.com", ready: false },
+        ]}
+        seatIcons={["🐻", "🦊"]}
+        botIcon="🦉"
+      />,
+    );
+    const icons = screen.getAllByText(/🐻|🦊|🦉/).map((el) => el.textContent);
+    expect(icons).toEqual(["🐻", "🦉", "🦊"]);
+  });
+
   it("marks bots and lets them be removed", () => {
     const onRemoveBot = vi.fn();
     renderWithMantine(

@@ -22,8 +22,51 @@ import { useUserContext } from "../context/useUserContext";
 import { useLobbyContext } from "../context/useLobbyContext";
 import displayName from "../utils/displayName";
 import { GAME_INFO } from "@games/shared/gameInfo";
+import type { LobbyTheme } from "./theme";
+import classes from "./lobby.module.css";
 
-export default function Lobby({ gameName }: { gameName: GameName }) {
+/** A game's theme dresses the lobby; without one it keeps the plain look. */
+function Dressed({
+  theme,
+  children,
+}: {
+  theme?: LobbyTheme;
+  children: React.ReactNode;
+}) {
+  if (!theme) return <>{children}</>;
+  return (
+    <div
+      className={classes.themed}
+      style={
+        {
+          "--lobby-accent": theme.accent,
+          background: theme.background,
+        } as React.CSSProperties
+      }
+      data-testid="themed-lobby"
+    >
+      {theme.banner}
+      <Text
+        size="sm"
+        c="dimmed"
+        ta="center"
+        className={classes.flavour}
+        mb="md"
+      >
+        {theme.flavour}
+      </Text>
+      {children}
+    </div>
+  );
+}
+
+export default function Lobby({
+  gameName,
+  theme,
+}: {
+  gameName: GameName;
+  theme?: LobbyTheme;
+}) {
   const { user } = useUserContext();
   const { lobbyId, isLoadingLobbyData, lobbyData, isJoiningLobby } =
     useLobbyContext();
@@ -152,32 +195,39 @@ export default function Lobby({ gameName }: { gameName: GameName }) {
 
   if (!lobbyId) {
     return (
-      <Center>
-        <Stack gap="sm" align="center">
-          {hasModes && (
-            <Stack gap={4} align="center">
-              <SegmentedControl
-                value={mode}
-                onChange={(v) => setMode(v as "TYCOON" | "CLASSIC")}
-                data={[
-                  { value: "TYCOON", label: "Tycoon Mode" },
-                  { value: "CLASSIC", label: "Classic Mode" },
-                ]}
-                aria-label="Stockholder bonus mode"
-              />
-              <Text size="xs" c="dimmed" ta="center" maw={360}>
-                {mode === "TYCOON"
-                  ? "Bonuses go to the top three stockholders. The rulebook's pick for a first game."
-                  : "Bonuses go to the top two stockholders, as in the original game."}{" "}
-                Two-player games always use Classic.
-              </Text>
-            </Stack>
-          )}
-          <Button loading={!!isCreatingLobby} onClick={handleCreateLobby}>
-            Create lobby
-          </Button>
-        </Stack>
-      </Center>
+      <Container size="xs" px="md">
+        <Dressed theme={theme}>
+          <Stack gap="sm" align="center">
+            {hasModes && (
+              <Stack gap={4} align="center">
+                <SegmentedControl
+                  value={mode}
+                  onChange={(v) => setMode(v as "TYCOON" | "CLASSIC")}
+                  data={[
+                    { value: "TYCOON", label: "Tycoon Mode" },
+                    { value: "CLASSIC", label: "Classic Mode" },
+                  ]}
+                  aria-label="Stockholder bonus mode"
+                />
+                <Text size="xs" c="dimmed" ta="center" maw={360}>
+                  {mode === "TYCOON"
+                    ? "Bonuses go to the top three stockholders. The rulebook's pick for a first game."
+                    : "Bonuses go to the top two stockholders, as in the original game."}{" "}
+                  Two-player games always use Classic.
+                </Text>
+              </Stack>
+            )}
+            <Button
+              loading={!!isCreatingLobby}
+              onClick={handleCreateLobby}
+              color={theme?.accent}
+              autoContrast
+            >
+              Create lobby
+            </Button>
+          </Stack>
+        </Dressed>
+      </Container>
     );
   }
 
@@ -205,69 +255,76 @@ export default function Lobby({ gameName }: { gameName: GameName }) {
 
   return (
     <Container size="xs" px="md">
-      <Stack gap="md">
-        <Group justify="space-between" align="flex-start" wrap="wrap">
-          <ConnectedPlayersCount gameName={gameName} players={players} />
-          <Group gap="xs">
-            <Button variant="default" onClick={handleCopyInvite}>
-              {copied ? "Link copied" : "Copy invite link"}
-            </Button>
-            <Button
-              variant="default"
-              onClick={handleAddBot}
-              loading={!!isAddingBot}
-              disabled={!!isAddingBot || isFull}
-              title={isFull ? "The lobby is full" : undefined}
-            >
-              Add bot
-            </Button>
+      <Dressed theme={theme}>
+        <Stack gap="md">
+          <Group justify="space-between" align="flex-start" wrap="wrap">
+            <ConnectedPlayersCount gameName={gameName} players={players} />
+            <Group gap="xs">
+              <Button variant="default" onClick={handleCopyInvite}>
+                {copied ? "Link copied" : "Copy invite link"}
+              </Button>
+              <Button
+                variant="default"
+                onClick={handleAddBot}
+                loading={!!isAddingBot}
+                disabled={!!isAddingBot || isFull}
+                title={isFull ? "The lobby is full" : undefined}
+              >
+                Add bot
+              </Button>
+            </Group>
           </Group>
-        </Group>
 
-        <Text size="xs" c="dimmed" ta="center">
-          {info?.title ?? gameName} seats{" "}
-          {minPlayers === maxPlayers
-            ? minPlayers
-            : `${minPlayers} to ${maxPlayers}`}{" "}
-          players. Bots can take any empty seat.
-          {hasModes &&
-            (lobbyData.options?.mode === "CLASSIC"
-              ? " Classic Mode: bonuses to the top two stockholders."
-              : " Tycoon Mode: bonuses to the top three stockholders (Classic with two players).")}
-        </Text>
+          <Text size="xs" c="dimmed" ta="center">
+            {info?.title ?? gameName} seats{" "}
+            {minPlayers === maxPlayers
+              ? minPlayers
+              : `${minPlayers} to ${maxPlayers}`}{" "}
+            players. Bots can take any empty seat.
+            {hasModes &&
+              (lobbyData.options?.mode === "CLASSIC"
+                ? " Classic Mode: bonuses to the top two stockholders."
+                : " Tycoon Mode: bonuses to the top three stockholders (Classic with two players).")}
+          </Text>
 
-        <PlayersList
-          players={players}
-          onRemoveBot={handleRemoveBot}
-          removingBot={removingBot}
-        />
+          <PlayersList
+            players={players}
+            onRemoveBot={handleRemoveBot}
+            removingBot={removingBot}
+            seatIcons={theme?.seatIcons}
+            botIcon={theme?.botIcon}
+          />
 
-        <Text size="sm" c="dimmed" ta="center" aria-live="polite">
-          {status}
-        </Text>
+          <Text size="sm" c="dimmed" ta="center" aria-live="polite">
+            {status}
+          </Text>
 
-        {!isCurrentUserReady && (
-          <Button
-            size="lg"
-            onClick={handleReadyUp}
-            loading={!!isReadying}
-            disabled={!!isReadying || isStartingWithBots}
-          >
-            I'm ready
-          </Button>
-        )}
-        {missingForBots > 0 && (
-          <Button
-            size="lg"
-            variant="light"
-            onClick={handleStartWithBots}
-            loading={isStartingWithBots}
-            disabled={isStartingWithBots || !!isReadying}
-          >
-            Start now with {missingForBots} bot{missingForBots === 1 ? "" : "s"}
-          </Button>
-        )}
-      </Stack>
+          {!isCurrentUserReady && (
+            <Button
+              size="lg"
+              onClick={handleReadyUp}
+              loading={!!isReadying}
+              disabled={!!isReadying || isStartingWithBots}
+              color={theme?.accent}
+              autoContrast
+            >
+              {theme?.readyLabel ?? "I'm ready"}
+            </Button>
+          )}
+          {missingForBots > 0 && (
+            <Button
+              size="lg"
+              variant="light"
+              onClick={handleStartWithBots}
+              loading={isStartingWithBots}
+              disabled={isStartingWithBots || !!isReadying}
+            >
+              Start now with {missingForBots} bot
+              {missingForBots === 1 ? "" : "s"}
+            </Button>
+          )}
+        </Stack>
+      </Dressed>
     </Container>
   );
 }
