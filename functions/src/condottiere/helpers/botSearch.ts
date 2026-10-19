@@ -39,7 +39,9 @@ export function regionValue(
   const mine = me.regions || [];
   const withIt = [...mine, region];
   let value = 1;
-  if (largestConnected(withIt) > largestConnected(mine)) value += 2;
+  // Joining a chain of our own is worth more; a first region is just a region.
+  if (mine.length > 0 && largestConnected(withIt) > largestConnected(mine))
+    value += 2;
   if (
     largestConnected(withIt) >= gameState.public.winAdjacent ||
     withIt.length >= gameState.public.winTotal
@@ -54,7 +56,10 @@ export function regionValue(
       theirsWithIt.length >= gameState.public.winTotal
     )
       value += 6;
-    else if (largestConnected(theirsWithIt) > largestConnected(theirs))
+    else if (
+      theirs.length > 0 &&
+      largestConnected(theirsWithIt) > largestConnected(theirs)
+    )
       value += 2;
     else if (neighbours(region).some((n) => theirs.includes(n))) value += 1;
     // A rival with a few regions already is worth holding back wherever they go.
@@ -110,8 +115,13 @@ export function chooseBattleMove(gameState: CondottiereGameState): BotMove {
   // What the bot will commit here: a share of all it could field this battle,
   // a third for any region and everything when the game turns on it.
   const power = handPower(hand) + handPower(me.line || []);
-  const share = value >= 10 ? 1 : value >= 6 ? 0.8 : value >= 3 ? 0.55 : 0.35;
-  const budget = Math.max(6, Math.round(power * share));
+  const share = value >= 10 ? 1 : value >= 6 ? 0.8 : value >= 3 ? 0.5 : 0.3;
+  // Keep something back for the battles still to come, unless this one decides the game.
+  const reserve = value >= 6 ? 0 : 8;
+  const budget = Math.max(
+    4,
+    Math.min(Math.round(power * share), power - reserve),
+  );
   const spent = handPower(me.line || []);
 
   // Surrender while ahead locks in the win.
@@ -160,7 +170,15 @@ export function chooseBattleMove(gameState: CondottiereGameState): BotMove {
       }
     }
     // Out of reach, or more than this region is worth: sit out.
-    if (gap >= handPower(hand)) return { kind: "pass" };
+    const courtesans = hand.filter((c) => c === "COURTESAN").length;
+    const drumming =
+      indexOf("DRUMMER") >= 0 && !(me.line || []).includes("DRUMMER")
+        ? (me.line || [])
+            .filter(isMercenary)
+            .reduce((s, c) => s + mercenaryValue(c), 0) +
+          hand.filter(isMercenary).reduce((s, c) => s + mercenaryValue(c), 0)
+        : 0;
+    if (gap >= handPower(hand) + courtesans + drumming) return { kind: "pass" };
     if (spent + gap > budget) return { kind: "pass" };
     // Spring when our strongest cards would gain the most.
     if (
@@ -190,7 +208,9 @@ export function chooseBattleMove(gameState: CondottiereGameState): BotMove {
             : mercenaryValue(c)
           : c === "HEROINE"
             ? 10
-            : 0,
+            : c === "COURTESAN"
+              ? 1
+              : 0,
       }))
       .filter((m) => m.v > 0)
       .sort((a, b) => a.v - b.v);
@@ -200,7 +220,7 @@ export function chooseBattleMove(gameState: CondottiereGameState): BotMove {
     const affordable = mercs.filter((m) => spent + m.v <= budget);
     // The cheapest card that takes the lead within budget; over budget only for a region that matters.
     const enough =
-      affordable.find(lifts) ?? (value >= 3 ? mercs.find(lifts) : undefined);
+      affordable.find(lifts) ?? (value >= 6 ? mercs.find(lifts) : undefined);
     if (enough) return { kind: "play", index: enough.i };
     // Otherwise build towards the lead with the biggest card the budget allows.
     const biggest = affordable[affordable.length - 1];
