@@ -196,23 +196,32 @@ export default function AcquireRules() {
         <Table withTableBorder fz="xs" verticalSpacing={2}>
           <Table.Thead>
             <Table.Tr>
-              <Table.Th>Chain size</Table.Th>
               <Table.Th>Cheap</Table.Th>
               <Table.Th>Medium</Table.Th>
               <Table.Th>Dear</Table.Th>
+              <Table.Th ta="right">Share price</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
-            {SIZES.map(([name, size]) => (
-              <Table.Tr key={name}>
-                <Table.Td>{name}</Table.Td>
-                <Table.Td>{money(priceOf("LUXOR", size))}</Table.Td>
-                <Table.Td>{money(priceOf("AMERICAN", size))}</Table.Td>
-                <Table.Td>{money(priceOf("IMPERIAL", size))}</Table.Td>
+            {PRICES.map((price) => (
+              <Table.Tr key={price}>
+                {(["LUXOR", "AMERICAN", "IMPERIAL"] as const).map((chain) => (
+                  <Table.Td key={chain}>
+                    {SIZES.find(
+                      ([, size]) => priceOf(chain, size) === price,
+                    )?.[0] ?? "–"}
+                  </Table.Td>
+                ))}
+                <Table.Td ta="right">{money(price)}</Table.Td>
               </Table.Tr>
             ))}
           </Table.Tbody>
         </Table>
+        <Text size="xs" c="dimmed">
+          Each column is a band's chain sizes, as on the price card in the box:
+          a medium chain pays one row more than a cheap one of the same size, a
+          dear chain two rows more. Any chain can grow to any size.
+        </Text>
 
         <Title order={4}>Who gets paid: {modeLabel(mode)} Mode</Title>
         {gameState ? (
