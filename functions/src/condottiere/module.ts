@@ -37,7 +37,12 @@ const condottiere: GameModule<CondottiereGameState> = {
     })),
   isGameOver,
   botTurn: (state) => takeBotTurn(state),
-  botPauseMs: 1100,
+  // A Surrender deserves its moment before the next battlefield is called.
+  botPauseMs: (state) =>
+    state.public.lastMove?.type === "play" &&
+    state.public.lastMove.card === "SURRENDER"
+      ? 4500
+      : 1100,
 };
 
 export default condottiere;

@@ -406,12 +406,10 @@ export function playCard(
   const card = hand[index];
   if (!card) return fail("That card is not in your hand.");
 
-  if (card === "SCARECROW") {
+  if (card === "SCARECROW" && target !== undefined) {
     const line = player.line || [];
-    if (target === undefined || !isMercenary(line[target] ?? "DRUMMER"))
-      return fail(
-        "A Scarecrow takes back one of your mercenaries: choose which.",
-      );
+    if (!isMercenary(line[target] ?? "DRUMMER"))
+      return fail("A Scarecrow takes back one of your mercenaries.");
   }
   if (
     card === "BISHOP" &&
@@ -435,11 +433,16 @@ export function playCard(
 
   switch (card) {
     case "SCARECROW": {
+      discard(gameState, ["SCARECROW"]);
+      if (target === undefined) {
+        // Played for nothing: a way to stay in the battle without committing.
+        note = `${player.email} plays a Scarecrow and takes nothing back.`;
+        break;
+      }
       const line = [...(player.line || [])];
-      const [back] = line.splice(target as number, 1);
+      const [back] = line.splice(target, 1);
       player.line = line;
       player.hand = [...player.hand, back];
-      discard(gameState, ["SCARECROW"]);
       move.returned = back;
       note = `${player.email} plays a Scarecrow and takes back a ${label(back)}.`;
       break;

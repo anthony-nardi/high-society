@@ -31,6 +31,7 @@ export default function ActionPanel({
   onSkipPope,
   onCancel,
   onMercenary,
+  onStall,
 }: {
   gameState: CondottiereGameState;
   me: CondottierePlayerState;
@@ -43,6 +44,8 @@ export default function ActionPanel({
   onCancel: () => void;
   /** A Scarecrow waiting: which mercenary in your line to take back. */
   onMercenary?: (lineIndex: number) => void;
+  /** A Scarecrow played for nothing: a way to stay in without committing. */
+  onStall?: () => void;
 }) {
   const acting = gameState.activePlayer === me.email;
   const who = displayName(gameState.activePlayer);
@@ -134,8 +137,9 @@ export default function ActionPanel({
   let hint: string;
   if (loading) hint = "Sending your move…";
   else if (pending?.card === "SCARECROW")
-    hint =
-      "Choose which of your mercenaries the Scarecrow takes back: tap it in your line above, or use the buttons here.";
+    hint = (me.line || []).some(isMercenary)
+      ? "Choose which of your mercenaries the Scarecrow takes back, or play it for nothing to stay in the battle without committing a card."
+      : "You have no mercenary in your line to take back, but the Scarecrow can still be played for nothing: you stay in the battle without committing a card.";
   else if (pending?.card === "BISHOP")
     hint = popeTargets(gameState).length
       ? "Every copy of the strongest mercenary on the table is discarded. Tap a region on the map to send the Pope there, or play without moving him."
@@ -176,6 +180,11 @@ export default function ActionPanel({
           {!loading && pending?.card === "BISHOP" && (
             <Button variant="light" onClick={onSkipPope}>
               Play without moving the Pope
+            </Button>
+          )}
+          {!loading && pending?.card === "SCARECROW" && onStall && (
+            <Button variant="light" onClick={onStall}>
+              Play it for nothing
             </Button>
           )}
           {!loading && pending && (

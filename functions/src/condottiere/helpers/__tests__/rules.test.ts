@@ -161,10 +161,30 @@ describe("a battle", () => {
     playCard(state, 0);
     playCard(state, 0);
     pass(state);
-    expect(playCard(state, 0).ok).toBe(false); // needs a target
+    expect(playCard(state, 0, 5).ok).toBe(false); // no such mercenary
     expect(playCard(state, 0, 0).ok).toBe(true);
     expect(state.public.players[0].line).toEqual([]);
     expect(state.public.players[0].hand).toEqual(["M6"]);
+    expect(state.public.lastMove?.returned).toBe("M6");
+  });
+
+  it("lets a scarecrow be played for nothing, to stay in the battle", () => {
+    const state = battle({
+      a: ["M6", "SCARECROW"],
+      b: ["M3", "M2"],
+      c: ["M1"],
+    });
+    playCard(state, 0); // a: 6
+    playCard(state, 0); // b: 3
+    pass(state); // c
+    expect(playCard(state, 0).ok).toBe(true); // a's scarecrow, no target
+    expect(state.public.players[0].line).toEqual(["M6"]);
+    expect(state.public.players[0].hand).toEqual([]);
+    expect(state.public.lastMove?.returned).toBeUndefined();
+    expect(state.public.notification?.title).toBe(
+      "a plays a Scarecrow and takes nothing back.",
+    );
+    expect(state.public.activePlayer).toBe("b");
   });
 
   it("redeals ten plus one per region once at most one player has cards", () => {

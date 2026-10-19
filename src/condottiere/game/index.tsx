@@ -11,6 +11,7 @@ import { CondottiereGameState } from "./types";
 import Map, { Highlight } from "./components/Map";
 import BattleLines from "./components/BattleLines";
 import BattleResult from "./components/BattleResult";
+import SurrenderMoment from "./components/SurrenderMoment";
 import PlayerOverview from "./components/PlayerOverview";
 import ActionPanel, { Pending } from "./components/ActionPanel";
 import GameOver from "./components/GameOver";
@@ -144,6 +145,7 @@ export default function Game() {
   return (
     <>
       <TurnBanner active={acting && inProgress} />
+      <SurrenderMoment gameState={gameState} me={me?.email} />
       <Container fluid px="md" pt={44} pb="md">
         <div className={tableClasses.table}>
           <div
@@ -222,6 +224,11 @@ export default function Game() {
           }}
           onCancel={() => setPending(null)}
           onMercenary={handleMercenary}
+          onStall={() => {
+            if (!pending) return;
+            const index = pending.index;
+            void call(() => playCondottiereCard({ lobbyUID, index }));
+          }}
         />
       )}
     </>

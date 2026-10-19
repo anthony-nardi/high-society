@@ -29,7 +29,9 @@ export type SoundKind =
   | "chime"
   | "bell"
   | "flourish"
-  | "rustle";
+  | "rustle"
+  | "steel"
+  | "surrender";
 
 const MUTE_KEY = "sound:muted";
 const MUTE_EVENT = "sound:mute-changed";
@@ -399,6 +401,92 @@ const SOUNDS: { [kind in SoundKind]: Note[] } = {
       noiseQ: 0.8,
     },
   ],
+  // The call to arms: blades ring twice over a thud.
+  steel: [
+    {
+      frequency: 90,
+      at: 0,
+      length: 0.3,
+      type: "sine",
+      volume: 0.5,
+      glideTo: 40,
+    },
+    {
+      frequency: 0,
+      at: 0,
+      length: 0.05,
+      volume: 0.6,
+      noiseFrequency: 4200,
+      noiseQ: 6,
+    },
+    {
+      frequency: 2960,
+      at: 0.01,
+      length: 0.5,
+      type: "triangle",
+      volume: 0.25,
+      glideTo: 2700,
+    },
+    {
+      frequency: 0,
+      at: 0.14,
+      length: 0.05,
+      volume: 0.5,
+      noiseFrequency: 3600,
+      noiseQ: 6,
+    },
+    {
+      frequency: 2200,
+      at: 0.15,
+      length: 0.5,
+      type: "triangle",
+      volume: 0.2,
+      glideTo: 2000,
+    },
+    {
+      frequency: 0,
+      at: 0.3,
+      length: 0.04,
+      volume: 0.4,
+      noiseFrequency: 4800,
+      noiseQ: 6,
+    },
+    {
+      frequency: 3300,
+      at: 0.31,
+      length: 0.6,
+      type: "triangle",
+      volume: 0.18,
+      glideTo: 3000,
+    },
+  ],
+  // A surrender: a horn falling away, then the drum.
+  surrender: [
+    {
+      frequency: 440,
+      at: 0,
+      length: 0.5,
+      type: "sawtooth",
+      volume: 0.35,
+      glideTo: 220,
+    },
+    {
+      frequency: 330,
+      at: 0.45,
+      length: 0.7,
+      type: "sawtooth",
+      volume: 0.3,
+      glideTo: 110,
+    },
+    {
+      frequency: 0,
+      at: 1.05,
+      length: 0.25,
+      volume: 0.7,
+      noiseFrequency: 110,
+      noiseQ: 1,
+    },
+  ],
   train: [
     {
       frequency: 0,
@@ -578,14 +666,14 @@ export function soundForEvent(title: string): SoundKind | null {
   if (/replaces \d+ tiles?\./.test(text)) return "card";
   if (/takes over/.test(text)) return "merger";
   if (/calls the end/.test(text)) return "fanfare";
-  if (/calls the armies/.test(text)) return "clash";
+  if (/calls the armies/.test(text)) return "steel";
   if (/plays drummer/.test(text)) return "drum";
   if (/plays winter/.test(text)) return "wind";
   if (/plays spring/.test(text)) return "chime";
   if (/plays a bishop/.test(text)) return "bell";
   if (/plays heroine/.test(text)) return "flourish";
   if (/plays a scarecrow/.test(text)) return "rustle";
-  if (/plays surrender/.test(text)) return "alarm";
+  if (/plays surrender/.test(text)) return "surrender";
   if (/^\S+ plays (mercenary|courtesan)/.test(text)) return "card";
   if (/ wins \w+ with \d/.test(text)) return "win";
   if (/carries a passenger/.test(text)) return "train";

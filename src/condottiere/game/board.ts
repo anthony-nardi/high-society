@@ -321,7 +321,8 @@ export const CARD_HELP: { [card in Card]: string } = {
   SURRENDER: "The battle ends at once; the strongest line wins.",
   BISHOP:
     "Every copy of the highest mercenary on the table is discarded, and you move the Pope to an unclaimed region, where no battle may be fought.",
-  SCARECROW: "Take one of your mercenaries back from your line into your hand.",
+  SCARECROW:
+    "Take one of your mercenaries back from your line into your hand, or play it for nothing to stay in the battle without committing.",
   COURTESAN:
     "Strength 1. Whoever has the most Courtesans at the end takes the Condottiere and chooses the next battlefield.",
 };

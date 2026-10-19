@@ -205,6 +205,14 @@ export function chooseBattleMove(gameState: CondottiereGameState): BotMove {
     // Otherwise build towards the lead with the biggest card the budget allows.
     const biggest = affordable[affordable.length - 1];
     if (biggest) return { kind: "play", index: biggest.i };
+    return stallOrPass();
+  }
+
+  // A Scarecrow played for nothing keeps the bot in the battle while rivals show their hands.
+  function stallOrPass(): BotMove {
+    const scarecrow = indexOf("SCARECROW");
+    if (scarecrow >= 0 && rivalsIn.length > 0 && value >= 3)
+      return { kind: "play", index: scarecrow };
     return { kind: "pass" };
   }
 
@@ -222,7 +230,7 @@ export function chooseBattleMove(gameState: CondottiereGameState): BotMove {
     if (myCourtesans <= theirs)
       return { kind: "play", index: indexOf("COURTESAN") };
   }
-  return { kind: "pass" };
+  return stallOrPass();
 }
 
 export function chooseBotMove(gameState: CondottiereGameState): BotMove | null {
