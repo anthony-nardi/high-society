@@ -8,6 +8,7 @@ import { GameStateProvider } from "../shared/context/GameStateProvider";
 import { LobbyProvider } from "../shared/context/LobbyProvider";
 import { UserProvider } from "../shared/context/UserProvider";
 import SoundToggle from "../shared/components/SoundToggle";
+import PanelInset from "../shared/components/PanelInset";
 import StatsDrawer from "../shared/components/StatsDrawer";
 import Game from "./game";
 
@@ -20,6 +21,7 @@ function App() {
         <LobbyProvider>
           <GameStateProvider gameName={"gipf"}>
             <SoundToggle />
+            <PanelInset />
             <StatsDrawer gameName={"gipf"} />
             <GipfRules />
             <GameTitle />

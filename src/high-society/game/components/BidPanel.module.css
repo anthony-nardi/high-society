@@ -54,11 +54,11 @@
 
 /* Reserve room under the page content for the fixed panel. */
 .pageSpacer {
-  height: calc(var(--hs-card-h) * 2 + 170px);
+  height: var(--panel-h, calc(var(--hs-card-h) * 2 + 170px));
 }
 
 @media (min-width: 62em) {
   .pageSpacer {
-    height: calc(var(--hs-card-h) * 2 + 80px);
+    height: var(--panel-h, calc(var(--hs-card-h) * 2 + 80px));
   }
 }

@@ -26,9 +26,9 @@
 
 /* Reserve room under the page content for the fixed panel. */
 .pageSpacer {
-  height: 130px;
+  height: var(--panel-h, 130px);
 }
 
 .pageSpacerCompact {
-  height: 72px;
+  height: var(--panel-h, 72px);
 }

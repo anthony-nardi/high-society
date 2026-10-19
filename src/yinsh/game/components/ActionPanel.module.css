@@ -24,9 +24,9 @@
 }
 
 .pageSpacer {
-  height: 110px;
+  height: var(--panel-h, 110px);
 }
 
 .pageSpacerCompact {
-  height: 72px;
+  height: var(--panel-h, 72px);
 }

@@ -24,11 +24,11 @@
 }
 
 .pageSpacer {
-  height: 360px;
+  height: var(--panel-h, 360px);
 }
 
 .pageSpacerCompact {
-  height: 260px;
+  height: var(--panel-h, 260px);
 }
 
 /* A fixed-column row: name, price or note, minus, count, plus. Nothing moves when the count changes. */

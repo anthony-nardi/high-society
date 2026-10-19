@@ -24,14 +24,14 @@
 }
 
 .pageSpacer {
-  height: 340px;
+  height: var(--panel-h, 340px);
 }
 
 .pageSpacerCompact {
-  height: 72px;
+  height: var(--panel-h, 72px);
 }
 
 /* Off turn while selling the hand still shows, locked. */
 .pageSpacerHand {
-  height: 300px;
+  height: var(--panel-h, 300px);
 }
