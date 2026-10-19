@@ -8,9 +8,13 @@ import {
 import { LogEntry, Notification, PlayerInLobby } from "../../shared/types";
 import type { ActionResult } from "../../shared/game";
 import {
+  bestLionFlips,
   canPlace,
   cellKey,
   fullDeck,
+  lionFlipCount,
+  lionOptions,
+  validLionFlips,
   GAZELLE_PLACES,
   HAND_SIZE,
   label,
@@ -128,6 +132,8 @@ export const hasChosen = (gameState: SavannaGameState, email: string) =>
 
 export function mayAct(gameState: SavannaGameState, email: string) {
   if (isGameOver(gameState)) return false;
+  if (gameState.public.phase === "FLIP")
+    return (gameState.public.flipping || []).includes(email);
   const player = playerByEmail(gameState, email);
   return (
     !!player && !hasChosen(gameState, email) && (player.hand || []).length > 0
@@ -160,7 +166,7 @@ export function playProblem(
 /** Every player's breakdown, with the gazelle bonus compared across the table. */
 export function scoreAll(gameState: SavannaGameState): Breakdown[] {
   const players = gameState.public.players;
-  const scored = players.map((p) => scoreGrid(gridOf(p)));
+  const scored = players.map((p) => scoreGrid(gridOf(p), p.flips));
   const gazelles = scored.map((s) => s.gazelles);
   // The neutral hand's set-aside gazelles compete too.
   const neutral = gameState.public.neutral?.discards || [];
@@ -186,6 +192,11 @@ export function scoreAll(gameState: SavannaGameState): Breakdown[] {
 
 /** The active player is the first who still has to choose. */
 function setActive(gameState: SavannaGameState) {
+  if (gameState.public.phase === "FLIP") {
+    const next = (gameState.public.flipping || [])[0];
+    if (next) gameState.public.activePlayer = next;
+    return;
+  }
   const waiting = gameState.public.players.find((p) =>
     mayAct(gameState, p.email),
   );
@@ -237,7 +248,80 @@ function neutralDiscards(gameState: SavannaGameState) {
   neutral.discards = [...(neutral.discards || []), card];
 }
 
+/**
+ * The savannas are complete. Each lion beside a grassland flips a gazelle
+ * or zebra of its owner's choosing: bots choose at once, and so does
+ * anyone with no real choice; the others are asked.
+ */
 function finish(gameState: SavannaGameState) {
+  const pub = gameState.public;
+  const asked: string[] = [];
+  for (const p of pub.players) {
+    const grid = gridOf(p);
+    const { lions, prey } = lionOptions(grid);
+    const k = lionFlipCount(grid);
+    if (!p.isBot && k > 0 && prey.length > lions) asked.push(p.email);
+    else {
+      const flips = bestLionFlips(grid);
+      if (flips.length) p.flips = flips;
+      else delete p.flips;
+    }
+  }
+  if (!asked.length) {
+    finalise(gameState);
+    return;
+  }
+  pub.phase = "FLIP";
+  pub.flipping = asked;
+  pub.activePlayer = asked[0];
+  announce(
+    gameState,
+    `The savannas are complete. ${asked.join(", ")} choose${asked.length === 1 ? "s" : ""} which prey the lions flip.`,
+  );
+}
+
+/** A player names the prey their lions flip. */
+export function flipPrey(
+  gameState: SavannaGameState,
+  email: string,
+  cells: string[],
+): ActionResult {
+  if (isGameOver(gameState)) return { ok: false, reason: "The game is over." };
+  const pub = gameState.public;
+  if (pub.phase !== "FLIP")
+    return { ok: false, reason: "The lions are not hunting yet." };
+  if (!(pub.flipping || []).includes(email))
+    return { ok: false, reason: "Your lions have chosen." };
+  const player = playerByEmail(gameState, email) as SavannaPlayerState;
+  const grid = gridOf(player);
+  if (!validLionFlips(grid, cells))
+    return {
+      ok: false,
+      reason: `Choose ${lionFlipCount(grid)} different faceup gazelles or zebras.`,
+    };
+  player.flips = cells;
+  player.lastActionAt = Date.now();
+  const rest = (pub.flipping || []).filter((e) => e !== email);
+  appendLog(gameState, {
+    timestamp: Date.now(),
+    title: `${email}'s lions flip ${cells.map((c) => label(grid[c])).join(", ")}.`,
+  });
+  if (rest.length) {
+    pub.flipping = rest;
+    pub.activePlayer = rest[0];
+    pub.notification = {
+      timestamp: Date.now(),
+      title: `${email}'s lions have chosen. Waiting for ${rest.join(", ")}.`,
+    };
+    return { ok: true };
+  }
+  delete pub.flipping;
+  delete pub.phase;
+  finalise(gameState);
+  return { ok: true };
+}
+
+function finalise(gameState: SavannaGameState) {
   const pub = gameState.public;
   pub.status = "GAME_OVER";
   pub.results = scoreAll(gameState);

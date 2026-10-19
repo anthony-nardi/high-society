@@ -28,6 +28,8 @@ export type SavannaPlayerState = GenericPlayerState & {
   /** The hand. Public state, hidden by the table. Absent while empty. */
   hand?: CardType[];
   grid?: Grid;
+  /** The prey the lions flip, chosen when the savanna is complete. */
+  flips?: string[];
   isBot: boolean;
 };
 
@@ -71,6 +73,10 @@ export type SavannaPublicGameState = {
   /** Who has chosen this pick. Absent while empty. */
   chosen?: string[];
   neutral?: Neutral;
+  /** Set while players choose their lions' prey at the end. */
+  phase?: "FLIP";
+  /** Who still has to choose. */
+  flipping?: string[];
   /** What the last pick placed, by player. */
   lastPick?: { email: string; card: CardType; cell: string }[];
   turn: number;

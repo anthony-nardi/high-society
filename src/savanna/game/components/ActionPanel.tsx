@@ -10,6 +10,15 @@ import classes from "./ActionPanel.module.css";
 /** What you are in the middle of: a card lifted and a cell chosen. */
 export type Draft = { card: number | null; cell: string | null };
 
+/** The end of the game: which prey your lions flip. */
+export type FlipChoice = {
+  /** How many prey the lions flip. */
+  needed: number;
+  chosen: string[];
+  onConfirm: () => void;
+  onClear: () => void;
+};
+
 /** Fixed strip: your hand fanned, the chosen cell, and the place button. */
 export default function ActionPanel({
   gameState,
@@ -19,6 +28,7 @@ export default function ActionPanel({
   onCard,
   onPlace,
   onCancel,
+  flip,
 }: {
   gameState: SavannaGameState;
   me: SavannaPlayerState;
@@ -27,8 +37,65 @@ export default function ActionPanel({
   onCard: (index: number) => void;
   onPlace: () => void;
   onCancel: () => void;
+  /** Set while it is your turn to choose your lions' prey. */
+  flip?: FlipChoice;
 }) {
   const hand = me.hand || [];
+  if (gameState.phase === "FLIP") {
+    const flipping = gameState.flipping || [];
+    if (!flip) {
+      return (
+        <div
+          className={`${classes.panel} ${classes.compact} safe-bottom`}
+          data-testid="action-panel"
+        >
+          <Text size="sm" c="dimmed" ta="center">
+            The savannas are complete. Waiting for{" "}
+            {flipping.map(displayName).join(", ")} to choose which prey the
+            lions flip.
+          </Text>
+        </div>
+      );
+    }
+    const ready = flip.chosen.length === flip.needed;
+    return (
+      <div
+        className={`${classes.panel} ${classes.active} safe-bottom`}
+        data-testid="action-panel"
+      >
+        <Stack gap={6} align="center">
+          <Group gap="sm" justify="center" wrap="wrap">
+            <Badge color="yellow" variant="filled" radius="sm" size="lg">
+              The lions hunt: {flip.chosen.length} of {flip.needed} chosen
+            </Badge>
+            {loading && <Loader size="xs" color="yellow" />}
+            {!loading && (
+              <Button
+                color="yellow"
+                size="sm"
+                disabled={!ready}
+                onClick={flip.onConfirm}
+              >
+                Flip {flip.needed === 1 ? "it" : "them"}
+              </Button>
+            )}
+            {!loading && flip.chosen.length > 0 && (
+              <Button variant="default" size="xs" onClick={flip.onClear}>
+                Clear
+              </Button>
+            )}
+          </Group>
+          <Text size="sm" c="dimmed" ta="center" data-testid="hint">
+            Each lion beside a grassland flips one faceup gazelle or zebra and
+            scores 4. Tap {flip.needed === 1 ? "the one" : `the ${flip.needed}`}{" "}
+            to flip: a flipped card still scores, feeds nearby hyenas and
+            vultures, and no longer troubles elephants. Your running score shows
+            the result.
+          </Text>
+        </Stack>
+      </div>
+    );
+  }
   const chosen = hasChosen(gameState, me.email);
   const waitingFor = gameState.players
     .filter((p) => !hasChosen(gameState, p.email) && (p.hand || []).length > 0)

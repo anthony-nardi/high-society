@@ -70,7 +70,7 @@ import {
   withdrawTigrisLeader,
 } from "./tigris/client";
 import { placeCoralReefCard } from "./coral-reef/client";
-import { placeSavannaCard } from "./savanna/client";
+import { flipSavannaPrey, placeSavannaCard } from "./savanna/client";
 import {
   bidMedici,
   drawMediciCard,
@@ -202,6 +202,7 @@ exports.placeCoralReefCard = placeCoralReefCard;
 
 // Ecosystem: Savanna
 exports.placeSavannaCard = placeSavannaCard;
+exports.flipSavannaPrey = flipSavannaPrey;
 
 // Medici
 exports.drawMediciCard = drawMediciCard;

@@ -4,12 +4,21 @@ import { Grid } from "../../types";
 import {
   buildSavannaGameState,
   choose,
+  flipPrey,
   mayAct,
   playProblem,
   scoreAll,
   setNeutralRandom,
 } from "../rules";
-import { canPlace, fullDeck, openCells, placings, scoreGrid } from "../board";
+import {
+  bestLionFlips,
+  canPlace,
+  fullDeck,
+  lionOptions,
+  openCells,
+  placings,
+  scoreGrid,
+} from "../board";
 import { chooseBotMove, turnMoves } from "../botSearch";
 import { takeBotTurn } from "../bot";
 
@@ -186,4 +195,57 @@ describe("the bot", () => {
         expect(Object.keys(p.grid || {})).toHaveLength(20);
     }
   }, 60000);
+});
+
+describe("the lions' prey", () => {
+  it("lets the owner choose, scores the best flips for bots, and keeps flipped points", () => {
+    // A lion beside grassland, a gazelle and a zebra: the zebra is beside an elephant,
+    // so flipping it spares the elephant two points.
+    const g = grid(["LG...", "AZE..", "..H.."]);
+    expect(lionOptions(g)).toEqual({ lions: 1, prey: ["1_0", "1_1"] });
+    expect(bestLionFlips(g)).toEqual(["1_1"]);
+    const chosen = scoreGrid(g, ["1_0"]);
+    const best = scoreGrid(g);
+    expect(chosen.flipped).toEqual(["1_0"]);
+    expect(best.flipped).toEqual(["1_1"]);
+    // The flipped zebra still scores its grassland; the elephant is no longer troubled by it.
+    expect(best.byType.ZEBRA).toBe(3);
+    expect(best.byType.ELEPHANT).toBe(4);
+    expect(chosen.byType.ELEPHANT).toBe(2);
+    expect(best.byType.LION).toBe(4);
+    // An illegal choice falls back to the best.
+    expect(scoreGrid(g, ["0_0"]).flipped).toEqual(["1_1"]);
+  });
+
+  it("asks a human with a real choice at the end and finishes once they have chosen", () => {
+    const state = fresh("a", "Bot #1");
+    const g = grid(["LG...", "AZE..", "..H.."]);
+    // Skip to the last pick: everyone holds one card, the grids are set.
+    state.public.round = 2;
+    state.public.pick = 9;
+    for (const p of state.public.players) {
+      p.grid = { ...g };
+      p.hand = ["TREE", "TREE"];
+    }
+    delete state.public.neutral;
+    expect(choose(state, "a", { card: 0, row: 0, col: 2 }).ok).toBe(true);
+    expect(choose(state, "Bot #1", { card: 0, row: 0, col: 2 }).ok).toBe(true);
+    expect(state.public.status).toBe("IN_PROGRESS");
+    expect(state.public.phase).toBe("FLIP");
+    expect(state.public.flipping).toEqual(["a"]);
+    expect(state.public.activePlayer).toBe("a");
+    expect(mayAct(state, "a")).toBe(true);
+    expect(mayAct(state, "Bot #1")).toBe(false);
+    // The bot has already chosen the best.
+    expect(state.public.players[1].flips).toEqual(["1_1"]);
+    expect(flipPrey(state, "a", ["1_0", "1_1"]).ok).toBe(false);
+    expect(flipPrey(state, "a", ["0_0"]).ok).toBe(false);
+    expect(flipPrey(state, "a", ["1_0"]).ok).toBe(true);
+    expect(state.public.status).toBe("GAME_OVER");
+    const a = state.public.results!.find((r) => r.email === "a")!;
+    const bot = state.public.results!.find((r) => r.email === "Bot #1")!;
+    expect(a.flipped).toEqual(["1_0"]);
+    expect(bot.flipped).toEqual(["1_1"]);
+    expect(bot.total).toBeGreaterThan(a.total);
+  });
 });

@@ -195,20 +195,65 @@ export type Scored = {
   gazelles: number;
 };
 
+const byReading = (a: string, b: string) => {
+  const [ra, ca] = parseCell(a);
+  const [rb, cb] = parseCell(b);
+  return ra - rb || ca - cb;
+};
+
+/** The gazelles the cheetahs flip: every one on a cheetah's diagonals. */
+export function cheetahFlips(grid: Grid): string[] {
+  const flipped = new Set<string>();
+  for (const [key, type] of Object.entries(grid)) {
+    if (type !== "CHEETAH") continue;
+    const [r, c] = parseCell(key);
+    for (const [k, t] of Object.entries(grid)) {
+      if (t !== "GAZELLE") continue;
+      const [r2, c2] = parseCell(k);
+      const dr = r2 - r;
+      const dc = c2 - c;
+      if (dr !== 0 && Math.abs(dr) === Math.abs(dc)) flipped.add(k);
+    }
+  }
+  return [...flipped].sort(byReading);
+}
+
+/** The lions that may hunt, and the faceup gazelles and zebras they may flip. */
+export function lionOptions(grid: Grid): { lions: number; prey: string[] } {
+  const taken = new Set(cheetahFlips(grid));
+  const lions = Object.keys(grid).filter(
+    (k) =>
+      grid[k] === "LION" && neighbours(k).some((n) => grid[n] === "GRASSLAND"),
+  ).length;
+  const prey = Object.keys(grid)
+    .filter(
+      (k) => (grid[k] === "GAZELLE" || grid[k] === "ZEBRA") && !taken.has(k),
+    )
+    .sort(byReading);
+  return { lions, prey };
+}
+
+/** How many prey the lions flip: one each, while there are any. */
+export const lionFlipCount = (grid: Grid) => {
+  const { lions, prey } = lionOptions(grid);
+  return Math.min(lions, prey.length);
+};
+
 /**
  * Points of every card in one ecosystem, by type, in the rulebook's
- * order, without the gazelle bonus. Cheetahs flip the gazelles they
- * score; each lion beside a grassland then flips a faceup gazelle or
- * zebra, chosen here to feed the hyenas and vultures best.
+ * order, without the gazelle bonus, with the lions flipping the given
+ * cells. Gazelles and zebras score before they are flipped, so a flip
+ * costs nothing but counts for the scavengers and spares the elephants.
  */
-export function scoreGrid(grid: Grid): Scored {
+function scoreWithFlips(grid: Grid, lionFlips: string[]): Scored {
   const points: { [type in CardType]?: number } = {};
   const add = (type: CardType, n: number) => {
     if (n) points[type] = (points[type] ?? 0) + n;
   };
   const treeRows = new Set<number>();
   const treeCols = new Set<number>();
-  const flipped = new Set<string>();
+  const cheetah = cheetahFlips(grid);
+  const flipped = new Set(cheetah);
 
   for (const [key, type] of Object.entries(grid)) {
     const [r, c] = parseCell(key);
@@ -238,10 +283,7 @@ export function scoreGrid(grid: Grid): Scored {
           const [r2, c2] = parseCell(k);
           const dr = r2 - r;
           const dc = c2 - c;
-          if (dr !== 0 && Math.abs(dr) === Math.abs(dc)) {
-            prey += 1;
-            flipped.add(k);
-          }
+          if (dr !== 0 && Math.abs(dr) === Math.abs(dc)) prey += 1;
         }
         add("CHEETAH", 3 * prey);
         break;
@@ -254,40 +296,8 @@ export function scoreGrid(grid: Grid): Scored {
   for (const g of groups(grid, "GRASSLAND"))
     add("GRASSLAND", grasslandPoints(g.length));
 
-  // Lions, in reading order: each beside a grassland flips the faceup
-  // gazelle or zebra that will feed the scavengers best, and scores 4.
-  const lions = Object.keys(grid)
-    .filter((k) => grid[k] === "LION")
-    .sort((a, b) => {
-      const [ra, ca] = parseCell(a);
-      const [rb, cb] = parseCell(b);
-      return ra - rb || ca - cb;
-    });
-  const order = [...flipped];
-  for (const lion of lions) {
-    if (!neighbours(lion).some((n) => grid[n] === "GRASSLAND")) continue;
-    const prey = Object.keys(grid).filter(
-      (k) => (grid[k] === "GAZELLE" || grid[k] === "ZEBRA") && !flipped.has(k),
-    );
-    if (!prey.length) continue;
-    let best = prey[0];
-    let bestWorth = -Infinity;
-    for (const p of prey) {
-      const trial = new Set(flipped);
-      trial.add(p);
-      const { hyena, vulture } = scavengerPoints(grid, trial);
-      // Flipping beside an elephant also spares it a point or two.
-      const elephants = neighbours(p).filter(
-        (n) => grid[n] === "ELEPHANT",
-      ).length;
-      const worth = hyena + vulture + 2 * elephants;
-      if (worth > bestWorth) {
-        bestWorth = worth;
-        best = p;
-      }
-    }
-    flipped.add(best);
-    order.push(best);
+  for (const cell of lionFlips) {
+    flipped.add(cell);
     add("LION", 4);
   }
 
@@ -302,7 +312,64 @@ export function scoreGrid(grid: Grid): Scored {
   add("HYENA", hyena);
   add("VULTURE", vulture);
 
-  return { byType: points, flipped: order, gazelles: countOf(grid, "GAZELLE") };
+  return {
+    byType: points,
+    flipped: [...cheetah, ...lionFlips],
+    gazelles: countOf(grid, "GAZELLE"),
+  };
+}
+
+/** Every way to pick k of the items, in order. */
+function combinations<T>(items: T[], k: number): T[][] {
+  if (k === 0) return [[]];
+  if (items.length < k) return [];
+  const [head, ...rest] = items;
+  return [
+    ...combinations(rest, k - 1).map((c) => [head, ...c]),
+    ...combinations(rest, k),
+  ];
+}
+
+/** The prey the lions should flip to score the ecosystem best. */
+export function bestLionFlips(grid: Grid): string[] {
+  const { prey } = lionOptions(grid);
+  const k = lionFlipCount(grid);
+  if (!k) return [];
+  let best: string[] = prey.slice(0, k);
+  let bestTotal = -Infinity;
+  for (const combo of combinations(prey, k)) {
+    const total = totalOf(scoreWithFlips(grid, combo).byType);
+    if (total > bestTotal) {
+      bestTotal = total;
+      best = combo;
+    }
+  }
+  return best;
+}
+
+/** Whether these cells are a legal choice for the lions: distinct prey, one each. */
+export function validLionFlips(grid: Grid, flips: string[]) {
+  const { prey } = lionOptions(grid);
+  return (
+    flips.length === lionFlipCount(grid) &&
+    new Set(flips).size === flips.length &&
+    flips.every((f) => prey.includes(f))
+  );
+}
+
+/**
+ * Points of every card in one ecosystem, in the rulebook's order, without
+ * the gazelle bonus. The cheetahs flip the gazelles they score; each lion
+ * beside a grassland then flips a faceup gazelle or zebra: the cells
+ * given, or, when none are, whichever score the ecosystem best.
+ */
+export function scoreGrid(grid: Grid, lionFlips?: string[]): Scored {
+  return scoreWithFlips(
+    grid,
+    lionFlips && validLionFlips(grid, lionFlips)
+      ? lionFlips
+      : bestLionFlips(grid),
+  );
 }
 
 export const totalOf = (byType: { [type in CardType]?: number }) =>

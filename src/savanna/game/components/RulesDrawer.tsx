@@ -49,10 +49,11 @@ export default function SavannaRules() {
         <Text size="sm">
           Adjacent means above, below, left or right. Cards are scored in the
           order above: cheetahs flip the gazelles they score, then each lion
-          beside a grassland flips one faceup gazelle or zebra and scores 4.
-          Flipped cards count for nothing except as food for hyenas and
-          vultures, and they no longer trouble elephants. Here each lion's flip
-          is chosen for you to feed your scavengers best.
+          beside a grassland flips one faceup gazelle or zebra and scores 4. A
+          flipped card keeps the points it already scored, feeds the hyenas and
+          vultures, and no longer troubles elephants. When the savannas are
+          complete you choose which prey your lions flip; a bot, or a player
+          with no real choice, flips whatever scores best.
         </Text>
 
         <Title order={4}>Two players</Title>

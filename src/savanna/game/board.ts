@@ -12,6 +12,8 @@ export {
   countOf,
   isAnimal,
   label,
+  lionFlipCount,
+  lionOptions,
   neighbours,
   openCells,
   parseCell,
@@ -89,9 +91,13 @@ export const CARD_INFO: {
   },
 };
 
-/** The ecosystem scored as it stands: the flips the cheetahs and lions would make, the gazelle bonus unknown until the end. */
-export function runningScore(grid: Grid) {
-  const scored = score(grid);
+/**
+ * The ecosystem scored as it stands: the flips the cheetahs would make and
+ * the lions' best, or the lions' chosen prey, the gazelle bonus unknown
+ * until the end.
+ */
+export function runningScore(grid: Grid, lionFlips?: string[]) {
+  const scored = score(grid, lionFlips);
   return { ...scored, total: total(scored.byType) };
 }
 

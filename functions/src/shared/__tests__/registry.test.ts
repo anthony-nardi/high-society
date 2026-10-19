@@ -135,7 +135,10 @@ describe("game registry", () => {
     expect(Object.keys(GAMES["coral-reef"].actions)).toEqual([
       "placeCoralReefCard",
     ]);
-    expect(Object.keys(GAMES.savanna.actions)).toEqual(["placeSavannaCard"]);
+    expect(Object.keys(GAMES.savanna.actions).sort()).toEqual([
+      "flipSavannaPrey",
+      "placeSavannaCard",
+    ]);
     expect(Object.keys(GAMES.medici.actions).sort()).toEqual([
       "bidMedici",
       "drawMediciCard",

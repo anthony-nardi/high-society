@@ -1,13 +1,23 @@
 import { CardType, Grid, Play, SavannaGameState } from "../types";
 import {
+  bestLionFlips,
   cellKey,
   countOf,
+  lionFlipCount,
+  lionOptions,
   openCells,
   parseCell,
   scoreGrid,
   totalOf,
 } from "./board";
-import { choose, getActivePlayer, gridOf, hasChosen, mayAct } from "./rules";
+import {
+  choose,
+  flipPrey,
+  getActivePlayer,
+  gridOf,
+  hasChosen,
+  mayAct,
+} from "./rules";
 
 /*
  * The bot's judgement: an ecosystem is worth its points as the rulebook
@@ -15,7 +25,10 @@ import { choose, getActivePlayer, gridOf, hasChosen, mayAct } from "./rules";
  * room it leaves to grow. Each card in hand is tried in every open cell.
  */
 
-export type BotMove = Play;
+/** The prey a player's lions flip at the end. */
+export type FlipMove = { email: string; cells: string[] };
+
+export type BotMove = Play | FlipMove;
 
 export function turnMoves(gameState: SavannaGameState): BotMove[] {
   if (gameState.public.status !== "IN_PROGRESS") return [];
@@ -24,6 +37,15 @@ export function turnMoves(gameState: SavannaGameState): BotMove[] {
   if (!player || hasChosen(gameState, email) || !mayAct(gameState, email))
     return [];
   const grid = gridOf(player);
+  if (gameState.public.phase === "FLIP") {
+    const { prey } = lionOptions(grid);
+    const k = lionFlipCount(grid);
+    return [
+      { email, cells: bestLionFlips(grid) },
+      { email, cells: prey.slice(0, k) },
+      { email, cells: prey.slice(-k) },
+    ];
+  }
   const cells = openCells(grid);
   const out: BotMove[] = [];
   (player.hand || []).forEach((_, card) => {
@@ -36,6 +58,7 @@ export function turnMoves(gameState: SavannaGameState): BotMove[] {
 }
 
 export function applyMove(gameState: SavannaGameState, move: BotMove) {
+  if ("cells" in move) return flipPrey(gameState, move.email, move.cells);
   return choose(gameState, move.email, move);
 }
 

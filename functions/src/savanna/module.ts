@@ -3,6 +3,7 @@ import { SavannaGameState } from "./types";
 import {
   buildSavannaGameState,
   choose,
+  flipPrey,
   isGameOver,
   mayAct,
   scoreAll,
@@ -27,6 +28,15 @@ const savanna: GameModule<SavannaGameState> = {
         row: Number(payload?.row),
         col: Number(payload?.col),
       }),
+    flipSavannaPrey: (
+      state,
+      payload: { cells?: unknown; callerEmail?: string },
+    ) =>
+      flipPrey(
+        state,
+        String(payload?.callerEmail ?? ""),
+        Array.isArray(payload?.cells) ? payload.cells.map(String) : [],
+      ),
   },
   mayAct: (state, email) => mayAct(state, email),
   standings: (state) =>

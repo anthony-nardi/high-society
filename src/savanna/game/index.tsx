@@ -22,12 +22,15 @@ import PlayerOverview from "./components/PlayerOverview";
 import ActionPanel, { Draft } from "./components/ActionPanel";
 import GameOver from "./components/GameOver";
 import placeSavannaCard from "../client/placeSavannaCard";
+import flipSavannaPrey from "../client/flipSavannaPrey";
 import {
   CARD_INFO,
   CARD_TYPES,
   gridOf,
   hasChosen,
   label,
+  lionFlipCount,
+  lionOptions,
   openCells,
   parseCell,
   PICKS,
@@ -47,6 +50,7 @@ export default function Game() {
     key: "",
     draft: EMPTY,
   });
+  const [flipDraft, setFlipDraft] = useState<string[]>([]);
 
   useGameSounds(gameState?.notification);
   useBotNudge(lobbyId, gameState);
@@ -63,7 +67,13 @@ export default function Game() {
     inProgress &&
     !hasChosen(gameState, me.email) &&
     (me.hand || []).length > 0;
-  useTurnAlert(mustPick, "Savanna");
+  const mustFlip =
+    !!gameState &&
+    !!me &&
+    inProgress &&
+    gameState.phase === "FLIP" &&
+    (gameState.flipping || []).includes(me.email);
+  useTurnAlert(mustPick || mustFlip, "Savanna");
 
   const pickKey = `${gameState?.round}:${gameState?.pick}:${(me?.hand || []).length}`;
   const draft = draftState.key === pickKey ? draftState.draft : EMPTY;
@@ -83,6 +93,7 @@ export default function Game() {
   }, []);
 
   const grid = useMemo(() => (me ? gridOf(me) : {}), [me]);
+  const flipNeeded = mustFlip ? lionFlipCount(grid) : 0;
   const card =
     draft.card === null ? null : ((me?.hand || [])[draft.card] ?? null);
 
@@ -97,21 +108,41 @@ export default function Game() {
     if (!gameState || !me) return h;
     for (const p of gameState.lastPick || [])
       if (p.email === me.email) h[p.cell] = "new";
+    if (mustFlip && !loading) {
+      for (const cell of lionOptions(grid).prey) h[cell] = "prey";
+      for (const cell of flipDraft) h[cell] = "flip";
+      return h;
+    }
     if (!mustPick || loading) return h;
     if (draft.card !== null && draft.cell === null)
       for (const c of openCells(grid)) h[c] = "open";
     if (draft.cell !== null) h[draft.cell] = "target";
     return h;
-  }, [gameState, me, mustPick, loading, draft, grid]);
+  }, [gameState, me, mustPick, mustFlip, flipDraft, loading, draft, grid]);
 
   const handleCell = useCallback(
     (cell: string) => {
+      if (mustFlip && !loading) {
+        if (flipDraft.includes(cell))
+          setFlipDraft(flipDraft.filter((c) => c !== cell));
+        else if (
+          lionOptions(grid).prey.includes(cell) &&
+          flipDraft.length < flipNeeded
+        )
+          setFlipDraft([...flipDraft, cell]);
+        return;
+      }
       if (!mustPick || loading || draft.card === null) return;
       if (cell === draft.cell) setDraft({ ...draft, cell: null });
       else if (openCells(grid).includes(cell)) setDraft({ ...draft, cell });
     },
-    [mustPick, loading, draft, grid, setDraft],
+    [mustPick, mustFlip, flipDraft, flipNeeded, loading, draft, grid, setDraft],
   );
+
+  const confirmFlips = useCallback(() => {
+    if (flipDraft.length !== flipNeeded) return;
+    void call(() => flipSavannaPrey({ lobbyUID, cells: flipDraft }));
+  }, [flipDraft, flipNeeded, call, lobbyUID]);
 
   const place = useCallback(() => {
     if (draft.card === null || draft.cell === null) return;
@@ -139,7 +170,10 @@ export default function Game() {
     );
   }
 
-  const score = runningScore(previewGrid);
+  const score = runningScore(
+    previewGrid,
+    mustFlip && flipDraft.length === flipNeeded ? flipDraft : undefined,
+  );
   const others = gameState.players.filter((p) => p.email !== me?.email);
 
   return (
@@ -177,7 +211,17 @@ export default function Game() {
                     grid={previewGrid}
                     size={56}
                     highlights={highlights}
-                    flipped={score.flipped}
+                    flipped={
+                      mustFlip && flipDraft.length !== flipNeeded
+                        ? [
+                            ...score.flipped.slice(
+                              0,
+                              score.flipped.length - flipNeeded,
+                            ),
+                            ...flipDraft,
+                          ]
+                        : score.flipped
+                    }
                     onCell={handleCell}
                   />
                 </div>
@@ -252,7 +296,9 @@ export default function Game() {
       {me && (
         <div
           className={
-            mustPick ? panelClasses.pageSpacer : panelClasses.pageSpacerCompact
+            mustPick || mustFlip
+              ? panelClasses.pageSpacer
+              : panelClasses.pageSpacerCompact
           }
         />
       )}
@@ -267,6 +313,16 @@ export default function Game() {
           }
           onPlace={place}
           onCancel={() => setDraft(EMPTY)}
+          flip={
+            mustFlip
+              ? {
+                  needed: flipNeeded,
+                  chosen: flipDraft,
+                  onConfirm: confirmFlips,
+                  onClear: () => setFlipDraft([]),
+                }
+              : undefined
+          }
         />
       )}
     </>

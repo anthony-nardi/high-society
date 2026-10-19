@@ -1,11 +1,16 @@
 import { SavannaGameState } from "../types";
 import { applyMove, chooseBotMove, turnMoves } from "./botSearch";
-import { getActivePlayer } from "./rules";
+import { flipPrey, getActivePlayer } from "./rules";
+import { bestLionFlips } from "./board";
 
 /** One bot pick. Pure. */
 export function takeBotTurn(gameState: SavannaGameState) {
   const player = getActivePlayer(gameState);
   if (!player?.isBot) return;
+  if (gameState.public.phase === "FLIP") {
+    flipPrey(gameState, player.email, bestLionFlips(player.grid || {}));
+    return;
+  }
   let move = null;
   try {
     move = chooseBotMove(gameState);

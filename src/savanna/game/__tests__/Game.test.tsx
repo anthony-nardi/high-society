@@ -5,10 +5,14 @@ import { SavannaGameState } from "../types";
 import { runningScore } from "../board";
 
 const placeSavannaCard = vi.fn().mockResolvedValue(true);
+const flipSavannaPrey = vi.fn().mockResolvedValue(true);
 let current: SavannaGameState;
 
 vi.mock("../../client/placeSavannaCard", () => ({
   default: (r: unknown) => placeSavannaCard(r),
+}));
+vi.mock("../../client/flipSavannaPrey", () => ({
+  default: (r: unknown) => flipSavannaPrey(r),
 }));
 vi.mock("../../../shared/hooks/useGameState", () => ({
   default: () => ({ gameState: current, isLoading: false }),
@@ -65,6 +69,7 @@ const base = (over: Partial<SavannaGameState>): SavannaGameState => ({
 afterEach(() => {
   cleanup();
   placeSavannaCard.mockClear();
+  flipSavannaPrey.mockClear();
 });
 
 describe("Savanna", () => {
@@ -119,5 +124,40 @@ describe("Savanna", () => {
       </MantineProvider>,
     );
     expect(screen.getByLabelText("Gazelle (facedown)")).toBeTruthy();
+  });
+
+  it("lets you choose which prey the lions flip when the savanna is complete", () => {
+    current = base({
+      phase: "FLIP",
+      flipping: ["a@example.com"],
+      players: [
+        {
+          ...base({}).players[0],
+          hand: undefined,
+          grid: {
+            "0_0": "LION",
+            "0_1": "GRASSLAND",
+            "1_0": "GAZELLE",
+            "1_1": "ZEBRA",
+            "1_2": "HYENA",
+          },
+        },
+        { ...base({}).players[1], hand: undefined },
+      ],
+    });
+    render(
+      <MantineProvider>
+        <Game />
+      </MantineProvider>,
+    );
+    expect(screen.getByText("The lions hunt: 0 of 1 chosen")).toBeTruthy();
+    fireEvent.click(screen.getByLabelText("ZEBRA 1,1 (prey)"));
+    expect(screen.getByText("The lions hunt: 1 of 1 chosen")).toBeTruthy();
+    expect(screen.getByLabelText("Zebra (facedown)")).toBeTruthy();
+    fireEvent.click(screen.getByText("Flip it"));
+    expect(flipSavannaPrey).toHaveBeenCalledWith({
+      lobbyUID: "123",
+      cells: ["1_1"],
+    });
   });
 });

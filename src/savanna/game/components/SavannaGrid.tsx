@@ -2,7 +2,7 @@ import { Grid } from "../types";
 import { bounds, canPlace, cellKey, COLS, ROWS } from "../board";
 import CardFace from "./CardFace";
 
-export type CellHighlight = "open" | "target" | "new";
+export type CellHighlight = "open" | "target" | "new" | "prey" | "flip";
 
 /**
  * One player's ecosystem: the cards placed so far on a 4 by 5 canvas
@@ -77,7 +77,8 @@ export default function SavannaGrid({
           const h = highlights[key];
           const open = !type && canPlace(grid, r, c);
           const clickable =
-            !!onCell && (h === "open" || h === "target" || !!type);
+            !!onCell &&
+            (h === "open" || h === "target" || h === "prey" || h === "flip");
           return (
             <div
               key={key}
@@ -93,23 +94,25 @@ export default function SavannaGrid({
                 alignItems: "center",
                 justifyContent: "center",
                 border:
-                  h === "target"
+                  h === "target" || h === "flip"
                     ? "2px solid #ff9f43"
-                    : h === "open"
+                    : h === "open" || h === "prey"
                       ? "2px dashed #ffd86b"
                       : !type && showEmpty
                         ? "1px dashed rgba(255,255,255,0.12)"
                         : "1px solid transparent",
                 background:
-                  h === "target"
+                  h === "target" || h === "flip"
                     ? "rgba(255,159,67,0.2)"
-                    : h === "open"
+                    : h === "open" || h === "prey"
                       ? "rgba(255,216,107,0.1)"
                       : "transparent",
                 transition: "background 150ms, border-color 150ms",
               }}
               className={
-                h === "open" || h === "target" ? "target-disc" : undefined
+                h === "open" || h === "target" || h === "prey"
+                  ? "target-disc"
+                  : undefined
               }
             >
               {type && (
