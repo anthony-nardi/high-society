@@ -49,6 +49,9 @@ export type BattleResult = {
   region: number;
   winner?: string;
   totals: { email: string; strength: number }[];
+  /** Every line as it stood when the battle ended. */
+  lines?: { email: string; line: Card[] }[];
+  season?: Season;
 };
 
 export type CondottierePublicGameState = {
@@ -76,6 +79,10 @@ export type CondottierePublicGameState = {
     email: string;
     card?: Card;
     region?: number;
+    /** Cards a Bishop or a change of season took off the table. */
+    removed?: { email: string; card: Card }[];
+    /** The mercenary a Scarecrow took back. */
+    returned?: Card;
   };
   turn: number;
   winner?: string;

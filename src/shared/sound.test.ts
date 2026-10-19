@@ -88,10 +88,25 @@ describe("soundForEvent", () => {
     ).toBe("win");
     expect(soundForEvent("Luxor takes over Imperial.")).toBe("merger");
     expect(soundForEvent("a buys 2 Tower, 1 Luxor for $600.")).toBe("card");
-    expect(soundForEvent("a calls the armies to Roma.")).toBe("fanfare");
+    expect(soundForEvent("a calls the armies to Roma.")).toBe("clash");
+    expect(soundForEvent("a plays drummer.")).toBe("drum");
+    expect(soundForEvent("a plays winter: every mercenary counts 1.")).toBe(
+      "wind",
+    );
+    expect(
+      soundForEvent("a plays spring: the strongest mercenaries gain 3."),
+    ).toBe("chime");
+    expect(
+      soundForEvent("a plays a bishop: every mercenary 6 is discarded."),
+    ).toBe("bell");
+    expect(soundForEvent("a plays heroine.")).toBe("flourish");
+    expect(
+      soundForEvent("a plays a scarecrow and takes back a mercenary 3."),
+    ).toBe("rustle");
+    expect(soundForEvent("a plays courtesan.")).toBe("card");
     expect(soundForEvent("a plays mercenary 6.")).toBe("card");
     expect(soundForEvent("a plays Winter: every mercenary counts 1.")).toBe(
-      "alarm",
+      "wind",
     );
     expect(soundForEvent("a wins Roma with 12. a holds the Condottiere.")).toBe(
       "win",

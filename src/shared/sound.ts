@@ -23,7 +23,13 @@ export type SoundKind =
   | "train"
   | "merger"
   | "flush"
-  | "clash";
+  | "clash"
+  | "drum"
+  | "wind"
+  | "chime"
+  | "bell"
+  | "flourish"
+  | "rustle";
 
 const MUTE_KEY = "sound:muted";
 const MUTE_EVENT = "sound:mute-changed";
@@ -294,6 +300,105 @@ const SOUNDS: { [kind in SoundKind]: Note[] } = {
       glideTo: 110,
     },
   ],
+  // A drum roll: five quick taps.
+  drum: [
+    {
+      frequency: 0,
+      at: 0,
+      length: 0.06,
+      volume: 0.5,
+      noiseFrequency: 180,
+      noiseQ: 1.2,
+    },
+    {
+      frequency: 0,
+      at: 0.09,
+      length: 0.06,
+      volume: 0.5,
+      noiseFrequency: 180,
+      noiseQ: 1.2,
+    },
+    {
+      frequency: 0,
+      at: 0.18,
+      length: 0.06,
+      volume: 0.55,
+      noiseFrequency: 180,
+      noiseQ: 1.2,
+    },
+    {
+      frequency: 0,
+      at: 0.27,
+      length: 0.06,
+      volume: 0.6,
+      noiseFrequency: 180,
+      noiseQ: 1.2,
+    },
+    {
+      frequency: 0,
+      at: 0.36,
+      length: 0.14,
+      volume: 0.7,
+      noiseFrequency: 140,
+      noiseQ: 1,
+    },
+  ],
+  // Winter: a gust that falls away.
+  wind: [
+    {
+      frequency: 0,
+      at: 0,
+      length: 0.7,
+      volume: 0.35,
+      noiseFrequency: 600,
+      noiseQ: 0.3,
+    },
+    {
+      frequency: 330,
+      at: 0.05,
+      length: 0.6,
+      type: "sine",
+      volume: 0.15,
+      glideTo: 180,
+    },
+  ],
+  // Spring: three rising chimes.
+  chime: [
+    { frequency: 1046.5, at: 0, length: 0.25, type: "sine" },
+    { frequency: 1318.5, at: 0.12, length: 0.3, type: "sine" },
+    { frequency: 1568, at: 0.24, length: 0.45, type: "sine", volume: 0.6 },
+  ],
+  // The Bishop: a low church bell.
+  bell: [
+    { frequency: 196, at: 0, length: 0.9, type: "triangle", volume: 0.5 },
+    { frequency: 392, at: 0.02, length: 0.6, type: "sine", volume: 0.25 },
+    { frequency: 587.3, at: 0.04, length: 0.4, type: "sine", volume: 0.12 },
+  ],
+  // The Heroine: a short trumpet flourish.
+  flourish: [
+    { frequency: 659.25, at: 0, length: 0.1, type: "square", volume: 0.3 },
+    { frequency: 880, at: 0.09, length: 0.1, type: "square", volume: 0.3 },
+    { frequency: 1174.7, at: 0.18, length: 0.32, type: "square", volume: 0.35 },
+  ],
+  // The Scarecrow: straw rustling.
+  rustle: [
+    {
+      frequency: 0,
+      at: 0,
+      length: 0.12,
+      volume: 0.35,
+      noiseFrequency: 2400,
+      noiseQ: 0.8,
+    },
+    {
+      frequency: 0,
+      at: 0.14,
+      length: 0.1,
+      volume: 0.25,
+      noiseFrequency: 3000,
+      noiseQ: 0.8,
+    },
+  ],
   train: [
     {
       frequency: 0,
@@ -472,11 +577,16 @@ export function soundForEvent(title: string): SoundKind | null {
   if (/commits (\d+ |nothing)/.test(text)) return "bid";
   if (/replaces \d+ tiles?\./.test(text)) return "card";
   if (/takes over/.test(text)) return "merger";
-  if (/calls the end|calls the armies/.test(text)) return "fanfare";
-  if (/plays surrender|plays winter|plays spring|plays a bishop/.test(text))
-    return "alarm";
-  if (/^\S+ plays (mercenary|a scarecrow|drummer|heroine|courtesan)/.test(text))
-    return "card";
+  if (/calls the end/.test(text)) return "fanfare";
+  if (/calls the armies/.test(text)) return "clash";
+  if (/plays drummer/.test(text)) return "drum";
+  if (/plays winter/.test(text)) return "wind";
+  if (/plays spring/.test(text)) return "chime";
+  if (/plays a bishop/.test(text)) return "bell";
+  if (/plays heroine/.test(text)) return "flourish";
+  if (/plays a scarecrow/.test(text)) return "rustle";
+  if (/plays surrender/.test(text)) return "alarm";
+  if (/^\S+ plays (mercenary|courtesan)/.test(text)) return "card";
   if (/ wins \w+ with \d/.test(text)) return "win";
   if (/carries a passenger/.test(text)) return "train";
   if (/lays \w+ track/.test(text)) return "stonePlace";

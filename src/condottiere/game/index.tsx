@@ -1,12 +1,4 @@
-import {
-  Badge,
-  Center,
-  Container,
-  Group,
-  Loader,
-  Stack,
-  Text,
-} from "@mantine/core";
+import { Badge, Center, Container, Group, Loader, Stack } from "@mantine/core";
 import { useCallback, useMemo, useState } from "react";
 import useGameState from "../../shared/hooks/useGameState";
 import { useUserContext } from "../../shared/context/useUserContext";
@@ -18,6 +10,7 @@ import TurnBanner from "../../shared/components/TurnBanner";
 import { CondottiereGameState } from "./types";
 import Map, { Highlight } from "./components/Map";
 import BattleLines from "./components/BattleLines";
+import BattleResult from "./components/BattleResult";
 import PlayerOverview from "./components/PlayerOverview";
 import ActionPanel, { Pending } from "./components/ActionPanel";
 import GameOver from "./components/GameOver";
@@ -138,6 +131,16 @@ export default function Game() {
     );
   }
 
+  const battle = gameState.phase === "BATTLE";
+  const map = (small: boolean) => (
+    <Map
+      gameState={gameState}
+      highlights={highlights}
+      onClick={handleRegion}
+      small={small}
+    />
+  );
+
   return (
     <>
       <TurnBanner active={acting && inProgress} />
@@ -151,9 +154,9 @@ export default function Game() {
             <Stack gap="xs" align="center">
               <Group gap="sm" justify="center">
                 <Badge variant="light" radius="sm" size="lg">
-                  {gameState.phase === "CHOOSE"
-                    ? "Choosing the battlefield"
-                    : `Battle ${gameState.turn}`}
+                  {battle
+                    ? `Battle ${gameState.turn}`
+                    : "Choosing the battlefield"}
                 </Badge>
                 <Badge variant="light" color="gray" radius="sm" size="lg">
                   {gameState.deckCount} in the deck · win {gameState.winTotal}{" "}
@@ -165,12 +168,7 @@ export default function Game() {
                   </Badge>
                 )}
               </Group>
-              <Map
-                gameState={gameState}
-                highlights={highlights}
-                onClick={handleRegion}
-              />
-              {gameState.phase === "BATTLE" ? (
+              {battle ? (
                 <BattleLines
                   gameState={gameState}
                   me={me?.email}
@@ -178,17 +176,10 @@ export default function Game() {
                   onMercenary={handleMercenary}
                 />
               ) : (
-                gameState.lastBattle && (
-                  <Text size="sm" c="dimmed" ta="center">
-                    Last battle, {REGIONS[gameState.lastBattle.region].name}:{" "}
-                    {gameState.lastBattle.totals
-                      .map((t) => `${t.email.split("@")[0]} ${t.strength}`)
-                      .join(", ")}
-                    {gameState.lastBattle.winner
-                      ? ` — ${gameState.lastBattle.winner.split("@")[0]} wins`
-                      : " — nobody wins"}
-                  </Text>
-                )
+                <>
+                  <BattleResult gameState={gameState} me={me?.email} />
+                  {map(false)}
+                </>
               )}
             </Stack>
           </div>
@@ -197,6 +188,7 @@ export default function Game() {
             style={{ order: 2, gridTemplateColumns: "1fr" }}
           >
             <Stack gap="sm">
+              {battle && map(true)}
               {gameState.players.map((player) => (
                 <PlayerOverview
                   key={player.email}

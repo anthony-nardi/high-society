@@ -289,6 +289,10 @@ function resolveBattle(gameState: CondottiereGameState) {
   else if (winner) gameState.public.condottiere = winner.email;
 
   let played = 0;
+  const lines = gameState.public.players
+    .filter((p) => (p.line || []).length)
+    .map((p) => ({ email: p.email, line: [...(p.line || [])] }));
+  const season = gameState.public.season;
   for (const p of gameState.public.players) {
     played += (p.line || []).length;
     discard(gameState, p.line || []);
@@ -299,6 +303,8 @@ function resolveBattle(gameState: CondottiereGameState) {
     region,
     totals: result,
     ...(winner ? { winner: winner.email } : {}),
+    ...(lines.length ? { lines } : {}),
+    ...(season ? { season } : {}),
   };
   if (winner) {
     winner.regions = [...(winner.regions || []), region].sort((a, b) => a - b);
@@ -418,7 +424,13 @@ export function playCard(
 
   player.hand = hand.filter((_, i) => i !== index);
   player.lastActionAt = Date.now();
-  gameState.public.lastMove = { type: "play", email: player.email, card };
+  const move: NonNullable<CondottiereGameState["public"]["lastMove"]> = {
+    type: "play",
+    email: player.email,
+    card,
+  };
+  gameState.public.lastMove = move;
+  const removed: { email: string; card: Card }[] = [];
   let note = `${player.email} plays ${label(card)}.`;
 
   switch (card) {
@@ -428,6 +440,7 @@ export function playCard(
       player.line = line;
       player.hand = [...player.hand, back];
       discard(gameState, ["SCARECROW"]);
+      move.returned = back;
       note = `${player.email} plays a Scarecrow and takes back a ${label(back)}.`;
       break;
     }
@@ -437,6 +450,7 @@ export function playCard(
       for (const p of gameState.public.players) {
         const gone = (p.line || []).filter((c) => c === other);
         if (gone.length) {
+          for (const c of gone) removed.push({ email: p.email, card: c });
           discard(gameState, gone);
           p.line = (p.line || []).filter((c) => c !== other);
         }
@@ -447,6 +461,7 @@ export function playCard(
       break;
     }
     case "BISHOP": {
+      const removedCards = removed;
       let top = 0;
       for (const p of gameState.public.players)
         for (const c of p.line || []) top = Math.max(top, mercenaryValue(c));
@@ -459,6 +474,8 @@ export function playCard(
           gone += removed.length;
           discard(gameState, removed);
           p.line = (p.line || []).filter((c) => mercenaryValue(c) !== top);
+          for (const c of removed)
+            removedCards.push({ email: p.email, card: c });
         }
       }
       player.line = [...(player.line || []), card];
@@ -478,6 +495,7 @@ export function playCard(
     default:
       player.line = [...(player.line || []), card];
   }
+  if (removed.length) move.removed = removed;
   announce(gameState, note);
   advance(gameState);
   return { ok: true };
