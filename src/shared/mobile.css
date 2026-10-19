@@ -12,6 +12,15 @@ body {
   overflow-x: hidden;
 }
 
+/*
+ * Reserve the scrollbar's column even when there is nothing to scroll, so
+ * a lobby or loader that flips the page between short and tall does not
+ * jolt everything sideways as the scrollbar comes and goes.
+ */
+html {
+  scrollbar-gutter: stable;
+}
+
 /* Fixed bottom panels clear the iPhone home indicator. */
 .safe-bottom {
   padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
