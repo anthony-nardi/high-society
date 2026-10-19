@@ -208,6 +208,11 @@ export default function Game() {
                     size={56}
                     highlights={highlights}
                     onCell={handleCell}
+                    pickable={
+                      card === "RABBIT" &&
+                      draft.cell !== null &&
+                      draft.swap.length < 2
+                    }
                   />
                 </div>
               ) : (

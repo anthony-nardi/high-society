@@ -132,6 +132,9 @@ describe("game registry", () => {
       "takeTigrisTreasure",
       "withdrawTigrisLeader",
     ]);
+    expect(Object.keys(GAMES["coral-reef"].actions)).toEqual([
+      "placeCoralReefCard",
+    ]);
   });
 
   it("creates a playable state and lets bots finish from it", () => {

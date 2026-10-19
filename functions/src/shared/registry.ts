@@ -19,6 +19,7 @@ import twixt from "../twixt/module";
 import ecosystem from "../ecosystem/module";
 import fujiFlush from "../fuji-flush/module";
 import tigris from "../tigris/module";
+import coralReef from "../coral-reef/module";
 
 /** Every playable game, keyed by the name stored in lobbies and states. */
 export const GAMES: { [name in GameName]: GameModule<any> } = {
@@ -41,6 +42,7 @@ export const GAMES: { [name in GameName]: GameModule<any> } = {
   ecosystem,
   "fuji-flush": fujiFlush,
   tigris,
+  "coral-reef": coralReef,
 };
 
 export function getGameModule(name: GameName): GameModule<any> {

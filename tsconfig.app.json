@@ -37,6 +37,7 @@
     "functions/src/no-thanks/helpers/scoring.ts",
     "functions/src/clans/helpers/map.ts",
     "functions/src/fuji-flush/helpers/board.ts",
-    "functions/src/tigris/helpers/board.ts"
+    "functions/src/tigris/helpers/board.ts",
+    "functions/src/coral-reef/helpers/board.ts"
   ]
 }

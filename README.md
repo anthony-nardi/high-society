@@ -1,8 +1,8 @@
-# High Society / No Thanks! / Razzia! / Family Inc. / For Sale / The Bridges of Shangri-La / Acquire / Condottiere / Ride the Rails / Clans / TwixT / Ecosystem / Fuji Flush / Tigris & Euphrates / ZÈRTZ / YINSH / DVONN / GIPF / LYNGK
+# High Society / No Thanks! / Razzia! / Family Inc. / For Sale / The Bridges of Shangri-La / Acquire / Condottiere / Ride the Rails / Clans / TwixT / Ecosystem / Fuji Flush / Tigris & Euphrates / Ecosystem: Coral Reef / ZÈRTZ / YINSH / DVONN / GIPF / LYNGK
 
-Twenty board and card games played online against friends or bots.
+Twenty-one board and card games played online against friends or bots.
 
-- `src/` — Vite + React 19 + Mantine 9 client (`/high-society`, `/no-thanks`, `/razzia`, `/family-inc`, `/zertz`, `/yinsh`, `/dvonn`, `/gipf`, `/lyngk`, `/for-sale`, `/shangri-la`, `/acquire`, `/condottiere`, `/ride-the-rails`, `/clans`, `/twixt`, `/ecosystem`, `/fuji-flush`, `/tigris`)
+- `src/` — Vite + React 19 + Mantine 9 client (`/high-society`, `/no-thanks`, `/razzia`, `/family-inc`, `/zertz`, `/yinsh`, `/dvonn`, `/gipf`, `/lyngk`, `/for-sale`, `/shangri-la`, `/acquire`, `/condottiere`, `/ride-the-rails`, `/clans`, `/twixt`, `/ecosystem`, `/fuji-flush`, `/tigris`, `/coral-reef`)
 - `functions/` — Firebase Cloud Functions holding all game logic (Node 22 runtime)
 - Realtime Database stores lobbies and game state; Google sign-in via Firebase Auth
 
@@ -125,6 +125,11 @@ card only; the face-down deck is never read.
   with plausible commitments, and the result is valued by the lowest
   sphere above all, leaders in place with supporters and monuments beside
   them, less what the strongest rival stands to gain.
+
+- Ecosystem: Coral Reef (`functions/src/coral-reef/helpers/botSearch.ts`):
+  the Ecosystem judgement over the reef's cards: points with the whales'
+  flips chosen, the food web bonus, a guess at the plankton placing and
+  the room left to grow; an Octopus tries every swap and every move.
 
 - Ride the Rails (`functions/src/ride-the-rails/helpers/botSearch.ts`):
   a share by what the railroad will pay, each locomotive by the links and

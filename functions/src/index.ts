@@ -69,6 +69,7 @@ import {
   takeTigrisTreasure,
   withdrawTigrisLeader,
 } from "./tigris/client";
+import { placeCoralReefCard } from "./coral-reef/client";
 
 import { leaderboard } from "./shared/leaderboard";
 
@@ -182,3 +183,6 @@ exports.chooseTigrisWar = chooseTigrisWar;
 exports.buildTigrisMonument = buildTigrisMonument;
 exports.skipTigrisMonument = skipTigrisMonument;
 exports.takeTigrisTreasure = takeTigrisTreasure;
+
+// Ecosystem: Coral Reef
+exports.placeCoralReefCard = placeCoralReefCard;

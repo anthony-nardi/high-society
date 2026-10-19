@@ -20,6 +20,7 @@ import type { TwixtGameState } from "../../twixt/game/types";
 import type { EcosystemGameState } from "../../ecosystem/game/types";
 import type { FujiFlushGameState } from "../../fuji-flush/game/types";
 import type { TigrisGameState } from "../../tigris/game/types";
+import type { CoralReefGameState } from "../../coral-reef/game/types";
 
 /** The public state each game's screens read. */
 export type GameStateFor<T extends GameName> = T extends "high-society"
@@ -60,7 +61,9 @@ export type GameStateFor<T extends GameName> = T extends "high-society"
                                     ? FujiFlushGameState
                                     : T extends "tigris"
                                       ? TigrisGameState
-                                      : never;
+                                      : T extends "coral-reef"
+                                        ? CoralReefGameState
+                                        : never;
 
 type ContextValue = {
   isGameStatusLoading: boolean | null;

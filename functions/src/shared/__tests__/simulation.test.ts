@@ -16,6 +16,7 @@ import * as twixt from "../../twixt/helpers/botSearch";
 import * as ecosystem from "../../ecosystem/helpers/botSearch";
 import * as fujiFlush from "../../fuji-flush/helpers/botSearch";
 import * as tigris from "../../tigris/helpers/botSearch";
+import * as coralReef from "../../coral-reef/helpers/botSearch";
 
 /*
  * Simulation: every game is played to the end many times with random legal
@@ -244,6 +245,7 @@ const MOVERS: Partial<Record<GameName, Mover>> = {
   ecosystem: inPlace(ecosystem.turnMoves, ecosystem.applyMove),
   "fuji-flush": inPlace(fujiFlush.turnMoves, fujiFlush.applyMove),
   tigris: inPlace(tigris.turnMoves, tigris.applyMove),
+  "coral-reef": inPlace(coralReef.turnMoves, coralReef.applyMove),
 };
 
 type Finding = { game: GameName; seed: number; step: number; message: string };
@@ -329,6 +331,7 @@ function conserved(game: GameName, state: State): number[] {
       // Huts on the board plus huts in founded villages never exceed sixty; each village founded is a chip.
       return [len(pub.villages) - sum(players.map((p) => p.chips as number))];
     case "ecosystem":
+    case "coral-reef":
       // Cards in the deck, in hands, in grids and set aside by the neutral hand.
       return [
         len(priv.deck) +

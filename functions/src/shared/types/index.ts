@@ -17,7 +17,8 @@ export type GameName =
   | "twixt"
   | "ecosystem"
   | "fuji-flush"
-  | "tigris";
+  | "tigris"
+  | "coral-reef";
 
 export type GameStatus = "IN_PROGRESS" | "GAME_OVER";
 

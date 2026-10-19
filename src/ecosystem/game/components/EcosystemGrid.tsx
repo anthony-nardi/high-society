@@ -14,12 +14,15 @@ export default function EcosystemGrid({
   highlights = {},
   onCell,
   compact = false,
+  pickable = false,
 }: {
   grid: Grid;
   size?: number;
   highlights?: { [cell: string]: CellHighlight };
   onCell?: (cell: string) => void;
   compact?: boolean;
+  /** A Rabbit is in play: any card may be tapped to swap. */
+  pickable?: boolean;
 }) {
   const b = bounds(grid);
   const gap = Math.max(3, Math.round(size * 0.08));
@@ -78,7 +81,7 @@ export default function EcosystemGrid({
             (h === "open" ||
               h === "target" ||
               h === "swap" ||
-              (!!type && h !== undefined));
+              (!!type && (h !== undefined || pickable)));
           const [rr, cc] = parseCell(key);
           void rr;
           void cc;

@@ -147,6 +147,13 @@ export const GAME_INFO: { [name in GameName]: GameInfo } = {
     maxPlayers: 4,
     route: "/tigris",
   },
+  "coral-reef": {
+    name: "coral-reef",
+    title: "Ecosystem: Coral Reef",
+    minPlayers: 2,
+    maxPlayers: 6,
+    route: "/coral-reef",
+  },
 };
 
 export const GAME_NAMES = Object.keys(GAME_INFO) as GameName[];
