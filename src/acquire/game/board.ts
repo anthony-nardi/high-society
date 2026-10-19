@@ -245,30 +245,6 @@ export function holders(
     .sort((a, b) => b.shares - a.shares);
 }
 
-/**
- * What a player's shares are worth on paper right now, and the bonuses
- * they would collect if every chain were settled this instant. Both are
- * public, unlike cash.
- */
-export function paperWorth(
-  state: AcquireGameState,
-  player: AcquirePlayerState,
-) {
-  const shares = CHAINS.reduce(
-    (s, c) => s + stockOf(player, c) * currentPrice(state, c),
-    0,
-  );
-  const bonus = activeChains(state).reduce(
-    (s, c) =>
-      s +
-      bonuses(state, c)
-        .filter(([email]) => email === player.email)
-        .reduce((t, [, amount]) => t + amount, 0),
-    0,
-  );
-  return { shares, bonus, total: shares + bonus };
-}
-
 /** The tiles a played tile would join: the chains it grows or merges. */
 export function touchedChains(state: AcquireGameState, tile: Tile): Chain[] {
   const p = analyse(state, tile);
