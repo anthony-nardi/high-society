@@ -31,7 +31,8 @@ export type SoundKind =
   | "flourish"
   | "rustle"
   | "steel"
-  | "surrender";
+  | "surrender"
+  | "dice";
 
 const MUTE_KEY = "sound:muted";
 const MUTE_EVENT = "sound:mute-changed";
@@ -460,6 +461,32 @@ const SOUNDS: { [kind in SoundKind]: Note[] } = {
       glideTo: 3000,
     },
   ],
+  // A die rattled in a cup, faster and faster, then dropped on the table:
+  // a run of little knocks closing in, a bright clack as it lands, and one
+  // last tick as it settles. Timed to the die tumbling on screen.
+  dice: [
+    ...knock(0, 470, 0.45),
+    ...knock(0.11, 390, 0.5),
+    ...knock(0.21, 520, 0.55),
+    ...knock(0.3, 360, 0.6),
+    ...knock(0.38, 480, 0.65),
+    ...knock(0.45, 410, 0.7),
+    ...knock(0.51, 540, 0.75),
+    ...knock(0.56, 380, 0.8),
+    ...knock(0.6, 450, 0.85),
+    ...lift(0.64, 0.5),
+    ...knock(0.86, 240, 1.4),
+    {
+      frequency: 0,
+      at: 0.86,
+      length: 0.05,
+      volume: 0.9,
+      noiseFrequency: 2600,
+      noiseQ: 1,
+    },
+    ...knock(0.99, 300, 0.6),
+    ...knock(1.07, 330, 0.3),
+  ],
   // A surrender: a horn falling away, then the drum.
   surrender: [
     {
@@ -670,8 +697,7 @@ export function soundForEvent(title: string): SoundKind | null {
   if (/^nobody bids/.test(text)) return "pass";
   if (/fills the hold for nothing/.test(text)) return "card";
   if (/^day \d is scored/.test(text)) return "fanfare";
-  if (/pushes too far/.test(text)) return "alarm";
-  if (/the die shows/.test(text)) return "stoneClatter";
+  if (/the die shows/.test(text)) return "dice";
   if (/turns over a switch card/.test(text)) return "chime";
   if (/turns over (red|blue|yellow|green|purple|dice)/.test(text))
     return "card";

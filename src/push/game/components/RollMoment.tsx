@@ -1,13 +1,15 @@
 import { Text } from "@mantine/core";
 import type { PushGameState } from "../types";
 import { cardLabel, colourName, columnLabel, nameFor, points } from "../board";
-import CardFace, { Die } from "./CardFace";
+import CardFace from "./CardFace";
+import DiceCube from "./DiceCube";
 import classes from "../push.module.css";
 
 /**
- * A die roll: the die tumbles in over the table and settles on its face,
- * and the cards it takes shake and fall. It shows for a few seconds, then
- * fades, so nobody misses what the die did.
+ * A die roll: the die is thrown across the table, spinning and bouncing,
+ * and settles with its face to the front; the verdict is read out once it
+ * has landed, and the cards it takes shake and fall. It shows for a few
+ * seconds, then fades, so nobody misses what the die did.
  */
 export default function RollMoment({
   gameState,
@@ -40,10 +42,8 @@ export default function RollMoment({
             {cardLabel(roll.card)} fits nowhere.
           </Text>
         )}
-        <div className={classes.die}>
-          <Die face={roll.face} size={84} />
-        </div>
-        <Text size="lg" fw={700} ta="center">
+        <DiceCube face={roll.face} size={84} />
+        <Text size="lg" fw={700} ta="center" className={classes.verdict}>
           {roll.face === "STAR"
             ? `The star: ${who} ${who === "you" ? "lose" : "loses"} nothing.`
             : lost.length

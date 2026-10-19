@@ -122,7 +122,7 @@
   align-items: center;
   justify-content: center;
   pointer-events: none;
-  animation: push-roll-fade 3000ms ease-in-out forwards;
+  animation: push-roll-fade 3800ms ease-in-out forwards;
 }
 
 @keyframes push-roll-fade {
@@ -149,7 +149,7 @@
   background: rgba(20, 22, 30, 0.95);
   border: 2px solid rgba(255, 216, 107, 0.5);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
-  animation: push-roll-card 3000ms ease-out forwards;
+  animation: push-roll-card 3800ms ease-out forwards;
 }
 
 @keyframes push-roll-card {
@@ -168,18 +168,118 @@
   }
 }
 
-.die {
-  animation: push-tumble 900ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
+/* The thrown die: a cube spun through the air, bouncing twice, settling face front. */
+.throw {
+  position: relative;
+  width: var(--size);
+  height: calc(var(--size) + 28px);
+  perspective: 700px;
+  perspective-origin: 50% 30%;
 }
 
-@keyframes push-tumble {
+.shadow {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  bottom: 0;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.7);
+  filter: blur(4px);
+  animation: push-shadow 1100ms ease-out both;
+}
+
+@keyframes push-shadow {
   0% {
-    transform: rotate(-540deg) scale(0.4) translateY(-60px);
+    transform: scale(0.3);
+    opacity: 0;
   }
-  70% {
-    transform: rotate(20deg) scale(1.1);
+  40% {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+  62% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(0.8);
+    opacity: 0.7;
+  }
+  86% {
+    transform: scale(1);
+    opacity: 1;
   }
   100% {
+    transform: scale(0.95);
+    opacity: 0.9;
+  }
+}
+
+.cube {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--size);
+  height: var(--size);
+  transform-style: preserve-3d;
+  animation: push-throw 1100ms cubic-bezier(0.25, 0.7, 0.3, 1) both;
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: 12px;
+}
+
+@keyframes push-throw {
+  0% {
+    transform: translate3d(-140px, -90px, 220px) rotateX(-40deg) rotateY(-60deg)
+      rotateZ(-30deg);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  40% {
+    transform: translate3d(-30px, -40px, 60px) rotateX(400deg) rotateY(300deg)
+      rotateZ(90deg);
+  }
+  62% {
+    transform: translate3d(10px, 0, 0) rotateX(640deg) rotateY(520deg)
+      rotateZ(180deg);
+  }
+  75% {
+    transform: translate3d(2px, -22px, 0) rotateX(690deg) rotateY(690deg)
+      rotateZ(330deg);
+  }
+  86% {
+    transform: translate3d(0, 0, 0) rotateX(720deg) rotateY(720deg)
+      rotateZ(360deg);
+  }
+  93% {
+    transform: translate3d(0, -4px, 0) rotateX(722deg) rotateY(718deg)
+      rotateZ(362deg);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotateX(720deg) rotateY(720deg)
+      rotateZ(360deg);
+  }
+}
+
+/* What the die decided, read out once it has settled. */
+.verdict {
+  animation: push-verdict 400ms ease-out 950ms both;
+}
+
+@keyframes push-verdict {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
     transform: none;
   }
 }
@@ -192,7 +292,7 @@
 
 /* The cards the die took: they shake and fall. */
 .lost {
-  animation: push-lost 1200ms ease-in 900ms both;
+  animation: push-lost 1200ms ease-in 1300ms both;
 }
 
 @keyframes push-lost {
@@ -278,7 +378,9 @@
   .columnOpen,
   .landed,
   .pending,
-  .die,
+  .cube,
+  .shadow,
+  .verdict,
   .lost,
   .banked,
   .columnGone {

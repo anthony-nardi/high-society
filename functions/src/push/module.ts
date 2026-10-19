@@ -40,7 +40,7 @@ const push: GameModule<PushGameState> = {
       const fresh =
         pub.notification?.title.includes("The die shows") ||
         pub.notification?.title.includes("pushes too far");
-      if (fresh) return 3200;
+      if (fresh) return 4000;
     }
     if (pub.phase === "CHOOSE") return 1400;
     return pub.pending ? 900 : 1100;

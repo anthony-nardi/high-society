@@ -137,12 +137,12 @@ describe("soundForEvent", () => {
       soundForEvent(
         "a takes Red 3, Dice. The die shows Blue and takes Blue 4.",
       ),
-    ).toBe("stoneClatter");
+    ).toBe("dice");
     expect(
       soundForEvent(
         "a pushes too far: Green 2 fits nowhere. The die shows the star.",
       ),
-    ).toBe("alarm");
+    ).toBe("dice");
     expect(
       soundForEvent(
         "a turns over a Switch card: the others will choose from the right.",
