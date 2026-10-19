@@ -21,6 +21,7 @@ import Tigris from "./tigris/App";
 import CoralReef from "./coral-reef/App";
 import Savanna from "./savanna/App";
 import Medici from "./medici/App";
+import Push from "./push/App";
 import Razzia from "./razzia/App";
 import reportWebVitals from "./reportWebVitals";
 import "@mantine/core/styles.css";
@@ -127,6 +128,10 @@ const router = createBrowserRouter([
   {
     path: "/medici",
     element: <Medici />,
+  },
+  {
+    path: "/push",
+    element: <Push />,
   },
 ]);
 

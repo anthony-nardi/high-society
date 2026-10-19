@@ -670,6 +670,15 @@ export function soundForEvent(title: string): SoundKind | null {
   if (/^nobody bids/.test(text)) return "pass";
   if (/fills the hold for nothing/.test(text)) return "card";
   if (/^day \d is scored/.test(text)) return "fanfare";
+  if (/pushes too far/.test(text)) return "alarm";
+  if (/the die shows/.test(text)) return "stoneClatter";
+  if (/turns over a switch card/.test(text)) return "chime";
+  if (/turns over (red|blue|yellow|green|purple|dice)/.test(text))
+    return "card";
+  if (/places (red|blue|yellow|green|purple|dice) .*in column/.test(text))
+    return "chip";
+  if (/^\S+ takes (red|blue|yellow|green|purple|dice)/.test(text)) return "win";
+  if (/protects (red|blue|yellow|green|purple)/.test(text)) return "bell";
   if (/takes over/.test(text)) return "merger";
   if (/calls the end/.test(text)) return "fanfare";
   if (/calls the armies/.test(text)) return "steel";

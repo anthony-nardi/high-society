@@ -1,0 +1,287 @@
+/* The three columns in the middle of the table. */
+.columns {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 14px;
+  width: 100%;
+  min-height: 150px;
+  padding: 10px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 78px;
+  padding: 8px 6px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: default;
+  transition:
+    border-color 150ms,
+    background 150ms,
+    transform 150ms;
+}
+
+.column:disabled {
+  cursor: default;
+}
+
+/* A column the player may tap now. */
+.columnOpen {
+  cursor: pointer;
+  border-color: rgba(255, 216, 107, 0.6);
+  background: rgba(255, 216, 107, 0.08);
+  animation: push-pulse 1400ms ease-in-out infinite;
+}
+
+.columnOpen:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 216, 107, 0.16);
+}
+
+@keyframes push-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 216, 107, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(255, 216, 107, 0);
+  }
+}
+
+/* A column just taken fades out towards its new owner. */
+.columnGone {
+  animation: push-gone 900ms ease-in forwards;
+}
+
+@keyframes push-gone {
+  to {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.85);
+  }
+}
+
+/* Cards stacked down a column, overlapping. */
+.stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stack > * + * {
+  margin-top: -58px;
+}
+
+/* A card just placed drops into the column. */
+.landed {
+  animation: push-land 380ms cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+@keyframes push-land {
+  from {
+    transform: translateY(-24px) scale(1.15);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* The card just turned over, waiting for a column. */
+.pending {
+  animation: push-flip 420ms ease-out;
+}
+
+@keyframes push-flip {
+  from {
+    transform: rotateY(90deg) scale(1.1);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* A die roll: it tumbles in, then settles on its face. */
+.roll {
+  position: fixed;
+  inset: 0;
+  z-index: 950;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  animation: push-roll-fade 3000ms ease-in-out forwards;
+}
+
+@keyframes push-roll-fade {
+  0% {
+    background: rgba(0, 0, 0, 0);
+  }
+  10%,
+  80% {
+    background: rgba(0, 0, 0, 0.55);
+  }
+  100% {
+    background: rgba(0, 0, 0, 0);
+    opacity: 0;
+  }
+}
+
+.rollCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 22px 30px;
+  border-radius: 18px;
+  background: rgba(20, 22, 30, 0.95);
+  border: 2px solid rgba(255, 216, 107, 0.5);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  animation: push-roll-card 3000ms ease-out forwards;
+}
+
+@keyframes push-roll-card {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  12%,
+  80% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+}
+
+.die {
+  animation: push-tumble 900ms cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+@keyframes push-tumble {
+  0% {
+    transform: rotate(-540deg) scale(0.4) translateY(-60px);
+  }
+  70% {
+    transform: rotate(20deg) scale(1.1);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+.rollTitle {
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 4px;
+}
+
+/* The cards the die took: they shake and fall. */
+.lost {
+  animation: push-lost 1200ms ease-in 900ms both;
+}
+
+@keyframes push-lost {
+  0% {
+    opacity: 1;
+    transform: none;
+  }
+  20% {
+    transform: translateX(-4px) rotate(-4deg);
+  }
+  40% {
+    transform: translateX(4px) rotate(4deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(50px) rotate(12deg) scale(0.7);
+  }
+}
+
+/* A player's zone: cards grouped by colour, overlapping sideways. */
+.zone {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin: 8px 0 4px;
+  min-height: 48px;
+}
+
+.group {
+  display: flex;
+  align-items: flex-end;
+}
+
+.group > * + * {
+  margin-left: -22px;
+}
+
+.groupTotal {
+  margin-left: 4px;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 6px;
+}
+
+/* A group just protected flips face down. */
+.banked {
+  animation: push-bank 600ms ease-out;
+}
+
+@keyframes push-bank {
+  from {
+    transform: rotateY(180deg);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.narrative {
+  animation: push-fade-in 300ms ease-out;
+}
+
+@keyframes push-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.players {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 12px;
+  align-items: start;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .columnOpen,
+  .landed,
+  .pending,
+  .die,
+  .lost,
+  .banked,
+  .columnGone {
+    animation: none;
+  }
+}

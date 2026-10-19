@@ -40,6 +40,7 @@
     "functions/src/tigris/helpers/board.ts",
     "functions/src/coral-reef/helpers/board.ts",
     "functions/src/savanna/helpers/board.ts",
-    "functions/src/medici/helpers/board.ts"
+    "functions/src/medici/helpers/board.ts",
+    "functions/src/push/helpers/board.ts"
   ]
 }

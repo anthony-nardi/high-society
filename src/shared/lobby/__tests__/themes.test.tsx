@@ -16,6 +16,7 @@ import highSociety from "../../../high-society/lobbyTheme";
 import lyngk from "../../../lyngk/lobbyTheme";
 import medici from "../../../medici/lobbyTheme";
 import noThanks from "../../../no-thanks/lobbyTheme";
+import push from "../../../push/lobbyTheme";
 import razzia from "../../../razzia/lobbyTheme";
 import rideTheRails from "../../../ride-the-rails/lobbyTheme";
 import savanna from "../../../savanna/lobbyTheme";
@@ -40,6 +41,7 @@ const THEMES: { [name: string]: LobbyTheme } = {
   lyngk,
   medici,
   noThanks,
+  push,
   razzia,
   rideTheRails,
   savanna,

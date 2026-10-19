@@ -20,7 +20,8 @@ export type GameName =
   | "tigris"
   | "coral-reef"
   | "savanna"
-  | "medici";
+  | "medici"
+  | "push";
 
 export type GameStatus = "IN_PROGRESS" | "GAME_OVER";
 

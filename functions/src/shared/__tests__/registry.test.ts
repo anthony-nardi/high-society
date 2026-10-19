@@ -142,6 +142,12 @@ describe("game registry", () => {
       "offerMediciLot",
       "passMedici",
     ]);
+    expect(Object.keys(GAMES.push.actions).sort()).toEqual([
+      "bankPushColour",
+      "drawPushCard",
+      "placePushCard",
+      "takePushColumn",
+    ]);
   });
 
   it("creates a playable state and lets bots finish from it", () => {

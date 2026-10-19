@@ -19,6 +19,7 @@ import * as tigris from "../../tigris/helpers/botSearch";
 import * as coralReef from "../../coral-reef/helpers/botSearch";
 import * as savanna from "../../savanna/helpers/botSearch";
 import * as medici from "../../medici/helpers/botSearch";
+import * as push from "../../push/helpers/botSearch";
 
 /*
  * Simulation: every game is played to the end many times with random legal
@@ -250,6 +251,7 @@ const MOVERS: Partial<Record<GameName, Mover>> = {
   "coral-reef": inPlace(coralReef.turnMoves, coralReef.applyMove),
   savanna: inPlace(savanna.turnMoves, savanna.applyMove),
   medici: inPlace(medici.turnMoves, medici.applyMove),
+  push: inPlace(push.turnMoves, push.applyMove),
 };
 
 type Finding = { game: GameName; seed: number; step: number; message: string };
@@ -353,6 +355,15 @@ function conserved(game: GameName, state: State): number[] {
           len(priv.discard) +
           len(pub.lot) +
           sum(players.map((p) => len(p.ship))),
+      ];
+    case "push":
+      // The deck: in the draw pile, discarded, in a column, pending, or in a zone or bank.
+      return [
+        len(priv.deck) +
+          len(priv.discard) +
+          sum(((pub.columns as unknown[][]) || []).map((c) => len(c))) +
+          (pub.pending ? 1 : 0) +
+          sum(players.map((p) => len(p.bench) + len(p.bank))),
       ];
     case "fuji-flush":
       // Ninety cards: in the stack, in the drain, in hands or on the table.

@@ -22,6 +22,7 @@ import tigris from "../tigris/module";
 import coralReef from "../coral-reef/module";
 import savanna from "../savanna/module";
 import medici from "../medici/module";
+import push from "../push/module";
 
 /** Every playable game, keyed by the name stored in lobbies and states. */
 export const GAMES: { [name in GameName]: GameModule<any> } = {
@@ -47,6 +48,7 @@ export const GAMES: { [name in GameName]: GameModule<any> } = {
   "coral-reef": coralReef,
   savanna,
   medici,
+  push,
 };
 
 export function getGameModule(name: GameName): GameModule<any> {

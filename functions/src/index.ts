@@ -77,6 +77,12 @@ import {
   offerMediciLot,
   passMedici,
 } from "./medici/client";
+import {
+  bankPushColour,
+  drawPushCard,
+  placePushCard,
+  takePushColumn,
+} from "./push/client";
 
 import { leaderboard } from "./shared/leaderboard";
 
@@ -202,3 +208,9 @@ exports.drawMediciCard = drawMediciCard;
 exports.offerMediciLot = offerMediciLot;
 exports.bidMedici = bidMedici;
 exports.passMedici = passMedici;
+
+// PUSH
+exports.drawPushCard = drawPushCard;
+exports.placePushCard = placePushCard;
+exports.takePushColumn = takePushColumn;
+exports.bankPushColour = bankPushColour;
