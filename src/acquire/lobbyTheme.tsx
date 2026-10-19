@@ -19,7 +19,6 @@ const acquireLobby: LobbyTheme = {
     "Lay tiles, found hotel chains, and hold the right shares when the mergers come.",
   seatIcons: ["🎩", "💼", "🏨", "🏦", "🧳", "🏢"],
   botIcon: "🤖",
-  readyLabel: "Open for business",
 };
 
 export default acquireLobby;

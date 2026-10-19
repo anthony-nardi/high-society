@@ -19,7 +19,6 @@ const savannaLobby: LobbyTheme = {
     "Giraffes by the trees, zebras on the grass, and lions waiting at the edge of it all. Draft the plains.",
   seatIcons: ["🦁", "🦒", "🐘", "🦓", "🐆", "🦌", "🦅"],
   botIcon: "🤖",
-  readyLabel: "Onto the plains",
 };
 
 export default savannaLobby;

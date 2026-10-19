@@ -18,6 +18,4 @@ export type LobbyTheme = {
   seatIcons: string[];
   /** Icon for a bot's seat. */
   botIcon?: string;
-  /** Text of the ready button. */
-  readyLabel?: string;
 };

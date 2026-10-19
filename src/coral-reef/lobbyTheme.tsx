@@ -19,7 +19,6 @@ const coralReefLobby: LobbyTheme = {
     "Sharks hunt, whales sieve the krill, and the octopus slips a card away. Draft the reef that feeds itself.",
   seatIcons: ["🐠", "🐙", "🦈", "🐢", "🦀", "🐋", "🦐"],
   botIcon: "🤖",
-  readyLabel: "Dive in",
 };
 
 export default coralReefLobby;

@@ -19,7 +19,6 @@ const ecosystemLobby: LobbyTheme = {
     "Eleven cards each. Keep one, pass the rest, and build a wild where everything feeds something.",
   seatIcons: ["🐻", "🦊", "🐺", "🦌", "🐝", "🐰", "🦅"],
   botIcon: "🤖",
-  readyLabel: "Into the wild",
 };
 
 export default ecosystemLobby;

@@ -305,10 +305,8 @@ export default function Lobby({
               onClick={handleReadyUp}
               loading={!!isReadying}
               disabled={!!isReadying || isStartingWithBots}
-              color={theme?.accent}
-              autoContrast
             >
-              {theme?.readyLabel ?? "I'm ready"}
+              I'm ready
             </Button>
           )}
           {missingForBots > 0 && (
