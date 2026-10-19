@@ -11,6 +11,7 @@ import SoundToggle from "../shared/components/SoundToggle";
 import PanelInset from "../shared/components/PanelInset";
 import StatsDrawer from "../shared/components/StatsDrawer";
 import Game from "./game";
+import acquireLobby from "./lobbyTheme";
 
 initializeFirebase();
 
@@ -26,7 +27,7 @@ function App() {
             <AcquireRules />
             <GameTitle />
             <Login />
-            <Lobby gameName={"acquire"} />
+            <Lobby gameName={"acquire"} theme={acquireLobby} />
             <Game />
           </GameStateProvider>
         </LobbyProvider>
