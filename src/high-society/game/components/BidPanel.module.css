@@ -7,21 +7,18 @@
   z-index: 10;
   padding: 0 16px;
   pointer-events: none;
-  background: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.35),
-    rgba(0, 0, 0, 0) 60%
-  );
+  background: rgba(16, 18, 24, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.35);
   transition: background 300ms;
 }
 
 /* On the player's turn the whole strip warms up so the change is hard to miss. */
 .active {
-  background: linear-gradient(
-    to top,
-    rgba(255, 216, 107, 0.16),
-    rgba(255, 216, 107, 0) 70%
-  );
+  background: rgba(44, 37, 18, 0.92);
+  border-top-color: rgba(255, 216, 107, 0.5);
 }
 
 /* Shares the tray geometry with the hand so the controls can sit beside it. */
