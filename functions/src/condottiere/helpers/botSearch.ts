@@ -54,7 +54,11 @@ export function regionValue(
       theirsWithIt.length >= gameState.public.winTotal
     )
       value += 6;
+    else if (largestConnected(theirsWithIt) > largestConnected(theirs))
+      value += 2;
     else if (neighbours(region).some((n) => theirs.includes(n))) value += 1;
+    // A rival with a few regions already is worth holding back wherever they go.
+    value += 0.5 * Math.max(0, theirs.length - 1);
   }
   return value;
 }
@@ -103,9 +107,11 @@ export function chooseBattleMove(gameState: CondottiereGameState): BotMove {
   if (leading && rivalsIn.length === 0) return { kind: "pass" };
 
   const indexOf = (card: Card) => hand.findIndex((c) => c === card);
-  const committed = (me.line || []).length;
-  // How much the bot is willing to commit: more for valuable regions, less when its hand is thin.
-  const budget = value * 4 + (committed ? 4 : 0);
+  // What the bot will commit here: a share of all it could field this battle,
+  // a third for any region and everything when the game turns on it.
+  const power = handPower(hand) + handPower(me.line || []);
+  const share = value >= 10 ? 1 : value >= 6 ? 0.8 : value >= 3 ? 0.55 : 0.35;
+  const budget = Math.max(6, Math.round(power * share));
   const spent = handPower(me.line || []);
 
   // Surrender while ahead locks in the win.
@@ -153,6 +159,8 @@ export function chooseBattleMove(gameState: CondottiereGameState): BotMove {
         return { kind: "play", index: indexOf("BISHOP"), target: pope };
       }
     }
+    // Out of reach, or more than this region is worth: sit out.
+    if (gap >= handPower(hand)) return { kind: "pass" };
     if (spent + gap > budget) return { kind: "pass" };
     // Spring when our strongest cards would gain the most.
     if (
@@ -187,12 +195,16 @@ export function chooseBattleMove(gameState: CondottiereGameState): BotMove {
       .filter((m) => m.v > 0)
       .sort((a, b) => a.v - b.v);
     const drummer = (me.line || []).includes("DRUMMER");
-    const enough = mercs.find(
-      (m) => mine + (drummer && isMercenary(m.c) ? m.v * 2 : m.v) > bestRival,
-    );
+    const lifts = (m: { c: Card; v: number }) =>
+      mine + (drummer && isMercenary(m.c) ? m.v * 2 : m.v) > bestRival;
+    const affordable = mercs.filter((m) => spent + m.v <= budget);
+    // The cheapest card that takes the lead within budget; over budget only for a region that matters.
+    const enough =
+      affordable.find(lifts) ?? (value >= 3 ? mercs.find(lifts) : undefined);
     if (enough) return { kind: "play", index: enough.i };
-    if (mercs.length && value >= 3 && spent < budget)
-      return { kind: "play", index: mercs[mercs.length - 1].i };
+    // Otherwise build towards the lead with the biggest card the budget allows.
+    const biggest = affordable[affordable.length - 1];
+    if (biggest) return { kind: "play", index: biggest.i };
     return { kind: "pass" };
   }
 

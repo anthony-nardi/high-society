@@ -92,20 +92,40 @@ export default function BattleLines({
                   nothing yet
                 </Text>
               ) : (
-                line.map((card: Card, i) => (
-                  <div key={`${key}-${i}`} className="piece piece-drop">
-                    <CardFace
-                      card={card}
-                      width={38}
-                      onClick={
-                        mine && pickingMercenary && isMercenary(card)
-                          ? () => onMercenary(i)
+                line.map((card: Card, i) => {
+                  const target = mine && pickingMercenary && isMercenary(card);
+                  return (
+                    <div
+                      key={`${key}-${i}`}
+                      className={`piece piece-drop ${target ? "row-glow" : ""}`}
+                      style={
+                        target
+                          ? {
+                              padding: 6,
+                              borderRadius: 10,
+                              background: "rgba(255, 216, 107, 0.18)",
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
+                              gap: 2,
+                            }
                           : undefined
                       }
-                      selected={mine && pickingMercenary && isMercenary(card)}
-                    />
-                  </div>
-                ))
+                    >
+                      <CardFace
+                        card={card}
+                        width={target ? 64 : 38}
+                        onClick={target ? () => onMercenary(i) : undefined}
+                        selected={target}
+                      />
+                      {target && (
+                        <Text size="xs" fw={700} c="yellow.4">
+                          take back
+                        </Text>
+                      )}
+                    </div>
+                  );
+                })
               )}
             </Group>
           </Group>

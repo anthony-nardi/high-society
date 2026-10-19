@@ -30,6 +30,7 @@ export default function ActionPanel({
   onPass,
   onSkipPope,
   onCancel,
+  onMercenary,
 }: {
   gameState: CondottiereGameState;
   me: CondottierePlayerState;
@@ -40,6 +41,8 @@ export default function ActionPanel({
   onPass: () => void;
   onSkipPope: () => void;
   onCancel: () => void;
+  /** A Scarecrow waiting: which mercenary in your line to take back. */
+  onMercenary?: (lineIndex: number) => void;
 }) {
   const acting = gameState.activePlayer === me.email;
   const who = displayName(gameState.activePlayer);
@@ -131,7 +134,8 @@ export default function ActionPanel({
   let hint: string;
   if (loading) hint = "Sending your move…";
   else if (pending?.card === "SCARECROW")
-    hint = "Tap one of the mercenaries in your line above to take it back.";
+    hint =
+      "Choose which of your mercenaries the Scarecrow takes back: tap it in your line above, or use the buttons here.";
   else if (pending?.card === "BISHOP")
     hint = popeTargets(gameState).length
       ? "Every copy of the strongest mercenary on the table is discarded. Tap a region on the map to send the Pope there, or play without moving him."
@@ -180,6 +184,23 @@ export default function ActionPanel({
             </Button>
           )}
         </Group>
+        {!loading && pending?.card === "SCARECROW" && onMercenary && (
+          <Group gap={6} justify="center" wrap="wrap" aria-label="Take back">
+            {(me.line || []).map((card, i) =>
+              isMercenary(card) ? (
+                <Button
+                  key={`${i}-${card}`}
+                  color="yellow"
+                  variant="light"
+                  size="compact-md"
+                  onClick={() => onMercenary(i)}
+                >
+                  Take back {CARD_LABEL[card]}
+                </Button>
+              ) : null,
+            )}
+          </Group>
+        )}
         <Text size="sm" c="dimmed" ta="center">
           {hint}
         </Text>

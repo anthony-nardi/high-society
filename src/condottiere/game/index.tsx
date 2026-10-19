@@ -229,6 +229,7 @@ export default function Game() {
             void call(() => playCondottiereCard({ lobbyUID, index }));
           }}
           onCancel={() => setPending(null)}
+          onMercenary={handleMercenary}
         />
       )}
     </>

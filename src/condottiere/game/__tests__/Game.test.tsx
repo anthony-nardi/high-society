@@ -122,8 +122,9 @@ describe("Condottiere table", () => {
     const hand = screen.getByLabelText("Your hand");
     fireEvent.click(hand.querySelector('[aria-label="Scarecrow"]') as Element);
     fireEvent.click(screen.getByRole("button", { name: "Play Scarecrow" }));
+    expect(screen.getByText(/Choose which of your mercenaries/)).toBeTruthy();
     expect(
-      screen.getByText(/Tap one of the mercenaries in your line/),
+      screen.getByRole("button", { name: "Take back Mercenary 6" }),
     ).toBeTruthy();
     const line = screen.getByLabelText("a's line");
     fireEvent.click(
