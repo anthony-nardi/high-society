@@ -4,7 +4,14 @@ import { AcquireGameState, AcquirePlayerState, Chain } from "../types";
 import { useUserContext } from "../../../shared/context/useUserContext";
 import displayName, { isBotName } from "../../../shared/utils/displayName";
 import ThinkingDots from "../../../shared/components/ThinkingDots";
-import { CHAIN_COLOUR, CHAINS, label, money, stockOf } from "../board";
+import {
+  CHAIN_COLOUR,
+  CHAINS,
+  label,
+  money,
+  paperWorth,
+  stockOf,
+} from "../board";
 
 export default function PlayerOverview({
   player,
@@ -19,6 +26,10 @@ export default function PlayerOverview({
   const isCurrentUser = !!user && player.email === user.email;
   const isBot = isBotName(player.email);
   const held = CHAINS.filter((c) => stockOf(player, c) > 0);
+  const paper = paperWorth(gameState, player);
+  const leader = gameState.players.every(
+    (p) => paperWorth(gameState, p).total <= paper.total,
+  );
 
   // Shares that just grew pop, and money that just arrived floats up.
   const lastStocks = useRef<{ [chain in Chain]?: number }>({});
@@ -126,6 +137,20 @@ export default function PlayerOverview({
           {(player.tiles || []).length} tiles in hand
         </Text>
       )}
+      <Text
+        size="xs"
+        c="dimmed"
+        aria-label={`${displayName(player.email)} holds ${money(paper.shares)} in shares and would collect ${money(paper.bonus)} in bonuses now`}
+        title="Shares at today's prices, and the bonuses that would be paid if every chain were settled this instant. Cash is private."
+      >
+        {money(paper.shares)} in shares · {money(paper.bonus)} in bonuses now
+        {leader && paper.total > 0 && (
+          <Text component="span" c="yellow.4" fw={700}>
+            {" "}
+            · leads on paper
+          </Text>
+        )}
+      </Text>
       <Group
         gap={4}
         mt={6}

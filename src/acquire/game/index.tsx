@@ -8,7 +8,7 @@ import useGameSounds from "../../shared/hooks/useGameSounds";
 import useBotNudge from "../../shared/hooks/useBotNudge";
 import { useLobbyContext } from "../../shared/context/useLobbyContext";
 import TurnBanner from "../../shared/components/TurnBanner";
-import { AcquireGameState, Chain } from "./types";
+import { AcquireGameState, Chain, Tile } from "./types";
 import Board from "./components/Board";
 import ChainTable from "./components/ChainTable";
 import PlayerOverview from "./components/PlayerOverview";
@@ -30,6 +30,23 @@ export default function Game() {
   const { lobbyId } = useLobbyContext();
   const { gameState, isLoading } = useGameState<AcquireGameState>();
   const [loading, setLoading] = useState(false);
+  // A chain pointed at in the table lights up on the board; a tap keeps it lit.
+  const [focus, setFocus] = useState<{ chain: Chain | null; pinned: boolean }>({
+    chain: null,
+    pinned: false,
+  });
+  const [staged, setStaged] = useState<Tile | null>(null);
+  const focusChain = useCallback((chain: Chain | null, pin = false) => {
+    setFocus((f) => {
+      if (pin)
+        return {
+          chain: f.pinned && f.chain === chain ? null : chain,
+          pinned: !(f.pinned && f.chain === chain),
+        };
+      if (f.pinned) return f;
+      return { chain, pinned: false };
+    });
+  }, []);
 
   useGameSounds(gameState?.notification);
   useBotNudge(lobbyId, gameState);
@@ -126,6 +143,8 @@ export default function Game() {
                     ? gameState.merger?.survivor
                     : undefined
                 }
+                focusChain={focus.chain}
+                preview={gameState.phase === "PLACE" && acting ? staged : null}
                 onTile={
                   canTapBoard
                     ? (tile) =>
@@ -140,7 +159,12 @@ export default function Game() {
             style={{ order: 2, gridTemplateColumns: "1fr", minWidth: 0 }}
           >
             <Stack gap="sm" style={{ minWidth: 0, maxWidth: "100%" }}>
-              <ChainTable gameState={gameState} me={me} />
+              <ChainTable
+                gameState={gameState}
+                me={me}
+                focused={focus.chain}
+                onFocus={focusChain}
+              />
               {gameState.players.map((player) => (
                 <PlayerOverview
                   key={player.email}
@@ -180,6 +204,7 @@ export default function Game() {
             void call(() => buyAcquireStock({ lobbyUID, purchases }))
           }
           onDeclare={() => void call(() => declareAcquireEnd({ lobbyUID }))}
+          onStage={setStaged}
         />
       )}
     </>

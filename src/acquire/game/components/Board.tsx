@@ -1,6 +1,16 @@
 import { useState } from "react";
 import { AcquireGameState, Chain, Tile } from "../types";
-import { CHAIN_COLOUR, COLUMNS, describe, isPlayable, ROWS } from "../board";
+import {
+  CHAIN_COLOUR,
+  COLUMNS,
+  currentPrice,
+  describe,
+  isPlayable,
+  label,
+  money,
+  ROWS,
+  touchedChains,
+} from "../board";
 
 const CELL = 36;
 const GAP = 3;
@@ -14,6 +24,8 @@ export default function Board({
   onTile,
   doomed,
   survivor,
+  focusChain,
+  preview,
 }: {
   gameState: AcquireGameState;
   /** Your tiles, drawn in place as outlines. */
@@ -23,10 +35,23 @@ export default function Board({
   /** The chain being swallowed right now, and the one swallowing it. */
   doomed?: Chain;
   survivor?: Chain;
+  /** A chain to light up, the rest dimmed. */
+  focusChain?: Chain | null;
+  /** A tile lifted from the hand: it and the chains it would touch light up. */
+  preview?: Tile | null;
 }) {
   const width = PAD + COLUMNS * (CELL + GAP) + 6;
   const height = PAD + ROWS.length * (CELL + GAP) + 6;
   const handSet = new Set(hand);
+  // What is lit: a chain pointed at in the table, or what a lifted tile would touch.
+  const litChains = new Set<Chain>(
+    preview
+      ? touchedChains(gameState, preview)
+      : focusChain
+        ? [focusChain]
+        : [],
+  );
+  const dimming = litChains.size > 0 || !!preview;
 
   // Tiles whose chain changed since the last board: a merger or a founding
   // sweeping them into a new colour. They flash; the played tile pulses.
@@ -112,12 +137,26 @@ export default function Board({
             : inHand
               ? `${tile} in your hand: ${describe(gameState, tile)}`
               : tile;
+          const lit =
+            preview === tile ||
+            (owner && owner !== "NONE" && litChains.has(owner)) ||
+            (preview !== undefined &&
+              preview !== null &&
+              owner === "NONE" &&
+              touchesLone(preview, tile));
+          const tip =
+            owner && owner !== "NONE"
+              ? `${label(owner)}: ${gameState.chains[owner].size} tiles, ${money(currentPrice(gameState, owner))} a share`
+              : owner === "NONE"
+                ? `${tile}: a lone tile`
+                : inHand
+                  ? `${tile}: ${describe(gameState, tile)}`
+                  : undefined;
           return (
             <g
               key={tile}
               className={playable ? "point" : undefined}
               onClick={playable ? () => onTile(tile) : undefined}
-              style={{ cursor: playable ? "pointer" : "default" }}
               role={playable ? "button" : undefined}
               aria-label={aria}
               tabIndex={playable ? 0 : undefined}
@@ -125,7 +164,14 @@ export default function Board({
                 if (playable && (e.key === "Enter" || e.key === " "))
                   onTile(tile);
               }}
+              opacity={dimming && !lit && !inHand ? 0.35 : 1}
+              style={{
+                cursor: playable ? "pointer" : "default",
+                transition: "opacity 180ms",
+              }}
+              data-lit={lit ? "true" : undefined}
             >
+              {tip && <title>{tip}</title>}
               <rect
                 key={
                   lastTile === tile || changed.has(tile)
@@ -152,7 +198,7 @@ export default function Board({
                 rx="5"
                 fill={fill}
                 stroke={
-                  lastTile === tile
+                  lastTile === tile || lit
                     ? "#ffd86b"
                     : inHand
                       ? playable
@@ -160,7 +206,7 @@ export default function Board({
                         : "rgba(255,255,255,0.35)"
                       : "rgba(0,0,0,0.5)"
                 }
-                strokeWidth={lastTile === tile ? 3 : inHand ? 2 : 1}
+                strokeWidth={lastTile === tile || lit ? 3 : inHand ? 2 : 1}
                 strokeDasharray={inHand && !owner ? "4 3" : undefined}
                 opacity={inHand && !playable ? 0.6 : 1}
               />
@@ -195,5 +241,14 @@ export default function Board({
         }),
       )}
     </svg>
+  );
+}
+
+/** Whether a lone tile sits beside the tile about to be played. */
+function touchesLone(played: Tile, lone: Tile) {
+  const col = (t: Tile) => Number(t.slice(0, -1));
+  const row = (t: Tile) => ROWS.indexOf(t.slice(-1));
+  return (
+    Math.abs(col(played) - col(lone)) + Math.abs(row(played) - row(lone)) === 1
   );
 }

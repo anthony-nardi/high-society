@@ -127,6 +127,27 @@ describe("Acquire table", () => {
     });
   });
 
+  it("names who leads each chain and what everyone holds on paper", () => {
+    current = base({});
+    render(
+      <MantineProvider>
+        <Game />
+      </MantineProvider>,
+    );
+    const tower = screen.getByTestId("chain-tower");
+    expect(tower.textContent).toContain("👑 you 2");
+    expect(tower.textContent).toContain("Bot 1 1");
+    // Two Tower shares at $200; the primary bonus at that price is $2,000.
+    expect(
+      screen.getByLabelText(/a holds \$400 in shares and would collect/)
+        .textContent,
+    ).toContain("leads on paper");
+    expect(
+      screen.getByLabelText(/a holds \$400 in shares and would collect/)
+        .textContent,
+    ).toContain("$2,000 in bonuses now");
+  });
+
   it("offers the free chains when founding", () => {
     current = base({ phase: "FOUND", merger: { tile: "6E", defunct: [] } });
     renderGame();

@@ -97,6 +97,7 @@ export default function ActionPanel({
   onDispose,
   onBuy,
   onDeclare,
+  onStage,
 }: {
   gameState: AcquireGameState;
   me: AcquirePlayerState;
@@ -107,6 +108,8 @@ export default function ActionPanel({
   onDispose: (sell: number, trade: number) => void;
   onBuy: (purchases: { [chain in Chain]?: number }) => void;
   onDeclare: () => void;
+  /** Told whenever a tile is lifted to play or put back. */
+  onStage?: (tile: Tile | null) => void;
 }) {
   const phase = gameState.phase;
   const acting = gameState.activePlayer === me.email;
@@ -136,9 +139,11 @@ export default function ActionPanel({
       ratio={1.3}
       disabled={!enabled || loading}
       selected={staged ? [staged] : []}
-      onToggle={(tile) =>
-        setStagedTile({ key, tile: staged === tile ? null : (tile as Tile) })
-      }
+      onToggle={(tile) => {
+        const next = staged === tile ? null : (tile as Tile);
+        setStagedTile({ key, tile: next });
+        onStage?.(next);
+      }}
       items={hand.map((tile) => {
         const playable = isPlayable(gameState, tile);
         return {
