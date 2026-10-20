@@ -5,6 +5,7 @@ import { useUserContext } from "../../../shared/context/useUserContext";
 import displayName, { isBotName } from "../../../shared/utils/displayName";
 import ThinkingDots from "../../../shared/components/ThinkingDots";
 import { CHAIN_COLOUR, CHAINS, label, money, stockOf } from "../board";
+import ChainCard from "./ChainCard";
 
 export default function PlayerOverview({
   player,
@@ -137,18 +138,59 @@ export default function PlayerOverview({
             No shares
           </Text>
         ) : (
-          held.map((c) => (
-            <Badge
-              key={grown.chains.includes(c) ? `${c}-${grown.key}` : c}
-              size="sm"
-              radius="sm"
-              variant="filled"
-              className={grown.chains.includes(c) ? "chip-pop" : undefined}
-              style={{ background: CHAIN_COLOUR[c], color: "#fff" }}
-            >
-              {stockOf(player, c)} {label(c)}
-            </Badge>
-          ))
+          held.map((c) => {
+            const n = stockOf(player, c);
+            const shown = Math.min(n, 5);
+            return (
+              <div
+                key={grown.chains.includes(c) ? `${c}-${grown.key}` : c}
+                className={grown.chains.includes(c) ? "chip-pop" : undefined}
+                role="img"
+                aria-label={`${n} ${label(c)}`}
+                title={`${n} ${label(c)} share${n === 1 ? "" : "s"}`}
+                style={{
+                  position: "relative",
+                  width: 30 + (shown - 1) * 5,
+                  height: 42,
+                  marginRight: 6,
+                  borderRadius: 4,
+                }}
+              >
+                {Array.from({ length: shown }, (_, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      position: "absolute",
+                      left: i * 5,
+                      top: 0,
+                      filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.5))",
+                    }}
+                  >
+                    <ChainCard chain={c} width={30} />
+                  </div>
+                ))}
+                <span
+                  style={{
+                    position: "absolute",
+                    right: -6,
+                    bottom: -4,
+                    minWidth: 18,
+                    padding: "0 5px",
+                    borderRadius: 9,
+                    background: CHAIN_COLOUR[c],
+                    color: "#fff",
+                    fontSize: 11,
+                    fontWeight: 800,
+                    textAlign: "center",
+                    border: "1px solid rgba(0,0,0,0.6)",
+                    lineHeight: "17px",
+                  }}
+                >
+                  {n}
+                </span>
+              </div>
+            );
+          })
         )}
       </Group>
     </Box>

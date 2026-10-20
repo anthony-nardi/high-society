@@ -2,7 +2,13 @@ import { CHAIN_COLOUR, TIER, label } from "../board";
 import type { Chain } from "../types";
 
 /** A stock certificate for one hotel chain: its colour, its name and a skyline sized to its tier. */
-export default function ChainCard({ chain }: { chain: Chain }) {
+export default function ChainCard({
+  chain,
+  width = 46,
+}: {
+  chain: Chain;
+  width?: number;
+}) {
   const colour = CHAIN_COLOUR[chain];
   const tier = TIER[chain];
   const towers = [
@@ -12,7 +18,13 @@ export default function ChainCard({ chain }: { chain: Chain }) {
     { x: 41, h: 12 + tier * 5 },
   ];
   return (
-    <svg viewBox="0 0 56 78" width="46" height="64" aria-hidden="true">
+    <svg
+      viewBox="0 0 56 78"
+      width={width}
+      height={Math.round((width * 78) / 56)}
+      aria-hidden="true"
+      style={{ display: "block" }}
+    >
       <rect
         x="1"
         y="1"

@@ -1,4 +1,6 @@
+import { useEffect, useRef, useState } from "react";
 import { Badge, Table, Text } from "@mantine/core";
+import { playSound } from "../../../shared/sound";
 import { AcquireGameState, AcquirePlayerState, Chain } from "../types";
 import displayName from "../../../shared/utils/displayName";
 import {
@@ -33,6 +35,31 @@ export default function ChainTable({
   onFocus?: (chain: Chain | null, pin?: boolean) => void;
 }) {
   const places = gameState.mode === "TYCOON" ? 3 : 2;
+  // A chain that has just become safe: its padlock clicks shut.
+  const safeNow = CHAINS.filter((c) => isSafe(gameState, c));
+  const safeBefore = useRef<Chain[] | null>(null);
+  const [locked, setLocked] = useState<{ key: number; chains: Chain[] }>({
+    key: 0,
+    chains: [],
+  });
+  useEffect(() => {
+    const before = safeBefore.current;
+    safeBefore.current = safeNow;
+    if (!before) return;
+    const fresh = safeNow.filter((c) => !before.includes(c));
+    if (!fresh.length) return;
+    setLocked((l) => ({ key: l.key + 1, chains: fresh }));
+    const sound = window.setTimeout(() => playSound("lock"), 450);
+    const clear = window.setTimeout(
+      () => setLocked({ key: 0, chains: [] }),
+      2600,
+    );
+    return () => {
+      window.clearTimeout(sound);
+      window.clearTimeout(clear);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [safeNow.join(",")]);
   const name = (email: string) =>
     email === me?.email ? "you" : displayName(email);
   return (
@@ -104,7 +131,21 @@ export default function ChainTable({
                     />
                     <Text size="sm">{label(chain)}</Text>
                     {isSafe(gameState, chain) && (
-                      <Badge size="xs" color="gray" variant="light">
+                      <Badge
+                        key={
+                          locked.chains.includes(chain) ? locked.key : "safe"
+                        }
+                        size="xs"
+                        color="yellow"
+                        variant="light"
+                        className={
+                          locked.chains.includes(chain)
+                            ? "vault-lock"
+                            : undefined
+                        }
+                        title="Safe: eleven or more tiles, it can never be swallowed"
+                        leftSection={<span aria-hidden="true">🔒</span>}
+                      >
                         safe
                       </Badge>
                     )}

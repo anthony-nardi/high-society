@@ -6,6 +6,7 @@ import {
   currentPrice,
   describe,
   isPlayable,
+  isSafe,
   label,
   money,
   ROWS,
@@ -213,13 +214,22 @@ export default function Board({
                 stroke={
                   lastTile === tile || lit
                     ? "#ffd86b"
-                    : inHand
-                      ? playable
-                        ? "#ffd86b"
-                        : "rgba(255,255,255,0.35)"
-                      : "rgba(0,0,0,0.5)"
+                    : owner && owner !== "NONE" && isSafe(gameState, owner)
+                      ? "#d9b64a"
+                      : inHand
+                        ? playable
+                          ? "#ffd86b"
+                          : "rgba(255,255,255,0.35)"
+                        : "rgba(0,0,0,0.5)"
                 }
-                strokeWidth={lastTile === tile || lit ? 3 : inHand ? 2 : 1}
+                strokeWidth={
+                  lastTile === tile || lit
+                    ? 3
+                    : (owner && owner !== "NONE" && isSafe(gameState, owner)) ||
+                        inHand
+                      ? 2
+                      : 1
+                }
                 strokeDasharray={
                   (inHand && !owner) || ghosted ? "4 3" : undefined
                 }

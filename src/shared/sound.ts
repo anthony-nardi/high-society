@@ -32,7 +32,8 @@ export type SoundKind =
   | "rustle"
   | "steel"
   | "surrender"
-  | "dice";
+  | "dice"
+  | "lock";
 
 const MUTE_KEY = "sound:muted";
 const MUTE_EVENT = "sound:mute-changed";
@@ -459,6 +460,19 @@ const SOUNDS: { [kind in SoundKind]: Note[] } = {
       type: "triangle",
       volume: 0.18,
       glideTo: 3000,
+    },
+  ],
+  // A padlock clicking shut: a small click, a heavier clack, and a short metallic ring.
+  lock: [
+    ...knock(0, 900, 0.5),
+    ...knock(0.1, 520, 1.1),
+    {
+      frequency: 2400,
+      at: 0.11,
+      length: 0.18,
+      type: "triangle",
+      volume: 0.18,
+      glideTo: 2300,
     },
   ],
   // A die rattled in a cup, faster and faster, then dropped on the table:
