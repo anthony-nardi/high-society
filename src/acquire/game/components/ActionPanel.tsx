@@ -98,6 +98,7 @@ export default function ActionPanel({
   onBuy,
   onDeclare,
   onStage,
+  ghost,
 }: {
   gameState: AcquireGameState;
   me: AcquirePlayerState;
@@ -110,6 +111,8 @@ export default function ActionPanel({
   onDeclare: () => void;
   /** Told whenever a tile is lifted to play or put back. */
   onStage?: (tile: Tile | null) => void;
+  /** A tile just played and not yet confirmed: gone from the hand already. */
+  ghost?: Tile | null;
 }) {
   const phase = gameState.phase;
   const acting = gameState.activePlayer === me.email;
@@ -124,7 +127,7 @@ export default function ActionPanel({
   const d = draft.key === key ? draft : { key, sell: 0, trade: 0, buy: {} };
   const set = (patch: Partial<typeof d>) => setDraft({ ...d, ...patch, key });
 
-  const hand = me.tiles || [];
+  const hand = (me.tiles || []).filter((t) => t !== ghost);
   const [stagedTile, setStagedTile] = useState<{
     key: string;
     tile: Tile | null;

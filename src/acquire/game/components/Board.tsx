@@ -26,6 +26,7 @@ export default function Board({
   survivor,
   focusChain,
   preview,
+  ghost,
 }: {
   gameState: AcquireGameState;
   /** Your tiles, drawn in place as outlines. */
@@ -39,6 +40,8 @@ export default function Board({
   focusChain?: Chain | null;
   /** A tile lifted from the hand: it and the chains it would touch light up. */
   preview?: Tile | null;
+  /** A tile just played, shown at once while the server catches up. */
+  ghost?: Tile | null;
 }) {
   const width = PAD + COLUMNS * (CELL + GAP) + 6;
   const height = PAD + ROWS.length * (CELL + GAP) + 6;
@@ -123,8 +126,11 @@ export default function Board({
           const tile = `${c + 1}${row}`;
           const x = PAD + c * (CELL + GAP);
           const y = PAD + r * (CELL + GAP);
-          const owner = gameState.board?.[tile];
-          const inHand = handSet.has(tile);
+          const ghosted = ghost === tile && !gameState.board?.[tile];
+          const owner =
+            gameState.board?.[tile] ??
+            (ghosted ? ghostOwner(gameState, tile) : undefined);
+          const inHand = handSet.has(tile) && !ghosted;
           const playable = inHand && !!onTile && isPlayable(gameState, tile);
           const fill =
             owner === "NONE"
@@ -207,8 +213,10 @@ export default function Board({
                       : "rgba(0,0,0,0.5)"
                 }
                 strokeWidth={lastTile === tile || lit ? 3 : inHand ? 2 : 1}
-                strokeDasharray={inHand && !owner ? "4 3" : undefined}
-                opacity={inHand && !playable ? 0.6 : 1}
+                strokeDasharray={
+                  (inHand && !owner) || ghosted ? "4 3" : undefined
+                }
+                opacity={inHand && !playable ? 0.6 : ghosted ? 0.75 : 1}
               />
               {owner && owner !== "NONE" && (
                 <text
@@ -242,6 +250,12 @@ export default function Board({
       )}
     </svg>
   );
+}
+
+/** The colour a tile just played will take: its chain if it grows one, else a lone tile. */
+function ghostOwner(state: AcquireGameState, tile: Tile): Chain | "NONE" {
+  const chains = touchedChains(state, tile);
+  return chains.length === 1 ? chains[0] : "NONE";
 }
 
 /** Whether a lone tile sits beside the tile about to be played. */

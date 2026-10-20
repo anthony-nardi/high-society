@@ -236,10 +236,15 @@ export default function Lobby({
   }
 
   if (isJoiningLobby || isLoadingLobbyData || !!isCreatingLobby) {
+    // Inside the same frame as the lobby, so the page does not jump when it arrives.
     return (
-      <Center>
-        <Loader />
-      </Center>
+      <Container size="xs" px="md">
+        <Dressed theme={theme}>
+          <Center mih={120}>
+            <Loader />
+          </Center>
+        </Dressed>
+      </Container>
     );
   }
 
@@ -251,6 +256,10 @@ export default function Lobby({
   const minPlayers = getMinPlayers(gameName);
   const maxPlayers = getMaxPlayers(gameName);
   const missingForBots = Math.max(0, minPlayers - players.length);
+  // A game that seats more than two is not meant to be a duel: one bot is
+  // added by hand, not by the shortcut.
+  const offerBots =
+    missingForBots > 0 && (missingForBots > 1 || maxPlayers === 2);
   const info = GAME_INFO[gameName];
 
   return (
@@ -309,7 +318,7 @@ export default function Lobby({
               I'm ready
             </Button>
           )}
-          {missingForBots > 0 && (
+          {offerBots && (
             <Button
               size="lg"
               variant="light"

@@ -36,6 +36,9 @@ export default function Game() {
     pinned: false,
   });
   const [staged, setStaged] = useState<Tile | null>(null);
+  // Optimistic: the tile shows on the board the moment it is played, until
+  // the server's board has it (or the move is refused).
+  const [ghost, setGhost] = useState<{ tile: Tile; turn: number } | null>(null);
   const focusChain = useCallback((chain: Chain | null, pin = false) => {
     setFocus((f) => {
       if (pin)
@@ -89,6 +92,21 @@ export default function Game() {
   }
 
   const canTapBoard = acting && !loading && gameState.phase === "PLACE";
+  const ghostTile =
+    ghost &&
+    ghost.turn === gameState.turn &&
+    !gameState.board?.[ghost.tile] &&
+    gameState.phase === "PLACE"
+      ? ghost.tile
+      : null;
+  const playTile = (tile: Tile) => {
+    setGhost({ tile, turn: gameState.turn });
+    setStaged(null);
+    void call(async () => {
+      const ok = await placeAcquireTile({ lobbyUID, tile });
+      if (!ok) setGhost(null);
+    });
+  };
 
   return (
     <>
@@ -145,12 +163,8 @@ export default function Game() {
                 }
                 focusChain={focus.chain}
                 preview={gameState.phase === "PLACE" && acting ? staged : null}
-                onTile={
-                  canTapBoard
-                    ? (tile) =>
-                        void call(() => placeAcquireTile({ lobbyUID, tile }))
-                    : undefined
-                }
+                ghost={ghostTile}
+                onTile={canTapBoard ? playTile : undefined}
               />
             </Stack>
           </div>
@@ -188,9 +202,8 @@ export default function Game() {
           gameState={gameState}
           me={me}
           loading={loading}
-          onTile={(tile) =>
-            void call(() => placeAcquireTile({ lobbyUID, tile }))
-          }
+          onTile={playTile}
+          ghost={ghostTile}
           onFound={(chain: Chain) =>
             void call(() => foundAcquireChain({ lobbyUID, chain }))
           }

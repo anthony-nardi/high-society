@@ -125,6 +125,9 @@ describe("Acquire table", () => {
       lobbyUID: "123",
       tile: "5E",
     });
+    // Optimistic: the tile is on the board and out of the hand before the server answers.
+    expect(screen.getByLabelText("5E: lone tile")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Tile 5E" })).toBeNull();
   });
 
   it("names who leads each chain", () => {
