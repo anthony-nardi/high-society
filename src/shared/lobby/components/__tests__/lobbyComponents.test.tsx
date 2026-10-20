@@ -3,6 +3,7 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import ConnectedPlayersCount from "../ConnectedPlayersCount";
 import PlayersList from "../PlayersList";
+import { registerPersonas } from "../../../utils/displayName";
 
 function renderWithMantine(ui: React.ReactElement) {
   return render(<MantineProvider>{ui}</MantineProvider>);
@@ -68,6 +69,21 @@ describe("PlayersList", () => {
     );
     const icons = screen.getAllByText(/🐻|🦊|🦉/).map((el) => el.textContent);
     expect(icons).toEqual(["🐻", "🦉", "🦊"]);
+  });
+
+  it("shows a bot's persona: avatar, name and temper", () => {
+    registerPersonas([{ email: "Bot #9", persona: "rita" }]);
+    renderWithMantine(
+      <PlayersList
+        players={[
+          { email: "alice@example.com", ready: true },
+          { email: "Bot #9", ready: true, isBot: true, persona: "rita" },
+        ]}
+      />,
+    );
+    expect(screen.getByText("Reckless Rita")).toBeTruthy();
+    expect(screen.getByText("🦊")).toBeTruthy();
+    expect(screen.getByText(/reckless bot/)).toBeTruthy();
   });
 
   it("marks bots and lets them be removed", () => {

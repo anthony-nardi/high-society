@@ -1,5 +1,6 @@
 import { createContext, useContext } from "react";
 import useGameState from "../hooks/useGameState";
+import { registerPersonas } from "../utils/displayName";
 import type { GameName } from "@games/shared/types";
 import type { HighSocietyGameState } from "../../high-society/game/types";
 import type { NoThanksGameState } from "../../no-thanks/game/types";
@@ -104,6 +105,10 @@ export const GameStateProvider = ({
   children: React.ReactNode;
 }) => {
   const { isLoading: isGameStatusLoading, gameState } = useGameState<unknown>();
+  registerPersonas(
+    (gameState as { players?: { email: string; persona?: string }[] } | null)
+      ?.players,
+  );
   return (
     <GameStateContext.Provider value={{ gameState, isGameStatusLoading }}>
       {children}

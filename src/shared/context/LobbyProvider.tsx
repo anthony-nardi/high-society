@@ -5,6 +5,7 @@ import useLobbyData from "../lobby/hooks/useLobbyData";
 import useJoinLobby from "../lobby/hooks/useJoinLobby";
 import { useUserContext } from "./useUserContext";
 import { LobbyContext } from "./LobbyContext";
+import { registerPersonas } from "../utils/displayName";
 
 export const LobbyProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useUserContext();
@@ -23,6 +24,7 @@ export const LobbyProvider = ({ children }: { children: React.ReactNode }) => {
   });
 
   const { isLoadingLobbyData, lobbyData } = useLobbyData({ lobbyId, user });
+  registerPersonas(lobbyData?.players);
 
   return (
     <LobbyContext.Provider

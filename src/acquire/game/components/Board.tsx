@@ -73,6 +73,13 @@ export default function Board({
   }
   const changed = seen.board === board ? seen.changed : new Set<string>();
   const animationKey = `${gameState.turn}:${gameState.phase}:${lastTile}:${Object.keys(board || {}).length}`;
+  // A chain just founded plants its flag on the founding tile.
+  const founded =
+    gameState.lastMove?.type === "found" &&
+    gameState.lastMove.tile &&
+    gameState.lastMove.chain
+      ? { tile: gameState.lastMove.tile, chain: gameState.lastMove.chain }
+      : null;
   return (
     <svg
       viewBox={`0 0 ${width} ${height}`}
@@ -248,7 +255,63 @@ export default function Board({
           );
         }),
       )}
+      {founded && (
+        <Flag
+          key={`flag-${gameState.turn}-${founded.tile}`}
+          tile={founded.tile}
+          chain={founded.chain}
+        />
+      )}
     </svg>
+  );
+}
+
+/** A pennant in the chain's colour rising from the founding tile, with the chain's name. */
+function Flag({ tile, chain }: { tile: Tile; chain: Chain }) {
+  const col = Number(tile.slice(0, -1)) - 1;
+  const row = ROWS.indexOf(tile.slice(-1));
+  const x = PAD + col * (CELL + GAP) + CELL / 2;
+  const y = PAD + row * (CELL + GAP) + CELL / 2;
+  const name = label(chain);
+  const w = name.length * 7.5 + 16;
+  return (
+    <g
+      className="flag-plant"
+      style={{ transformOrigin: `${x}px ${y}px`, pointerEvents: "none" }}
+      aria-label={`${name} founded at ${tile}`}
+    >
+      <line
+        x1={x}
+        y1={y}
+        x2={x}
+        y2={y - 54}
+        stroke="#f3e9d2"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+      <circle cx={x} cy={y - 56} r="3" fill="#ffd86b" />
+      <g
+        className="flag-wave"
+        style={{ transformOrigin: `${x}px ${y - 50}px` }}
+      >
+        <path
+          d={`M ${x} ${y - 52} L ${x + w} ${y - 52} L ${x + w - 8} ${y - 41} L ${x + w} ${y - 30} L ${x} ${y - 30} Z`}
+          fill={CHAIN_COLOUR[chain]}
+          stroke="rgba(0,0,0,0.5)"
+          strokeWidth="1.5"
+        />
+        <text
+          x={x + 7}
+          y={y - 37}
+          fontSize="12"
+          fontWeight="800"
+          fill="#fff"
+          style={{ fontFamily: "inherit" }}
+        >
+          {name}
+        </text>
+      </g>
+    </g>
   );
 }
 

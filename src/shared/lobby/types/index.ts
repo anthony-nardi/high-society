@@ -6,6 +6,8 @@ export type LobbyPlayer = {
   email: string;
   ready: boolean;
   isBot?: boolean;
+  /** A bot's persona id. */
+  persona?: string;
 };
 
 export type LobbyData = {

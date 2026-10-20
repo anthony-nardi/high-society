@@ -207,9 +207,19 @@ function rollsAhead(gameState: PushGameState) {
   return roundsLeft * 1.0;
 }
 
+/** How a temper bends the judgement: the margin a draw must beat stopping by, and how soon to protect. */
+export type Appetite = { margin: number; protectAt: number };
+
+export const APPETITE: { [temper: string]: Appetite } = {
+  CAUTIOUS: { margin: 1.2, protectAt: 0.7 },
+  STEADY: { margin: 0.1, protectAt: 1 },
+  RECKLESS: { margin: -1.0, protectAt: 1.5 },
+};
+
 export function chooseBotMove(
   gameState: PushGameState,
   random: () => number = Math.random,
+  appetite: Appetite = APPETITE.STEADY,
 ): BotMove {
   const pub = gameState.public;
   const me = getActivePlayer(gameState);
@@ -266,7 +276,8 @@ export function chooseBotMove(
       }
     }
     // A push turn is worth a few points; protecting must save more than that.
-    const pushWorth = Math.max(3, drawValue(gameState, me, []));
+    const pushWorth =
+      Math.max(3, drawValue(gameState, me, [])) * appetite.protectAt;
     if (bestColour && bestRisk > pushWorth && values[bestColour] >= 6)
       return { type: "bank", colour: bestColour };
   }
@@ -275,7 +286,7 @@ export function chooseBotMove(
   const stop = stopValue(gameState, me, columns);
   const draw =
     pub.deckCount > 0 ? drawValue(gameState, me, columns) : -Infinity;
-  if (draw > stop + 0.1) return { type: "draw" };
+  if (draw > stop + appetite.margin) return { type: "draw" };
   let best = 0;
   let bestValue = -Infinity;
   columns.forEach((_, i) => {

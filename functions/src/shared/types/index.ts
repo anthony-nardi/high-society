@@ -49,12 +49,16 @@ export type PlayerInLobby = {
   joinedAt: string;
   isBot: boolean;
   gameName: GameName;
+  /** A bot's persona id, from shared/personas. */
+  persona?: string;
 };
 
 export type GenericPlayerState = {
   email: string;
   lastActionAt: number;
   isBot: boolean;
+  /** A bot's persona id, from shared/personas. */
+  persona?: string;
 };
 
 // Define the GenericGameState type

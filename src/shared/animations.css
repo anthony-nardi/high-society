@@ -448,3 +448,55 @@
     transform: none;
   }
 }
+
+/* Acquire: the flag planted when a chain is founded rises, waves, and settles. */
+.flag-plant {
+  animation: flag-plant 4s ease-out both;
+}
+@keyframes flag-plant {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.2);
+  }
+  12% {
+    opacity: 1;
+    transform: translateY(-4px) scale(1.08);
+  }
+  20% {
+    transform: none;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.flag-wave {
+  animation: flag-wave 700ms ease-in-out 200ms 5 alternate;
+}
+@keyframes flag-wave {
+  from {
+    transform: skewY(-6deg) scaleX(1);
+  }
+  to {
+    transform: skewY(5deg) scaleX(0.96);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flag-plant {
+    animation: flag-fade 4s linear both;
+  }
+  .flag-wave {
+    animation: none;
+  }
+}
+@keyframes flag-fade {
+  0%,
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

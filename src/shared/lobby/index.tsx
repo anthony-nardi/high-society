@@ -6,10 +6,12 @@ import {
   Container,
   Group,
   Loader,
+  Menu,
   SegmentedControl,
   Stack,
   Text,
 } from "@mantine/core";
+import { PERSONAS, TEMPER_LABEL } from "@games/shared/personas";
 import { notifications } from "@mantine/notifications";
 import ConnectedPlayersCount from "./components/ConnectedPlayersCount";
 import { getMaxPlayers, getMinPlayers } from "./playerLimits";
@@ -128,19 +130,21 @@ export default function Lobby({
     }
   }, []);
 
-  const handleAddBot = useCallback(async () => {
-    if (!user || !user.email || !lobbyId) {
-      throw new Error("There is no current user or lobby.");
-    }
+  const handleAddBot = useCallback(
+    async (persona?: string) => {
+      if (!user || !user.email || !lobbyId) {
+        throw new Error("There is no current user or lobby.");
+      }
 
-    setIsAddingBot(true);
-
-    await addBot({
-      lobbyUID: lobbyId,
-    });
-
-    setIsAddingBot(false);
-  }, [user, lobbyId]);
+      setIsAddingBot(true);
+      try {
+        await addBot({ lobbyUID: lobbyId, persona });
+      } finally {
+        setIsAddingBot(false);
+      }
+    },
+    [user, lobbyId],
+  );
 
   const handleRemoveBot = useCallback(
     async (email: string) => {
@@ -272,15 +276,53 @@ export default function Lobby({
               <Button variant="default" onClick={handleCopyInvite}>
                 {copied ? "Link copied" : "Copy invite link"}
               </Button>
-              <Button
-                variant="default"
-                onClick={handleAddBot}
-                loading={!!isAddingBot}
-                disabled={!!isAddingBot || isFull}
-                title={isFull ? "The lobby is full" : undefined}
-              >
-                Add bot
-              </Button>
+              <Menu shadow="md" width={300} withinPortal>
+                <Menu.Target>
+                  <Button
+                    variant="default"
+                    loading={!!isAddingBot}
+                    disabled={!!isAddingBot || isFull}
+                    title={isFull ? "The lobby is full" : undefined}
+                  >
+                    Add bot
+                  </Button>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Label>Who sits down?</Menu.Label>
+                  {PERSONAS.map((p) => {
+                    const seated = players.some((pl) => pl.persona === p.id);
+                    return (
+                      <Menu.Item
+                        key={p.id}
+                        leftSection={
+                          <span style={{ fontSize: 20 }}>{p.avatar}</span>
+                        }
+                        disabled={seated}
+                        onClick={() => void handleAddBot(p.id)}
+                      >
+                        <Text size="sm" fw={600}>
+                          {p.name}
+                          <Text component="span" size="xs" c="dimmed">
+                            {" "}
+                            · {TEMPER_LABEL[p.temper]}
+                            {seated ? " · at the table" : ""}
+                          </Text>
+                        </Text>
+                        <Text size="xs" c="dimmed">
+                          {p.blurb}
+                        </Text>
+                      </Menu.Item>
+                    );
+                  })}
+                  <Menu.Divider />
+                  <Menu.Item
+                    leftSection={<span style={{ fontSize: 20 }}>🎲</span>}
+                    onClick={() => void handleAddBot()}
+                  >
+                    Surprise me
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
             </Group>
           </Group>
 
@@ -289,7 +331,8 @@ export default function Lobby({
             {minPlayers === maxPlayers
               ? minPlayers
               : `${minPlayers} to ${maxPlayers}`}{" "}
-            players. Bots can take any empty seat.
+            players. Bots can take any empty seat; their temper tells in Medici
+            and PUSH, and is only a name elsewhere.
             {hasModes &&
               (lobbyData.options?.mode === "CLASSIC"
                 ? " Classic Mode: bonuses to the top two stockholders."

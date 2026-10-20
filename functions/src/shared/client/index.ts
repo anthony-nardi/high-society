@@ -1,3 +1,5 @@
+import { personaById, pickPersona } from "../personas";
+import type { PlayerInLobby } from "../types";
 import {
   onCall,
   HttpsError,
@@ -160,6 +162,8 @@ export const addbot = onCall(
   async (
     request: CallableRequest<{
       lobbyUID: string;
+      /** A persona id; one not yet at the table is drawn when absent. */
+      persona?: string;
     }>,
   ) => {
     checkAuthentication(request);
@@ -179,12 +183,16 @@ export const addbot = onCall(
       return;
     }
 
+    const persona =
+      personaById(request.data.persona) ??
+      pickPersona(playersSnapshotValue.map((p: PlayerInLobby) => p.persona));
     playersSnapshotValue.push({
       email: `Bot #${playersSnapshotValue.length}`,
       ready: true,
       joinedAt: Date.now().toString(),
       isBot: true,
       gameName,
+      persona: persona.id,
     });
 
     await updatePlayers(lobbyUID, playersSnapshotValue);

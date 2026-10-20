@@ -35,6 +35,11 @@ async function createSpecificGameState(lobbyUID: string, gameName: GameName) {
     lobby.players,
     lobby.options || {},
   );
+  // The bots keep their personas from the lobby.
+  for (const player of state.public.players) {
+    const seat = lobby.players.find((p) => p.email === player.email);
+    if (seat?.persona) player.persona = seat.persona;
+  }
   await getDatabase().ref(`/games/${lobbyUID}`).set(state);
   // The first player may be a bot; let the bots play until a human is up.
   await playBots(module, state);

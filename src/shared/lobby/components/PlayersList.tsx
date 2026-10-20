@@ -1,6 +1,7 @@
 import { LobbyPlayer } from "../types";
 import { ActionIcon, Badge, Group, Stack, Text } from "@mantine/core";
-import displayName, { isBotName } from "../../utils/displayName";
+import displayName, { isBotName, personaOf } from "../../utils/displayName";
+import { TEMPER_LABEL } from "@games/shared/personas";
 import classes from "../lobby.module.css";
 
 export default function PlayersList({
@@ -23,8 +24,9 @@ export default function PlayersList({
     <Stack gap="xs" data-testid="players-list">
       {players.map((player) => {
         const isBot = player.isBot || isBotName(player.email);
+        const persona = isBot ? personaOf(player.email) : undefined;
         const icon = isBot
-          ? botIcon
+          ? (persona?.avatar ?? botIcon)
           : seatIcons?.length
             ? seatIcons[humans++ % seatIcons.length]
             : "🙂";
@@ -52,7 +54,11 @@ export default function PlayersList({
               <div>
                 <Text fw={600}>{displayName(player.email)}</Text>
                 <Text size="xs" c="dimmed">
-                  {isBot ? "Bot" : player.email}
+                  {isBot
+                    ? persona
+                      ? `${TEMPER_LABEL[persona.temper]} bot · ${persona.blurb}`
+                      : "Bot"
+                    : player.email}
                 </Text>
               </div>
             </Group>
