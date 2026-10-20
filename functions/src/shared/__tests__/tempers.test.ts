@@ -7,6 +7,9 @@ import { buildPushGameState } from "../../push/helpers/rules";
 import { takeBotTurn as pushTurn } from "../../push/helpers/bot";
 import { PushGameState } from "../../push/types";
 import { MediciGameState } from "../../medici/types";
+import { buildAcquireGameState } from "../../acquire/helpers/rules";
+import { takeBotTurn as acquireTurn } from "../../acquire/helpers/bot";
+import { AcquireGameState } from "../../acquire/types";
 
 /*
  * Do the tempers show in play? Three bots of different temper sit at the
@@ -22,7 +25,7 @@ const SEATS: [string, string][] = [
   ["Bot #3", "rita"],
 ];
 
-const lobby = (game: "medici" | "push"): PlayerInLobby[] =>
+const lobby = (game: "medici" | "push" | "acquire"): PlayerInLobby[] =>
   SEATS.map(([email, persona]) => ({
     email,
     ready: true,
@@ -114,5 +117,35 @@ describe("bot tempers", () => {
     if (process.env.ARENA)
       appendFileSync("tempers.log", JSON.stringify({ push: perTurn }) + "\n");
     expect(perTurn["Bot #3"].draws).toBeGreaterThan(perTurn["Bot #1"].draws);
+  });
+
+  it("make the reckless bot buy more shares in Acquire than the cautious one", () => {
+    const bought: { [email: string]: number } = {};
+    for (let g = 0; g < GAMES; g++) {
+      const random = rng(303 + g);
+      const state = buildAcquireGameState("t", lobby("acquire"), random);
+      for (const p of state.public.players)
+        p.persona = SEATS.find(([e]) => e === p.email)?.[1];
+      let guard = 0;
+      while (state.public.status === "IN_PROGRESS" && guard++ < 4000) {
+        const before = Object.fromEntries(
+          state.public.players.map((p) => [
+            p.email,
+            Object.values(p.stocks || {}).reduce((a, b) => a + (b || 0), 0),
+          ]),
+        );
+        acquireTurn(state as AcquireGameState);
+        if (state.public.lastMove?.type === "buy") {
+          const who = state.public.lastMove.email;
+          const after = Object.values(
+            state.public.players.find((p) => p.email === who)?.stocks || {},
+          ).reduce((a, b) => a + (b || 0), 0);
+          bought[who] = (bought[who] || 0) + Math.max(0, after - before[who]);
+        }
+      }
+    }
+    if (process.env.ARENA)
+      appendFileSync("tempers.log", JSON.stringify({ acquire: bought }) + "\n");
+    expect(bought["Bot #3"] || 0).toBeGreaterThan(bought["Bot #1"] || 0);
   });
 });

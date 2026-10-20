@@ -331,8 +331,8 @@ export default function Lobby({
             {minPlayers === maxPlayers
               ? minPlayers
               : `${minPlayers} to ${maxPlayers}`}{" "}
-            players. Bots can take any empty seat; their temper tells in Medici
-            and PUSH, and is only a name elsewhere.
+            players. Bots can take any empty seat; their temper tells in
+            Acquire, Medici and PUSH, and is only a name elsewhere.
             {hasModes &&
               (lobbyData.options?.mode === "CLASSIC"
                 ? " Classic Mode: bonuses to the top two stockholders."

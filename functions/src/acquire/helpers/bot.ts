@@ -1,6 +1,7 @@
 import { AcquireGameState } from "../types";
 import { getActivePlayer } from "./rules";
-import { takeBotStep } from "./botSearch";
+import { STYLES, takeBotStep } from "./botSearch";
+import { temperOf } from "../../shared/personas";
 import { updateGameState } from "../../shared/helpers";
 import { wait } from "../../high-society/helpers";
 
@@ -11,7 +12,10 @@ export function takeBotTurn(gameState: AcquireGameState) {
   const player = getActivePlayer(gameState);
   if (!player?.isBot) return;
   try {
-    takeBotStep(gameState);
+    takeBotStep(
+      gameState,
+      STYLES[temperOf(gameState.public.players, player.email)],
+    );
   } catch (e) {
     console.log("Bot step failed.", e);
   }

@@ -34,6 +34,49 @@ import {
  * mode in play, which is what makes Tycoon's third place worth chasing.
  */
 
+/**
+ * How a temper bends the judgement: the cash kept back early, the hurdle a
+ * share's worth must clear over its price, how much a rival's possible
+ * merger weighs, how readily absorbed shares are traded for the
+ * survivor's, and how far ahead the bot must be to call the end.
+ */
+export type Style = {
+  reserve: number;
+  hurdle: number;
+  /** Shares bought in one turn at most, up to the rules' three. */
+  maxBuy: number;
+  threat: number;
+  tradeAt: number;
+  declareEdge: number;
+};
+
+export const STYLES: { [temper: string]: Style } = {
+  CAUTIOUS: {
+    reserve: 3000,
+    hurdle: 1.45,
+    maxBuy: 2,
+    threat: 0.5,
+    tradeAt: 1.2,
+    declareEdge: 1.1,
+  },
+  STEADY: {
+    reserve: 1000,
+    hurdle: 1.15,
+    maxBuy: 3,
+    threat: 0.3,
+    tradeAt: 1,
+    declareEdge: 1,
+  },
+  RECKLESS: {
+    reserve: 0,
+    hurdle: 0.9,
+    maxBuy: 3,
+    threat: 0.12,
+    tradeAt: 0.85,
+    declareEdge: 1,
+  },
+};
+
 export function cloneForSearch(gameState: AcquireGameState): AcquireGameState {
   return {
     public: JSON.parse(JSON.stringify(gameState.public)),
@@ -128,6 +171,7 @@ export function chooseSurvivorFor(
 export function chooseDisposal(
   gameState: AcquireGameState,
   email: string,
+  style: Style = STYLES.STEADY,
 ): { sell: number; trade: number } {
   const merger = gameState.public.merger;
   const player = playerByEmail(gameState, email);
@@ -142,7 +186,7 @@ export function chooseDisposal(
   let survivorLeft = gameState.public.chains[merger.survivor].stockLeft;
   while (pairs > 0 && survivorLeft > 0) {
     const worth = marginalShareValue(copy, merger.survivor, email);
-    if (worth <= 2 * price) break;
+    if (worth <= 2 * price * style.tradeAt) break;
     me.stocks = {
       ...(me.stocks || {}),
       [merger.survivor]: stockOf(me, merger.survivor) + 1,
@@ -162,6 +206,7 @@ export function chooseDisposal(
 export function choosePurchases(
   gameState: AcquireGameState,
   email: string,
+  style: Style = STYLES.STEADY,
 ): { [chain in Chain]?: number } {
   const player = playerByEmail(gameState, email) as AcquirePlayerState;
   const purchases: { [chain in Chain]?: number } = {};
@@ -170,8 +215,10 @@ export function choosePurchases(
   let cash = player.money;
   let bought = gameState.public.bought;
   const late = progress(gameState);
-  const reserve = Math.round(Math.max(0, 1000 * (1 - late)) / 100) * 100;
-  for (let i = 0; i < MAX_BUY && bought < MAX_BUY; i++) {
+  const reserve =
+    Math.round(Math.max(0, style.reserve * (1 - late)) / 100) * 100;
+  const limit = Math.min(MAX_BUY, style.maxBuy);
+  for (let i = 0; i < limit && bought < MAX_BUY; i++) {
     let best: Chain | null = null;
     let bestGain = 0;
     for (const chain of activeChains(copy)) {
@@ -180,7 +227,7 @@ export function choosePurchases(
       if (price > cash - reserve) continue;
       const worth = marginalShareValue(copy, chain, email);
       // Money kept is worth a little more early, when it buys founding shares cheaply.
-      const gain = worth - price * (1.15 - 0.3 * late);
+      const gain = worth - price * (style.hurdle - 0.3 * late);
       if (gain > bestGain) {
         bestGain = gain;
         best = chain;
@@ -197,7 +244,11 @@ export function choosePurchases(
 }
 
 /** Run the bot's own policies through any choices a placement opened up, others keeping their shares. */
-function settle(gameState: AcquireGameState, email: string) {
+function settle(
+  gameState: AcquireGameState,
+  email: string,
+  style: Style = STYLES.STEADY,
+) {
   let guard = 40;
   while (guard-- > 0 && gameState.public.status === "IN_PROGRESS") {
     const phase = gameState.public.phase;
@@ -215,7 +266,9 @@ function settle(gameState: AcquireGameState, email: string) {
     } else if (phase === "DISPOSE") {
       const who = gameState.public.activePlayer;
       const d =
-        who === email ? chooseDisposal(gameState, who) : { sell: 0, trade: 0 };
+        who === email
+          ? chooseDisposal(gameState, who, style)
+          : { sell: 0, trade: 0 };
       dispose(gameState, who, d.sell, d.trade);
     } else {
       return;
@@ -257,7 +310,12 @@ function mergerSquares(gameState: AcquireGameState): Tile[] {
 }
 
 /** The worst a rival's merger could leave the bot, from this position. */
-function threat(gameState: AcquireGameState, email: string, base: number) {
+function threat(
+  gameState: AcquireGameState,
+  email: string,
+  base: number,
+  style: Style,
+) {
   const squares = mergerSquares(gameState);
   if (!squares.length) return base;
   const rival = gameState.public.players.find((p) => p.email !== email);
@@ -270,14 +328,17 @@ function threat(gameState: AcquireGameState, email: string, base: number) {
     const r = playerByEmail(copy, rival.email) as AcquirePlayerState;
     r.tiles = [tile];
     if (!placeTile(copy, tile).ok) continue;
-    settle(copy, email);
+    settle(copy, email, style);
     worst = Math.min(worst, standing(copy, email));
   }
   return worst;
 }
 
 /** The tile to play, or null when none can be. */
-export function chooseTile(gameState: AcquireGameState): Tile | null {
+export function chooseTile(
+  gameState: AcquireGameState,
+  style: Style = STYLES.STEADY,
+): Tile | null {
   const player = getActivePlayer(gameState);
   if (!player) return null;
   const options = playableTiles(gameState, player);
@@ -288,11 +349,11 @@ export function chooseTile(gameState: AcquireGameState): Tile | null {
     const copy = cloneForSearch(gameState);
     const result = placeTile(copy, tile);
     if (!result.ok) continue;
-    settle(copy, player.email);
+    settle(copy, player.email, style);
     const now = standing(copy, player.email);
     // A merger the others could spring next counts against the position.
-    const exposed = threat(copy, player.email, now);
-    let score = 0.7 * now + 0.3 * exposed;
+    const exposed = threat(copy, player.email, now, style);
+    let score = (1 - style.threat) * now + style.threat * exposed;
     const kind = analyse(gameState, tile).kind;
     // A quiet tile keeps options open; founding is worth a little beyond the free share.
     if (kind === "lone") score += 50;
@@ -313,7 +374,11 @@ export function chooseTile(gameState: AcquireGameState): Tile | null {
 }
 
 /** Call the end only when the bot would win it. */
-export function shouldDeclare(gameState: AcquireGameState, email: string) {
+export function shouldDeclare(
+  gameState: AcquireGameState,
+  email: string,
+  style: Style = STYLES.STEADY,
+) {
   if (!canDeclare(gameState)) return false;
   const copy = cloneForSearch(gameState);
   const worths = copy.public.players.map(
@@ -331,21 +396,27 @@ export function shouldDeclare(gameState: AcquireGameState, email: string) {
     if (who === email) mine = worth;
     else best = Math.max(best, worth);
   }
-  return mine > best;
+  return mine > best * style.declareEdge;
 }
 
 /** Everything the bot does on its own turn, in order. */
-export function takeBotStep(gameState: AcquireGameState) {
+export function takeBotStep(
+  gameState: AcquireGameState,
+  style: Style = STYLES.STEADY,
+) {
   const player = getActivePlayer(gameState);
   if (!player) return;
   const email = player.email;
   switch (gameState.public.phase) {
     case "PLACE": {
-      if (!gameState.public.declaredBy && shouldDeclare(gameState, email)) {
+      if (
+        !gameState.public.declaredBy &&
+        shouldDeclare(gameState, email, style)
+      ) {
         declareEnd(gameState);
         return;
       }
-      const tile = chooseTile(gameState);
+      const tile = chooseTile(gameState, style);
       if (tile) placeTile(gameState, tile);
       else gameState.public.phase = "BUY";
       return;
@@ -364,16 +435,19 @@ export function takeBotStep(gameState: AcquireGameState) {
       );
       return;
     case "DISPOSE": {
-      const d = chooseDisposal(gameState, email);
+      const d = chooseDisposal(gameState, email, style);
       dispose(gameState, email, d.sell, d.trade);
       return;
     }
     case "BUY": {
-      if (!gameState.public.declaredBy && shouldDeclare(gameState, email)) {
+      if (
+        !gameState.public.declaredBy &&
+        shouldDeclare(gameState, email, style)
+      ) {
         declareEnd(gameState);
         return;
       }
-      buyStock(gameState, choosePurchases(gameState, email));
+      buyStock(gameState, choosePurchases(gameState, email, style));
       return;
     }
   }

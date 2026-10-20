@@ -58,7 +58,7 @@ Acquire.
 
 ## Bot personas, next steps
 
-- Tempers currently change the judgement in Medici and PUSH only. Candidates
-  for dials: Condottiere (budget share), For Sale and High Society (bid
-  ceilings), No Thanks! (chip patience), Fuji Flush (equity), the drafting
-  games (room-to-grow weight).
+- Tempers currently change the judgement in Acquire, Medici and PUSH only.
+  Candidates for dials: Condottiere (budget share), For Sale and High
+  Society (bid ceilings), No Thanks! (chip patience), Fuji Flush (equity),
+  the drafting games (room-to-grow weight).
