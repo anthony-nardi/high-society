@@ -28,6 +28,7 @@ export default function Board({
   focusChain,
   preview,
   ghost,
+  mergerTile,
 }: {
   gameState: AcquireGameState;
   /** Your tiles, drawn in place as outlines. */
@@ -43,6 +44,8 @@ export default function Board({
   preview?: Tile | null;
   /** A tile just played, shown at once while the server catches up. */
   ghost?: Tile | null;
+  /** The tile that set off the merger being settled: on the board in spirit, not yet in fact. */
+  mergerTile?: Tile | null;
 }) {
   const width = PAD + COLUMNS * (CELL + GAP) + 6;
   const height = PAD + ROWS.length * (CELL + GAP) + 6;
@@ -134,10 +137,16 @@ export default function Board({
           const tile = `${c + 1}${row}`;
           const x = PAD + c * (CELL + GAP);
           const y = PAD + r * (CELL + GAP);
-          const ghosted = ghost === tile && !gameState.board?.[tile];
+          const merging = mergerTile === tile && !gameState.board?.[tile];
+          const ghosted =
+            !merging && ghost === tile && !gameState.board?.[tile];
           const owner =
             gameState.board?.[tile] ??
-            (ghosted ? ghostOwner(gameState, tile) : undefined);
+            (merging
+              ? (survivor ?? "NONE")
+              : ghosted
+                ? ghostOwner(gameState, tile)
+                : undefined);
           const inHand = handSet.has(tile) && !ghosted;
           const playable = inHand && !!onTile && isPlayable(gameState, tile);
           const fill =
@@ -158,8 +167,9 @@ export default function Board({
               preview !== null &&
               owner === "NONE" &&
               touchesLone(preview, tile));
-          const tip =
-            owner && owner !== "NONE"
+          const tip = merging
+            ? `${tile}: the tile that set off this merger, placed once it is settled`
+            : owner && owner !== "NONE"
               ? `${label(owner)}: ${gameState.chains[owner].size} tiles, ${money(currentPrice(gameState, owner))} a share`
               : owner === "NONE"
                 ? `${tile}: a lone tile`
@@ -193,17 +203,19 @@ export default function Board({
                     : undefined
                 }
                 className={
-                  lastTile === tile && owner
-                    ? "tile-pulse"
-                    : changed.has(tile)
-                      ? "tile-convert"
-                      : owner && owner === doomed
-                        ? "tile-doomed"
-                        : owner && owner === survivor
-                          ? "tile-survivor"
-                          : inHand
-                            ? "target-disc"
-                            : undefined
+                  merging
+                    ? "tile-merging"
+                    : lastTile === tile && owner
+                      ? "tile-pulse"
+                      : changed.has(tile)
+                        ? "tile-convert"
+                        : owner && owner === doomed
+                          ? "tile-doomed"
+                          : owner && owner === survivor
+                            ? "tile-survivor"
+                            : inHand
+                              ? "target-disc"
+                              : undefined
                 }
                 x={x}
                 y={y}
@@ -212,7 +224,7 @@ export default function Board({
                 rx="5"
                 fill={fill}
                 stroke={
-                  lastTile === tile || lit
+                  lastTile === tile || lit || merging
                     ? "#ffd86b"
                     : owner && owner !== "NONE" && isSafe(gameState, owner)
                       ? "#d9b64a"
@@ -231,9 +243,11 @@ export default function Board({
                       : 1
                 }
                 strokeDasharray={
-                  (inHand && !owner) || ghosted ? "4 3" : undefined
+                  (inHand && !owner) || ghosted || merging ? "4 3" : undefined
                 }
-                opacity={inHand && !playable ? 0.6 : ghosted ? 0.75 : 1}
+                opacity={
+                  inHand && !playable ? 0.6 : ghosted || merging ? 0.8 : 1
+                }
               />
               {owner && owner !== "NONE" && (
                 <text
@@ -248,7 +262,7 @@ export default function Board({
                   {owner.charAt(0)}
                 </text>
               )}
-              {(inHand || owner === "NONE") && (
+              {(inHand || owner === "NONE" || merging) && (
                 <text
                   x={x + CELL / 2}
                   y={y + CELL / 2 + 4}

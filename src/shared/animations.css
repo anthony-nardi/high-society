@@ -523,3 +523,26 @@
     animation: none;
   }
 }
+
+/* Acquire: the tile that set off a merger, hovering over its square until the merger is settled. */
+.tile-merging {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: tile-merging 1.4s ease-in-out infinite;
+}
+@keyframes tile-merging {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 2px rgba(255, 216, 107, 0.6));
+  }
+  50% {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 8px rgba(255, 216, 107, 1));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tile-merging {
+    animation: none;
+  }
+}

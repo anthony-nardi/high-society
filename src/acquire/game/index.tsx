@@ -164,6 +164,12 @@ export default function Game() {
                 focusChain={focus.chain}
                 preview={gameState.phase === "PLACE" && acting ? staged : null}
                 ghost={ghostTile}
+                mergerTile={
+                  gameState.phase === "SURVIVOR" ||
+                  gameState.phase === "DISPOSE"
+                    ? gameState.merger?.tile
+                    : null
+                }
                 onTile={canTapBoard ? playTile : undefined}
               />
             </Stack>

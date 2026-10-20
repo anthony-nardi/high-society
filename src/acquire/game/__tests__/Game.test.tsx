@@ -172,6 +172,8 @@ describe("Acquire table", () => {
     });
     renderGame();
     expect(screen.getByText(/Tower is absorbed by Luxor/)).toBeTruthy();
+    // The tile that set off the merger hovers over its square, not yet placed.
+    expect(screen.getByLabelText(/^4E: luxor/)).toBeTruthy();
     fireEvent.click(
       screen.getByRole("button", { name: "Trade · two for one Luxor: more" }),
     );
