@@ -5,7 +5,54 @@ import { useUserContext } from "../../../shared/context/useUserContext";
 import displayName, { isBotName } from "../../../shared/utils/displayName";
 import ThinkingDots from "../../../shared/components/ThinkingDots";
 import { CHAIN_COLOUR, CHAINS, label, money, stockOf } from "../board";
-import ChainCard from "./ChainCard";
+
+/** A share, drawn plainly enough to read at thumbnail size: the chain's colour and its initial on cream. */
+function Share({ chain, width = 34 }: { chain: Chain; width?: number }) {
+  const height = Math.round(width * 1.35);
+  return (
+    <svg
+      viewBox="0 0 34 46"
+      width={width}
+      height={height}
+      aria-hidden="true"
+      style={{ display: "block" }}
+    >
+      <rect
+        x="1"
+        y="1"
+        width="32"
+        height="44"
+        rx="4"
+        fill="#f3e9d2"
+        stroke="#1d2230"
+        strokeWidth="2"
+      />
+      <rect
+        x="3"
+        y="3"
+        width="28"
+        height="22"
+        rx="3"
+        fill={CHAIN_COLOUR[chain]}
+      />
+      <text
+        x="17"
+        y="20"
+        textAnchor="middle"
+        fontSize="16"
+        fontWeight="900"
+        fill="#fff"
+        stroke="rgba(0,0,0,0.35)"
+        strokeWidth="0.8"
+        paintOrder="stroke"
+      >
+        {label(chain).charAt(0)}
+      </text>
+      <rect x="7" y="31" width="20" height="2.5" rx="1" fill="#8a7d64" />
+      <rect x="9" y="37" width="16" height="2.5" rx="1" fill="#8a7d64" />
+    </svg>
+  );
+}
 
 export default function PlayerOverview({
   player,
@@ -150,9 +197,9 @@ export default function PlayerOverview({
                 title={`${n} ${label(c)} share${n === 1 ? "" : "s"}`}
                 style={{
                   position: "relative",
-                  width: 30 + (shown - 1) * 5,
-                  height: 42,
-                  marginRight: 6,
+                  width: 34 + (shown - 1) * 7,
+                  height: 46,
+                  marginRight: 8,
                   borderRadius: 4,
                 }}
               >
@@ -161,29 +208,29 @@ export default function PlayerOverview({
                     key={i}
                     style={{
                       position: "absolute",
-                      left: i * 5,
+                      left: i * 7,
                       top: 0,
-                      filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.5))",
+                      filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.6))",
                     }}
                   >
-                    <ChainCard chain={c} width={30} />
+                    <Share chain={c} />
                   </div>
                 ))}
                 <span
                   style={{
                     position: "absolute",
-                    right: -6,
-                    bottom: -4,
-                    minWidth: 18,
-                    padding: "0 5px",
-                    borderRadius: 9,
-                    background: CHAIN_COLOUR[c],
+                    right: -8,
+                    bottom: -5,
+                    minWidth: 20,
+                    padding: "0 6px",
+                    borderRadius: 10,
+                    background: "#1d2230",
                     color: "#fff",
-                    fontSize: 11,
+                    fontSize: 12,
                     fontWeight: 800,
                     textAlign: "center",
-                    border: "1px solid rgba(0,0,0,0.6)",
-                    lineHeight: "17px",
+                    border: `2px solid ${CHAIN_COLOUR[c]}`,
+                    lineHeight: "18px",
                   }}
                 >
                   {n}
