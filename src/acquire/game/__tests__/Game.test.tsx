@@ -130,6 +130,33 @@ describe("Acquire table", () => {
     expect(screen.queryByRole("button", { name: "Tile 5E" })).toBeNull();
   });
 
+  it("pays a bonus as a stamped cheque", () => {
+    const merging = (money: number) =>
+      base({
+        phase: "DISPOSE",
+        activePlayer: "Bot #1",
+        turnPlayer: "Bot #1",
+        merger: {
+          tile: "4E",
+          survivor: "LUXOR",
+          current: "TOWER",
+          price: 200,
+          defunct: [],
+          paid: [{ email: "a@example.com", amount: 2000 }],
+        },
+        players: [{ ...base({}).players[0], money }, base({}).players[1]],
+      });
+    current = merging(6000);
+    const view = renderGame();
+    current = merging(8000);
+    view.rerender(
+      <MantineProvider>
+        <Game />
+      </MantineProvider>,
+    );
+    expect(screen.getByLabelText("Cheque to a: $2,000, primary")).toBeTruthy();
+  });
+
   it("names who leads each chain", () => {
     current = base({});
     render(

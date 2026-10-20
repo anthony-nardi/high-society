@@ -76,6 +76,18 @@ export default function Board({
     setSeen({ board, changed });
   }
   const changed = seen.board === board ? seen.changed : new Set<string>();
+  // Tiles swept into the survivor recolour one after another, spreading
+  // out from the tile that set the merger off.
+  const floodFrom = gameState.lastMerger?.tile;
+  const floodDelay = (tile: Tile) => {
+    if (!floodFrom || !changed.has(tile)) return undefined;
+    const col = (t: Tile) => Number(t.slice(0, -1));
+    const row = (t: Tile) => ROWS.indexOf(t.slice(-1));
+    const steps =
+      Math.abs(col(tile) - col(floodFrom)) +
+      Math.abs(row(tile) - row(floodFrom));
+    return `${steps * 90}ms`;
+  };
   const animationKey = `${gameState.turn}:${gameState.phase}:${lastTile}:${Object.keys(board || {}).length}`;
   // A chain just founded plants its flag on the founding tile.
   const founded =
@@ -223,6 +235,7 @@ export default function Board({
                 height={CELL}
                 rx="5"
                 fill={fill}
+                style={{ animationDelay: floodDelay(tile) }}
                 stroke={
                   lastTile === tile || lit || merging
                     ? "#ffd86b"

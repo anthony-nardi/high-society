@@ -4,7 +4,48 @@ import { AcquireGameState, AcquirePlayerState, Chain } from "../types";
 import { useUserContext } from "../../../shared/context/useUserContext";
 import displayName, { isBotName } from "../../../shared/utils/displayName";
 import ThinkingDots from "../../../shared/components/ThinkingDots";
-import { CHAIN_COLOUR, CHAINS, label, money, stockOf } from "../board";
+import {
+  bonusRank,
+  CHAIN_COLOUR,
+  CHAINS,
+  label,
+  money,
+  stockOf,
+} from "../board";
+
+/** A bonus arriving as a cheque: payee, amount, and the rank stamped on it. */
+function Cheque({
+  to,
+  amount,
+  rank,
+  chain,
+}: {
+  to: string;
+  amount: number;
+  rank: string;
+  chain: Chain;
+}) {
+  return (
+    <div
+      className="cheque"
+      role="status"
+      aria-label={`Cheque to ${to}: ${money(amount)}, ${rank}`}
+    >
+      <div
+        className="cheque-strip"
+        style={{ background: CHAIN_COLOUR[chain] }}
+      />
+      <div className="cheque-body">
+        <div className="cheque-to">
+          Pay to <b>{to}</b>
+        </div>
+        <div className="cheque-amount">{money(amount)}</div>
+        <div className="cheque-memo">{label(chain)} stockholder bonus</div>
+      </div>
+      <div className="cheque-stamp">{rank}</div>
+    </div>
+  );
+}
 
 /** A share, drawn plainly enough to read at thumbnail size: the chain's colour and its initial on cream. */
 function Share({ chain, width = 34 }: { chain: Chain; width?: number }) {
@@ -75,9 +116,11 @@ export default function PlayerOverview({
     key: 0,
     chains: [],
   });
-  const [gain, setGain] = useState<{ amount: number; key: number } | null>(
-    null,
-  );
+  const [gain, setGain] = useState<{
+    amount: number;
+    key: number;
+    cheque?: { rank: string; chain: Chain };
+  } | null>(null);
   useEffect(() => {
     const before = lastStocks.current;
     const chains = CHAINS.filter((c) => stockOf(player, c) > (before[c] ?? 0));
@@ -94,10 +137,23 @@ export default function PlayerOverview({
       );
     }
     if (delta > 0) {
-      setGain({ amount: delta, key: Date.now() });
-      timers.push(window.setTimeout(() => setGain(null), 1700));
+      // A bonus arrives as a cheque; other money floats up as a number.
+      const merger = gameState.merger;
+      const paid = merger?.paid?.find(
+        (p) => p.email === player.email && p.amount === delta,
+      );
+      const cheque =
+        paid && merger?.current && merger.price
+          ? {
+              rank: bonusRank(paid.amount, merger.price, gameState.mode),
+              chain: merger.current,
+            }
+          : undefined;
+      setGain({ amount: delta, key: Date.now(), cheque });
+      timers.push(window.setTimeout(() => setGain(null), cheque ? 3400 : 1700));
     }
     return () => timers.forEach((t) => window.clearTimeout(t));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [player]);
 
   return (
@@ -147,10 +203,19 @@ export default function PlayerOverview({
           )}
         </Badge>
       )}
-      {gain && (
+      {gain && !gain.cheque && (
         <span key={gain.key} className="money-float" aria-hidden="true">
           +{money(gain.amount)}
         </span>
+      )}
+      {gain && gain.cheque && (
+        <Cheque
+          key={gain.key}
+          to={displayName(player.email)}
+          amount={gain.amount}
+          rank={gain.cheque.rank}
+          chain={gain.cheque.chain}
+        />
       )}
       <Text fw={700} truncate mt={4}>
         {displayName(player.email)}

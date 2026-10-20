@@ -130,6 +130,7 @@ describe("soundForEvent", () => {
     expect(soundForEvent("a pushes a 7 through with b.")).toBe("win");
     expect(soundForEvent("Game over: a and b win together.")).toBe("fanfare");
     expect(soundForEvent("a turns over Cloth 5.")).toBe("card");
+    expect(soundForEvent("Luxor now has 14 tiles.")).toBe("flood");
     expect(soundForEvent("a turns over Red 3.")).toBe("card");
     expect(soundForEvent("a places Red 3 in column 2.")).toBe("chip");
     expect(soundForEvent("a takes Red 3, Blue 5.")).toBe("win");

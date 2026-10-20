@@ -33,7 +33,8 @@ export type SoundKind =
   | "steel"
   | "surrender"
   | "dice"
-  | "lock";
+  | "lock"
+  | "flood";
 
 const MUTE_KEY = "sound:muted";
 const MUTE_EVENT = "sound:mute-changed";
@@ -462,6 +463,21 @@ const SOUNDS: { [kind in SoundKind]: Note[] } = {
       glideTo: 3000,
     },
   ],
+  // A merger completed: the survivor's colour flooding the board, a chord
+  // rising a note at a time and holding.
+  flood: [
+    { frequency: 261.63, at: 0, length: 0.9, type: "triangle", volume: 0.5 },
+    { frequency: 329.63, at: 0.12, length: 0.8, type: "triangle", volume: 0.5 },
+    { frequency: 392.0, at: 0.24, length: 0.7, type: "triangle", volume: 0.5 },
+    {
+      frequency: 523.25,
+      at: 0.36,
+      length: 0.7,
+      type: "triangle",
+      volume: 0.55,
+    },
+    { frequency: 659.25, at: 0.48, length: 0.6, type: "sine", volume: 0.4 },
+  ],
   // A padlock clicking shut: a small click, a heavier clack, and a short metallic ring.
   lock: [
     ...knock(0, 900, 0.5),
@@ -720,6 +736,7 @@ export function soundForEvent(title: string): SoundKind | null {
   if (/^\S+ takes (red|blue|yellow|green|purple|dice)/.test(text)) return "win";
   if (/protects (red|blue|yellow|green|purple)/.test(text)) return "bell";
   if (/takes over/.test(text)) return "merger";
+  if (/^\w+ now has \d+ tiles\./.test(text)) return "flood";
   if (/calls the end/.test(text)) return "fanfare";
   if (/calls the armies/.test(text)) return "steel";
   if (/plays drummer/.test(text)) return "drum";
